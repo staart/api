@@ -15,6 +15,5 @@
     "outDir": "./dist",
     "typeRoots": ["node_modules/@types"]
   },
-  "include": ["index.ts"],
   "exclude": ["node_modues"]
 }
