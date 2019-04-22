@@ -6,15 +6,23 @@
   "author": "Anand Chowdhary <mail@anandchowdhary.com>",
   "license": "MIT",
   "scripts": {
-    "prettier-watch": "onchange '**/*.{ts,json}' -- prettier --write {{changed}}"
+    "build": "touch .env && mkdir -p dist && cp .env dist/.env && tsc",
+    "start": "concurrently 'yarn watch-build' 'yarn watch-prettier' 'yarn watch-server'",
+    "watch-build": "onchange '{src,examples}/**/*.ts' -- yarn build",
+    "watch-prettier": "onchange '{src,examples}/**/*.{ts,json}' -- prettier --write {{changed}}",
+    "watch-server": "nodemon dist/examples/express.js"
   },
   "devDependencies": {
     "@types/dotenv": "^6.1.1",
+    "@types/express": "^4.16.1",
     "@types/jest": "^24.0.11",
     "@types/node": "^11.13.6",
+    "concurrently": "^4.1.0",
     "coveralls": "^3.0.3",
     "dotenv": "^7.0.0",
+    "express": "^4.16.4",
     "jest": "^24.7.1",
+    "nodemon": "^1.18.11",
     "onchange": "^5.2.0",
     "prettier": "^1.17.0",
     "ts-jest": "^24.0.2",

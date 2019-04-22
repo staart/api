@@ -1,4 +1,4 @@
-import { getConnectionManager } from "typeorm";
+import { createConnection } from "typeorm";
 import {
   DB_HOST,
   DB_PORT,
@@ -7,16 +7,15 @@ import {
   DB_DATABASE
 } from "../config";
 
-const connectionManager = getConnectionManager();
-const connection = connectionManager.create({
-  type: "mysql",
-  host: DB_HOST,
-  port: DB_PORT,
-  username: DB_USERNAME,
-  password: DB_PASSWORD,
-  database: DB_DATABASE
-});
-
 export const connect = async () => {
-  return await connection.connect();
+  return await createConnection({
+    type: "mysql",
+    host: DB_HOST,
+    port: DB_PORT,
+    username: DB_USERNAME,
+    password: DB_PASSWORD,
+    database: DB_DATABASE,
+    entities: [`${__dirname}/enities/*.ts`],
+    synchronize: true
+  });
 };

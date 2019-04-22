@@ -16,7 +16,7 @@ export class Event {
 
   @ManyToOne(type => User)
   @JoinColumn()
-  user: User;
+  user!: User;
 
   @Column({
     type: "enum",
