@@ -2,17 +2,21 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   CreateDateColumn,
-  Column
+  Column,
+  ManyToOne,
+  JoinColumn
 } from "typeorm";
 import { EventType } from "../interfaces/enum";
+import { User } from "./user";
 
 @Entity()
 export class Event {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
-  userId!: number;
+  @ManyToOne(type => User)
+  @JoinColumn()
+  user: User;
 
   @Column({
     type: "enum",

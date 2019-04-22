@@ -3,16 +3,20 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  Column
+  Column,
+  ManyToOne,
+  JoinColumn
 } from "typeorm";
+import { User } from "./user";
 
 @Entity()
 export class Email {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
-  userId!: number;
+  @ManyToOne(type => User)
+  @JoinColumn()
+  user!: User;
 
   @Column()
   email!: string;

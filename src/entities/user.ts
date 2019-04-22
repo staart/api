@@ -3,50 +3,54 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  Column
+  Column,
+  OneToOne,
+  JoinColumn
 } from "typeorm";
+import { Email } from "./email";
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
-  id!: number;
+  id?: number;
 
   @Column()
-  name!: string;
+  name?: string;
 
   @Column()
-  nickname!: string;
+  nickname?: string;
+
+  @OneToOne(type => Email)
+  @JoinColumn()
+  primaryEmail?: Email;
 
   @Column()
-  primaryEmailId!: number;
+  password?: string;
 
   @Column()
-  password!: string;
+  twoFactorEnabled?: boolean;
 
   @Column()
-  twoFactorEnabled!: boolean;
+  twoFactorSecret?: string;
 
   @Column()
-  twoFactorSecret!: string;
+  country?: string;
 
   @Column()
-  country!: string;
+  timezone?: string;
 
   @Column()
-  timezone!: string;
+  notificationEmails?: 1 | 2 | 3 | 4;
 
   @Column()
-  notificationEmails!: 1 | 2 | 3 | 4;
+  preferredLanguage?: string;
 
   @Column()
-  preferredLanguage!: string;
-
-  @Column()
-  prefersReducedMotion!: boolean;
+  prefersReducedMotion?: boolean;
 
   @CreateDateColumn()
-  createdAt!: Date;
+  createdAt?: Date;
 
   @UpdateDateColumn()
-  updatedAt!: Date;
+  updatedAt?: Date;
 }
