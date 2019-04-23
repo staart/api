@@ -10,12 +10,13 @@
     "start": "concurrently 'yarn watch-build' 'yarn watch-prettier' 'yarn watch-server'",
     "watch-build": "onchange '{src,examples}/**/*.ts' -- yarn build",
     "watch-prettier": "onchange '{src,examples}/**/*.{ts,json}' -- prettier --write {{changed}}",
-    "watch-server": "nodemon dist/examples/express.js"
+    "watch-server": "nodemon dist/index.js"
   },
   "devDependencies": {
     "@types/dotenv": "^6.1.1",
     "@types/express": "^4.16.1",
     "@types/jest": "^24.0.11",
+    "@types/mysql": "^2.15.5",
     "@types/node": "^11.13.6",
     "concurrently": "^4.1.0",
     "coveralls": "^3.0.3",
@@ -30,7 +31,6 @@
   },
   "dependencies": {
     "mysql": "^2.17.1",
-    "reflect-metadata": "^0.1.13",
-    "typeorm": "^0.2.16"
+    "reflect-metadata": "^0.1.13"
   }
 }
