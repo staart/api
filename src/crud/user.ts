@@ -31,7 +31,7 @@ interface KV {
   [index: string]: any;
 }
 export const updateUser = async (id: number, user: KV) => {
-  user.updatedAt = user.createdAt;
+  user.updatedAt = new Date();
   // Create user
   return await query(`UPDATE users SET ${setValues(user)} WHERE id = ?`, [
     ...Object.values(user),

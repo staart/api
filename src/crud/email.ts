@@ -1,7 +1,7 @@
 import { query, tableValues } from "../helpers/mysql";
 import { Email } from "../interfaces/tables/emails";
 
-export const createEmail = async (email: Email) => {
+export const createEmail = async (email: Email, sendVerification = true) => {
   // Clean up values
   email.email = email.email.toLowerCase();
   email.isVerified = false;

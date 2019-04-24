@@ -9,7 +9,7 @@ app.get("/create-account", async (req, res) => {
   try {
     const users = await register(
       { name: "Anand Chowdhary" },
-      "anandchowdhary@gmail.com"
+      "anand@oswaldlabs.com"
     );
     res.json({ success: true, users });
   } catch (error) {

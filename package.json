@@ -16,7 +16,9 @@
     "@types/bcrypt": "^3.0.0",
     "@types/dotenv": "^6.1.1",
     "@types/express": "^4.16.1",
+    "@types/fs-extra": "^5.0.5",
     "@types/jest": "^24.0.11",
+    "@types/marked": "^0.6.5",
     "@types/mysql": "^2.15.5",
     "@types/node": "^11.13.6",
     "concurrently": "^4.1.0",
@@ -31,8 +33,13 @@
     "typescript": "^3.4.4"
   },
   "dependencies": {
+    "@types/mustache": "^0.8.32",
     "bcrypt": "^3.0.6",
+    "fs-extra": "^7.0.1",
+    "marked": "^0.6.2",
+    "mustache": "^3.0.1",
     "mysql": "^2.17.1",
+    "node-ses": "^2.2.0",
     "reflect-metadata": "^0.1.13"
   }
 }

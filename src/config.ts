@@ -2,7 +2,7 @@ import { config } from "dotenv";
 config();
 
 // Server
-export const PORT = process.env.PORT || 7008;
+export const PORT = process.env.PORT || 7007;
 
 // Database
 export const DB_HOST = process.env.DB_HOST || "localhost";
@@ -12,3 +12,8 @@ export const DB_PORT = process.env.DB_PORT
 export const DB_USERNAME = process.env.DB_USERNAME || "root";
 export const DB_PASSWORD = process.env.DB_PASSWORD || "";
 export const DB_DATABASE = process.env.DB_DATABASE || "database";
+
+// Email
+export const SES_EMAIL = process.env.SES_EMAIL || "";
+export const SES_ACCESS = process.env.SES_ACCESS || "";
+export const SES_SECRET = process.env.SES_SECRET || "";
