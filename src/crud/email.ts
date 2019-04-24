@@ -5,7 +5,7 @@ export const createEmail = async (email: Email) => {
   // Clean up values
   email.email = email.email.toLowerCase();
   email.isVerified = false;
-  email.isPrimary = false;
+  email.isPrimary = !!email.isPrimary;
   email.createdAt = new Date();
   email.updatedAt = email.createdAt;
   // Create user
