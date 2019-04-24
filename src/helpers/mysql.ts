@@ -50,6 +50,8 @@ export const cleanValues = (
   values: (string | number | boolean | Date | undefined)[]
 ) => {
   values = values.map(value => {
+    // Clean up strings
+    if (typeof value === "string") value = value.trim();
     // Convert true to 1, false to 0
     if (typeof value === "boolean") value = !!value;
     // Convert Date to mysql datetime
@@ -61,4 +63,15 @@ export const cleanValues = (
     return value;
   });
   return values;
+};
+
+interface KV {
+  [index: string]: any;
+}
+export const setValues = (object: KV) => {
+  let query = "";
+  Object.keys(object).forEach(key => {
+    query += `${key} = "${object[key]}", `;
+  });
+  return query.slice(0, -2);
 };

@@ -1,9 +1,9 @@
 export interface Email {
-  id: number;
+  id?: number;
   email: string;
   userId: number;
-  isVerified: boolean;
-  isPrimary: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  isVerified?: boolean;
+  isPrimary?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

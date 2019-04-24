@@ -1,4 +1,4 @@
-import { query, tableValues } from "../helpers/mysql";
+import { query, tableValues, setValues } from "../helpers/mysql";
 import { User } from "../interfaces/tables/user";
 import { capitalizeFirstAndLastLetter } from "../helpers/string";
 import { hash } from "bcrypt";
@@ -25,4 +25,16 @@ export const createUser = async (user: User) => {
     `INSERT INTO users ${tableValues(user)}`,
     Object.values(user)
   );
+};
+
+interface KV {
+  [index: string]: any;
+}
+export const updateUser = async (id: number, user: KV) => {
+  user.updatedAt = user.createdAt;
+  // Create user
+  return await query(`UPDATE users SET ${setValues(user)} WHERE id = ?`, [
+    ...Object.values(user),
+    id
+  ]);
 };
