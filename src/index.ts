@@ -1,13 +1,16 @@
 import express from "express";
 import { PORT } from "./config";
-import { listAllUsers } from "./helpers/crud";
+import { register } from "./rest/auth";
 
 const app = express();
 
 app.get("/", (req, res) => res.json({ hello: "world" }));
 app.get("/create-account", async (req, res) => {
   try {
-    const users = await listAllUsers();
+    const users = await register(
+      { name: "Anand Chowdhary" },
+      "anandchowdhary@gmail.com"
+    );
     res.json({ success: true, users });
   } catch (error) {
     console.log("Error", error);

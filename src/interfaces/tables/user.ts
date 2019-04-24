@@ -1,9 +1,9 @@
 export interface User {
-  id: number;
+  id?: number;
   name: string;
-  nickname: string;
+  nickname?: string;
   primaryEmail?: number;
-  password: string;
+  password?: string;
   twoFactorEnabled?: boolean;
   twoFactorSecret?: string;
   countryCode?: string;
