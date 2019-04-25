@@ -3,6 +3,7 @@ import { createUser, updateUser } from "../crud/user";
 import { InsertResult } from "../interfaces/mysql";
 import { createEmail } from "../crud/email";
 import { mail } from "../helpers/mail";
+import { emailVerificationToken } from "../helpers/jwt";
 
 export const register = async (
   user: User,
@@ -21,7 +22,17 @@ export const register = async (
     });
     const emailId = newEmail.insertId;
     await updateUser(userId, { primaryEmail: emailId });
-    await mail(email, "verify-email", { name: user.name, email });
+    await sendEmailVerification(emailId, email, user);
   }
   return { created: true };
+};
+
+export const sendEmailVerification = async (
+  id: number,
+  email: string,
+  user: User
+) => {
+  const token = emailVerificationToken(id);
+  await mail(email, "verify-email", { name: user.name, email, token });
+  return;
 };
