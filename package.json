@@ -36,6 +36,7 @@
   "dependencies": {
     "@types/mustache": "^0.8.32",
     "bcrypt": "^3.0.6",
+    "express-async-handler": "^1.1.4",
     "fs-extra": "^7.0.1",
     "jsonwebtoken": "^8.5.1",
     "marked": "^0.6.2",
