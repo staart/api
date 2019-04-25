@@ -1,5 +1,7 @@
-import { query, tableValues } from "../helpers/mysql";
+import { query, tableValues, setValues } from "../helpers/mysql";
 import { Email } from "../interfaces/tables/emails";
+import { dateToDateTime } from "../helpers/utils";
+import { KeyValue } from "../interfaces/general";
 
 export const createEmail = async (email: Email, sendVerification = true) => {
   // Clean up values
@@ -12,4 +14,12 @@ export const createEmail = async (email: Email, sendVerification = true) => {
     `INSERT INTO emails ${tableValues(email)}`,
     Object.values(email)
   );
+};
+
+export const updateEmail = async (id: number, email: KeyValue) => {
+  email.updatedAt = dateToDateTime(new Date());
+  return await query(`UPDATE emails SET ${setValues(email)} WHERE id = ?`, [
+    ...Object.values(email),
+    id
+  ]);
 };

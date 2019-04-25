@@ -1,6 +1,12 @@
 import * as ses from "node-ses";
 import { Mail } from "../interfaces/mail";
-import { SES_SECRET, SES_ACCESS, SES_EMAIL, SES_REGION } from "../config";
+import {
+  SES_SECRET,
+  SES_ACCESS,
+  SES_EMAIL,
+  SES_REGION,
+  FRONTEND_URL
+} from "../config";
 import { readFile } from "fs-extra";
 import { join } from "path";
 import { render } from "mustache";
@@ -30,7 +36,7 @@ export const mail = async (
     (await readFile(
       join(__dirname, "..", "..", "src", "templates", `${template}.md`)
     )).toString(),
-    data
+    { ...data, frontendUrl: FRONTEND_URL }
   );
   const message = marked(altText);
   return await sendMail({

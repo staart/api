@@ -14,6 +14,7 @@ export const DB_PASSWORD = process.env.DB_PASSWORD || "";
 export const DB_DATABASE = process.env.DB_DATABASE || "database";
 
 // Email
+export const FRONTEND_URL = process.env.FRONTEND_URL || "https://example.com";
 export const SES_EMAIL = process.env.SES_EMAIL || "";
 export const SES_REGION = process.env.SES_REGION || "eu-west-1";
 export const SES_ACCESS = process.env.SES_ACCESS || "";

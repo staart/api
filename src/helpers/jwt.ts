@@ -1,4 +1,4 @@
-import { sign, Secret } from "jsonwebtoken";
+import { sign, verify } from "jsonwebtoken";
 import { JWT_ISSUER, JWT_SECRET } from "../config";
 
 export const generateToken = (
@@ -22,5 +22,13 @@ export const generateToken = (
     );
   });
 
-export const emailVerificationToken = async (id: number) =>
+export const verifyToken = (token: string, subject: string) =>
+  new Promise((resolve, reject) => {
+    verify(token, JWT_SECRET, { subject }, (error, data) => {
+      if (error) return reject(error);
+      resolve(data);
+    });
+  });
+
+export const emailVerificationToken = (id: number) =>
   generateToken({ id }, "7d", "email-verify");

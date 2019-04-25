@@ -2,6 +2,7 @@ import { query, tableValues, setValues } from "../helpers/mysql";
 import { User } from "../interfaces/tables/user";
 import { capitalizeFirstAndLastLetter, dateToDateTime } from "../helpers/utils";
 import { hash } from "bcrypt";
+import { KeyValue } from "../interfaces/general";
 
 export const listAllUsers = async () => {
   return <User[]>await query("SELECT * from users");
@@ -27,12 +28,8 @@ export const createUser = async (user: User) => {
   );
 };
 
-interface KV {
-  [index: string]: any;
-}
-export const updateUser = async (id: number, user: KV) => {
+export const updateUser = async (id: number, user: KeyValue) => {
   user.updatedAt = dateToDateTime(new Date());
-  // Create user
   return await query(`UPDATE users SET ${setValues(user)} WHERE id = ?`, [
     ...Object.values(user),
     id

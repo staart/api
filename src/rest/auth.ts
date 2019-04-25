@@ -1,9 +1,10 @@
 import { User } from "../interfaces/tables/user";
 import { createUser, updateUser } from "../crud/user";
 import { InsertResult } from "../interfaces/mysql";
-import { createEmail } from "../crud/email";
+import { createEmail, updateEmail } from "../crud/email";
 import { mail } from "../helpers/mail";
-import { emailVerificationToken } from "../helpers/jwt";
+import { emailVerificationToken, verifyToken } from "../helpers/jwt";
+import { KeyValue } from "../interfaces/general";
 
 export const register = async (
   user: User,
@@ -31,7 +32,12 @@ export const sendEmailVerification = async (
   email: string,
   user: User
 ) => {
-  const token = emailVerificationToken(id);
-  await mail(email, "verify-email", { name: user.name, email, token });
+  const token = await emailVerificationToken(id);
+  await mail(email, "email-verify", { name: user.name, email, token });
   return;
+};
+
+export const verifyEmail = async (token: string) => {
+  const emailId = (<KeyValue>await verifyToken(token, "email-verify")).id;
+  return await updateEmail(emailId, { isVerified: true });
 };
