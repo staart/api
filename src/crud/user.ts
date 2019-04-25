@@ -1,6 +1,6 @@
 import { query, tableValues, setValues } from "../helpers/mysql";
 import { User } from "../interfaces/tables/user";
-import { capitalizeFirstAndLastLetter } from "../helpers/string";
+import { capitalizeFirstAndLastLetter, dateToDateTime } from "../helpers/utils";
 import { hash } from "bcrypt";
 
 export const listAllUsers = async () => {
@@ -31,7 +31,7 @@ interface KV {
   [index: string]: any;
 }
 export const updateUser = async (id: number, user: KV) => {
-  user.updatedAt = new Date();
+  user.updatedAt = dateToDateTime(new Date());
   // Create user
   return await query(`UPDATE users SET ${setValues(user)} WHERE id = ?`, [
     ...Object.values(user),

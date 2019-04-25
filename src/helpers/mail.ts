@@ -1,13 +1,17 @@
 import * as ses from "node-ses";
 import { Mail } from "../interfaces/mail";
-import { SES_SECRET, SES_ACCESS, SES_EMAIL } from "../config";
+import { SES_SECRET, SES_ACCESS, SES_EMAIL, SES_REGION } from "../config";
 import { readFile } from "fs-extra";
 import { join } from "path";
 import { render } from "mustache";
 import marked from "marked";
 import i18n from "../i18n";
 
-const client = ses.createClient({ key: SES_ACCESS, secret: SES_SECRET });
+const client = ses.createClient({
+  key: SES_ACCESS,
+  secret: SES_SECRET,
+  amazon: `https://email.${SES_REGION}.amazonaws.com`
+});
 
 export const sendMail = (mail: Mail) =>
   new Promise((resolve, reject) => {

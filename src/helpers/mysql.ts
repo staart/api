@@ -71,7 +71,7 @@ interface KV {
 export const setValues = (object: KV) => {
   let query = "";
   Object.keys(object).forEach(key => {
-    query += `${key} = "${object[key]}", `;
+    query += `${key} = ?, `;
   });
   return query.slice(0, -2);
 };

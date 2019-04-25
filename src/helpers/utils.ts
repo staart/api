@@ -14,3 +14,9 @@ export const capitalizeFirstAndLastLetter = (string: string) => {
 
 export const capitalizeFirstLetter = (string: string) =>
   string.charAt(0).toUpperCase() + string.toLowerCase().slice(1);
+
+export const dateToDateTime = (date: Date) =>
+  date
+    .toISOString()
+    .slice(0, 19)
+    .replace("T", " ");
