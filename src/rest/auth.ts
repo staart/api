@@ -17,8 +17,7 @@ export const register = async (
   if (email) {
     const newEmail = <InsertResult>await createEmail({
       userId,
-      email,
-      isPrimary: true
+      email
     });
     const emailId = newEmail.insertId;
     await updateUser(userId, { primaryEmail: emailId });

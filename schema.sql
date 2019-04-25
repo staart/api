@@ -25,7 +25,6 @@ CREATE TABLE `emails` (
   `email` varchar(255) NOT NULL,
   `userId` int(11) NOT NULL,
   `isVerified` int(1) NOT NULL DEFAULT '0',
-  `isPrimary` int(1) NOT NULL DEFAULT '0',
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
