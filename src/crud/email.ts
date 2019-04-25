@@ -23,3 +23,7 @@ export const updateEmail = async (id: number, email: KeyValue) => {
     id
   ]);
 };
+
+export const getEmail = async (id: number) => {
+  return (<Email[]>await query("SELECT * FROM emails WHERE id = ?", [id]))[0];
+};

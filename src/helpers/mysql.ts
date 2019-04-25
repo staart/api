@@ -37,7 +37,7 @@ export const query = (
   });
 
 export const tableValues = (
-  object: User | BackupCode | Email | Membership | Organization
+  object: User | BackupCode | Event | Email | Membership | Organization
 ) => {
   const values = Object.keys(object)
     .map(() => "?")

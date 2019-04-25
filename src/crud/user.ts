@@ -28,10 +28,25 @@ export const createUser = async (user: User) => {
   );
 };
 
+export const getUser = async (id: number) => {
+  const users = <User[]>(
+    await query(`SELECT * FROM users WHERE id = ? LIMIT 1`, [id])
+  );
+  const user = users[0];
+  // Delete sensitive information
+  delete user.password;
+  delete user.twoFactorSecret;
+  return user;
+};
+
 export const updateUser = async (id: number, user: KeyValue) => {
   user.updatedAt = dateToDateTime(new Date());
   return await query(`UPDATE users SET ${setValues(user)} WHERE id = ?`, [
     ...Object.values(user),
     id
   ]);
+};
+
+export const deleteUser = async (id: number) => {
+  return await query("DELETE FROM users WHERE id = ?", [id]);
 };
