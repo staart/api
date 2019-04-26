@@ -20,6 +20,7 @@
     "@types/jest": "^24.0.11",
     "@types/jsonwebtoken": "^8.3.2",
     "@types/marked": "^0.6.5",
+    "@types/mustache": "^0.8.32",
     "@types/mysql": "^2.15.5",
     "@types/node": "^11.13.6",
     "concurrently": "^4.1.0",
@@ -34,7 +35,6 @@
     "typescript": "^3.4.4"
   },
   "dependencies": {
-    "@types/mustache": "^0.8.32",
     "bcrypt": "^3.0.6",
     "express-async-handler": "^1.1.4",
     "fs-extra": "^7.0.1",

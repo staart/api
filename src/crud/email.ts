@@ -2,6 +2,8 @@ import { query, tableValues, setValues } from "../helpers/mysql";
 import { Email } from "../interfaces/tables/emails";
 import { dateToDateTime } from "../helpers/utils";
 import { KeyValue } from "../interfaces/general";
+import { User } from "../interfaces/tables/user";
+import { getUser } from "./user";
 
 export const createEmail = async (email: Email, sendVerification = true) => {
   // Clean up values
@@ -24,6 +26,40 @@ export const updateEmail = async (id: number, email: KeyValue) => {
   ]);
 };
 
+export const deleteEmail = async (id: number) => {
+  return await query("DELETE FROM emails WHERE id = ?", [id]);
+};
+
 export const getEmail = async (id: number) => {
-  return (<Email[]>await query("SELECT * FROM emails WHERE id = ?", [id]))[0];
+  return (<Email[]>(
+    await query("SELECT * FROM emails WHERE id = ? LIMIT 1", [id])
+  ))[0];
+};
+
+export const getUserPrimaryEmailObject = async (user: User | number) => {
+  let userObject: User;
+  if (typeof user === "number") {
+    userObject = await getUser(user);
+  } else {
+    userObject = user;
+  }
+  const primaryEmailId = userObject.primaryEmail;
+  if (!primaryEmailId) throw new Error("no-primary-email");
+  return await getEmail(primaryEmailId);
+};
+
+export const getUserPrimaryEmail = async (user: User | number) => {
+  return (await getUserPrimaryEmailObject(user)).email;
+};
+
+export const getUserEmails = async (userId: number) => {
+  return <Email>await query("SELECT * FROM emails WHERE userId = ?", [userId]);
+};
+
+export const getUserVerifiedEmails = async (userId: number) => {
+  return <Email>(
+    await query("SELECT * FROM emails WHERE userId = ? AND isVerified = 1", [
+      userId
+    ])
+  );
 };
