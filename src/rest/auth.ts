@@ -1,12 +1,28 @@
 import { User } from "../interfaces/tables/user";
-import { createUser, updateUser } from "../crud/user";
+import { createUser, updateUser, getUserByEmail } from "../crud/user";
 import { InsertResult } from "../interfaces/mysql";
 import { createEmail, updateEmail, getEmail } from "../crud/email";
 import { mail } from "../helpers/mail";
-import { emailVerificationToken, verifyToken } from "../helpers/jwt";
+import {
+  emailVerificationToken,
+  verifyToken,
+  loginToken
+} from "../helpers/jwt";
 import { KeyValue, Locals } from "../interfaces/general";
 import { createEvent } from "../crud/event";
 import { EventType } from "../interfaces/enum";
+import { compare } from "bcrypt";
+import { deleteSensitiveInfoUser } from "../helpers/utils";
+
+export const login = async (email: string, password: string) => {
+  const user = await getUserByEmail(email, true);
+  if (!user.password) throw new Error("unset");
+  const correctPassword = await compare(password, user.password);
+  if (correctPassword) {
+    return await loginToken(deleteSensitiveInfoUser(user));
+  }
+  throw new Error("invalid auth");
+};
 
 export const register = async (
   user: User,

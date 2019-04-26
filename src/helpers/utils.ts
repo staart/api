@@ -1,3 +1,5 @@
+import { User } from "../interfaces/tables/user";
+
 export const capitalizeEachFirstLetter = (string: string) =>
   (string = string
     .toLowerCase()
@@ -20,3 +22,9 @@ export const dateToDateTime = (date: Date) =>
     .toISOString()
     .slice(0, 19)
     .replace("T", " ");
+
+export const deleteSensitiveInfoUser = (user: User) => {
+  delete user.password;
+  delete user.twoFactorSecret;
+  return user;
+};

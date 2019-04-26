@@ -1,6 +1,9 @@
 export enum UserRole {
-  ADMIN = "admin",
-  MEMBER = "member"
+  SUDO = 1,
+  ADMIN = 2,
+  MANAGER = 3,
+  MEMBER = 4,
+  BASIC = 5
 }
 
 export enum EventType {
@@ -18,4 +21,10 @@ export enum EventType {
   EMAIL_UPDATED = "email.updated",
   EMAIL_DELETED = "email.deleted",
   EMAIL_VERIFIED = "email.verified"
+}
+
+export enum ErrorCode {
+  MISSING_TOKEN = "422/missing-token",
+  INVALID_TOKEN = "401/invalid-token",
+  DEFAULT = "500/server-error"
 }

@@ -1,6 +1,10 @@
 import { query, tableValues, setValues } from "../helpers/mysql";
 import { User } from "../interfaces/tables/user";
-import { capitalizeFirstAndLastLetter, dateToDateTime } from "../helpers/utils";
+import {
+  capitalizeFirstAndLastLetter,
+  dateToDateTime,
+  deleteSensitiveInfoUser
+} from "../helpers/utils";
 import { hash } from "bcrypt";
 import { KeyValue } from "../interfaces/general";
 
@@ -33,9 +37,19 @@ export const getUser = async (id: number) => {
     await query(`SELECT * FROM users WHERE id = ? LIMIT 1`, [id])
   );
   const user = users[0];
-  // Delete sensitive information
-  delete user.password;
-  delete user.twoFactorSecret;
+  return deleteSensitiveInfoUser(user);
+};
+
+export const getUserByEmail = async (email: string, secureOrigin = false) => {
+  const users = <User[]>(
+    await query(`SELECT * FROM users WHERE id = ? LIMIT 1`, [email])
+  );
+  const user = users[0];
+  if (!secureOrigin) {
+    delete user.password;
+    delete user.twoFactorSecret;
+    return user;
+  }
   return user;
 };
 
