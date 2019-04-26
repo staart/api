@@ -4,7 +4,7 @@ import { InsertResult } from "../interfaces/mysql";
 import { createEmail, updateEmail, getEmail } from "../crud/email";
 import { mail } from "../helpers/mail";
 import { emailVerificationToken, verifyToken } from "../helpers/jwt";
-import { KeyValue } from "../interfaces/general";
+import { KeyValue, Locals } from "../interfaces/general";
 import { createEvent } from "../crud/event";
 import { EventType } from "../interfaces/enum";
 
@@ -39,13 +39,16 @@ export const sendEmailVerification = async (
   return;
 };
 
-export const verifyEmail = async (token: string) => {
+export const verifyEmail = async (token: string, locals: Locals) => {
   const emailId = (<KeyValue>await verifyToken(token, "email-verify")).id;
   const email = await getEmail(emailId);
-  await createEvent({
-    userId: email.userId,
-    type: EventType.EMAIL_VERIFIED,
-    data: { id: emailId }
-  });
+  await createEvent(
+    {
+      userId: email.userId,
+      type: EventType.EMAIL_VERIFIED,
+      data: { id: emailId }
+    },
+    locals
+  );
   return await updateEmail(emailId, { isVerified: true });
 };

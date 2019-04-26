@@ -5,5 +5,7 @@ export interface Event {
   userId?: number;
   type?: EventType;
   data?: string | object;
+  ipAddress?: string;
+  userAgent?: string;
   createdAt?: Date;
 }

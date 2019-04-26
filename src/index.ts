@@ -3,9 +3,11 @@ import { PORT } from "./config";
 import { register, verifyEmail } from "./rest/auth";
 import asyncHandler from "express-async-handler";
 import { HTTPError } from "./interfaces/general";
-import { errorHandler } from "./helpers/errors";
+import { errorHandler, trackingHandler } from "./helpers/middleware";
 
 const app = express();
+
+app.use(trackingHandler);
 
 app.get("/", (req, res) => res.json({ hello: "world" }));
 
@@ -20,7 +22,7 @@ app.put("/user", async (req, res) => {
 app.get(
   "/verify-email/:token",
   asyncHandler(async (req, res) => {
-    await verifyEmail(req.params.token);
+    await verifyEmail(req.params.token, res.locals);
     res.json({ success: true });
   })
 );

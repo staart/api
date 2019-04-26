@@ -7,3 +7,8 @@ export interface HTTPError {
   code: string;
   message?: string;
 }
+
+export interface Locals {
+  userAgent: string;
+  ipAddress: string;
+}
