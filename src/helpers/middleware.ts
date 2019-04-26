@@ -1,6 +1,18 @@
 import { Request, Response, NextFunction } from "express";
+import { HTTPError } from "../interfaces/general";
 
-export const errorHandler = (error: string) => {
+export const errorHandler = (
+  error: any,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const response: HTTPError = safeError(error.toString());
+  res.status(response.status);
+  res.json({ error: response.code, message: response.message });
+};
+
+export const safeError = (error: string) => {
   const errorString = error.toString();
   if (errorString.startsWith("JsonWebTokenError"))
     return { status: 401, code: "invalid-token" };
