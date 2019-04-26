@@ -26,5 +26,10 @@ export enum EventType {
 export enum ErrorCode {
   MISSING_TOKEN = "422/missing-token",
   INVALID_TOKEN = "401/invalid-token",
+  MISSING_PRIMARY_EMAIL = "422/missing-primary-email",
+  MISSING_PASSWORD = "422/missing-password",
+  MISSING_FIELD = "422/missing-field",
+  USER_NOT_FOUND = "404/user-not-found",
+  INVALID_LOGIN = "301/invalid-login",
   DEFAULT = "500/server-error"
 }

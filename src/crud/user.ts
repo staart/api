@@ -7,6 +7,8 @@ import {
 } from "../helpers/utils";
 import { hash } from "bcrypt";
 import { KeyValue } from "../interfaces/general";
+import { ErrorCode } from "../interfaces/enum";
+import { getEmail, getEmailObject } from "./email";
 
 export const listAllUsers = async () => {
   return <User[]>await query("SELECT * from users");
@@ -32,25 +34,19 @@ export const createUser = async (user: User) => {
   );
 };
 
-export const getUser = async (id: number) => {
+export const getUser = async (id: number, secureOrigin = false) => {
   const users = <User[]>(
     await query(`SELECT * FROM users WHERE id = ? LIMIT 1`, [id])
   );
-  const user = users[0];
-  return deleteSensitiveInfoUser(user);
+  let user = users[0];
+  if (!user) throw new Error(ErrorCode.USER_NOT_FOUND);
+  if (!secureOrigin) user = deleteSensitiveInfoUser(user);
+  return user;
 };
 
 export const getUserByEmail = async (email: string, secureOrigin = false) => {
-  const users = <User[]>(
-    await query(`SELECT * FROM users WHERE id = ? LIMIT 1`, [email])
-  );
-  const user = users[0];
-  if (!secureOrigin) {
-    delete user.password;
-    delete user.twoFactorSecret;
-    return user;
-  }
-  return user;
+  const emailObject = await getEmailObject(email);
+  return await getUser(emailObject.userId, secureOrigin);
 };
 
 export const updateUser = async (id: number, user: KeyValue) => {

@@ -5,7 +5,7 @@ export const safeError = (error: string) => {
   const errorString = error.toString();
   if (errorString.startsWith("JsonWebTokenError"))
     return sendError(ErrorCode.INVALID_TOKEN);
-  return sendError(ErrorCode.DEFAULT);
+  return sendError(error);
 };
 
 export const sendError = (error: string) => {

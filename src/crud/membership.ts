@@ -4,6 +4,7 @@ import { dateToDateTime } from "../helpers/utils";
 import { KeyValue } from "../interfaces/general";
 import { User } from "../interfaces/tables/user";
 import { getOrganization } from "./organization";
+import { ErrorCode } from "../interfaces/enum";
 
 export const createMembership = async (membership: Membership) => {
   membership.createdAt = new Date();
@@ -39,7 +40,7 @@ export const getUserMembershipObject = async (user: User | number) => {
   } else if (user.id) {
     userId = user.id;
   }
-  if (!userId) throw new Error("user id not found");
+  if (!userId) throw new Error(ErrorCode.USER_NOT_FOUND);
   return <Membership>(
     await query(`SELECT * FROM memberships WHERE userId = ? LIMIT 1`, [userId])
   );

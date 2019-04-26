@@ -34,4 +34,7 @@ export const verifyToken = (token: string, subject: string) =>
 export const emailVerificationToken = (id: number) =>
   generateToken({ id }, "7d", "email-verify");
 
+export const passwordResetToken = (id: number) =>
+  generateToken({ id }, "1d", "password-reset");
+
 export const loginToken = (user: User) => generateToken(user, "1d", "auth");

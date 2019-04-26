@@ -4,6 +4,7 @@ import { dateToDateTime } from "../helpers/utils";
 import { KeyValue } from "../interfaces/general";
 import { User } from "../interfaces/tables/user";
 import { getUser } from "./user";
+import { ErrorCode } from "../interfaces/enum";
 
 export const createEmail = async (email: Email, sendVerification = true) => {
   // Clean up values
@@ -44,7 +45,7 @@ export const getUserPrimaryEmailObject = async (user: User | number) => {
     userObject = user;
   }
   const primaryEmailId = userObject.primaryEmail;
-  if (!primaryEmailId) throw new Error("no-primary-email");
+  if (!primaryEmailId) throw new Error(ErrorCode.MISSING_PRIMARY_EMAIL);
   return await getEmail(primaryEmailId);
 };
 
@@ -54,6 +55,10 @@ export const getUserPrimaryEmail = async (user: User | number) => {
 
 export const getUserEmails = async (userId: number) => {
   return <Email>await query("SELECT * FROM emails WHERE userId = ?", [userId]);
+};
+
+export const getEmailObject = async (email: string) => {
+  return <Email>await query("SELECT * FROM emails WHERE email = ?", [email]);
 };
 
 export const getUserVerifiedEmails = async (userId: number) => {

@@ -1,33 +1,40 @@
 import { User } from "../interfaces/tables/user";
-import { createUser, updateUser, getUserByEmail } from "../crud/user";
+import { createUser, updateUser, getUserByEmail, getUser } from "../crud/user";
 import { InsertResult } from "../interfaces/mysql";
-import { createEmail, updateEmail, getEmail } from "../crud/email";
+import {
+  createEmail,
+  updateEmail,
+  getEmail,
+  getUserPrimaryEmail
+} from "../crud/email";
 import { mail } from "../helpers/mail";
 import {
   emailVerificationToken,
   verifyToken,
-  loginToken
+  loginToken,
+  passwordResetToken
 } from "../helpers/jwt";
 import { KeyValue, Locals } from "../interfaces/general";
 import { createEvent } from "../crud/event";
-import { EventType } from "../interfaces/enum";
+import { EventType, ErrorCode, UserRole } from "../interfaces/enum";
 import { compare } from "bcrypt";
 import { deleteSensitiveInfoUser } from "../helpers/utils";
+import { createMembership } from "../crud/membership";
 
 export const login = async (email: string, password: string) => {
   const user = await getUserByEmail(email, true);
-  if (!user.password) throw new Error("unset");
+  if (!user.password) throw new Error(ErrorCode.MISSING_PASSWORD);
   const correctPassword = await compare(password, user.password);
   if (correctPassword) {
     return await loginToken(deleteSensitiveInfoUser(user));
   }
-  throw new Error("invalid auth");
+  throw new Error(ErrorCode.INVALID_LOGIN);
 };
 
 export const register = async (
   user: User,
   email?: string,
-  organizationId?: string
+  organizationId?: number
 ) => {
   // Create user
   const result = <InsertResult>await createUser(user);
@@ -42,6 +49,13 @@ export const register = async (
     await updateUser(userId, { primaryEmail: emailId });
     await sendEmailVerification(emailId, email, user);
   }
+  if (organizationId) {
+    await createMembership({
+      userId,
+      organizationId,
+      role: UserRole.ADMIN
+    });
+  }
   return { created: true };
 };
 
@@ -53,6 +67,14 @@ export const sendEmailVerification = async (
   const token = await emailVerificationToken(id);
   await mail(email, "email-verify", { name: user.name, email, token });
   return;
+};
+
+export const sendPasswordReset = async (email: string) => {
+  const user = await getUserByEmail(email);
+  console.log("user is", user, email);
+  if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
+  const token = await passwordResetToken(user.id);
+  return await mail(email, "password-reset", { name: user.name, token });
 };
 
 export const verifyEmail = async (token: string, locals: Locals) => {
