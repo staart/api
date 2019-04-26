@@ -58,7 +58,9 @@ export const getUserEmails = async (userId: number) => {
 };
 
 export const getEmailObject = async (email: string) => {
-  return <Email>await query("SELECT * FROM emails WHERE email = ?", [email]);
+  return (<Email[]>(
+    await query("SELECT * FROM emails WHERE email = ? LIMIT 1", [email])
+  ))[0];
 };
 
 export const getUserVerifiedEmails = async (userId: number) => {

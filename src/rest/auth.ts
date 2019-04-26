@@ -71,7 +71,6 @@ export const sendEmailVerification = async (
 
 export const sendPasswordReset = async (email: string) => {
   const user = await getUserByEmail(email);
-  console.log("user is", user, email);
   if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
   const token = await passwordResetToken(user.id);
   return await mail(email, "password-reset", { name: user.name, token });
