@@ -4,7 +4,11 @@ import { routeUserMe, routeUserPut } from "./users";
 import { routeEmailVerify } from "./emails";
 import { routeOrganizationCreate } from "./organizations";
 import { authHandler } from "../helpers/middleware";
-import { routeAuthResetPassword } from "./auth";
+import {
+  routeAuthResetPassword,
+  routeAuthVerifyToken,
+  routeAuthLogin
+} from "./auth";
 
 export const router = (app: Application) => {
   app.get("/", (req, res) => res.json({ hello: "world" }));
@@ -18,6 +22,8 @@ export const router = (app: Application) => {
 };
 
 const routesAuth = (app: Application) => {
+  app.post("/auth/login", asyncHandler(routeAuthLogin));
+  app.post("/auth/verify-token", asyncHandler(routeAuthVerifyToken));
   app.post("/auth/reset-password", asyncHandler(routeAuthResetPassword));
 };
 

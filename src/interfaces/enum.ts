@@ -14,6 +14,7 @@ export enum EventType {
   AUTH_LOGIN_BACKUP_CODE = "auth.login_backupCode",
   AUTH_LOGIN_GOOGLE = "auth.login_google",
   AUTH_PASSWORD_CHANGED = "auth.password_changed",
+  AUTH_PASSWORD_RESET_REQUESTED = "auth.passwordReset",
   ORGANIZATION_CREATED = "organization.created",
   ORGANIZATION_UPDATED = "organization.updated",
   ORGANIZATION_DELETED = "organization.deleted",

@@ -42,7 +42,7 @@ export const mail = async (
   return await sendMail({
     from: SES_EMAIL,
     to: to.toString(),
-    subject: i18n.en.emails[template],
+    subject: i18n.en.emails[template] || "",
     message,
     altText
   });

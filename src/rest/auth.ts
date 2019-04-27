@@ -1,12 +1,7 @@
 import { User } from "../interfaces/tables/user";
 import { createUser, updateUser, getUserByEmail, getUser } from "../crud/user";
 import { InsertResult } from "../interfaces/mysql";
-import {
-  createEmail,
-  updateEmail,
-  getEmail,
-  getUserPrimaryEmail
-} from "../crud/email";
+import { createEmail, updateEmail, getEmail } from "../crud/email";
 import { mail } from "../helpers/mail";
 import {
   emailVerificationToken,
@@ -21,11 +16,22 @@ import { compare } from "bcrypt";
 import { deleteSensitiveInfoUser } from "../helpers/utils";
 import { createMembership } from "../crud/membership";
 
-export const login = async (email: string, password: string) => {
+export const login = async (
+  email: string,
+  password: string,
+  locals: Locals
+) => {
   const user = await getUserByEmail(email, true);
   if (!user.password) throw new Error(ErrorCode.MISSING_PASSWORD);
   const correctPassword = await compare(password, user.password);
   if (correctPassword) {
+    await createEvent(
+      {
+        userId: user.id,
+        type: EventType.AUTH_LOGIN
+      },
+      locals
+    );
     return await loginToken(deleteSensitiveInfoUser(user));
   }
   throw new Error(ErrorCode.INVALID_LOGIN);
@@ -69,11 +75,19 @@ export const sendEmailVerification = async (
   return;
 };
 
-export const sendPasswordReset = async (email: string) => {
+export const sendPasswordReset = async (email: string, locals: Locals) => {
   const user = await getUserByEmail(email);
   if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
   const token = await passwordResetToken(user.id);
-  return await mail(email, "password-reset", { name: user.name, token });
+  await mail(email, "password-reset", { name: user.name, token });
+  await createEvent(
+    {
+      userId: user.id,
+      type: EventType.AUTH_PASSWORD_RESET_REQUESTED
+    },
+    locals
+  );
+  return;
 };
 
 export const verifyEmail = async (token: string, locals: Locals) => {
