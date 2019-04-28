@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { verifyEmail } from "../rest/auth";
 import { ErrorCode } from "../interfaces/enum";
 import { addEmailToUser, deleteEmailFromUser } from "../rest/user";
+import { resendEmailVerification } from "../crud/email";
 
 export const routeEmailAdd = async (req: Request, res: Response) => {
   const email = req.body.email;
@@ -19,5 +20,12 @@ export const routeEmailDelete = async (req: Request, res: Response) => {
 
 export const routeEmailVerify = async (req: Request, res: Response) => {
   await verifyEmail(req.body.token || req.params.token, res.locals);
+  res.json({ success: true });
+};
+
+export const routeEmailVerifyResend = async (req: Request, res: Response) => {
+  const emailId = req.params.id || req.body.id;
+  if (!emailId) throw new Error(ErrorCode.MISSING_FIELD);
+  await resendEmailVerification(emailId);
   res.json({ success: true });
 };

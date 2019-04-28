@@ -4,12 +4,19 @@ import {
   UserRole,
   EventType
 } from "../interfaces/enum";
-import { getUser } from "../crud/user";
+import { getUser, updateUser } from "../crud/user";
 import {
   getUserOrganizationId,
   getUserMembershipObject
 } from "../crud/membership";
-import { createEmail, deleteEmail, getEmail } from "../crud/email";
+import {
+  createEmail,
+  deleteEmail,
+  getEmail,
+  getUserVerifiedEmails,
+  getUserPrimaryEmail,
+  getUserPrimaryEmailObject
+} from "../crud/email";
 import { Locals } from "../interfaces/general";
 import { createEvent } from "../crud/event";
 
@@ -55,6 +62,18 @@ export const deleteEmailFromUser = async (
   const email = await getEmail(emailId);
   if (email.userId != userId)
     throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+  const verifiedEmails = await getUserVerifiedEmails(userId);
+  if (verifiedEmails.length > 1) {
+    const currentPrimaryEmailId = (await getUserPrimaryEmailObject(userId)).id;
+    if (currentPrimaryEmailId == emailId) {
+      const nextVerifiedEmail = verifiedEmails.filter(
+        emailObject => emailObject.id != emailId
+      )[0];
+      await updateUser(userId, { primaryEmail: nextVerifiedEmail });
+    }
+  } else {
+    throw new Error(EventType.EMAIL_CANNOT_DELETE);
+  }
   await deleteEmail(emailId);
   await createEvent(
     { userId, type: EventType.EMAIL_DELETED, data: { email: email.email } },

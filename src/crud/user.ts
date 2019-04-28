@@ -1,4 +1,9 @@
-import { query, tableValues, setValues, removeReadOnlyValues } from "../helpers/mysql";
+import {
+  query,
+  tableValues,
+  setValues,
+  removeReadOnlyValues
+} from "../helpers/mysql";
 import { User } from "../interfaces/tables/user";
 import {
   capitalizeFirstAndLastLetter,

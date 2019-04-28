@@ -1,8 +1,16 @@
 import { Application } from "express";
 import asyncHandler from "express-async-handler";
 import { routeUserPut, routeUserId } from "./users";
-import { routeEmailVerify, routeEmailAdd, routeEmailDelete } from "./emails";
-import { routeOrganizationCreate, routeOrganizationUpdate } from "./organizations";
+import {
+  routeEmailVerify,
+  routeEmailAdd,
+  routeEmailDelete,
+  routeEmailVerifyResend
+} from "./emails";
+import {
+  routeOrganizationCreate,
+  routeOrganizationUpdate
+} from "./organizations";
 import { authHandler } from "../helpers/middleware";
 import {
   routeAuthVerifyToken,
@@ -43,10 +51,15 @@ const routesUser = (app: Application) => {
 const routesEmail = (app: Application) => {
   app.put("/emails", authHandler, asyncHandler(routeEmailAdd));
   app.delete("/emails/:id", authHandler, asyncHandler(routeEmailDelete));
+  app.post("/emails/:id/resend", asyncHandler(routeEmailVerifyResend));
   app.post("/emails/verify", asyncHandler(routeEmailVerify));
 };
 
 const routesOrganization = (app: Application) => {
   app.put("/organizations", authHandler, asyncHandler(routeOrganizationCreate));
-  app.patch("/organizations/:id", authHandler, asyncHandler(routeOrganizationUpdate));
+  app.patch(
+    "/organizations/:id",
+    authHandler,
+    asyncHandler(routeOrganizationUpdate)
+  );
 };

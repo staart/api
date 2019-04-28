@@ -1,4 +1,9 @@
-import { query, tableValues, setValues, removeReadOnlyValues } from "../helpers/mysql";
+import {
+  query,
+  tableValues,
+  setValues,
+  removeReadOnlyValues
+} from "../helpers/mysql";
 import { Email } from "../interfaces/tables/emails";
 import { dateToDateTime } from "../helpers/utils";
 import { KeyValue } from "../interfaces/general";
@@ -37,6 +42,15 @@ export const sendEmailVerification = async (
   user: User
 ) => {
   const token = await emailVerificationToken(id);
+  await mail(email, Templates.EMAIL_VERIFY, { name: user.name, email, token });
+  return;
+};
+
+export const resendEmailVerification = async (id: number) => {
+  const token = await emailVerificationToken(id);
+  const emailObject = await getEmail(id);
+  const email = emailObject.email;
+  const user = await getUser(emailObject.userId);
   await mail(email, Templates.EMAIL_VERIFY, { name: user.name, email, token });
   return;
 };
@@ -87,7 +101,7 @@ export const getEmailObject = async (email: string) => {
 };
 
 export const getUserVerifiedEmails = async (userId: number) => {
-  return <Email>(
+  return <Email[]>(
     await query("SELECT * FROM emails WHERE userId = ? AND isVerified = 1", [
       userId
     ])

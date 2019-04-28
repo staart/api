@@ -1,4 +1,9 @@
-import { query, tableValues, setValues, removeReadOnlyValues } from "../helpers/mysql";
+import {
+  query,
+  tableValues,
+  setValues,
+  removeReadOnlyValues
+} from "../helpers/mysql";
 import { Organization } from "../interfaces/tables/organization";
 import { capitalizeFirstAndLastLetter, dateToDateTime } from "../helpers/utils";
 import { KeyValue } from "../interfaces/general";

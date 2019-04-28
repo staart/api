@@ -97,4 +97,4 @@ export const removeReadOnlyValues = (object: KeyValue) => {
     if (object[value]) delete object[value];
   });
   return object;
-}
+};

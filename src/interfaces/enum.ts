@@ -34,7 +34,8 @@ export enum EventType {
   EMAIL_CREATED = "email.created",
   EMAIL_UPDATED = "email.updated",
   EMAIL_DELETED = "email.deleted",
-  EMAIL_VERIFIED = "email.verified"
+  EMAIL_VERIFIED = "email.verified",
+  EMAIL_CANNOT_DELETE = "email.cannotDelete"
 }
 
 export enum ErrorCode {
