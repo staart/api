@@ -72,7 +72,7 @@ export const deleteEmailFromUser = async (
       await updateUser(userId, { primaryEmail: nextVerifiedEmail });
     }
   } else {
-    throw new Error(EventType.EMAIL_CANNOT_DELETE);
+    throw new Error(ErrorCode.EMAIL_CANNOT_DELETE);
   }
   await deleteEmail(emailId);
   await createEvent(

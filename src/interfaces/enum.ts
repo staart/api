@@ -34,8 +34,7 @@ export enum EventType {
   EMAIL_CREATED = "email.created",
   EMAIL_UPDATED = "email.updated",
   EMAIL_DELETED = "email.deleted",
-  EMAIL_VERIFIED = "email.verified",
-  EMAIL_CANNOT_DELETE = "email.cannotDelete"
+  EMAIL_VERIFIED = "email.verified"
 }
 
 export enum ErrorCode {
@@ -47,7 +46,8 @@ export enum ErrorCode {
   USER_NOT_FOUND = "404/user-not-found",
   INVALID_LOGIN = "401/invalid-login",
   INSUFFICIENT_PERMISSION = "401/insufficient-permission",
-  DEFAULT = "500/server-error"
+  DEFAULT = "500/server-error",
+  EMAIL_CANNOT_DELETE = "400/email.cannotDelete"
 }
 
 export enum Templates {
