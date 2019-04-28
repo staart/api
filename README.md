@@ -34,6 +34,7 @@ Staart is a Node.js backend starter for SaaS startups written in TypeScript. It 
 - [ ] 💳 Store user preferences like language, and prefers-reduced-motion
 - [ ] 💳 Organization customization like logo, force 2FA, etc.
 - [ ] 👩‍💻 Examples for Express, Fastify, etc.
+- [ ] 💳 Affiliate accounts, dashboard, commissions
 
 ## 📄 License
 
