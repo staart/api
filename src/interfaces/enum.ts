@@ -1,8 +1,21 @@
-export enum UserRole {
+export enum MembershipRole {
   ADMIN = 2,
   MANAGER = 3,
   MEMBER = 4,
   BASIC = 5
+}
+
+export enum UserRole {
+  MEMBER = 1,
+  RESELLER = 2,
+  ADMIN = 3
+}
+
+export enum NotificationEmails {
+  SECURITY = 0,
+  ACCOUNT = 1,
+  GENERAL = 2,
+  PROMOTIONS = 3
 }
 
 export enum EventType {

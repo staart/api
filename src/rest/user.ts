@@ -1,4 +1,4 @@
-import { ErrorCode, UserRole } from "../interfaces/enum";
+import { ErrorCode, MembershipRole, UserRole } from "../interfaces/enum";
 import { getUser } from "../crud/user";
 import {
   getUserOrganizationId,
@@ -12,14 +12,14 @@ export const getUserFromId = async (userId: number, tokenId: number) => {
   if (userId == tokenId) return user;
   // (ii) You're a super-admin
   const tokenUser = await getUser(tokenId);
-  if (tokenUser.isSudo) return user;
+  if (tokenUser.role == UserRole.ADMIN) return user;
   // You're both in the same organization
   const tokenOrganization = await getUserMembershipObject(tokenUser);
   const userOrganizationId = await getUserOrganizationId(user);
   // and you're not a basic member
   if (
     tokenOrganization.organizationId == userOrganizationId &&
-    tokenOrganization.role !== UserRole.BASIC
+    tokenOrganization.role !== MembershipRole.BASIC
   )
     return user;
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);

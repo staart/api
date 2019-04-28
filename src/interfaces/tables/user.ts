@@ -1,3 +1,5 @@
+import { UserRole, NotificationEmails } from "../enum";
+
 export interface User {
   id?: number;
   name: string;
@@ -8,10 +10,10 @@ export interface User {
   twoFactorSecret?: string;
   countryCode?: string;
   timezone?: string;
-  notificationEmails?: 1 | 2 | 3 | 4;
+  notificationEmails?: NotificationEmails;
   preferredLanguage?: string;
   prefersReducedMotion?: boolean;
-  isSudo?: boolean;
+  role?: UserRole;
   createdAt?: Date;
   updatedAt?: Date;
 }

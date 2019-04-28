@@ -11,7 +11,7 @@ import {
 } from "../helpers/jwt";
 import { KeyValue, Locals } from "../interfaces/general";
 import { createEvent } from "../crud/event";
-import { EventType, ErrorCode, UserRole } from "../interfaces/enum";
+import { EventType, ErrorCode, MembershipRole } from "../interfaces/enum";
 import { compare, hash } from "bcrypt";
 import { deleteSensitiveInfoUser } from "../helpers/utils";
 import { createMembership } from "../crud/membership";
@@ -59,7 +59,7 @@ export const register = async (
     await createMembership({
       userId,
       organizationId,
-      role: UserRole.ADMIN
+      role: MembershipRole.ADMIN
     });
   }
   return { created: true };

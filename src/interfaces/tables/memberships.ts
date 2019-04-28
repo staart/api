@@ -1,10 +1,10 @@
-import { UserRole } from "../enum";
+import { MembershipRole } from "../enum";
 
 export interface Membership {
   id?: number;
   organizationId: number;
   userId: number;
-  role: UserRole;
+  role: MembershipRole;
   createdAt?: Date;
   updatedAt?: Date;
 }

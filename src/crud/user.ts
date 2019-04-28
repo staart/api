@@ -7,7 +7,7 @@ import {
 } from "../helpers/utils";
 import { hash } from "bcrypt";
 import { KeyValue } from "../interfaces/general";
-import { ErrorCode } from "../interfaces/enum";
+import { ErrorCode, NotificationEmails } from "../interfaces/enum";
 import { getEmail, getEmailObject } from "./email";
 
 export const listAllUsers = async () => {
@@ -22,7 +22,8 @@ export const createUser = async (user: User) => {
   user.twoFactorEnabled = user.twoFactorEnabled || false;
   user.timezone = user.timezone || "Europe/Amsterdam";
   user.password = await hash(user.password || "", 8);
-  user.notificationEmails = user.notificationEmails || 1;
+  user.notificationEmails =
+    user.notificationEmails || NotificationEmails.GENERAL;
   user.preferredLanguage = user.preferredLanguage || "en-us";
   user.prefersReducedMotion = user.prefersReducedMotion || false;
   user.createdAt = new Date();

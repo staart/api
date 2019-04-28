@@ -33,7 +33,6 @@ export const boolValues = [
   "twoFactorEnabled",
   "prefersReducedMotion",
   "used",
-  "isSudo",
   "isVerified"
 ];
 
