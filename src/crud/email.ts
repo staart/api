@@ -1,4 +1,4 @@
-import { query, tableValues, setValues } from "../helpers/mysql";
+import { query, tableValues, setValues, removeReadOnlyValues } from "../helpers/mysql";
 import { Email } from "../interfaces/tables/emails";
 import { dateToDateTime } from "../helpers/utils";
 import { KeyValue } from "../interfaces/general";
@@ -43,6 +43,7 @@ export const sendEmailVerification = async (
 
 export const updateEmail = async (id: number, email: KeyValue) => {
   email.updatedAt = dateToDateTime(new Date());
+  email = removeReadOnlyValues(email);
   return await query(`UPDATE emails SET ${setValues(email)} WHERE id = ?`, [
     ...Object.values(email),
     id

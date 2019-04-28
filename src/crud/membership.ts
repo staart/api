@@ -1,4 +1,4 @@
-import { query, tableValues, setValues } from "../helpers/mysql";
+import { query, tableValues, setValues, removeReadOnlyValues } from "../helpers/mysql";
 import { Membership } from "../interfaces/tables/memberships";
 import { dateToDateTime } from "../helpers/utils";
 import { KeyValue } from "../interfaces/general";
@@ -17,6 +17,7 @@ export const createMembership = async (membership: Membership) => {
 
 export const updateMembership = async (id: number, membership: KeyValue) => {
   membership.updatedAt = dateToDateTime(new Date());
+  membership = removeReadOnlyValues(membership);
   return await query(
     `UPDATE memberships SET ${setValues(membership)} WHERE id = ?`,
     [...Object.values(membership), id]
@@ -41,9 +42,9 @@ export const getUserMembershipObject = async (user: User | number) => {
     userId = user.id;
   }
   if (!userId) throw new Error(ErrorCode.USER_NOT_FOUND);
-  return <Membership>(
+  return (<Membership[]>(
     await query(`SELECT * FROM memberships WHERE userId = ? LIMIT 1`, [userId])
-  );
+  ))[0];
 };
 
 export const getUserOrganizationId = async (user: User | number) => {

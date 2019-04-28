@@ -1,4 +1,4 @@
-import { query, tableValues, setValues } from "../helpers/mysql";
+import { query, tableValues, setValues, removeReadOnlyValues } from "../helpers/mysql";
 import { User } from "../interfaces/tables/user";
 import {
   capitalizeFirstAndLastLetter,
@@ -52,6 +52,7 @@ export const getUserByEmail = async (email: string, secureOrigin = false) => {
 
 export const updateUser = async (id: number, user: KeyValue) => {
   user.updatedAt = dateToDateTime(new Date());
+  user = removeReadOnlyValues(user);
   return await query(`UPDATE users SET ${setValues(user)} WHERE id = ?`, [
     ...Object.values(user),
     id

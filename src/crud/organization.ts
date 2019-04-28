@@ -1,4 +1,4 @@
-import { query, tableValues, setValues } from "../helpers/mysql";
+import { query, tableValues, setValues, removeReadOnlyValues } from "../helpers/mysql";
 import { Organization } from "../interfaces/tables/organization";
 import { capitalizeFirstAndLastLetter, dateToDateTime } from "../helpers/utils";
 import { KeyValue } from "../interfaces/general";
@@ -30,6 +30,7 @@ export const updateOrganization = async (
   organization: KeyValue
 ) => {
   organization.updatedAt = dateToDateTime(new Date());
+  organization = removeReadOnlyValues(organization);
   return await query(
     `UPDATE organizations SET ${setValues(organization)} WHERE id = ?`,
     [...Object.values(organization), id]

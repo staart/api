@@ -13,7 +13,7 @@ import { Membership } from "../interfaces/tables/memberships";
 import { Organization } from "../interfaces/tables/organization";
 import { Event } from "../interfaces/tables/events";
 import { KeyValue } from "../interfaces/general";
-import { boolValues, dateValues } from "./utils";
+import { boolValues, dateValues, readOnlyValues } from "./utils";
 
 export const pool = createPool({
   host: DB_HOST,
@@ -91,3 +91,10 @@ export const setValues = (object: KeyValue) => {
   });
   return query.slice(0, -2);
 };
+
+export const removeReadOnlyValues = (object: KeyValue) => {
+  readOnlyValues.forEach(value => {
+    if (object[value]) delete object[value];
+  });
+  return object;
+}

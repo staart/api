@@ -37,3 +37,5 @@ export const boolValues = [
 ];
 
 export const dateValues = ["createdAt", "updatedAt"];
+
+export const readOnlyValues = ["createdAt", "id"];
