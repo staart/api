@@ -46,7 +46,8 @@ export const login = async (
 export const register = async (
   user: User,
   email?: string,
-  organizationId?: number
+  organizationId?: number,
+  role?: MembershipRole
 ) => {
   // Create user
   const result = <InsertResult>await createUser(user);
@@ -61,11 +62,11 @@ export const register = async (
     await updateUser(userId, { primaryEmail: emailId });
     await sendEmailVerification(emailId, email, user);
   }
-  if (organizationId) {
+  if (organizationId && role) {
     await createMembership({
       userId,
       organizationId,
-      role: MembershipRole.ADMIN
+      role
     });
   }
   return { created: true };

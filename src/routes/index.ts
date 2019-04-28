@@ -1,8 +1,8 @@
 import { Application } from "express";
 import asyncHandler from "express-async-handler";
-import { routeUserMe, routeUserPut, routeUserId } from "./users";
+import { routeUserPut, routeUserId } from "./users";
 import { routeEmailVerify, routeEmailAdd, routeEmailDelete } from "./emails";
-import { routeOrganizationCreate } from "./organizations";
+import { routeOrganizationCreate, routeOrganizationUpdate } from "./organizations";
 import { authHandler } from "../helpers/middleware";
 import {
   routeAuthVerifyToken,
@@ -36,7 +36,6 @@ const routesAuth = (app: Application) => {
 };
 
 const routesUser = (app: Application) => {
-  app.get("/users/me", authHandler, asyncHandler(routeUserMe));
   app.get("/users/:id", authHandler, asyncHandler(routeUserId));
   app.put("/users", asyncHandler(routeUserPut));
 };
@@ -49,4 +48,5 @@ const routesEmail = (app: Application) => {
 
 const routesOrganization = (app: Application) => {
   app.put("/organizations", authHandler, asyncHandler(routeOrganizationCreate));
+  app.patch("/organizations/:id", authHandler, asyncHandler(routeOrganizationUpdate));
 };

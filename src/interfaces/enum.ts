@@ -1,4 +1,5 @@
 export enum MembershipRole {
+  OWNER = 1,
   ADMIN = 2,
   MANAGER = 3,
   MEMBER = 4,
