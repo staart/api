@@ -8,6 +8,7 @@
   "scripts": {
     "build": "touch .env && mkdir -p dist && cp .env dist/.env && tsc",
     "start": "concurrently 'yarn watch-build' 'yarn watch-prettier' 'yarn watch-server'",
+    "prettier-all": "prettier '{src,examples}/**/*.{ts,json}' --write",
     "watch-build": "onchange '{src,examples}/**/*.ts' -- yarn build",
     "watch-prettier": "onchange '{src,examples}/**/*.{ts,json}' -- prettier --write {{changed}}",
     "watch-server": "cd dist && nodemon index.js"

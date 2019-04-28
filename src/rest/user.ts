@@ -9,7 +9,7 @@ import {
   getUserOrganizationId,
   getUserMembershipObject
 } from "../crud/membership";
-import { createEmail } from "../crud/email";
+import { createEmail, deleteEmail, getEmail } from "../crud/email";
 import { Locals } from "../interfaces/general";
 import { createEvent } from "../crud/event";
 
@@ -40,6 +40,25 @@ export const addEmailToUser = async (
 ) => {
   // Add email validation
   await createEmail({ email, userId });
-  await createEvent({ type: EventType.EMAIL_CREATED, data: { email } }, locals);
+  await createEvent(
+    { userId, type: EventType.EMAIL_CREATED, data: { email } },
+    locals
+  );
+  return;
+};
+
+export const deleteEmailFromUser = async (
+  emailId: number,
+  userId: number,
+  locals: Locals
+) => {
+  const email = await getEmail(emailId);
+  if (email.userId != userId)
+    throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+  await deleteEmail(emailId);
+  await createEvent(
+    { userId, type: EventType.EMAIL_DELETED, data: { email: email.email } },
+    locals
+  );
   return;
 };

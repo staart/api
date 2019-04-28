@@ -15,12 +15,18 @@ export const createEmail = async (email: Email, sendVerification = true) => {
   email.isVerified = false;
   email.createdAt = new Date();
   email.updatedAt = email.createdAt;
-  const result = <InsertResult> await query(
-    `INSERT INTO emails ${tableValues(email)}`,
-    Object.values(email)
+  const result = <InsertResult>(
+    await query(
+      `INSERT INTO emails ${tableValues(email)}`,
+      Object.values(email)
+    )
   );
   if (sendVerification) {
-    await sendEmailVerification(result.insertId, email.email, await getUser(email.userId));
+    await sendEmailVerification(
+      result.insertId,
+      email.email,
+      await getUser(email.userId)
+    );
   }
   return result;
 };

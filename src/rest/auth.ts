@@ -11,7 +11,12 @@ import { mail } from "../helpers/mail";
 import { verifyToken, loginToken, passwordResetToken } from "../helpers/jwt";
 import { KeyValue, Locals } from "../interfaces/general";
 import { createEvent } from "../crud/event";
-import { EventType, ErrorCode, MembershipRole, Templates } from "../interfaces/enum";
+import {
+  EventType,
+  ErrorCode,
+  MembershipRole,
+  Templates
+} from "../interfaces/enum";
 import { compare, hash } from "bcrypt";
 import { deleteSensitiveInfoUser } from "../helpers/utils";
 import { createMembership } from "../crud/membership";
