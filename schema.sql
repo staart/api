@@ -43,7 +43,7 @@ CREATE TABLE `events` (
   `userAgent` text,
   `createdAt` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- ----------------------------
 -- Table structure for memberships
@@ -86,11 +86,12 @@ CREATE TABLE `users` (
   `password` varchar(255) DEFAULT NULL,
   `twoFactorEnabled` int(1) NOT NULL DEFAULT '0',
   `twoFactorSecret` varchar(255) DEFAULT NULL,
-  `countryCode` varchar(2) DEFAULT NULL,
+  `countryCode` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'us',
   `timezone` varchar(255) NOT NULL DEFAULT 'Europe/Amsterdam',
   `notificationEmails` int(1) NOT NULL DEFAULT '1',
   `preferredLanguage` varchar(5) NOT NULL DEFAULT 'en-us',
   `prefersReducedMotion` int(1) NOT NULL DEFAULT '0',
+  `role` int(1) NOT NULL DEFAULT '1',
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
