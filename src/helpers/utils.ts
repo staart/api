@@ -28,3 +28,13 @@ export const deleteSensitiveInfoUser = (user: User) => {
   delete user.twoFactorSecret;
   return user;
 };
+
+export const boolValues = [
+  "twoFactorEnabled",
+  "prefersReducedMotion",
+  "used",
+  "isSudo",
+  "isVerified"
+];
+
+export const dateValues = ["createdAt", "updatedAt"];

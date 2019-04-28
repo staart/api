@@ -10,7 +10,7 @@
     "start": "concurrently 'yarn watch-build' 'yarn watch-prettier' 'yarn watch-server'",
     "watch-build": "onchange '{src,examples}/**/*.ts' -- yarn build",
     "watch-prettier": "onchange '{src,examples}/**/*.{ts,json}' -- prettier --write {{changed}}",
-    "watch-server": "nodemon dist/index.js"
+    "watch-server": "cd dist && nodemon index.js"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",

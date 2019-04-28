@@ -12,6 +12,8 @@ import { Email } from "../interfaces/tables/emails";
 import { Membership } from "../interfaces/tables/memberships";
 import { Organization } from "../interfaces/tables/organization";
 import { Event } from "../interfaces/tables/events";
+import { KeyValue } from "../interfaces/general";
+import { boolValues, dateValues } from "./utils";
 
 export const pool = createPool({
   host: DB_HOST,
@@ -32,7 +34,7 @@ export const query = (
       connection.query(queryString, values, (error, result) => {
         connection.destroy();
         if (error) return reject(error);
-        resolve(result);
+        resolve(uncleanValues(result));
       });
     });
   });
@@ -45,6 +47,20 @@ export const tableValues = (
     .join(", ");
   const query = `(${Object.keys(object).join(", ")}) VALUES (${values})`;
   return query;
+};
+
+export const uncleanValues = (
+  data: (User | BackupCode | Event | Email | Membership | Organization)[]
+) => {
+  data.map((item: KeyValue) => {
+    Object.keys(item).forEach(key => {
+      if (boolValues.includes(key)) item[key] = !!item[key];
+      if (dateValues.includes(key))
+        item[key] = new Date(item[key]).toISOString();
+    });
+    return item;
+  });
+  return data;
 };
 
 export const cleanValues = (
@@ -66,10 +82,7 @@ export const cleanValues = (
   return values;
 };
 
-interface KV {
-  [index: string]: any;
-}
-export const setValues = (object: KV) => {
+export const setValues = (object: KeyValue) => {
   let query = "";
   Object.keys(object).forEach(key => {
     query += `${key} = ?, `;

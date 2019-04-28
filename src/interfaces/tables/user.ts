@@ -11,6 +11,7 @@ export interface User {
   notificationEmails?: 1 | 2 | 3 | 4;
   preferredLanguage?: string;
   prefersReducedMotion?: boolean;
+  isSudo?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }

@@ -1,5 +1,4 @@
 export enum UserRole {
-  SUDO = 1,
   ADMIN = 2,
   MANAGER = 3,
   MEMBER = 4,
@@ -32,5 +31,6 @@ export enum ErrorCode {
   MISSING_FIELD = "422/missing-field",
   USER_NOT_FOUND = "404/user-not-found",
   INVALID_LOGIN = "401/invalid-login",
+  INSUFFICIENT_PERMISSION = "401/insufficient-permission",
   DEFAULT = "500/server-error"
 }
