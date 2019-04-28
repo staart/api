@@ -21,6 +21,7 @@ import {
   routeAuthResetPasswordRecover,
   routeAuthRegister
 } from "./auth";
+import { routeMembershipGet, routeMembershipCreate } from "./membership";
 
 export const router = (app: Application) => {
   app.get("/", (req, res) => res.json({ hello: "world" }));
@@ -29,6 +30,7 @@ export const router = (app: Application) => {
   routesUser(app);
   routesEmail(app);
   routesOrganization(app);
+  routesMembership(app);
 
   return app;
 };
@@ -75,5 +77,18 @@ const routesOrganization = (app: Application) => {
     "/organizations/:id",
     authHandler,
     asyncHandler(routeOrganizationDelete)
+  );
+};
+
+const routesMembership = (app: Application) => {
+  app.get(
+    "/organizations/:organizationId/memberships/:id",
+    authHandler,
+    asyncHandler(routeMembershipGet)
+  );
+  app.put(
+    "/organizations/:organizationId/memberships",
+    authHandler,
+    asyncHandler(routeMembershipCreate)
   );
 };
