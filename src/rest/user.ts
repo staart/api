@@ -9,14 +9,7 @@ import {
   getUserOrganizationId,
   getUserMembershipObject
 } from "../crud/membership";
-import {
-  createEmail,
-  deleteEmail,
-  getEmail,
-  getUserVerifiedEmails,
-  getUserPrimaryEmail,
-  getUserPrimaryEmailObject
-} from "../crud/email";
+import { User } from "../interfaces/tables/user";
 import { Locals } from "../interfaces/general";
 import { createEvent } from "../crud/event";
 
@@ -40,44 +33,24 @@ export const getUserFromId = async (userId: number, tokenId: number) => {
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
 
-export const addEmailToUser = async (
-  userId: number,
-  email: string,
+export const updateUserForUser = async (
+  tokenUserId: number,
+  updateUserId: number,
+  data: User,
   locals: Locals
 ) => {
-  // Add email validation
-  await createEmail({ email, userId });
-  await createEvent(
-    { userId, type: EventType.EMAIL_CREATED, data: { email } },
-    locals
-  );
-  return;
-};
-
-export const deleteEmailFromUser = async (
-  emailId: number,
-  userId: number,
-  locals: Locals
-) => {
-  const email = await getEmail(emailId);
-  if (email.userId != userId)
-    throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
-  const verifiedEmails = await getUserVerifiedEmails(userId);
-  if (verifiedEmails.length > 1) {
-    const currentPrimaryEmailId = (await getUserPrimaryEmailObject(userId)).id;
-    if (currentPrimaryEmailId == emailId) {
-      const nextVerifiedEmail = verifiedEmails.filter(
-        emailObject => emailObject.id != emailId
-      )[0];
-      await updateUser(userId, { primaryEmail: nextVerifiedEmail });
-    }
-  } else {
-    throw new Error(ErrorCode.EMAIL_CANNOT_DELETE);
+  const tokenUser = await getUser(tokenUserId);
+  if (tokenUserId == updateUserId || tokenUser.role == UserRole.ADMIN) {
+    await updateUser(updateUserId, data);
+    await createEvent(
+      {
+        userId: tokenUserId,
+        type: EventType.USER_UPDATED,
+        data: { id: updateUserId, data }
+      },
+      locals
+    );
+    return;
   }
-  await deleteEmail(emailId);
-  await createEvent(
-    { userId, type: EventType.EMAIL_DELETED, data: { email: email.email } },
-    locals
-  );
-  return;
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };

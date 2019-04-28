@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { verifyEmail } from "../rest/auth";
 import { ErrorCode } from "../interfaces/enum";
-import { addEmailToUser, deleteEmailFromUser } from "../rest/user";
 import { resendEmailVerification } from "../crud/email";
+import { addEmailToUser, deleteEmailFromUser } from "../rest/email";
 
 export const routeEmailAdd = async (req: Request, res: Response) => {
   const email = req.body.email;
