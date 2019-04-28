@@ -11,6 +11,7 @@ import { BackupCode } from "../interfaces/tables/backup-codes";
 import { Email } from "../interfaces/tables/emails";
 import { Membership } from "../interfaces/tables/memberships";
 import { Organization } from "../interfaces/tables/organization";
+import { Event } from "../interfaces/tables/events";
 
 export const pool = createPool({
   host: DB_HOST,

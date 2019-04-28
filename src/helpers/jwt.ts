@@ -9,7 +9,8 @@ export const generateToken = (
 ) =>
   new Promise((resolve, reject) => {
     sign(
-      payload,
+      // Payload is expected to be a plain object
+      JSON.parse(JSON.stringify(payload)),
       JWT_SECRET,
       {
         expiresIn,

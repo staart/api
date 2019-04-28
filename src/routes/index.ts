@@ -5,9 +5,10 @@ import { routeEmailVerify } from "./emails";
 import { routeOrganizationCreate } from "./organizations";
 import { authHandler } from "../helpers/middleware";
 import {
-  routeAuthResetPassword,
   routeAuthVerifyToken,
-  routeAuthLogin
+  routeAuthLogin,
+  routeAuthResetPasswordRequest,
+  routeAuthResetPasswordRecover
 } from "./auth";
 
 export const router = (app: Application) => {
@@ -24,7 +25,14 @@ export const router = (app: Application) => {
 const routesAuth = (app: Application) => {
   app.post("/auth/login", asyncHandler(routeAuthLogin));
   app.post("/auth/verify-token", asyncHandler(routeAuthVerifyToken));
-  app.post("/auth/reset-password", asyncHandler(routeAuthResetPassword));
+  app.post(
+    "/auth/reset-password/request",
+    asyncHandler(routeAuthResetPasswordRequest)
+  );
+  app.post(
+    "/auth/reset-password/recover",
+    asyncHandler(routeAuthResetPasswordRecover)
+  );
 };
 
 const routesUser = (app: Application) => {

@@ -12,7 +12,7 @@ import {
 import { KeyValue, Locals } from "../interfaces/general";
 import { createEvent } from "../crud/event";
 import { EventType, ErrorCode, UserRole } from "../interfaces/enum";
-import { compare } from "bcrypt";
+import { compare, hash } from "bcrypt";
 import { deleteSensitiveInfoUser } from "../helpers/utils";
 import { createMembership } from "../crud/membership";
 
@@ -83,7 +83,8 @@ export const sendPasswordReset = async (email: string, locals: Locals) => {
   await createEvent(
     {
       userId: user.id,
-      type: EventType.AUTH_PASSWORD_RESET_REQUESTED
+      type: EventType.AUTH_PASSWORD_RESET_REQUESTED,
+      data: { token }
     },
     locals
   );
@@ -102,4 +103,22 @@ export const verifyEmail = async (token: string, locals: Locals) => {
     locals
   );
   return await updateEmail(emailId, { isVerified: true });
+};
+
+export const updatePassword = async (
+  token: string,
+  password: string,
+  locals: Locals
+) => {
+  const userId = (<KeyValue>await verifyToken(token, "password-reset")).id;
+  const hashedPassword = await hash(password || "", 8);
+  await updateUser(userId, { password: hashedPassword });
+  await createEvent(
+    {
+      userId,
+      type: EventType.AUTH_PASSWORD_CHANGED
+    },
+    locals
+  );
+  return;
 };
