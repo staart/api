@@ -52,14 +52,16 @@ export const tableValues = (
 export const uncleanValues = (
   data: (User | BackupCode | Event | Email | Membership | Organization)[]
 ) => {
-  data.map((item: KeyValue) => {
-    Object.keys(item).forEach(key => {
-      if (boolValues.includes(key)) item[key] = !!item[key];
-      if (dateValues.includes(key))
-        item[key] = new Date(item[key]).toISOString();
+  if (typeof data.map === "function") {
+    data.map((item: KeyValue) => {
+      Object.keys(item).forEach(key => {
+        if (boolValues.includes(key)) item[key] = !!item[key];
+        if (dateValues.includes(key))
+          item[key] = new Date(item[key]).toISOString();
+      });
+      return item;
     });
-    return item;
-  });
+  }
   return data;
 };
 

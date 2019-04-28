@@ -1,17 +1,17 @@
 import { User } from "../interfaces/tables/user";
 import { createUser, updateUser, getUserByEmail, getUser } from "../crud/user";
 import { InsertResult } from "../interfaces/mysql";
-import { createEmail, updateEmail, getEmail } from "../crud/email";
-import { mail } from "../helpers/mail";
 import {
-  emailVerificationToken,
-  verifyToken,
-  loginToken,
-  passwordResetToken
-} from "../helpers/jwt";
+  createEmail,
+  updateEmail,
+  getEmail,
+  sendEmailVerification
+} from "../crud/email";
+import { mail } from "../helpers/mail";
+import { verifyToken, loginToken, passwordResetToken } from "../helpers/jwt";
 import { KeyValue, Locals } from "../interfaces/general";
 import { createEvent } from "../crud/event";
-import { EventType, ErrorCode, MembershipRole } from "../interfaces/enum";
+import { EventType, ErrorCode, MembershipRole, Templates } from "../interfaces/enum";
 import { compare, hash } from "bcrypt";
 import { deleteSensitiveInfoUser } from "../helpers/utils";
 import { createMembership } from "../crud/membership";
@@ -28,7 +28,8 @@ export const login = async (
     await createEvent(
       {
         userId: user.id,
-        type: EventType.AUTH_LOGIN
+        type: EventType.AUTH_LOGIN,
+        data: { strategy: "local" }
       },
       locals
     );
@@ -65,21 +66,11 @@ export const register = async (
   return { created: true };
 };
 
-export const sendEmailVerification = async (
-  id: number,
-  email: string,
-  user: User
-) => {
-  const token = await emailVerificationToken(id);
-  await mail(email, "email-verify", { name: user.name, email, token });
-  return;
-};
-
 export const sendPasswordReset = async (email: string, locals: Locals) => {
   const user = await getUserByEmail(email);
   if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
   const token = await passwordResetToken(user.id);
-  await mail(email, "password-reset", { name: user.name, token });
+  await mail(email, Templates.PASSWORD_RESET, { name: user.name, token });
   await createEvent(
     {
       userId: user.id,

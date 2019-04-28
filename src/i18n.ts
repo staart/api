@@ -8,7 +8,7 @@ interface I18N {
 export default {
   en: {
     emails: {
-      "verify-email": "Verify your new email",
+      "email-verify": "Verify your new email",
       "reset-password": "Reset your password"
     }
   }

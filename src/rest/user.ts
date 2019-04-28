@@ -1,9 +1,17 @@
-import { ErrorCode, MembershipRole, UserRole } from "../interfaces/enum";
+import {
+  ErrorCode,
+  MembershipRole,
+  UserRole,
+  EventType
+} from "../interfaces/enum";
 import { getUser } from "../crud/user";
 import {
   getUserOrganizationId,
   getUserMembershipObject
 } from "../crud/membership";
+import { createEmail } from "../crud/email";
+import { Locals } from "../interfaces/general";
+import { createEvent } from "../crud/event";
 
 export const getUserFromId = async (userId: number, tokenId: number) => {
   const user = await getUser(userId);
@@ -23,4 +31,15 @@ export const getUserFromId = async (userId: number, tokenId: number) => {
   )
     return user;
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const addEmailToUser = async (
+  userId: number,
+  email: string,
+  locals: Locals
+) => {
+  // Add email validation
+  await createEmail({ email, userId });
+  await createEvent({ type: EventType.EMAIL_CREATED, data: { email } }, locals);
+  return;
 };

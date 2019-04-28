@@ -4,7 +4,10 @@ import { dateToDateTime } from "../helpers/utils";
 import { KeyValue } from "../interfaces/general";
 import { User } from "../interfaces/tables/user";
 import { getUser } from "./user";
-import { ErrorCode } from "../interfaces/enum";
+import { ErrorCode, Templates } from "../interfaces/enum";
+import { emailVerificationToken } from "../helpers/jwt";
+import { mail } from "../helpers/mail";
+import { InsertResult } from "../interfaces/mysql";
 
 export const createEmail = async (email: Email, sendVerification = true) => {
   // Clean up values
@@ -12,11 +15,24 @@ export const createEmail = async (email: Email, sendVerification = true) => {
   email.isVerified = false;
   email.createdAt = new Date();
   email.updatedAt = email.createdAt;
-  // Create user
-  return await query(
+  const result = <InsertResult> await query(
     `INSERT INTO emails ${tableValues(email)}`,
     Object.values(email)
   );
+  if (sendVerification) {
+    await sendEmailVerification(result.insertId, email.email, await getUser(email.userId));
+  }
+  return result;
+};
+
+export const sendEmailVerification = async (
+  id: number,
+  email: string,
+  user: User
+) => {
+  const token = await emailVerificationToken(id);
+  await mail(email, Templates.EMAIL_VERIFY, { name: user.name, email, token });
+  return;
 };
 
 export const updateEmail = async (id: number, email: KeyValue) => {

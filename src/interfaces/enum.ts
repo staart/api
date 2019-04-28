@@ -47,3 +47,8 @@ export enum ErrorCode {
   INSUFFICIENT_PERMISSION = "401/insufficient-permission",
   DEFAULT = "500/server-error"
 }
+
+export enum Templates {
+  EMAIL_VERIFY = "email-verify",
+  PASSWORD_RESET = "password-reset"
+}
