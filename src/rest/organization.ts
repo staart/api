@@ -1,7 +1,17 @@
 import { Organization } from "../interfaces/tables/organization";
-import { createOrganization, updateOrganization } from "../crud/organization";
+import {
+  createOrganization,
+  updateOrganization,
+  deleteOrganization,
+  getOrganization
+} from "../crud/organization";
 import { InsertResult } from "../interfaces/mysql";
-import { createMembership, getUserOrganizationId } from "../crud/membership";
+import {
+  createMembership,
+  getUserOrganizationId,
+  getUserMembershipObject,
+  deleteAllOrganizationMemberships
+} from "../crud/membership";
 import {
   MembershipRole,
   ErrorCode,
@@ -11,6 +21,18 @@ import {
 import { getUser } from "../crud/user";
 import { createEvent } from "../crud/event";
 import { Locals } from "../interfaces/general";
+
+export const getOrganizationForUser = async (
+  userId: number,
+  organizationId: number
+) => {
+  const userMembership = await getUserMembershipObject(userId);
+  const organization = await getOrganization(organizationId);
+  if (userMembership.organizationId == organizationId) return organization;
+  const user = await getUser(userId);
+  if (user.role == UserRole.ADMIN) return organization;
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
 
 export const newOrganizationForUser = async (
   userId: number,
@@ -49,6 +71,33 @@ export const updateOrganizationForUser = async (
         userId,
         type: EventType.ORGANIZATION_UPDATED,
         data: { id: organizationId, data }
+      },
+      locals
+    );
+    return;
+  }
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const deleteOrganizationForUser = async (
+  userId: number,
+  organizationId: number,
+  locals: Locals
+) => {
+  const user = await getUser(userId);
+  const userMembership = await getUserMembershipObject(userId);
+  if (
+    user.role == UserRole.ADMIN ||
+    (userMembership.organizationId == organizationId &&
+      userMembership.role == MembershipRole.OWNER)
+  ) {
+    await deleteOrganization(organizationId);
+    await deleteAllOrganizationMemberships(organizationId);
+    await createEvent(
+      {
+        userId,
+        type: EventType.ORGANIZATION_DELETED,
+        data: { id: organizationId }
       },
       locals
     );

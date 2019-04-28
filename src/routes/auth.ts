@@ -1,6 +1,11 @@
 import { Request, Response } from "express";
-import { ErrorCode } from "../interfaces/enum";
-import { sendPasswordReset, login, updatePassword } from "../rest/auth";
+import { ErrorCode, UserRole } from "../interfaces/enum";
+import {
+  sendPasswordReset,
+  login,
+  updatePassword,
+  register
+} from "../rest/auth";
 import { verifyToken } from "../helpers/jwt";
 
 export const routeAuthVerifyToken = async (req: Request, res: Response) => {
@@ -26,6 +31,19 @@ export const routeAuthLogin = async (req: Request, res: Response) => {
   } catch (error) {
     throw new Error(ErrorCode.INVALID_LOGIN);
   }
+};
+
+export const routeAuthRegister = async (req: Request, res: Response) => {
+  const email = req.body.email;
+  const user = req.body;
+  delete user.organizationId;
+  delete user.email;
+  if (user.role == UserRole.ADMIN) delete user.role;
+  delete user.membershipRole;
+  if (!req.body.name || !req.body.email)
+    throw new Error(ErrorCode.MISSING_FIELD);
+  await register(user, email, req.body.organizationId, req.body.membershipRole);
+  res.json({ success: true });
 };
 
 export const routeAuthResetPasswordRequest = async (

@@ -33,6 +33,14 @@ export const deleteMembership = async (id: number) => {
   return await query("DELETE FROM memberships WHERE id = ?", [id]);
 };
 
+export const deleteAllOrganizationMemberships = async (
+  organizationId: number
+) => {
+  return await query("DELETE FROM memberships WHERE organizationId = ?", [
+    organizationId
+  ]);
+};
+
 export const getMembership = async (id: number) => {
   return (<Membership[]>(
     await query("SELECT * FROM memberships WHERE id = ? LIMIT 1", [id])

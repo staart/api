@@ -60,7 +60,6 @@ export const register = async (
     });
     const emailId = newEmail.insertId;
     await updateUser(userId, { primaryEmail: emailId });
-    await sendEmailVerification(emailId, email, user);
   }
   if (organizationId && role) {
     await createMembership({

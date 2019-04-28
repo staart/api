@@ -1,9 +1,19 @@
 import { Request, Response } from "express";
 import {
   newOrganizationForUser,
-  updateOrganizationForUser
+  updateOrganizationForUser,
+  deleteOrganizationForUser,
+  getOrganizationForUser
 } from "../rest/organization";
 import { ErrorCode } from "../interfaces/enum";
+
+export const routeOrganizationGet = async (req: Request, res: Response) => {
+  const organization = await getOrganizationForUser(
+    res.locals.token.id,
+    req.params.id
+  );
+  res.json({ organization });
+};
 
 export const routeOrganizationCreate = async (req: Request, res: Response) => {
   const name = req.body.name;
@@ -25,5 +35,13 @@ export const routeOrganizationUpdate = async (req: Request, res: Response) => {
     req.body,
     res.locals
   );
+  res.json({ success: true });
+};
+
+export const routeOrganizationDelete = async (req: Request, res: Response) => {
+  const organizationId = req.params.id;
+  const userId = res.locals.token.id;
+  if (!organizationId) throw new Error(ErrorCode.MISSING_FIELD);
+  await deleteOrganizationForUser(userId, organizationId, res.locals);
   res.json({ success: true });
 };

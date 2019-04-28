@@ -9,11 +9,3 @@ export const routeUserId = async (req: Request, res: Response) => {
   if (!id) throw new Error(ErrorCode.MISSING_FIELD);
   res.json({ user: await getUserFromId(id, res.locals.token.id) });
 };
-
-export const routeUserPut = async (req: Request, res: Response) => {
-  const user = req.body;
-  const email = user.email;
-  delete user.email;
-  const users = await register(user, email);
-  res.json({ success: true, users });
-};
