@@ -41,7 +41,7 @@ Staart is a Node.js backend starter for SaaS startups written in TypeScript. It 
 
 MIT
 
-## Contributors
+## 👥 Contributors
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
