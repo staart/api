@@ -1,4 +1,4 @@
-# 🏁 Staart
+![Staart](https://raw.githubusercontent.com/AnandChowdhary/staart/master/assets/logo.png)
 
 [![Travis CI](https://img.shields.io/travis/AnandChowdhary/staart.svg)](https://travis-ci.org/AnandChowdhary/staart)
 [![GitHub](https://img.shields.io/github/license/anandchowdhary/staart.svg)](https://github.com/AnandChowdhary/staart/blob/master/LICENSE)
