@@ -40,14 +40,16 @@ export const newOrganizationForUser = async (
   locals: Locals
 ) => {
   const org = <InsertResult>await createOrganization(organization);
+  const organizationId = org.insertId;
   await createMembership({
-    organizationId: org.insertId,
+    organizationId,
     userId,
     role: MembershipRole.OWNER
   });
   await createEvent(
     {
       userId,
+      organizationId,
       type: EventType.ORGANIZATION_CREATED,
       data: { id: org.insertId }
     },
@@ -69,6 +71,7 @@ export const updateOrganizationForUser = async (
     await createEvent(
       {
         userId,
+        organizationId,
         type: EventType.ORGANIZATION_UPDATED,
         data: { id: organizationId, data }
       },
@@ -96,6 +99,7 @@ export const deleteOrganizationForUser = async (
     await createEvent(
       {
         userId,
+        organizationId,
         type: EventType.ORGANIZATION_DELETED,
         data: { id: organizationId }
       },

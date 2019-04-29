@@ -85,6 +85,12 @@ export const addApprovedLocation = async (
   );
 };
 
+export const getUserApprovedLocations = async (userId: number) => {
+  return await query("SELECT * FROM `approved-locations` WHERE userId = ?", [
+    userId
+  ]);
+};
+
 export const checkApprovedLocation = async (
   userId: number,
   ipAddress: string

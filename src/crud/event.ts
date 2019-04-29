@@ -11,3 +11,9 @@ export const createEvent = async (event: Event, locals?: Locals) => {
   }
   await query(`INSERT INTO events ${tableValues(event)}`, Object.values(event));
 };
+
+export const getUserEvents = async (userId: number) => {
+  return <Event[]>(
+    await query(`SELECT * FROM events WHERE userId = ?`, [userId])
+  );
+};

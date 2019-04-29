@@ -4,14 +4,16 @@ import {
   UserRole,
   EventType
 } from "../interfaces/enum";
-import { getUser, updateUser } from "../crud/user";
+import { getUser, updateUser, getUserApprovedLocations } from "../crud/user";
 import {
   getUserOrganizationId,
-  getUserMembershipObject
+  getUserMembershipObject,
+  getUserOrganization
 } from "../crud/membership";
 import { User } from "../interfaces/tables/user";
 import { Locals } from "../interfaces/general";
-import { createEvent } from "../crud/event";
+import { createEvent, getUserEvents } from "../crud/event";
+import { getUserEmails } from "../crud/email";
 
 export const getUserFromId = async (userId: number, tokenId: number) => {
   const user = await getUser(userId);
@@ -53,4 +55,14 @@ export const updateUserForUser = async (
     return;
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const getAllDataForUser = async (userId: number) => {
+  const user = await getUser(userId);
+  const organization = await getUserOrganization(userId);
+  const membership = await getUserMembershipObject(userId);
+  const emails = await getUserEmails(userId);
+  const events = await getUserEvents(userId);
+  const approvedLocations = await getUserApprovedLocations(userId);
+  return { user, organization, membership, emails, events, approvedLocations };
 };
