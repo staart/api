@@ -1,0 +1,23 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "reallinfo",
+      "name": "reallinfo",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/36298335?v=4",
+      "profile": "http://komiserback@gmail.com",
+      "contributions": [
+        "design"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "staart",
+  "projectOwner": "AnandChowdhary",
+  "repoType": "github",
+  "repoHost": "https://github.com"
+}
