@@ -29,6 +29,8 @@ export const deleteSensitiveInfoUser = (user: User) => {
   return user;
 };
 
+export const ipAddressToSubnet = (ipAddress: string) => ipAddress;
+
 export const boolValues = [
   "twoFactorEnabled",
   "prefersReducedMotion",

@@ -1,19 +1,20 @@
 import { User } from "../interfaces/tables/user";
-import { createUser, updateUser, getUserByEmail, getUser } from "../crud/user";
-import { InsertResult } from "../interfaces/mysql";
-import { google } from "googleapis";
 import {
-  createEmail,
-  updateEmail,
-  getEmail,
-  getUserVerifiedEmails
-} from "../crud/email";
+  createUser,
+  updateUser,
+  getUserByEmail,
+  getUser,
+  addApprovedLocation
+} from "../crud/user";
+import { InsertResult } from "../interfaces/mysql";
+import { createEmail, updateEmail, getEmail } from "../crud/email";
 import { mail } from "../helpers/mail";
 import {
   verifyToken,
   loginToken,
   passwordResetToken,
-  refreshToken
+  refreshToken,
+  getLoginResponse
 } from "../helpers/jwt";
 import { KeyValue, Locals } from "../interfaces/general";
 import { createEvent } from "../crud/event";
@@ -38,17 +39,12 @@ export const validateRefreshToken = async (token: string, locals: Locals) => {
   const data = <User>await verifyToken(token, Tokens.REFRESH);
   if (!data.id) throw new Error(ErrorCode.USER_NOT_FOUND);
   const user = await getUser(data.id);
-  await createEvent(
-    {
-      userId: user.id,
-      type: EventType.AUTH_REFRESH
-    },
+  return await getLoginResponse(
+    user,
+    EventType.AUTH_REFRESH,
+    "refresh",
     locals
   );
-  return {
-    token: await loginToken(deleteSensitiveInfoUser(user)),
-    refresh: await refreshToken(data.id)
-  };
 };
 
 export const login = async (
@@ -57,24 +53,11 @@ export const login = async (
   locals: Locals
 ) => {
   const user = await getUserByEmail(email, true);
-  const verifiedEmails = await getUserVerifiedEmails(user);
-  if (!verifiedEmails.length) throw new Error(ErrorCode.UNVERIFIED_EMAIL);
   if (!user.password) throw new Error(ErrorCode.MISSING_PASSWORD);
   if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
   const correctPassword = await compare(password, user.password);
   if (correctPassword) {
-    await createEvent(
-      {
-        userId: user.id,
-        type: EventType.AUTH_LOGIN,
-        data: { strategy: "local" }
-      },
-      locals
-    );
-    return {
-      token: await loginToken(deleteSensitiveInfoUser(user)),
-      refresh: await refreshToken(user.id)
-    };
+    return await getLoginResponse(user, EventType.AUTH_LOGIN, "local", locals);
   }
   throw new Error(ErrorCode.INVALID_LOGIN);
 };
@@ -162,18 +145,7 @@ export const loginWithGoogleVerify = async (code: string, locals: Locals) => {
   const email = await googleGetEmailFromToken(data);
   const user = await getUserByEmail(email);
   if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
-  await createEvent(
-    {
-      userId: user.id,
-      type: EventType.AUTH_LOGIN,
-      data: { strategy: "google" }
-    },
-    locals
-  );
-  return {
-    token: await loginToken(deleteSensitiveInfoUser(user)),
-    refresh: await refreshToken(user.id)
-  };
+  return await getLoginResponse(user, EventType.AUTH_LOGIN, "google", locals);
 };
 
 export const impersonate = async (
@@ -189,4 +161,18 @@ export const impersonate = async (
     token: await loginToken(deleteSensitiveInfoUser(user)),
     refresh: await refreshToken(user.id)
   };
+};
+
+export const approveLocation = async (token: string, locals: Locals) => {
+  const tokenUser = <User>await verifyToken(token, Tokens.APPROVE_LOCATION);
+  if (!tokenUser.id) throw new Error(ErrorCode.USER_NOT_FOUND);
+  const user = await getUser(tokenUser.id);
+  if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
+  await addApprovedLocation(user.id, locals.ipAddress);
+  return await getLoginResponse(
+    user,
+    EventType.AUTH_APPROVE_LOCATION,
+    locals.ipAddress,
+    locals
+  );
 };

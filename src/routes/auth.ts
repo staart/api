@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ErrorCode, UserRole } from "../interfaces/enum";
+import { ErrorCode, UserRole, Tokens } from "../interfaces/enum";
 import {
   sendPasswordReset,
   login,
@@ -8,7 +8,8 @@ import {
   validateRefreshToken,
   loginWithGoogleLink,
   loginWithGoogleVerify,
-  impersonate
+  impersonate,
+  approveLocation
 } from "../rest/auth";
 import { verifyToken } from "../helpers/jwt";
 
@@ -29,24 +30,14 @@ export const routeAuthLogin = async (req: Request, res: Response) => {
   const email = req.body.email;
   const password = req.body.password;
   if (!email || !password) throw new Error(ErrorCode.MISSING_FIELD);
-  try {
-    const tokens = await login(email, password, res.locals);
-    res.json(tokens);
-  } catch (error) {
-    throw new Error(ErrorCode.INVALID_LOGIN);
-  }
+  res.json(await login(email, password, res.locals));
 };
 
 export const routeAuthRefresh = async (req: Request, res: Response) => {
   const token =
     req.body.token || (req.get("Authorization") || "").replace("Bearer ", "");
   if (!token) throw new Error(ErrorCode.MISSING_TOKEN);
-  try {
-    const tokens = await validateRefreshToken(token, res.locals);
-    res.json(tokens);
-  } catch (error) {
-    throw new Error(ErrorCode.INVALID_TOKEN);
-  }
+  res.json(await validateRefreshToken(token, res.locals));
 };
 
 export const routeAuthRegister = async (req: Request, res: Response) => {
@@ -107,4 +98,11 @@ export const routeAuthImpersonate = async (req: Request, res: Response) => {
   if (!tokenUserId || !impersonateUserId)
     throw new Error(ErrorCode.MISSING_FIELD);
   res.json(await impersonate(tokenUserId, impersonateUserId));
+};
+
+export const routeAuthApproveLocation = async (req: Request, res: Response) => {
+  const token =
+    req.body.token || (req.get("Authorization") || "").replace("Bearer ", "");
+  if (!token) throw new Error(ErrorCode.MISSING_FIELD);
+  res.json(await approveLocation(token, res.locals));
 };

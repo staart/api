@@ -23,7 +23,8 @@ import {
   routeAuthRefresh,
   routeAuthLoginWithGoogleLink,
   routeAuthLoginWithGoogleVerify,
-  routeAuthImpersonate
+  routeAuthImpersonate,
+  routeAuthApproveLocation
 } from "./auth";
 import { routeMembershipGet, routeMembershipCreate } from "./membership";
 
@@ -43,6 +44,7 @@ const routesAuth = (app: Application) => {
   app.post("/auth/login", asyncHandler(routeAuthLogin));
   app.post("/auth/refresh", asyncHandler(routeAuthRefresh));
   app.post("/auth/verify-token", asyncHandler(routeAuthVerifyToken));
+  app.post("/auth/approve-location", asyncHandler(routeAuthApproveLocation));
   app.post(
     "/auth/reset-password/request",
     asyncHandler(routeAuthResetPasswordRequest)

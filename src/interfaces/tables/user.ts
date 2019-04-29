@@ -17,3 +17,10 @@ export interface User {
   createdAt?: Date;
   updatedAt?: Date;
 }
+
+export interface ApprovedLocation {
+  id?: number;
+  userId?: number;
+  subnet?: string;
+  createdAt?: Date;
+}

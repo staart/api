@@ -28,6 +28,8 @@ export const TOKEN_EXPIRY_EMAIL_VERIFICATION =
 export const TOKEN_EXPIRY_PASSWORD_RESET =
   process.env.TOKEN_EXPIRY_PASSWORD_RESET || "1d";
 export const TOKEN_EXPIRY_LOGIN = process.env.TOKEN_EXPIRY_LOGIN || "1d";
+export const TOKEN_EXPIRY_APPROVE_LOCATION =
+  process.env.TOKEN_EXPIRY_LOGIN || "10m";
 export const TOKEN_EXPIRY_REFRESH = process.env.TOKEN_EXPIRY_REFRESH || "30d";
 
 export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || "";

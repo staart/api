@@ -4,11 +4,12 @@ import {
   setValues,
   removeReadOnlyValues
 } from "../helpers/mysql";
-import { User } from "../interfaces/tables/user";
+import { User, ApprovedLocation } from "../interfaces/tables/user";
 import {
   capitalizeFirstAndLastLetter,
   dateToDateTime,
-  deleteSensitiveInfoUser
+  deleteSensitiveInfoUser,
+  ipAddressToSubnet
 } from "../helpers/utils";
 import { hash } from "bcrypt";
 import { KeyValue } from "../interfaces/general";
@@ -66,4 +67,35 @@ export const updateUser = async (id: number, user: KeyValue) => {
 
 export const deleteUser = async (id: number) => {
   return await query("DELETE FROM users WHERE id = ?", [id]);
+};
+
+export const addApprovedLocation = async (
+  userId: number,
+  ipAddress: string
+) => {
+  const subnet = ipAddressToSubnet(ipAddress);
+  const subnetLocation: ApprovedLocation = {
+    userId,
+    subnet,
+    createdAt: new Date()
+  };
+  return await query(
+    `INSERT INTO \`approved-locations\` ${tableValues(subnetLocation)}`,
+    Object.values(subnetLocation)
+  );
+};
+
+export const checkApprovedLocation = async (
+  userId: number,
+  ipAddress: string
+) => {
+  const subnet = ipAddressToSubnet(ipAddress);
+  const approvedLocations = <ApprovedLocation[]>(
+    await query(
+      "SELECT * FROM `approved-locations` WHERE userId = ? AND subnet = ? LIMIT 1",
+      [userId, subnet]
+    )
+  );
+  if (!approvedLocations.length) return false;
+  return true;
 };

@@ -39,11 +39,15 @@ export const mail = async (
     { ...data, frontendUrl: FRONTEND_URL }
   );
   const message = marked(altText);
-  return await sendMail({
-    from: SES_EMAIL,
-    to: to.toString(),
-    subject: i18n.en.emails[template] || "",
-    message,
-    altText
-  });
+  try {
+    return await sendMail({
+      from: SES_EMAIL,
+      to: to.toString(),
+      subject: i18n.en.emails[template] || "",
+      message,
+      altText
+    });
+  } catch (error) {
+    console.log("Error in sending an email", error);
+  }
 };

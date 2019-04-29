@@ -29,6 +29,7 @@ export enum EventType {
   AUTH_LOGIN_GOOGLE = "auth.login_google",
   AUTH_PASSWORD_CHANGED = "auth.password_changed",
   AUTH_PASSWORD_RESET_REQUESTED = "auth.passwordReset",
+  AUTH_APPROVE_LOCATION = "auth.approveLocation",
   ORGANIZATION_CREATED = "organization.created",
   ORGANIZATION_UPDATED = "organization.updated",
   ORGANIZATION_DELETED = "organization.deleted",
@@ -50,17 +51,20 @@ export enum ErrorCode {
   DEFAULT = "500/server-error",
   EMAIL_CANNOT_DELETE = "400/email.cannotDelete",
   UNVERIFIED_EMAIL = "401/unverified-email",
-  GOOGLE_AUTH_ERROR = "401/google-auth-error"
+  GOOGLE_AUTH_ERROR = "401/google-auth-error",
+  UNAPPROVED_LOCATION = "401/unapproved-location"
 }
 
 export enum Templates {
   EMAIL_VERIFY = "email-verify",
-  PASSWORD_RESET = "password-reset"
+  PASSWORD_RESET = "password-reset",
+  UNAPPROVED_LOCATION = "unapproved-location"
 }
 
 export enum Tokens {
   LOGIN = "auth",
   REFRESH = "refresh",
   PASSWORD_RESET = "password-reset",
-  EMAIL_VERIFY = "email-verify"
+  EMAIL_VERIFY = "email-verify",
+  APPROVE_LOCATION = "approve-location"
 }
