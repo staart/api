@@ -19,7 +19,8 @@ import {
   routeAuthLogin,
   routeAuthResetPasswordRequest,
   routeAuthResetPasswordRecover,
-  routeAuthRegister
+  routeAuthRegister,
+  routeAuthRefresh
 } from "./auth";
 import { routeMembershipGet, routeMembershipCreate } from "./membership";
 
@@ -37,6 +38,7 @@ export const router = (app: Application) => {
 
 const routesAuth = (app: Application) => {
   app.post("/auth/login", asyncHandler(routeAuthLogin));
+  app.post("/auth/refresh", asyncHandler(routeAuthRefresh));
   app.post("/auth/verify-token", asyncHandler(routeAuthVerifyToken));
   app.post(
     "/auth/reset-password/request",

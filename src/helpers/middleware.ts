@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { safeError, sendError } from "./errors";
 import { verifyToken } from "./jwt";
-import { ErrorCode } from "../interfaces/enum";
+import { ErrorCode, Tokens } from "../interfaces/enum";
 
 export const errorHandler = (
   error: any,
@@ -41,7 +41,7 @@ export const authHandler = async (
   }
   if (token.startsWith("Bearer ")) token = token.replace("Bearer ", "");
   try {
-    res.locals.token = await verifyToken(token, "auth");
+    res.locals.token = await verifyToken(token, Tokens.LOGIN);
     next();
   } catch (e) {
     const error = sendError(ErrorCode.INVALID_TOKEN);

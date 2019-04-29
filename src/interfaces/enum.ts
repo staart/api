@@ -23,6 +23,7 @@ export enum EventType {
   USER_CREATED = "user.created",
   USER_UPDATED = "user.updated",
   USER_DELETED = "user.deleted",
+  AUTH_REFRESH = "auth.refresh",
   AUTH_LOGIN = "auth.login",
   AUTH_LOGIN_BACKUP_CODE = "auth.login_backupCode",
   AUTH_LOGIN_GOOGLE = "auth.login_google",
@@ -53,4 +54,11 @@ export enum ErrorCode {
 export enum Templates {
   EMAIL_VERIFY = "email-verify",
   PASSWORD_RESET = "password-reset"
+}
+
+export enum Tokens {
+  LOGIN = "auth",
+  REFRESH = "refresh",
+  PASSWORD_RESET = "password-reset",
+  EMAIL_VERIFY = "email-verify"
 }
