@@ -9,7 +9,7 @@ import {
   capitalizeFirstAndLastLetter,
   dateToDateTime,
   deleteSensitiveInfoUser,
-  ipAddressToSubnet
+  anonymizeIpAddress
 } from "../helpers/utils";
 import { hash } from "bcrypt";
 import { KeyValue } from "../interfaces/general";
@@ -73,7 +73,7 @@ export const addApprovedLocation = async (
   userId: number,
   ipAddress: string
 ) => {
-  const subnet = ipAddressToSubnet(ipAddress);
+  const subnet = anonymizeIpAddress(ipAddress);
   const subnetLocation: ApprovedLocation = {
     userId,
     subnet,
@@ -95,7 +95,7 @@ export const checkApprovedLocation = async (
   userId: number,
   ipAddress: string
 ) => {
-  const subnet = ipAddressToSubnet(ipAddress);
+  const subnet = anonymizeIpAddress(ipAddress);
   const approvedLocations = <ApprovedLocation[]>(
     await query(
       "SELECT * FROM `approved-locations` WHERE userId = ? AND subnet = ? LIMIT 1",

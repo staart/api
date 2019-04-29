@@ -1,3 +1,4 @@
+import anonymize from "ip-anonymize";
 import { User } from "../interfaces/tables/user";
 
 export const capitalizeEachFirstLetter = (string: string) =>
@@ -29,7 +30,8 @@ export const deleteSensitiveInfoUser = (user: User) => {
   return user;
 };
 
-export const ipAddressToSubnet = (ipAddress: string) => ipAddress;
+export const anonymizeIpAddress = (ipAddress: string) =>
+  anonymize(ipAddress) || ipAddress;
 
 export const boolValues = [
   "twoFactorEnabled",
