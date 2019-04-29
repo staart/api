@@ -100,7 +100,14 @@ export const getEmailObject = async (email: string) => {
   ))[0];
 };
 
-export const getUserVerifiedEmails = async (userId: number) => {
+export const getUserVerifiedEmails = async (user: User | number) => {
+  let userId = 0;
+  if (typeof user === "object" && user.id) {
+    userId = user.id;
+  } else if (typeof user === "number") {
+    userId = user;
+  }
+  if (!userId) throw new Error(ErrorCode.USER_NOT_FOUND);
   return <Email[]>(
     await query("SELECT * FROM emails WHERE userId = ? AND isVerified = 1", [
       userId

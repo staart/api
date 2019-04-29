@@ -1,7 +1,12 @@
 import { User } from "../interfaces/tables/user";
 import { createUser, updateUser, getUserByEmail, getUser } from "../crud/user";
 import { InsertResult } from "../interfaces/mysql";
-import { createEmail, updateEmail, getEmail } from "../crud/email";
+import {
+  createEmail,
+  updateEmail,
+  getEmail,
+  getUserVerifiedEmails
+} from "../crud/email";
 import { mail } from "../helpers/mail";
 import {
   verifyToken,
@@ -45,6 +50,8 @@ export const login = async (
   locals: Locals
 ) => {
   const user = await getUserByEmail(email, true);
+  const verifiedEmails = await getUserVerifiedEmails(user);
+  if (!verifiedEmails.length) throw new Error(ErrorCode.UNVERIFIED_EMAIL);
   if (!user.password) throw new Error(ErrorCode.MISSING_PASSWORD);
   if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
   const correctPassword = await compare(password, user.password);

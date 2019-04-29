@@ -48,7 +48,8 @@ export enum ErrorCode {
   INVALID_LOGIN = "401/invalid-login",
   INSUFFICIENT_PERMISSION = "401/insufficient-permission",
   DEFAULT = "500/server-error",
-  EMAIL_CANNOT_DELETE = "400/email.cannotDelete"
+  EMAIL_CANNOT_DELETE = "400/email.cannotDelete",
+  UNVERIFIED_EMAIL = "401/unverified-email"
 }
 
 export enum Templates {
