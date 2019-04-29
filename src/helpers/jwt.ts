@@ -1,5 +1,12 @@
 import { sign, verify } from "jsonwebtoken";
-import { JWT_ISSUER, JWT_SECRET } from "../config";
+import {
+  JWT_ISSUER,
+  JWT_SECRET,
+  TOKEN_EXPIRY_EMAIL_VERIFICATION,
+  TOKEN_EXPIRY_PASSWORD_RESET,
+  TOKEN_EXPIRY_LOGIN,
+  TOKEN_EXPIRY_REFRESH
+} from "../config";
 import { User } from "../interfaces/tables/user";
 import { Tokens } from "../interfaces/enum";
 
@@ -34,13 +41,13 @@ export const verifyToken = (token: string, subject: string) =>
   });
 
 export const emailVerificationToken = (id: number) =>
-  generateToken({ id }, "7d", Tokens.EMAIL_VERIFY);
+  generateToken({ id }, TOKEN_EXPIRY_EMAIL_VERIFICATION, Tokens.EMAIL_VERIFY);
 
 export const passwordResetToken = (id: number) =>
-  generateToken({ id }, "1d", Tokens.PASSWORD_RESET);
+  generateToken({ id }, TOKEN_EXPIRY_PASSWORD_RESET, Tokens.PASSWORD_RESET);
 
 export const loginToken = (user: User) =>
-  generateToken(user, "1d", Tokens.LOGIN);
+  generateToken(user, TOKEN_EXPIRY_LOGIN, Tokens.LOGIN);
 
 export const refreshToken = (id: number) =>
-  generateToken({ id }, "30d", Tokens.REFRESH);
+  generateToken({ id }, TOKEN_EXPIRY_REFRESH, Tokens.REFRESH);
