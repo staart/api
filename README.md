@@ -1,5 +1,10 @@
 # 🏁 Staart
-[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors)
+
+[![Travis CI](https://img.shields.io/travis/AnandChowdhary/staart.svg)](https://travis-ci.org/AnandChowdhary/staart)
+[![GitHub](https://img.shields.io/github/license/anandchowdhary/staart.svg)](https://github.com/AnandChowdhary/staart/blob/master/LICENSE)
+![Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/github/AnandChowdhary/staart.svg)
+![Type definitions](https://img.shields.io/badge/types-TypeScript-blue.svg)
+[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg)](#contributors)
 
 Staart is a Node.js backend starter for SaaS startups written in TypeScript. It has built-in user management and authentication, billing, organizations, GDPR tools, and more.
 
