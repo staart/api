@@ -40,6 +40,7 @@
     "body-parser": "^1.19.0",
     "express-async-handler": "^1.1.4",
     "fs-extra": "^7.0.1",
+    "googleapis": "^39.2.0",
     "jsonwebtoken": "^8.5.1",
     "marked": "^0.6.2",
     "mustache": "^3.0.1",

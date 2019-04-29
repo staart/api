@@ -29,3 +29,7 @@ export const TOKEN_EXPIRY_PASSWORD_RESET =
   process.env.TOKEN_EXPIRY_PASSWORD_RESET || "1d";
 export const TOKEN_EXPIRY_LOGIN = process.env.TOKEN_EXPIRY_LOGIN || "1d";
 export const TOKEN_EXPIRY_REFRESH = process.env.TOKEN_EXPIRY_REFRESH || "30d";
+
+export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || "";
+export const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || "";
+export const GOOGLE_CLIENT_REDIRECT = process.env.GOOGLE_CLIENT_REDIRECT || "";

@@ -20,7 +20,9 @@ import {
   routeAuthResetPasswordRequest,
   routeAuthResetPasswordRecover,
   routeAuthRegister,
-  routeAuthRefresh
+  routeAuthRefresh,
+  routeAuthLoginWithGoogleLink,
+  routeAuthLoginWithGoogleVerify
 } from "./auth";
 import { routeMembershipGet, routeMembershipCreate } from "./membership";
 
@@ -48,6 +50,8 @@ const routesAuth = (app: Application) => {
     "/auth/reset-password/recover",
     asyncHandler(routeAuthResetPasswordRecover)
   );
+  app.get("/auth/google/link", asyncHandler(routeAuthLoginWithGoogleLink));
+  app.post("/auth/google/verify", asyncHandler(routeAuthLoginWithGoogleVerify));
 };
 
 const routesUser = (app: Application) => {

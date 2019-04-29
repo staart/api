@@ -21,7 +21,7 @@ Staart is a Node.js backend starter for SaaS startups written in TypeScript. It 
 - [x] 👩‍💻 Helpers for database query, finding users, creating tokens, etc.
 - [x] 🔐 JWT-based authentication with email/password and scopes
 - [x] 💳 Support for multiple emails per user account
-- [ ] 🔐 Login with Google (and Facebook?)
+- [x] 🔐 Login with Google
 - [x] 👩‍💻 Configuration based on environment variables
 - [x] 👩‍💻 TypeScript interfaces for `User`, `HTTPError`, etc.
 - [ ] 💳 Organizations, inviting team members with permissions

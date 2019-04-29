@@ -5,7 +5,9 @@ import {
   login,
   updatePassword,
   register,
-  validateRefreshToken
+  validateRefreshToken,
+  loginWithGoogleLink,
+  loginWithGoogleVerify
 } from "../rest/auth";
 import { verifyToken } from "../helpers/jwt";
 
@@ -79,4 +81,21 @@ export const routeAuthResetPasswordRecover = async (
   if (!token || !password) throw new Error(ErrorCode.MISSING_FIELD);
   await updatePassword(token, password, res.locals);
   res.json({ success: true });
+};
+
+export const routeAuthLoginWithGoogleLink = async (
+  req: Request,
+  res: Response
+) => {
+  res.json({ redirect: loginWithGoogleLink() });
+};
+
+export const routeAuthLoginWithGoogleVerify = async (
+  req: Request,
+  res: Response
+) => {
+  const code =
+    req.body.code || (req.get("Authorization") || "").replace("Bearer ", "");
+  if (!code) throw new Error(ErrorCode.MISSING_TOKEN);
+  res.json(await loginWithGoogleVerify(code, res.locals));
 };

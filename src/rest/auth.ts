@@ -1,6 +1,7 @@
 import { User } from "../interfaces/tables/user";
 import { createUser, updateUser, getUserByEmail, getUser } from "../crud/user";
 import { InsertResult } from "../interfaces/mysql";
+import { google } from "googleapis";
 import {
   createEmail,
   updateEmail,
@@ -26,6 +27,11 @@ import {
 import { compare, hash } from "bcrypt";
 import { deleteSensitiveInfoUser } from "../helpers/utils";
 import { createMembership } from "../crud/membership";
+import {
+  googleGetConnectionUrl,
+  googleGetTokensFromCode,
+  googleGetEmailFromToken
+} from "../helpers/google";
 
 export const validateRefreshToken = async (token: string, locals: Locals) => {
   const data = <User>await verifyToken(token, Tokens.REFRESH);
@@ -146,4 +152,25 @@ export const updatePassword = async (
     locals
   );
   return;
+};
+
+export const loginWithGoogleLink = () => googleGetConnectionUrl();
+
+export const loginWithGoogleVerify = async (code: string, locals: Locals) => {
+  const data = await googleGetTokensFromCode(code);
+  const email = await googleGetEmailFromToken(data);
+  const user = await getUserByEmail(email);
+  if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
+  await createEvent(
+    {
+      userId: user.id,
+      type: EventType.AUTH_LOGIN,
+      data: { strategy: "google" }
+    },
+    locals
+  );
+  return {
+    token: await loginToken(deleteSensitiveInfoUser(user)),
+    refresh: await refreshToken(user.id)
+  };
 };

@@ -49,7 +49,8 @@ export enum ErrorCode {
   INSUFFICIENT_PERMISSION = "401/insufficient-permission",
   DEFAULT = "500/server-error",
   EMAIL_CANNOT_DELETE = "400/email.cannotDelete",
-  UNVERIFIED_EMAIL = "401/unverified-email"
+  UNVERIFIED_EMAIL = "401/unverified-email",
+  GOOGLE_AUTH_ERROR = "401/google-auth-error"
 }
 
 export enum Templates {
