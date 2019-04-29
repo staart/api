@@ -22,7 +22,8 @@ import {
   ErrorCode,
   MembershipRole,
   Templates,
-  Tokens
+  Tokens,
+  UserRole
 } from "../interfaces/enum";
 import { compare, hash } from "bcrypt";
 import { deleteSensitiveInfoUser } from "../helpers/utils";
@@ -169,6 +170,21 @@ export const loginWithGoogleVerify = async (code: string, locals: Locals) => {
     },
     locals
   );
+  return {
+    token: await loginToken(deleteSensitiveInfoUser(user)),
+    refresh: await refreshToken(user.id)
+  };
+};
+
+export const impersonate = async (
+  tokenUserId: number,
+  impersonateUserId: number
+) => {
+  const tokenUser = await getUser(tokenUserId);
+  if (tokenUser.role != UserRole.ADMIN)
+    throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+  const user = await getUser(impersonateUserId);
+  if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
   return {
     token: await loginToken(deleteSensitiveInfoUser(user)),
     refresh: await refreshToken(user.id)

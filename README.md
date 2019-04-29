@@ -30,7 +30,7 @@ Staart is a Node.js backend starter for SaaS startups written in TypeScript. It 
 - [ ] 🇪🇺 Check for location with logging in (i.e., "New location" with approved subnets)
 - [x] 👩‍💻 MySQL schema matching interfaces
 - [x] 🔐 Event logging and history (logins, settings changes, etc.)
-- [ ] 💳 "Magic wand" for user impersonation by superadmins
+- [x] 💳 "Magic wand" for user impersonation by super-admins
 - [x] 👩‍💻 Express middleware for token check which returns user
 - [ ] 🔐 Support for refresh tokens (i.e., "Keep me logged in for 30 days")
 - [ ] 🔐 Two-factor authentication with TOTP (and Twilio?)

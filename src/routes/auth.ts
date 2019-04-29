@@ -7,7 +7,8 @@ import {
   register,
   validateRefreshToken,
   loginWithGoogleLink,
-  loginWithGoogleVerify
+  loginWithGoogleVerify,
+  impersonate
 } from "../rest/auth";
 import { verifyToken } from "../helpers/jwt";
 
@@ -98,4 +99,12 @@ export const routeAuthLoginWithGoogleVerify = async (
     req.body.code || (req.get("Authorization") || "").replace("Bearer ", "");
   if (!code) throw new Error(ErrorCode.MISSING_TOKEN);
   res.json(await loginWithGoogleVerify(code, res.locals));
+};
+
+export const routeAuthImpersonate = async (req: Request, res: Response) => {
+  const tokenUserId = res.locals.token.id;
+  const impersonateUserId = req.params.id;
+  if (!tokenUserId || !impersonateUserId)
+    throw new Error(ErrorCode.MISSING_FIELD);
+  res.json(await impersonate(tokenUserId, impersonateUserId));
 };

@@ -22,7 +22,8 @@ import {
   routeAuthRegister,
   routeAuthRefresh,
   routeAuthLoginWithGoogleLink,
-  routeAuthLoginWithGoogleVerify
+  routeAuthLoginWithGoogleVerify,
+  routeAuthImpersonate
 } from "./auth";
 import { routeMembershipGet, routeMembershipCreate } from "./membership";
 
@@ -52,6 +53,11 @@ const routesAuth = (app: Application) => {
   );
   app.get("/auth/google/link", asyncHandler(routeAuthLoginWithGoogleLink));
   app.post("/auth/google/verify", asyncHandler(routeAuthLoginWithGoogleVerify));
+  app.get(
+    "/auth/impersonate/:id",
+    authHandler,
+    asyncHandler(routeAuthImpersonate)
+  );
 };
 
 const routesUser = (app: Application) => {
