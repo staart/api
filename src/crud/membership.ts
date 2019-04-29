@@ -10,6 +10,7 @@ import { KeyValue } from "../interfaces/general";
 import { User } from "../interfaces/tables/user";
 import { getOrganization } from "./organization";
 import { ErrorCode } from "../interfaces/enum";
+import { getUser } from "./user";
 
 export const createMembership = async (membership: Membership) => {
   membership.createdAt = new Date();
@@ -67,4 +68,21 @@ export const getUserOrganizationId = async (user: User | number) => {
 export const getUserOrganization = async (user: User | number) => {
   const organizationId = await getUserOrganizationId(user);
   return await getOrganization(organizationId);
+};
+
+export const getOrganizationMembers = async (organizationId: number) => {
+  return <Membership[]>(
+    await query(`SELECT * FROM memberships WHERE organizationId = ?`, [
+      organizationId
+    ])
+  );
+};
+
+export const getOrganizationMemberDetails = async (organizationId: number) => {
+  const members = <Membership[]>(
+    await query(`SELECT * FROM memberships WHERE organizationId = ?`, [
+      organizationId
+    ])
+  );
+  return members;
 };

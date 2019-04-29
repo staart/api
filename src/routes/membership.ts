@@ -4,6 +4,7 @@ import {
   getMembershipDetailsForUser,
   inviteMemberToOrganization
 } from "../rest/membership";
+import { getOrganizationMemberDetails } from "../crud/membership";
 
 export const routeMembershipGet = async (req: Request, res: Response) => {
   const id = req.params.id;
@@ -32,4 +33,10 @@ export const routeMembershipCreate = async (req: Request, res: Response) => {
     newMemberEmail,
     role
   );
+};
+
+export const routeMembershipList = async (req: Request, res: Response) => {
+  const organizationId = req.params.organizationId;
+  if (!organizationId) throw new Error(ErrorCode.MISSING_FIELD);
+  res.json(await getOrganizationMemberDetails(organizationId));
 };

@@ -27,7 +27,8 @@ Staart is a Node.js backend starter for SaaS startups written in TypeScript. It 
 - [ ] 💳 Organizations, inviting team members with permissions
 - [ ] 💳 Stripe for subscriptions, billing, cards, invoices, etc.
 - [ ] 🇪🇺 Check for authorized devices when logging in (i.e., "Your devices" with approved fingerprints)
-- [ ] 🇪🇺 Check for location with logging in (i.e., "New location" with approved subnets)
+- [x] 🇪🇺 Check for location with logging in (i.e., "New location" with approved subnets)
+- [ ] 👩‍💻 Built-in caching and invalidation for common database queries
 - [x] 👩‍💻 MySQL schema matching interfaces
 - [x] 🔐 Event logging and history (logins, settings changes, etc.)
 - [x] 💳 "Magic wand" for user impersonation by super-admins

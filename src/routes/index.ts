@@ -26,7 +26,11 @@ import {
   routeAuthImpersonate,
   routeAuthApproveLocation
 } from "./auth";
-import { routeMembershipGet, routeMembershipCreate } from "./membership";
+import {
+  routeMembershipGet,
+  routeMembershipCreate,
+  routeMembershipList
+} from "./membership";
 
 export const router = (app: Application) => {
   app.get("/", (req, res) => res.json({ hello: "world" }));
@@ -97,13 +101,18 @@ const routesOrganization = (app: Application) => {
 
 const routesMembership = (app: Application) => {
   app.get(
-    "/organizations/:organizationId/memberships/:id",
+    "/organizations/:organizationId/memberships",
     authHandler,
-    asyncHandler(routeMembershipGet)
+    asyncHandler(routeMembershipList)
   );
   app.put(
     "/organizations/:organizationId/memberships",
     authHandler,
     asyncHandler(routeMembershipCreate)
+  );
+  app.get(
+    "/organizations/:organizationId/memberships/:id",
+    authHandler,
+    asyncHandler(routeMembershipGet)
   );
 };
