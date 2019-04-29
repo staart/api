@@ -1,0 +1,25 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "AnandChowdhary",
+      "name": "Anand Chowdhary",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/2841780?v=4",
+      "profile": "https://anandchowdhary.com/?utm_source=github&utm_campaign=about-link",
+      "contributions": [
+        "code",
+        "doc",
+        "design"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "staart",
+  "projectOwner": "AnandChowdhary",
+  "repoType": "github",
+  "repoHost": "https://github.com"
+}
