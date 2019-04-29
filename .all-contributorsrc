@@ -15,6 +15,15 @@
         "doc",
         "design"
       ]
+    },
+    {
+      "login": "reallinfo",
+      "name": "reallinfo",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/36298335?v=4",
+      "profile": "http://komiserback@gmail.com",
+      "contributions": [
+        "design"
+      ]
     }
   ],
   "contributorsPerLine": 7,
