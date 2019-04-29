@@ -1,5 +1,5 @@
 interface Lang {
-  [index: string]: string | Lang;
+  [index: string]: any;
 }
 interface I18N {
   [index: string]: Lang;
