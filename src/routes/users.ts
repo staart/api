@@ -2,7 +2,8 @@ import { Request, Response } from "express";
 import {
   getUserFromId,
   updateUserForUser,
-  getAllDataForUser
+  getAllDataForUser,
+  getRecentEventsForUser
 } from "../rest/user";
 import { ErrorCode } from "../interfaces/enum";
 
@@ -21,6 +22,16 @@ export const routeUserUpdate = async (req: Request, res: Response) => {
   res.json({ success: true });
 };
 
+export const routeUserRecentEvents = async (req: Request, res: Response) => {
+  let id = req.params.id;
+  if (id === "me") id = res.locals.token.id;
+  if (!id) throw new Error(ErrorCode.MISSING_FIELD);
+  res.json(await getRecentEventsForUser(res.locals.token.id, id));
+};
+
 export const routeUserAllData = async (req: Request, res: Response) => {
-  res.json(await getAllDataForUser(res.locals.token.id));
+  let id = req.params.id;
+  if (id === "me") id = res.locals.token.id;
+  if (!id) throw new Error(ErrorCode.MISSING_FIELD);
+  res.json(await getAllDataForUser(res.locals.token.id, id));
 };

@@ -31,7 +31,11 @@ const canUserUser = async (
   if (
     userOrganizationId === targetOrganizationId &&
     user.role == UserRole.RESELLER &&
-    action != Authorizations.IMPERSONATE
+    [
+      Authorizations.READ,
+      Authorizations.UPDATE,
+      Authorizations.DELETE
+    ].includes(action)
   )
     return true;
 

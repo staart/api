@@ -6,7 +6,7 @@ import {
 } from "../crud/membership";
 import { User } from "../interfaces/tables/user";
 import { Locals } from "../interfaces/general";
-import { createEvent, getUserEvents } from "../crud/event";
+import { createEvent, getUserEvents, getUserRecentEvents } from "../crud/event";
 import { getUserEmails } from "../crud/email";
 import { can } from "../helpers/authorization";
 
@@ -37,7 +37,21 @@ export const updateUserForUser = async (
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
 
-export const getAllDataForUser = async (userId: number) => {
+export const getRecentEventsForUser = async (
+  tokenUserId: number,
+  dataUserId: number
+) => {
+  if (await can(tokenUserId, Authorizations.READ_SECURE, "user", dataUserId))
+    return await getUserRecentEvents(dataUserId);
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const getAllDataForUser = async (
+  tokenUserId: number,
+  userId: number
+) => {
+  if (!(await can(tokenUserId, Authorizations.READ_SECURE, "user", userId)))
+    throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
   const user = await getUser(userId);
   const organization = await getUserOrganization(userId);
   const membership = await getUserMembershipObject(userId);

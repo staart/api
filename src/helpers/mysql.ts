@@ -13,7 +13,7 @@ import { Membership } from "../interfaces/tables/memberships";
 import { Organization } from "../interfaces/tables/organization";
 import { Event } from "../interfaces/tables/events";
 import { KeyValue } from "../interfaces/general";
-import { boolValues, dateValues, readOnlyValues } from "./utils";
+import { boolValues, jsonValues, dateValues, readOnlyValues } from "./utils";
 
 export const pool = createPool({
   host: DB_HOST,
@@ -55,6 +55,11 @@ export const uncleanValues = (
   if (typeof data.map === "function") {
     data.map((item: KeyValue) => {
       Object.keys(item).forEach(key => {
+        try {
+          if (jsonValues.includes(key)) item[key] = JSON.parse(item[key]);
+        } catch (error) {
+          item[key] = {};
+        }
         if (boolValues.includes(key)) item[key] = !!item[key];
         if (dateValues.includes(key))
           item[key] = new Date(item[key]).toISOString();

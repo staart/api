@@ -1,6 +1,11 @@
 import { Application } from "express";
 import asyncHandler from "express-async-handler";
-import { routeUserId, routeUserUpdate, routeUserAllData } from "./users";
+import {
+  routeUserId,
+  routeUserUpdate,
+  routeUserAllData,
+  routeUserRecentEvents
+} from "./users";
 import {
   routeEmailVerify,
   routeEmailAdd,
@@ -70,7 +75,12 @@ const routesUser = (app: Application) => {
   app.put("/users", asyncHandler(routeAuthRegister));
   app.get("/users/:id", authHandler, asyncHandler(routeUserId));
   app.patch("/users/:id", authHandler, asyncHandler(routeUserUpdate));
-  app.get("/gdpr/json", authHandler, asyncHandler(routeUserAllData));
+  app.get(
+    "/users/:id/events",
+    authHandler,
+    asyncHandler(routeUserRecentEvents)
+  );
+  app.get("/users/:id/data", authHandler, asyncHandler(routeUserAllData));
 };
 
 const routesEmail = (app: Application) => {

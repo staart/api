@@ -76,6 +76,7 @@ export enum CacheCategories {
   USER_VERIFIED_EMAILS = "user-verified-emails",
   EMAIL = "email",
   USER_EVENT = "user-event",
+  USER_RECENT_EVENTS = "user-recent-events",
   ORGANIZATION_MEMBERSHIPS = "memberships",
   MEMBERSHIP = "membership",
   ORGANIZATION = "organization",
@@ -86,6 +87,7 @@ export enum CacheCategories {
 export enum Authorizations {
   CREATE = "create",
   READ = "read",
+  READ_SECURE = "read-secure",
   UPDATE = "update",
   DELETE = "delete",
   INVITE_MEMBER = "invite-member",
