@@ -28,12 +28,12 @@ Staart is a Node.js backend starter for SaaS startups written in TypeScript. It 
 - [ ] 💳 Stripe for subscriptions, billing, cards, invoices, etc.
 - [ ] 🇪🇺 Check for authorized devices when logging in (i.e., "Your devices" with approved fingerprints)
 - [x] 🇪🇺 Check for location with logging in (i.e., "New location" with approved subnets)
-- [ ] 👩‍💻 Built-in caching and invalidation for common database queries
+- [x] 👩‍💻 Built-in caching and invalidation for common database queries
 - [x] 👩‍💻 MySQL schema matching interfaces
 - [x] 🔐 Event logging and history (logins, settings changes, etc.)
 - [x] 💳 "Magic wand" for user impersonation by super-admins
 - [x] 👩‍💻 Express middleware for token check which returns user
-- [ ] 🔐 Support for refresh tokens (i.e., "Keep me logged in for 30 days")
+- [x] 🔐 Support for refresh tokens (i.e., "Keep me logged in for 30 days")
 - [ ] 🔐 Two-factor authentication with TOTP (and Twilio?)
 - [ ] 🇪🇺 Email preferences (1 = security, 2 = notifications, 3 = promotions, etc.)
 - [ ] 👩‍💻 Sending rich HTML transactional emails with SES
@@ -42,9 +42,22 @@ Staart is a Node.js backend starter for SaaS startups written in TypeScript. It 
 - [ ] 💳 Organization customization like logo, force 2FA, etc.
 - [ ] 💳 Affiliate accounts, dashboard, commissions
 
-## 📄 License
+## 🛠 Usage
 
-MIT
+1. Clone or fork this repository
+1. Install dependencies with `yarn` or `npm i`
+1. Add a `.env` file based on [config.ts](https://github.com/AnandChowdhary/staart/blob/master/src/config.ts).
+1. Create MariaDB/MySQL tables based on [schema.sql](https://github.com/AnandChowdhary/staart/blob/master/schema.sql)
+1. Add custom helper methods in the `./src/helpers` folder
+1. Add custom services in the `./src/rest` folder using helpers
+1. Add custom routes in the `./src/routes` folder with these services
+1. Build with `yarn build` and deploy with `pm2 start dist/index.js`
+
+## 💻 API
+
+Staart comes with tens of helper and CRUD methods for users, organizations, and more.
+
+*TBD (to be documented)*
 
 ## 👥 Contributors
 
@@ -57,3 +70,8 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+
+## 📄 License
+
+- Code: [MIT](https://github.com/AnandChowdhary/staart/blob/master/LICENSE)
+- Logo and assets: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
