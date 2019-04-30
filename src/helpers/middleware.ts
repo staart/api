@@ -3,6 +3,9 @@ import { safeError, sendError } from "./errors";
 import { verifyToken } from "./jwt";
 import { ErrorCode, Tokens } from "../interfaces/enum";
 
+/**
+ * Handle any errors for Express
+ */
 export const errorHandler = (
   error: any,
   req: Request,
@@ -15,6 +18,9 @@ export const errorHandler = (
   res.json({ error: response.code, message: response.message });
 };
 
+/**
+ * Add locals for IP address and user agent
+ */
 export const trackingHandler = (
   req: Request,
   res: Response,
@@ -30,6 +36,9 @@ export const trackingHandler = (
   next();
 };
 
+/**
+ * Add locals for a user after verifying their token
+ */
 export const authHandler = async (
   req: Request,
   res: Response,

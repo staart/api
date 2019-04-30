@@ -12,6 +12,9 @@ import { getOrganization } from "./organization";
 import { ErrorCode, CacheCategories } from "../interfaces/enum";
 import { deleteItemFromCache, cachedQuery } from "../helpers/cache";
 
+/*
+ * Create a new organization membership for a user
+ */
 export const createMembership = async (membership: Membership) => {
   membership.createdAt = new Date();
   membership.updatedAt = membership.createdAt;
@@ -25,6 +28,9 @@ export const createMembership = async (membership: Membership) => {
   );
 };
 
+/*
+ * Update an organization membership for a user
+ */
 export const updateMembership = async (id: number, membership: KeyValue) => {
   membership.updatedAt = dateToDateTime(new Date());
   membership = removeReadOnlyValues(membership);
@@ -35,11 +41,17 @@ export const updateMembership = async (id: number, membership: KeyValue) => {
   );
 };
 
+/*
+ * Delete an organization membership
+ */
 export const deleteMembership = async (id: number) => {
   deleteItemFromCache(CacheCategories.MEMBERSHIP, id);
   return await query("DELETE FROM memberships WHERE id = ?", [id]);
 };
 
+/*
+ * Delete all memberships in an organization
+ */
 export const deleteAllOrganizationMemberships = async (
   organizationId: number
 ) => {
@@ -49,6 +61,9 @@ export const deleteAllOrganizationMemberships = async (
   ]);
 };
 
+/*
+ * Get details about a specific organization membership
+ */
 export const getMembership = async (id: number) => {
   return (<Membership[]>(
     await cachedQuery(
@@ -82,6 +97,9 @@ export const getUserOrganization = async (user: User | number) => {
   return await getOrganization(organizationId);
 };
 
+/*
+ * Get a list of all members in an organization
+ */
 export const getOrganizationMembers = async (organizationId: number) => {
   return <Membership[]>(
     await cachedQuery(
@@ -93,6 +111,9 @@ export const getOrganizationMembers = async (organizationId: number) => {
   );
 };
 
+/*
+ * Get a detailed list of all members in an organization
+ */
 export const getOrganizationMemberDetails = async (organizationId: number) => {
   const members = await getOrganizationMembers(organizationId);
   return members;

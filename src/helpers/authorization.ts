@@ -11,6 +11,9 @@ import { getUserMembershipObject, getMembership } from "../crud/membership";
 import { getOrganization } from "../crud/organization";
 import { Membership } from "../interfaces/tables/memberships";
 
+/**
+ * Whether a user can perform an action on another user
+ */
 const canUserUser = async (
   user: User,
   action: Authorizations,
@@ -51,6 +54,9 @@ const canUserUser = async (
   return false;
 };
 
+/**
+ * Whether a user can perform an action on an organization
+ */
 const canUserOrganization = async (
   user: User,
   action: Authorizations,
@@ -84,6 +90,9 @@ const canUserOrganization = async (
   return false;
 };
 
+/**
+ * Whether a user can perform an action on a membership
+ */
 const canUserMembership = async (
   user: User,
   action: Authorizations,
@@ -113,6 +122,10 @@ const canUserMembership = async (
   return false;
 };
 
+/**
+ * Whether a user has authorization to perform an action
+ * @param ipAddress  IP address for the new location
+ */
 export const can = async (
   user: User | number,
   action: Authorizations,

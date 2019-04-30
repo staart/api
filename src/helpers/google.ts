@@ -7,6 +7,9 @@ import {
 import { ErrorCode } from "../interfaces/enum";
 import { GetTokenResponse } from "google-auth-library/build/src/auth/oauth2client";
 
+/**
+ * Create a new OAuth connection with Google
+ */
 export const googleCreateConnection = () => {
   return new google.auth.OAuth2(
     GOOGLE_CLIENT_ID,
@@ -15,6 +18,9 @@ export const googleCreateConnection = () => {
   );
 };
 
+/**
+ * Get the URL for "Login with Google"
+ */
 export const googleGetConnectionUrl = () => {
   const auth = googleCreateConnection();
   return auth.generateAuthUrl({
@@ -27,6 +33,9 @@ export const googleGetConnectionUrl = () => {
   });
 };
 
+/**
+ * Get Google OAuth tokens from a returned code
+ */
 export const googleGetTokensFromCode = async (code: string) => {
   const auth = googleCreateConnection();
   const tokens = await auth.getToken(code);
@@ -34,6 +43,9 @@ export const googleGetTokensFromCode = async (code: string) => {
   return tokens;
 };
 
+/**
+ * Get a user's email from their Google OAuth token
+ */
 export const googleGetEmailFromToken = async (data: GetTokenResponse) => {
   const auth = googleCreateConnection();
   auth.setCredentials(data.tokens);

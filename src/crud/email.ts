@@ -15,10 +15,14 @@ import { mail } from "../helpers/mail";
 import { InsertResult } from "../interfaces/mysql";
 import { deleteItemFromCache, cachedQuery } from "../helpers/cache";
 
-export const createEmail = async (email: Email, sendVerification = true) => {
-  // Clean up values
+/**
+ * Create a new email for a user
+ * @param sendVerification  Whether to send an email verification link to new email
+ * @param isVerified  Whether this email is verified by default
+ */
+export const createEmail = async (email: Email, sendVerification = true, isVerified = false) => {
   email.email = email.email.toLowerCase();
-  email.isVerified = false;
+  email.isVerified = isVerified;
   email.createdAt = new Date();
   email.updatedAt = email.createdAt;
   deleteItemFromCache(CacheCategories.USER_EMAILS, email.userId);
@@ -38,6 +42,9 @@ export const createEmail = async (email: Email, sendVerification = true) => {
   return result;
 };
 
+/**
+ * Send an email verification link
+ */
 export const sendEmailVerification = async (
   id: number,
   email: string,
@@ -48,6 +55,9 @@ export const sendEmailVerification = async (
   return;
 };
 
+/**
+ * Resend an email verification link
+ */
 export const resendEmailVerification = async (id: number) => {
   const token = await emailVerificationToken(id);
   const emailObject = await getEmail(id);
@@ -57,6 +67,9 @@ export const resendEmailVerification = async (id: number) => {
   return;
 };
 
+/**
+ * Update a user's email details
+ */
 export const updateEmail = async (id: number, email: KeyValue) => {
   email.updatedAt = dateToDateTime(new Date());
   email = removeReadOnlyValues(email);
@@ -73,6 +86,9 @@ export const updateEmail = async (id: number, email: KeyValue) => {
   ]);
 };
 
+/**
+ * Delete a user's email
+ */
 export const deleteEmail = async (id: number) => {
   const emailDetails = await getEmail(id);
   deleteItemFromCache(CacheCategories.EMAIL, emailDetails.email);
@@ -80,6 +96,9 @@ export const deleteEmail = async (id: number) => {
   return await query("DELETE FROM emails WHERE id = ?", [id]);
 };
 
+/**
+ * Get details about a user's email
+ */
 export const getEmail = async (id: number) => {
   return (<Email[]>(
     await cachedQuery(
@@ -91,6 +110,9 @@ export const getEmail = async (id: number) => {
   ))[0];
 };
 
+/**
+ * Get a user's primary email's detailed object
+ */
 export const getUserPrimaryEmailObject = async (user: User | number) => {
   let userObject: User;
   if (typeof user === "number") {
@@ -103,10 +125,16 @@ export const getUserPrimaryEmailObject = async (user: User | number) => {
   return await getEmail(primaryEmailId);
 };
 
+/**
+ * Get a user's primary email
+ */
 export const getUserPrimaryEmail = async (user: User | number) => {
   return (await getUserPrimaryEmailObject(user)).email;
 };
 
+/**
+ * Get a list of all emails added by a user
+ */
 export const getUserEmails = async (userId: number) => {
   return <Email>(
     await cachedQuery(
@@ -118,6 +146,9 @@ export const getUserEmails = async (userId: number) => {
   );
 };
 
+/**
+ * Get the detailed email object from an email
+ */
 export const getEmailObject = async (email: string) => {
   return (<Email[]>(
     await cachedQuery(
@@ -129,6 +160,9 @@ export const getEmailObject = async (email: string) => {
   ))[0];
 };
 
+/**
+ * Get a list of all verified emails of a user
+ */
 export const getUserVerifiedEmails = async (user: User | number) => {
   let userId = 0;
   if (typeof user === "object" && user.id) {

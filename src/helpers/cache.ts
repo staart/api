@@ -11,6 +11,9 @@ const cache = new NodeCache({
 const generateKey = (category: CacheCategories, item: number | string) =>
   `${category}_${item}`;
 
+/**
+ * Get an item from the cache
+ */
 export const getItemFromCache = (
   category: CacheCategories,
   item: number | string
@@ -19,6 +22,9 @@ export const getItemFromCache = (
   return cache.get(key);
 };
 
+/**
+ * Store a new item to the cache
+ */
 export const storeItemInCache = (
   category: CacheCategories,
   item: number | string,
@@ -28,6 +34,9 @@ export const storeItemInCache = (
   return cache.set(key, value);
 };
 
+/**
+ * Delete a specific item from the cache
+ */
 export const deleteItemFromCache = (
   category: CacheCategories,
   item: number | string
@@ -36,6 +45,9 @@ export const deleteItemFromCache = (
   return cache.del(key);
 };
 
+/**
+ * Return the results of a database query by first checking the cache
+ */
 export const cachedQuery = async (
   category: CacheCategories,
   item: number | string,

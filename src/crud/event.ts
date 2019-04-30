@@ -4,6 +4,9 @@ import { Locals } from "../interfaces/general";
 import { deleteItemFromCache, cachedQuery } from "../helpers/cache";
 import { CacheCategories } from "../interfaces/enum";
 
+/*
+ * Create a new security event
+ */
 export const createEvent = async (event: Event, locals?: Locals) => {
   if (typeof event.data === "object") event.data = JSON.stringify(event.data);
   event.createdAt = new Date();
@@ -18,6 +21,9 @@ export const createEvent = async (event: Event, locals?: Locals) => {
   await query(`INSERT INTO events ${tableValues(event)}`, Object.values(event));
 };
 
+/*
+ * Get all security events for a user
+ */
 export const getUserEvents = async (userId: number) => {
   return <Event[]>(
     await cachedQuery(
@@ -29,6 +35,9 @@ export const getUserEvents = async (userId: number) => {
   );
 };
 
+/*
+ * Get the 10 most recent security events for a user
+ */
 export const getUserRecentEvents = async (userId: number) => {
   return <Event[]>(
     await cachedQuery(

@@ -10,6 +10,9 @@ import { KeyValue } from "../interfaces/general";
 import { cachedQuery, deleteItemFromCache } from "../helpers/cache";
 import { CacheCategories } from "../interfaces/enum";
 
+/*
+ * Create a new organization for a user
+ */
 export const createOrganization = async (organization: Organization) => {
   if (organization.name)
     organization.name = capitalizeFirstAndLastLetter(organization.name);
@@ -22,6 +25,9 @@ export const createOrganization = async (organization: Organization) => {
   );
 };
 
+/*
+ * Get the details of a specific organization
+ */
 export const getOrganization = async (id: number) => {
   return (<Organization[]>(
     await cachedQuery(
@@ -33,6 +39,9 @@ export const getOrganization = async (id: number) => {
   ))[0];
 };
 
+/*
+ * Update an organization
+ */
 export const updateOrganization = async (
   id: number,
   organization: KeyValue
@@ -46,6 +55,9 @@ export const updateOrganization = async (
   );
 };
 
+/*
+ * Delete an organization
+ */
 export const deleteOrganization = async (id: number) => {
   deleteItemFromCache(CacheCategories.ORGANIZATION, id);
   return await query("DELETE FROM organizations WHERE id = ?", [id]);

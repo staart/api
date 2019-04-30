@@ -17,6 +17,9 @@ import { createEvent } from "../crud/event";
 import { getUserVerifiedEmails, getUserPrimaryEmail } from "../crud/email";
 import { mail } from "./mail";
 
+/**
+ * Generate a new JWT
+ */
 export const generateToken = (
   payload: string | object | Buffer,
   expiresIn: string | number,
@@ -39,6 +42,9 @@ export const generateToken = (
     );
   });
 
+/**
+ * Verify a JWT
+ */
 export const verifyToken = (token: string, subject: string) =>
   new Promise((resolve, reject) => {
     verify(token, JWT_SECRET, { subject }, (error, data) => {
@@ -47,21 +53,39 @@ export const verifyToken = (token: string, subject: string) =>
     });
   });
 
+/**
+ * Generate a new email verification JWT
+ */
 export const emailVerificationToken = (id: number) =>
   generateToken({ id }, TOKEN_EXPIRY_EMAIL_VERIFICATION, Tokens.EMAIL_VERIFY);
 
+/**
+ * Generate a new password reset JWT
+ */
 export const passwordResetToken = (id: number) =>
   generateToken({ id }, TOKEN_EXPIRY_PASSWORD_RESET, Tokens.PASSWORD_RESET);
 
+/**
+ * Generate a new login JWT
+ */
 export const loginToken = (user: User) =>
   generateToken(user, TOKEN_EXPIRY_LOGIN, Tokens.LOGIN);
 
+/**
+ * Generate a new approve location JWT
+ */
 export const approveLocationToken = (id: number) =>
   generateToken({ id }, TOKEN_EXPIRY_APPROVE_LOCATION, Tokens.APPROVE_LOCATION);
 
+/**
+ * Generate a new refresh JWT
+ */
 export const refreshToken = (id: number) =>
   generateToken({ id }, TOKEN_EXPIRY_REFRESH, Tokens.REFRESH);
 
+/**
+ * Get the token response after logging in a user
+ */
 export const getLoginResponse = async (
   user: User,
   type?: EventType,

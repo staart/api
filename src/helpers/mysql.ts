@@ -23,6 +23,9 @@ export const pool = createPool({
   database: DB_DATABASE
 });
 
+/**
+ * Return the results of a MySQL query
+ */
 export const query = (
   queryString: string,
   values?: (string | number | boolean | Date | undefined)[]
@@ -39,6 +42,9 @@ export const query = (
     });
   });
 
+/**
+ * Convert an object to MySQL-style (column) VALUES (values)
+ */
 export const tableValues = (
   object: User | BackupCode | Event | Email | Membership | Organization
 ) => {
@@ -49,6 +55,9 @@ export const tableValues = (
   return query;
 };
 
+/**
+ * Convert MySQL output to stronger types, like binary to boolean and datetime to JS Date
+ */
 export const uncleanValues = (
   data: (User | BackupCode | Event | Email | Membership | Organization)[]
 ) => {
@@ -70,6 +79,9 @@ export const uncleanValues = (
   return data;
 };
 
+/**
+ * Convert object values to MySQL-compatible types
+ */
 export const cleanValues = (
   values: (string | number | boolean | Date | undefined)[]
 ) => {
@@ -89,6 +101,9 @@ export const cleanValues = (
   return values;
 };
 
+/**
+ * Replace any object values with question marks to prevent injection
+ */
 export const setValues = (object: KeyValue) => {
   let query = "";
   Object.keys(object).forEach(key => {
@@ -97,6 +112,9 @@ export const setValues = (object: KeyValue) => {
   return query.slice(0, -2);
 };
 
+/**
+ * Remove any read-only values like createdAt from an object
+ */
 export const removeReadOnlyValues = (object: KeyValue) => {
   readOnlyValues.forEach(value => {
     if (object[value]) delete object[value];

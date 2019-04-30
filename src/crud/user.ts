@@ -21,10 +21,16 @@ import {
 import { getEmailObject } from "./email";
 import { cachedQuery, deleteItemFromCache } from "../helpers/cache";
 
+/**
+ * Get a list of all users
+ */
 export const listAllUsers = async () => {
   return <User[]>await query("SELECT * from users");
 };
 
+/**
+ * Create a new user
+ */
 export const createUser = async (user: User) => {
   // Clean up values
   user.name = capitalizeFirstAndLastLetter(user.name);
@@ -46,6 +52,10 @@ export const createUser = async (user: User) => {
   );
 };
 
+/**
+ * Get the details of a user
+ * @param secureOrigin  Whether security keys (password/tokens) should be returned too
+ */
 export const getUser = async (id: number, secureOrigin = false) => {
   let user = (<User[]>(
     await cachedQuery(
@@ -60,11 +70,17 @@ export const getUser = async (id: number, secureOrigin = false) => {
   return user;
 };
 
+/**
+ * Get the details of a user by their email
+ */
 export const getUserByEmail = async (email: string, secureOrigin = false) => {
   const emailObject = await getEmailObject(email);
   return await getUser(emailObject.userId, secureOrigin);
 };
 
+/**
+ * Update a user's details
+ */
 export const updateUser = async (id: number, user: KeyValue) => {
   user.updatedAt = dateToDateTime(new Date());
   user = removeReadOnlyValues(user);
@@ -75,11 +91,18 @@ export const updateUser = async (id: number, user: KeyValue) => {
   ]);
 };
 
+/**
+ * Delete a user
+ */
 export const deleteUser = async (id: number) => {
   deleteItemFromCache(CacheCategories.USER, id);
   return await query("DELETE FROM users WHERE id = ?", [id]);
 };
 
+/**
+ * Add a new approved location for a user
+ * @param ipAddress  IP address for the new location
+ */
 export const addApprovedLocation = async (
   userId: number,
   ipAddress: string
@@ -98,6 +121,9 @@ export const addApprovedLocation = async (
   );
 };
 
+/**
+ * Get a list of all approved locations of a user
+ */
 export const getUserApprovedLocations = async (userId: number) => {
   return await cachedQuery(
     CacheCategories.APPROVE_LOCATIONS,
@@ -107,6 +133,10 @@ export const getUserApprovedLocations = async (userId: number) => {
   );
 };
 
+/**
+ * Check whether a location is approved for a user
+ * @param ipAddress  IP address for checking
+ */
 export const checkApprovedLocation = async (
   userId: number,
   ipAddress: string

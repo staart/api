@@ -19,7 +19,10 @@ const client = ses.createClient({
   amazon: `https://email.${SES_REGION}.amazonaws.com`
 });
 
-export const sendMail = (mail: Mail) =>
+/**
+ * Send a new email using AWS SES
+ */
+const sendMail = (mail: Mail) =>
   new Promise((resolve, reject) => {
     client.sendEmail(mail, (error: Error, data: any, response: any) => {
       if (error) return reject(error);
@@ -27,6 +30,9 @@ export const sendMail = (mail: Mail) =>
     });
   });
 
+/**
+ * Send a new email using AWS SES
+ */
 export const mail = async (
   to: number | string,
   template: string,
