@@ -9,10 +9,11 @@ import { dateToDateTime } from "../helpers/utils";
 import { KeyValue } from "../interfaces/general";
 import { User } from "../interfaces/tables/user";
 import { getUser } from "./user";
-import { ErrorCode, Templates } from "../interfaces/enum";
+import { ErrorCode, Templates, CacheCategories } from "../interfaces/enum";
 import { emailVerificationToken } from "../helpers/jwt";
 import { mail } from "../helpers/mail";
 import { InsertResult } from "../interfaces/mysql";
+import { deleteItemFromCache, cachedQuery } from "../helpers/cache";
 
 export const createEmail = async (email: Email, sendVerification = true) => {
   // Clean up values
@@ -20,6 +21,7 @@ export const createEmail = async (email: Email, sendVerification = true) => {
   email.isVerified = false;
   email.createdAt = new Date();
   email.updatedAt = email.createdAt;
+  deleteItemFromCache(CacheCategories.USER_EMAILS, email.userId);
   const result = <InsertResult>(
     await query(
       `INSERT INTO emails ${tableValues(email)}`,
@@ -58,6 +60,13 @@ export const resendEmailVerification = async (id: number) => {
 export const updateEmail = async (id: number, email: KeyValue) => {
   email.updatedAt = dateToDateTime(new Date());
   email = removeReadOnlyValues(email);
+  const emailDetails = await getEmail(id);
+  deleteItemFromCache(CacheCategories.EMAIL, emailDetails.email);
+  deleteItemFromCache(CacheCategories.EMAIL, id);
+  deleteItemFromCache(
+    CacheCategories.USER_VERIFIED_EMAILS,
+    emailDetails.userId
+  );
   return await query(`UPDATE emails SET ${setValues(email)} WHERE id = ?`, [
     ...Object.values(email),
     id
@@ -65,12 +74,20 @@ export const updateEmail = async (id: number, email: KeyValue) => {
 };
 
 export const deleteEmail = async (id: number) => {
+  const emailDetails = await getEmail(id);
+  deleteItemFromCache(CacheCategories.EMAIL, emailDetails.email);
+  deleteItemFromCache(CacheCategories.EMAIL, id);
   return await query("DELETE FROM emails WHERE id = ?", [id]);
 };
 
 export const getEmail = async (id: number) => {
   return (<Email[]>(
-    await query("SELECT * FROM emails WHERE id = ? LIMIT 1", [id])
+    await cachedQuery(
+      CacheCategories.EMAIL,
+      id,
+      "SELECT * FROM emails WHERE id = ? LIMIT 1",
+      [id]
+    )
   ))[0];
 };
 
@@ -91,12 +108,24 @@ export const getUserPrimaryEmail = async (user: User | number) => {
 };
 
 export const getUserEmails = async (userId: number) => {
-  return <Email>await query("SELECT * FROM emails WHERE userId = ?", [userId]);
+  return <Email>(
+    await cachedQuery(
+      CacheCategories.USER_EMAILS,
+      userId,
+      "SELECT * FROM emails WHERE userId = ?",
+      [userId]
+    )
+  );
 };
 
 export const getEmailObject = async (email: string) => {
   return (<Email[]>(
-    await query("SELECT * FROM emails WHERE email = ? LIMIT 1", [email])
+    await cachedQuery(
+      CacheCategories.EMAIL,
+      email,
+      "SELECT * FROM emails WHERE email = ? LIMIT 1",
+      [email]
+    )
   ))[0];
 };
 
@@ -109,8 +138,11 @@ export const getUserVerifiedEmails = async (user: User | number) => {
   }
   if (!userId) throw new Error(ErrorCode.USER_NOT_FOUND);
   return <Email[]>(
-    await query("SELECT * FROM emails WHERE userId = ? AND isVerified = 1", [
-      userId
-    ])
+    await cachedQuery(
+      CacheCategories.USER_VERIFIED_EMAILS,
+      userId,
+      "SELECT * FROM emails WHERE userId = ? AND isVerified = 1",
+      [userId]
+    )
   );
 };

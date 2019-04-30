@@ -1,7 +1,7 @@
 import NodeCache from "node-cache";
 import { CACHE_TTL, CACHE_CHECK_PERIOD } from "../config";
 import { query } from "./mysql";
-import { ErrorCode } from "../interfaces/enum";
+import { ErrorCode, CacheCategories } from "../interfaces/enum";
 
 const cache = new NodeCache({
   stdTTL: CACHE_TTL,
@@ -34,7 +34,7 @@ export const deleteItemFromCache = (
 };
 
 export const cachedQuery = async (
-  category: string,
+  category: CacheCategories,
   item: number | string,
   queryString: string,
   values?: (string | number | boolean | Date | undefined)[]

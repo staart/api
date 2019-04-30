@@ -69,3 +69,14 @@ export enum Tokens {
   EMAIL_VERIFY = "email-verify",
   APPROVE_LOCATION = "approve-location"
 }
+
+export enum CacheCategories {
+  USER = "user",
+  USER_EMAILS = "user-emails",
+  USER_VERIFIED_EMAILS = "user-verified-emails",
+  EMAIL = "email",
+  USER_EVENT = "user-event",
+  ORGANIZATION_MEMBERSHIPS = "memberships",
+  MEMBERSHIP = "membership",
+  ORGANIZATION = "organization"
+}

@@ -9,12 +9,16 @@ import { dateToDateTime } from "../helpers/utils";
 import { KeyValue } from "../interfaces/general";
 import { User } from "../interfaces/tables/user";
 import { getOrganization } from "./organization";
-import { ErrorCode } from "../interfaces/enum";
-import { getUser } from "./user";
+import { ErrorCode, CacheCategories } from "../interfaces/enum";
+import { deleteItemFromCache, cachedQuery } from "../helpers/cache";
 
 export const createMembership = async (membership: Membership) => {
   membership.createdAt = new Date();
   membership.updatedAt = membership.createdAt;
+  deleteItemFromCache(
+    CacheCategories.ORGANIZATION_MEMBERSHIPS,
+    membership.organizationId
+  );
   return await query(
     `INSERT INTO memberships ${tableValues(membership)}`,
     Object.values(membership)
@@ -24,6 +28,7 @@ export const createMembership = async (membership: Membership) => {
 export const updateMembership = async (id: number, membership: KeyValue) => {
   membership.updatedAt = dateToDateTime(new Date());
   membership = removeReadOnlyValues(membership);
+  deleteItemFromCache(CacheCategories.MEMBERSHIP, id);
   return await query(
     `UPDATE memberships SET ${setValues(membership)} WHERE id = ?`,
     [...Object.values(membership), id]
@@ -31,12 +36,14 @@ export const updateMembership = async (id: number, membership: KeyValue) => {
 };
 
 export const deleteMembership = async (id: number) => {
+  deleteItemFromCache(CacheCategories.MEMBERSHIP, id);
   return await query("DELETE FROM memberships WHERE id = ?", [id]);
 };
 
 export const deleteAllOrganizationMemberships = async (
   organizationId: number
 ) => {
+  deleteItemFromCache(CacheCategories.ORGANIZATION_MEMBERSHIPS, organizationId);
   return await query("DELETE FROM memberships WHERE organizationId = ?", [
     organizationId
   ]);
@@ -44,7 +51,12 @@ export const deleteAllOrganizationMemberships = async (
 
 export const getMembership = async (id: number) => {
   return (<Membership[]>(
-    await query("SELECT * FROM memberships WHERE id = ? LIMIT 1", [id])
+    await cachedQuery(
+      CacheCategories.MEMBERSHIP,
+      id,
+      "SELECT * FROM memberships WHERE id = ? LIMIT 1",
+      [id]
+    )
   ))[0];
 };
 
@@ -72,17 +84,16 @@ export const getUserOrganization = async (user: User | number) => {
 
 export const getOrganizationMembers = async (organizationId: number) => {
   return <Membership[]>(
-    await query(`SELECT * FROM memberships WHERE organizationId = ?`, [
-      organizationId
-    ])
+    await cachedQuery(
+      CacheCategories.ORGANIZATION_MEMBERSHIPS,
+      organizationId,
+      `SELECT * FROM memberships WHERE organizationId = ?`,
+      [organizationId]
+    )
   );
 };
 
 export const getOrganizationMemberDetails = async (organizationId: number) => {
-  const members = <Membership[]>(
-    await query(`SELECT * FROM memberships WHERE organizationId = ?`, [
-      organizationId
-    ])
-  );
+  const members = await getOrganizationMembers(organizationId);
   return members;
 };

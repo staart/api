@@ -7,10 +7,8 @@ import {
 import { Organization } from "../interfaces/tables/organization";
 import { capitalizeFirstAndLastLetter, dateToDateTime } from "../helpers/utils";
 import { KeyValue } from "../interfaces/general";
-
-export const listAllOrganizations = async () => {
-  return <Organization[]>await query("SELECT * from organizations");
-};
+import { cachedQuery, deleteItemFromCache } from "../helpers/cache";
+import { CacheCategories } from "../interfaces/enum";
 
 export const createOrganization = async (organization: Organization) => {
   if (organization.name)
@@ -26,7 +24,12 @@ export const createOrganization = async (organization: Organization) => {
 
 export const getOrganization = async (id: number) => {
   return (<Organization[]>(
-    await query(`SELECT * FROM organizations WHERE id = ? LIMIT 1`, [id])
+    await cachedQuery(
+      CacheCategories.ORGANIZATION,
+      id,
+      `SELECT * FROM organizations WHERE id = ? LIMIT 1`,
+      [id]
+    )
   ))[0];
 };
 
@@ -36,6 +39,7 @@ export const updateOrganization = async (
 ) => {
   organization.updatedAt = dateToDateTime(new Date());
   organization = removeReadOnlyValues(organization);
+  deleteItemFromCache(CacheCategories.ORGANIZATION, id);
   return await query(
     `UPDATE organizations SET ${setValues(organization)} WHERE id = ?`,
     [...Object.values(organization), id]
@@ -43,5 +47,6 @@ export const updateOrganization = async (
 };
 
 export const deleteOrganization = async (id: number) => {
+  deleteItemFromCache(CacheCategories.ORGANIZATION, id);
   return await query("DELETE FROM organizations WHERE id = ?", [id]);
 };
