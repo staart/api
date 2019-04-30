@@ -1,6 +1,7 @@
 ![Staart](https://raw.githubusercontent.com/AnandChowdhary/staart/master/assets/logo.png)
 
 [![Travis CI](https://img.shields.io/travis/AnandChowdhary/staart.svg)](https://travis-ci.org/AnandChowdhary/staart)
+![Netlify status](https://img.shields.io/endpoint.svg?url=https://platform.oswaldlabs.com/netlify-status/560804f0-60ab-4172-9af8-f38e0dd675f6)
 [![GitHub](https://img.shields.io/github/license/anandchowdhary/staart.svg)](https://github.com/AnandChowdhary/staart/blob/master/LICENSE)
 ![Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/github/AnandChowdhary/staart.svg)
 ![Type definitions](https://img.shields.io/badge/types-TypeScript-blue.svg)
@@ -10,36 +11,31 @@ Staart is a Node.js backend starter for SaaS startups written in TypeScript. It 
 
 ## ⭐ Features
 
-|  | |
-| ----- | --- |
+| Emoji | Category |
+| ----- | -------- |
 | 👩‍💻 | Developer utilities |
 | 🔐 | Authentication and security |
 | 💳 | Organizations, users, and billing |
 | 🇪🇺 | GDPR and privacy |
 
-- [x] 👩‍💻 Promise-based utilities, framework agnostic
 - [x] 👩‍💻 Helpers for database query, finding users, creating tokens, etc.
 - [x] 🔐 JWT-based authentication with email/password and scopes
 - [x] 💳 Support for multiple emails per user account
 - [x] 🔐 Login with Google
-- [x] 👩‍💻 Configuration based on environment variables
-- [x] 👩‍💻 TypeScript interfaces for `User`, `HTTPError`, etc.
-- [ ] 💳 Organizations, inviting team members with permissions
+- [x] 👩‍💻 TypeScript interfaces for tables and helpers
+- [ ] 💳 Organizations and inviting team members with scopes
 - [ ] 💳 Stripe for subscriptions, billing, cards, invoices, etc.
 - [ ] 🇪🇺 Check for authorized devices when logging in (i.e., "Your devices" with approved fingerprints)
 - [x] 🇪🇺 Check for location with logging in (i.e., "New location" with approved subnets)
 - [x] 👩‍💻 Built-in caching and invalidation for common database queries
-- [x] 👩‍💻 MySQL schema matching interfaces
-- [x] 🔐 Event logging and history (logins, settings changes, etc.)
+- [x] 🔐 Event logging and history endpoints (logins, settings changes, etc.)
 - [x] 💳 "Magic wand" for user impersonation by super-admins
-- [x] 👩‍💻 Express middleware for token check which returns user
+- [x] 👩‍💻 Express middleware for login token validation
 - [x] 🔐 Support for refresh tokens (i.e., "Keep me logged in for 30 days")
 - [ ] 🔐 Two-factor authentication with TOTP (and Twilio?)
 - [ ] 🇪🇺 Email preferences (1 = security, 2 = notifications, 3 = promotions, etc.)
-- [ ] 👩‍💻 Sending rich HTML transactional emails with SES
+- [x] 👩‍💻 Sending rich HTML transactional emails with AWS SES
 - [ ] 🇪🇺 GDPR data export, delete (schedule deletion for 30 days)
-- [x] 💳 Store user preferences like language, and prefers-reduced-motion
-- [ ] 💳 Organization customization like logo, force 2FA, etc.
 - [ ] 💳 Affiliate accounts, dashboard, commissions
 
 ## 🛠 Usage
