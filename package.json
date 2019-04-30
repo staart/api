@@ -11,7 +11,8 @@
     "prettier-all": "prettier '{src,examples}/**/*.{ts,json}' --write",
     "watch-build": "onchange '{src,examples}/**/*.ts' -- yarn build",
     "watch-prettier": "onchange '{src,examples}/**/*.{ts,json}' -- prettier --write {{changed}}",
-    "watch-server": "cd dist && nodemon index.js"
+    "watch-server": "cd dist && nodemon index.js",
+    "generate-docs": "typedoc --out docs ./src"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
@@ -27,17 +28,18 @@
     "concurrently": "^4.1.0",
     "coveralls": "^3.0.3",
     "dotenv": "^7.0.0",
-    "express": "^4.16.4",
     "jest": "^24.7.1",
     "nodemon": "^1.18.11",
     "onchange": "^5.2.0",
     "prettier": "^1.17.0",
     "ts-jest": "^24.0.2",
+    "typedoc": "^0.14.2",
     "typescript": "^3.4.5"
   },
   "dependencies": {
     "bcrypt": "^3.0.6",
     "body-parser": "^1.19.0",
+    "express": "^4.16.4",
     "express-async-handler": "^1.1.4",
     "fs-extra": "^7.0.1",
     "googleapis": "^39.2.0",
