@@ -78,5 +78,16 @@ export enum CacheCategories {
   USER_EVENT = "user-event",
   ORGANIZATION_MEMBERSHIPS = "memberships",
   MEMBERSHIP = "membership",
-  ORGANIZATION = "organization"
+  ORGANIZATION = "organization",
+  APPROVE_LOCATIONS = "approved-locations",
+  APPROVE_LOCATION = "approved-location"
+}
+
+export enum Authorizations {
+  CREATE = "create",
+  READ = "read",
+  UPDATE = "update",
+  DELETE = "delete",
+  INVITE_MEMBER = "invite-member",
+  IMPERSONATE = "impersonate"
 }

@@ -90,6 +90,8 @@ export const addApprovedLocation = async (
     subnet,
     createdAt: new Date()
   };
+  deleteItemFromCache(CacheCategories.APPROVE_LOCATIONS, userId);
+  deleteItemFromCache(CacheCategories.APPROVE_LOCATION, subnet);
   return await query(
     `INSERT INTO \`approved-locations\` ${tableValues(subnetLocation)}`,
     Object.values(subnetLocation)
@@ -97,9 +99,12 @@ export const addApprovedLocation = async (
 };
 
 export const getUserApprovedLocations = async (userId: number) => {
-  return await query("SELECT * FROM `approved-locations` WHERE userId = ?", [
-    userId
-  ]);
+  return await cachedQuery(
+    CacheCategories.APPROVE_LOCATIONS,
+    userId,
+    "SELECT * FROM `approved-locations` WHERE userId = ?",
+    [userId]
+  );
 };
 
 export const checkApprovedLocation = async (
@@ -108,7 +113,9 @@ export const checkApprovedLocation = async (
 ) => {
   const subnet = anonymizeIpAddress(ipAddress);
   const approvedLocations = <ApprovedLocation[]>(
-    await query(
+    await cachedQuery(
+      CacheCategories.APPROVE_LOCATION,
+      subnet,
       "SELECT * FROM `approved-locations` WHERE userId = ? AND subnet = ? LIMIT 1",
       [userId, subnet]
     )

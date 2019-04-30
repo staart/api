@@ -8,29 +8,24 @@ import {
 import { InsertResult } from "../interfaces/mysql";
 import {
   createMembership,
-  getUserOrganizationId,
-  getUserMembershipObject,
   deleteAllOrganizationMemberships
 } from "../crud/membership";
 import {
   MembershipRole,
   ErrorCode,
-  UserRole,
-  EventType
+  EventType,
+  Authorizations
 } from "../interfaces/enum";
-import { getUser } from "../crud/user";
 import { createEvent } from "../crud/event";
 import { Locals } from "../interfaces/general";
+import { can } from "../helpers/authorization";
 
 export const getOrganizationForUser = async (
   userId: number,
   organizationId: number
 ) => {
-  const userMembership = await getUserMembershipObject(userId);
-  const organization = await getOrganization(organizationId);
-  if (userMembership.organizationId == organizationId) return organization;
-  const user = await getUser(userId);
-  if (user.role == UserRole.ADMIN) return organization;
+  if (await can(userId, Authorizations.READ, "organization", organizationId))
+    return await getOrganization(organizationId);
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
 
@@ -64,9 +59,9 @@ export const updateOrganizationForUser = async (
   data: Organization,
   locals: Locals
 ) => {
-  const user = await getUser(userId);
-  const userOrganizationId = await getUserOrganizationId(user);
-  if (organizationId == userOrganizationId || user.role == UserRole.ADMIN) {
+  if (
+    await can(userId, Authorizations.UPDATE, "organization", organizationId)
+  ) {
     await updateOrganization(organizationId, data);
     await createEvent(
       {
@@ -87,12 +82,8 @@ export const deleteOrganizationForUser = async (
   organizationId: number,
   locals: Locals
 ) => {
-  const user = await getUser(userId);
-  const userMembership = await getUserMembershipObject(userId);
   if (
-    user.role == UserRole.ADMIN ||
-    (userMembership.organizationId == organizationId &&
-      userMembership.role == MembershipRole.OWNER)
+    await can(userId, Authorizations.DELETE, "organization", organizationId)
   ) {
     await deleteOrganization(organizationId);
     await deleteAllOrganizationMemberships(organizationId);

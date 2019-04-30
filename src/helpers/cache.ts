@@ -8,16 +8,19 @@ const cache = new NodeCache({
   checkperiod: CACHE_CHECK_PERIOD
 });
 
-const generateKey = (category: string, item: number | string) =>
+const generateKey = (category: CacheCategories, item: number | string) =>
   `${category}_${item}`;
 
-export const getItemFromCache = (category: string, item: number | string) => {
+export const getItemFromCache = (
+  category: CacheCategories,
+  item: number | string
+) => {
   const key = generateKey(category, item);
   return cache.get(key);
 };
 
 export const storeItemInCache = (
-  category: string,
+  category: CacheCategories,
   item: number | string,
   value: any
 ) => {
@@ -26,7 +29,7 @@ export const storeItemInCache = (
 };
 
 export const deleteItemFromCache = (
-  category: string,
+  category: CacheCategories,
   item: number | string
 ) => {
   const key = generateKey(category, item);

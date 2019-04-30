@@ -11,9 +11,7 @@ import { createEmail, updateEmail, getEmail } from "../crud/email";
 import { mail } from "../helpers/mail";
 import {
   verifyToken,
-  loginToken,
   passwordResetToken,
-  refreshToken,
   getLoginResponse
 } from "../helpers/jwt";
 import { KeyValue, Locals } from "../interfaces/general";
@@ -24,16 +22,16 @@ import {
   MembershipRole,
   Templates,
   Tokens,
-  UserRole
+  Authorizations
 } from "../interfaces/enum";
 import { compare, hash } from "bcrypt";
-import { deleteSensitiveInfoUser } from "../helpers/utils";
 import { createMembership } from "../crud/membership";
 import {
   googleGetConnectionUrl,
   googleGetTokensFromCode,
   googleGetEmailFromToken
 } from "../helpers/google";
+import { can } from "../helpers/authorization";
 
 export const validateRefreshToken = async (token: string, locals: Locals) => {
   const data = <User>await verifyToken(token, Tokens.REFRESH);
@@ -152,15 +150,16 @@ export const impersonate = async (
   tokenUserId: number,
   impersonateUserId: number
 ) => {
-  const tokenUser = await getUser(tokenUserId);
-  if (tokenUser.role != UserRole.ADMIN)
-    throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
-  const user = await getUser(impersonateUserId);
-  if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
-  return {
-    token: await loginToken(deleteSensitiveInfoUser(user)),
-    refresh: await refreshToken(user.id)
-  };
+  if (
+    await can(
+      tokenUserId,
+      Authorizations.IMPERSONATE,
+      "user",
+      impersonateUserId
+    )
+  )
+    return await getLoginResponse(await getUser(impersonateUserId));
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
 
 export const approveLocation = async (token: string, locals: Locals) => {

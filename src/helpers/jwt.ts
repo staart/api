@@ -64,28 +64,35 @@ export const refreshToken = (id: number) =>
 
 export const getLoginResponse = async (
   user: User,
-  type: EventType,
-  strategy: string,
-  locals: Locals
+  type?: EventType,
+  strategy?: string,
+  locals?: Locals
 ) => {
   if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
   const verifiedEmails = await getUserVerifiedEmails(user);
   if (!verifiedEmails.length) throw new Error(ErrorCode.UNVERIFIED_EMAIL);
-  if (!(await checkApprovedLocation(user.id, locals.ipAddress))) {
-    await mail(await getUserPrimaryEmail(user), Templates.UNAPPROVED_LOCATION, {
-      ...user,
-      token: await approveLocationToken(user.id)
-    });
-    throw new Error(ErrorCode.UNAPPROVED_LOCATION);
+  if (locals) {
+    if (!(await checkApprovedLocation(user.id, locals.ipAddress))) {
+      await mail(
+        await getUserPrimaryEmail(user),
+        Templates.UNAPPROVED_LOCATION,
+        {
+          ...user,
+          token: await approveLocationToken(user.id)
+        }
+      );
+      throw new Error(ErrorCode.UNAPPROVED_LOCATION);
+    }
   }
-  await createEvent(
-    {
-      userId: user.id,
-      type,
-      data: { strategy }
-    },
-    locals
-  );
+  if (type && strategy && locals)
+    await createEvent(
+      {
+        userId: user.id,
+        type,
+        data: { strategy }
+      },
+      locals
+    );
   try {
     return {
       token: await loginToken(deleteSensitiveInfoUser(user)),
