@@ -13,6 +13,14 @@ export const DB_USERNAME = process.env.DB_USERNAME || "root";
 export const DB_PASSWORD = process.env.DB_PASSWORD || "";
 export const DB_DATABASE = process.env.DB_DATABASE || "database";
 
+// Caching
+export const CACHE_TTL = process.env.CACHE_TTL
+  ? parseInt(process.env.CACHE_TTL)
+  : 600;
+export const CACHE_CHECK_PERIOD = process.env.CACHE_CHECK_PERIOD
+  ? parseInt(process.env.CACHE_CHECK_PERIOD)
+  : 1000;
+
 // Email
 export const FRONTEND_URL = process.env.FRONTEND_URL || "https://example.com";
 export const SES_EMAIL = process.env.SES_EMAIL || "";
@@ -29,7 +37,7 @@ export const TOKEN_EXPIRY_PASSWORD_RESET =
   process.env.TOKEN_EXPIRY_PASSWORD_RESET || "1d";
 export const TOKEN_EXPIRY_LOGIN = process.env.TOKEN_EXPIRY_LOGIN || "1d";
 export const TOKEN_EXPIRY_APPROVE_LOCATION =
-  process.env.TOKEN_EXPIRY_LOGIN || "10m";
+  process.env.TOKEN_EXPIRY_APPROVE_LOCATION || "10m";
 export const TOKEN_EXPIRY_REFRESH = process.env.TOKEN_EXPIRY_REFRESH || "30d";
 
 export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || "";

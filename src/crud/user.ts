@@ -14,7 +14,8 @@ import {
 import { hash } from "bcrypt";
 import { KeyValue } from "../interfaces/general";
 import { ErrorCode, NotificationEmails } from "../interfaces/enum";
-import { getEmail, getEmailObject } from "./email";
+import { getEmailObject } from "./email";
+import { cachedQuery, deleteItemFromCache } from "../helpers/cache";
 
 export const listAllUsers = async () => {
   return <User[]>await query("SELECT * from users");
@@ -42,10 +43,11 @@ export const createUser = async (user: User) => {
 };
 
 export const getUser = async (id: number, secureOrigin = false) => {
-  const users = <User[]>(
-    await query(`SELECT * FROM users WHERE id = ? LIMIT 1`, [id])
-  );
-  let user = users[0];
+  let user = (<User[]>(
+    await cachedQuery("user", id, `SELECT * FROM users WHERE id = ? LIMIT 1`, [
+      id
+    ])
+  ))[0];
   if (!user) throw new Error(ErrorCode.USER_NOT_FOUND);
   if (!secureOrigin) user = deleteSensitiveInfoUser(user);
   return user;
@@ -59,6 +61,7 @@ export const getUserByEmail = async (email: string, secureOrigin = false) => {
 export const updateUser = async (id: number, user: KeyValue) => {
   user.updatedAt = dateToDateTime(new Date());
   user = removeReadOnlyValues(user);
+  deleteItemFromCache("user", id);
   return await query(`UPDATE users SET ${setValues(user)} WHERE id = ?`, [
     ...Object.values(user),
     id
@@ -66,6 +69,7 @@ export const updateUser = async (id: number, user: KeyValue) => {
 };
 
 export const deleteUser = async (id: number) => {
+  deleteItemFromCache("user", id);
   return await query("DELETE FROM users WHERE id = ?", [id]);
 };
 

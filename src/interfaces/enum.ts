@@ -40,6 +40,7 @@ export enum EventType {
 }
 
 export enum ErrorCode {
+  NOT_FOUND = "404/not-found",
   MISSING_TOKEN = "422/missing-token",
   INVALID_TOKEN = "401/invalid-token",
   MISSING_PRIMARY_EMAIL = "422/missing-primary-email",
