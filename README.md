@@ -57,7 +57,7 @@ Staart is a Node.js backend starter for SaaS startups written in TypeScript. It 
 
 Staart comes with tens of helper and CRUD methods for users, organizations, and more.
 
-*TBD (to be documented)*
+**[View documentation →](https://staart.anandchowdhary.com)**
 
 ## 👥 Contributors
 
