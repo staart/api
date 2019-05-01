@@ -75,6 +75,7 @@ export const getUser = async (id: number, secureOrigin = false) => {
  */
 export const getUserByEmail = async (email: string, secureOrigin = false) => {
   const emailObject = await getEmailObject(email);
+  if (!emailObject) throw new Error(ErrorCode.USER_NOT_FOUND);
   return await getUser(emailObject.userId, secureOrigin);
 };
 
