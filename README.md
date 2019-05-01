@@ -7,7 +7,7 @@
 ![Type definitions](https://img.shields.io/badge/types-TypeScript-blue.svg)
 [![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg)](#contributors)
 
-Staart is a Node.js backend starter for SaaS startups written in TypeScript. It has built-in user management and authentication, billing, organizations, GDPR tools, and more.
+Staart is a Node.js backend starter for SaaS startups written in TypeScript. It has built-in user management and authentication, billing, organizations, GDPR tools, and more. Works with [Staart UI](https://github.com/AnandChowdhary/staart-ui).
 
 ## ⭐ Features
 
