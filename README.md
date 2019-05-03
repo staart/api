@@ -37,6 +37,8 @@ Staart is a Node.js backend starter for SaaS startups written in TypeScript. It 
 - [x] 👩‍💻 Sending rich HTML transactional emails with AWS SES
 - [ ] 🇪🇺 GDPR data export, delete (schedule deletion for 30 days)
 - [ ] 💳 Affiliate accounts, dashboard, commissions
+- [ ] 👩‍💻 Generate and manage API keys per user
+- [ ] 👩‍💻 Access endpoints via API keys
 
 ## 🛠 Usage
 
