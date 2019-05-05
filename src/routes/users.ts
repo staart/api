@@ -11,7 +11,7 @@ export const routeUserId = async (req: Request, res: Response) => {
   let id = req.body.id || req.params.id;
   if (id === "me") id = res.locals.token.id;
   if (!id) throw new Error(ErrorCode.MISSING_FIELD);
-  res.json({ user: await getUserFromId(id, res.locals.token.id) });
+  res.json(await getUserFromId(id, res.locals.token.id));
 };
 
 export const routeUserUpdate = async (req: Request, res: Response) => {
