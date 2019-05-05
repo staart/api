@@ -136,7 +136,7 @@ export const updatePassword = async (
   return;
 };
 
-export const loginWithGoogleLink = () => googleGetConnectionUrl();
+export const loginWithGoogleLink = (redirectUri: string) => googleGetConnectionUrl(redirectUri);
 
 export const loginWithGoogleVerify = async (code: string, locals: Locals) => {
   const data = await googleGetTokensFromCode(code);

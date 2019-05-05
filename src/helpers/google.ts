@@ -21,7 +21,7 @@ export const googleCreateConnection = () => {
 /**
  * Get the URL for "Login with Google"
  */
-export const googleGetConnectionUrl = () => {
+export const googleGetConnectionUrl = (redirectUri: string) => {
   const auth = googleCreateConnection();
   return auth.generateAuthUrl({
     access_type: "offline",
@@ -29,7 +29,8 @@ export const googleGetConnectionUrl = () => {
     scope: [
       "https://www.googleapis.com/auth/plus.me",
       "https://www.googleapis.com/auth/userinfo.email"
-    ]
+    ],
+    redirect_uri: redirectUri
   });
 };
 
