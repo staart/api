@@ -2,7 +2,9 @@ import {
   query,
   tableValues,
   setValues,
-  removeReadOnlyValues
+  removeReadOnlyValues,
+  addIsPrimaryToEmails,
+  addIsPrimaryToEmail
 } from "../helpers/mysql";
 import { Email } from "../interfaces/tables/emails";
 import { dateToDateTime } from "../helpers/utils";
@@ -20,7 +22,11 @@ import { deleteItemFromCache, cachedQuery } from "../helpers/cache";
  * @param sendVerification  Whether to send an email verification link to new email
  * @param isVerified  Whether this email is verified by default
  */
-export const createEmail = async (email: Email, sendVerification = true, isVerified = false) => {
+export const createEmail = async (
+  email: Email,
+  sendVerification = true,
+  isVerified = false
+) => {
   email.email = email.email.toLowerCase();
   email.isVerified = isVerified;
   email.createdAt = new Date();
@@ -122,7 +128,9 @@ export const getUserPrimaryEmailObject = async (user: User | number) => {
   }
   const primaryEmailId = userObject.primaryEmail;
   if (!primaryEmailId) throw new Error(ErrorCode.MISSING_PRIMARY_EMAIL);
-  return await getEmail(primaryEmailId);
+  const email = await getEmail(primaryEmailId);
+  email.isPrimary = true;
+  return email;
 };
 
 /**
@@ -136,28 +144,30 @@ export const getUserPrimaryEmail = async (user: User | number) => {
  * Get a list of all emails added by a user
  */
 export const getUserEmails = async (userId: number) => {
-  return <Email>(
+  return await addIsPrimaryToEmails(<Email[]>(
     await cachedQuery(
       CacheCategories.USER_EMAILS,
       userId,
       "SELECT * FROM emails WHERE userId = ?",
       [userId]
     )
-  );
+  ));
 };
 
 /**
  * Get the detailed email object from an email
  */
 export const getEmailObject = async (email: string) => {
-  return (<Email[]>(
-    await cachedQuery(
-      CacheCategories.EMAIL,
-      email,
-      "SELECT * FROM emails WHERE email = ? LIMIT 1",
-      [email]
-    )
-  ))[0];
+  return await addIsPrimaryToEmail(
+    (<Email[]>(
+      await cachedQuery(
+        CacheCategories.EMAIL,
+        email,
+        "SELECT * FROM emails WHERE email = ? LIMIT 1",
+        [email]
+      )
+    ))[0]
+  );
 };
 
 /**
@@ -171,12 +181,12 @@ export const getUserVerifiedEmails = async (user: User | number) => {
     userId = user;
   }
   if (!userId) throw new Error(ErrorCode.USER_NOT_FOUND);
-  return <Email[]>(
+  return await addIsPrimaryToEmails(<Email[]>(
     await cachedQuery(
       CacheCategories.USER_VERIFIED_EMAILS,
       userId,
       "SELECT * FROM emails WHERE userId = ? AND isVerified = 1",
       [userId]
     )
-  );
+  ));
 };

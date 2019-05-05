@@ -14,6 +14,7 @@ import { Organization } from "../interfaces/tables/organization";
 import { Event } from "../interfaces/tables/events";
 import { KeyValue } from "../interfaces/general";
 import { boolValues, jsonValues, dateValues, readOnlyValues } from "./utils";
+import { getUserPrimaryEmailObject } from "../crud/email";
 
 export const pool = createPool({
   host: DB_HOST,
@@ -120,4 +121,21 @@ export const removeReadOnlyValues = (object: KeyValue) => {
     if (object[value]) delete object[value];
   });
   return object;
+};
+
+export const addIsPrimaryToEmails = async (emails: Email[]) => {
+  const userPrimaryEmailObject = await getUserPrimaryEmailObject(
+    emails[0].userId
+  );
+  emails.map(email => {
+    email.isPrimary = email.id === userPrimaryEmailObject.id;
+    return email;
+  });
+  return emails;
+};
+
+export const addIsPrimaryToEmail = async (email: Email) => {
+  const userPrimaryEmailObject = await getUserPrimaryEmailObject(email.userId);
+  email.isPrimary = email.id === userPrimaryEmailObject.id;
+  return email;
 };
