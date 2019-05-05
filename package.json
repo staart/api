@@ -29,7 +29,7 @@
     "concurrently": "^4.1.0",
     "coveralls": "^3.0.3",
     "dotenv": "^8.0.0",
-    "jest": "^24.7.1",
+    "jest": "^24.8.0",
     "nodemon": "^1.19.0",
     "onchange": "^5.2.0",
     "prettier": "^1.17.0",
