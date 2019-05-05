@@ -80,6 +80,7 @@ export const updateEmail = async (id: number, email: KeyValue) => {
   email.updatedAt = dateToDateTime(new Date());
   email = removeReadOnlyValues(email);
   const emailDetails = await getEmail(id);
+  deleteItemFromCache(CacheCategories.USER_EMAILS, emailDetails.userId);
   deleteItemFromCache(CacheCategories.EMAIL, emailDetails.email);
   deleteItemFromCache(CacheCategories.EMAIL, id);
   deleteItemFromCache(
@@ -97,6 +98,7 @@ export const updateEmail = async (id: number, email: KeyValue) => {
  */
 export const deleteEmail = async (id: number) => {
   const emailDetails = await getEmail(id);
+  deleteItemFromCache(CacheCategories.USER_EMAILS, id);
   deleteItemFromCache(CacheCategories.EMAIL, emailDetails.email);
   deleteItemFromCache(CacheCategories.EMAIL, id);
   return await query("DELETE FROM emails WHERE id = ?", [id]);
