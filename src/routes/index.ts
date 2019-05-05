@@ -10,7 +10,8 @@ import {
   routeEmailVerify,
   routeEmailAdd,
   routeEmailDelete,
-  routeEmailVerifyResend
+  routeEmailVerifyResend,
+  routeEmailList
 } from "./emails";
 import {
   routeOrganizationCreate,
@@ -81,6 +82,7 @@ const routesUser = (app: Application) => {
     asyncHandler(routeUserRecentEvents)
   );
   app.get("/users/:id/data", authHandler, asyncHandler(routeUserAllData));
+  app.get("/users/:id/emails", authHandler, asyncHandler(routeEmailList));
 };
 
 const routesEmail = (app: Application) => {

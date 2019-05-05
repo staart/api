@@ -4,11 +4,22 @@ import {
   getEmail,
   getUserVerifiedEmails,
   getUserPrimaryEmailObject,
-  deleteEmail
+  deleteEmail,
+  getUserEmails
 } from "../crud/email";
 import { createEvent } from "../crud/event";
-import { ErrorCode, EventType } from "../interfaces/enum";
+import { ErrorCode, EventType, Authorizations } from "../interfaces/enum";
 import { updateUser } from "../crud/user";
+import { can } from "../helpers/authorization";
+
+export const getAllEmailsForUser = async (
+  tokenUserId: number,
+  userId: number
+) => {
+  if (await can(tokenUserId, Authorizations.READ, "user", userId))
+    return await getUserEmails(userId);
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
 
 export const addEmailToUser = async (
   userId: number,

@@ -2,7 +2,18 @@ import { Request, Response } from "express";
 import { verifyEmail } from "../rest/auth";
 import { ErrorCode } from "../interfaces/enum";
 import { resendEmailVerification } from "../crud/email";
-import { addEmailToUser, deleteEmailFromUser } from "../rest/email";
+import {
+  addEmailToUser,
+  deleteEmailFromUser,
+  getAllEmailsForUser
+} from "../rest/email";
+
+export const routeEmailList = async (req: Request, res: Response) => {
+  let id = req.params.id;
+  if (id === "me") id = res.locals.token.id;
+  if (!id) throw new Error(ErrorCode.MISSING_FIELD);
+  res.json(await getAllEmailsForUser(res.locals.token.id, id));
+};
 
 export const routeEmailAdd = async (req: Request, res: Response) => {
   const email = req.body.email;
