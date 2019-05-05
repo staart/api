@@ -81,7 +81,8 @@ export enum CacheCategories {
   MEMBERSHIP = "membership",
   ORGANIZATION = "organization",
   APPROVE_LOCATIONS = "approved-locations",
-  APPROVE_LOCATION = "approved-location"
+  APPROVE_LOCATION = "approved-location",
+  IP_LOOKUP = "ip-lookup"
 }
 
 export enum Authorizations {

@@ -3,6 +3,7 @@ import { Event } from "../interfaces/tables/events";
 import { Locals } from "../interfaces/general";
 import { deleteItemFromCache, cachedQuery } from "../helpers/cache";
 import { CacheCategories } from "../interfaces/enum";
+import { addLocationToEvents } from "../helpers/location";
 
 /*
  * Create a new security event
@@ -39,12 +40,12 @@ export const getUserEvents = async (userId: number) => {
  * Get the 10 most recent security events for a user
  */
 export const getUserRecentEvents = async (userId: number) => {
-  return <Event[]>(
+  return await addLocationToEvents(<Event[]>(
     await cachedQuery(
       CacheCategories.USER_RECENT_EVENTS,
       userId,
       `SELECT * FROM events WHERE userId = ? ORDER BY id DESC LIMIT 10`,
       [userId]
     )
-  );
+  ));
 };

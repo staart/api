@@ -1,4 +1,5 @@
 import { EventType } from "../enum";
+import { CityResponse } from "maxmind";
 
 export interface Event {
   id?: number;
@@ -9,4 +10,5 @@ export interface Event {
   ipAddress?: string;
   userAgent?: string;
   createdAt?: Date;
+  location?: CityResponse | null;
 }

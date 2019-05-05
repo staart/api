@@ -386,6 +386,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/geolite2@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@types/geolite2/-/geolite2-1.2.0.tgz#f66dcdd395e5be29dff5d8c476c4cfb015a5e0d7"
+  integrity sha512-fSEel9sfeC8XGS/CD8duQhaGtAS9Ho3ehVEzAUZWFWpSiHKYX4fkJleEy08qbpF5tU4AnMHGGVKi0EvpI6tYag==
+
 "@types/glob@*":
   version "7.1.1"
   resolved "https://registry.yarnpkg.com/@types/glob/-/glob-7.1.1.tgz#aa59a1c6e3fbc421e07ccd31a944c30eba521575"
@@ -1821,6 +1826,11 @@ gcp-metadata@^1.0.0:
     gaxios "^1.0.2"
     json-bigint "^0.3.0"
 
+geolite2@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/geolite2/-/geolite2-1.2.1.tgz#b7c62d182021d398f7fc3c9d09a01c067b36cb36"
+  integrity sha512-4NqR+Wr4/KMSDrTq+0jnxL+xiMBiUXFiLBuMCs5gChLhZD6uvWICQxQV3MNpRH3FPGnB4gKHs3gGaYd+6X4sGQ==
+
 get-caller-file@^1.0.1:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/get-caller-file/-/get-caller-file-1.0.3.tgz#f978fa4c90d1dfe7ff2d6beda2a515e713bdcf4a"
@@ -3201,6 +3211,13 @@ marked@^0.6.2:
   version "0.6.2"
   resolved "https://registry.yarnpkg.com/marked/-/marked-0.6.2.tgz#c574be8b545a8b48641456ca1dbe0e37b6dccc1a"
   integrity sha512-LqxwVH3P/rqKX4EKGz7+c2G9r98WeM/SW34ybhgNGhUQNKtf1GmmSkJ6cDGJ/t6tiyae49qRkpyTw2B9HOrgUA==
+
+maxmind@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/maxmind/-/maxmind-3.0.3.tgz#f771af8cc10a6a3481a42c3f374af9448a0689c8"
+  integrity sha512-E/AvmqI1bfYU1c8p+Q7xCc9TGoTOp/yV8WsUHuJ+eGYEHmakEazbl3OrJCYkacBdLEqq19p/G3OyjBSDUJTUqA==
+  dependencies:
+    tiny-lru "6.0.1"
 
 media-typer@0.3.0:
   version "0.3.0"
@@ -4650,6 +4667,11 @@ timed-out@^4.0.0:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/timed-out/-/timed-out-4.0.1.tgz#f32eacac5a175bea25d7fab565ab3ed8741ef56f"
   integrity sha1-8y6srFoXW+ol1/q1Zas+2HQe9W8=
+
+tiny-lru@6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/tiny-lru/-/tiny-lru-6.0.1.tgz#558bd6b7232b8b9dfa482147539676fdd75a3a07"
+  integrity sha512-k/vdHz+bFALjmik0URLWBYNuO0hCABTL5dullbZBXvFDdlL8RrKaeLR6YuHfX+6ZXOLkHw+HpNLCUA7DtLMQmg==
 
 tmpl@1.0.x:
   version "1.0.4"
