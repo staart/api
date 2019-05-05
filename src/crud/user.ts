@@ -86,6 +86,7 @@ export const updateUser = async (id: number, user: KeyValue) => {
   user.updatedAt = dateToDateTime(new Date());
   user = removeReadOnlyValues(user);
   deleteItemFromCache(CacheCategories.USER, id);
+  deleteItemFromCache(CacheCategories.USER_EMAILS, id);
   return await query(`UPDATE users SET ${setValues(user)} WHERE id = ?`, [
     ...Object.values(user),
     id
