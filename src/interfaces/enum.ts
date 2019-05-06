@@ -94,3 +94,10 @@ export enum Authorizations {
   INVITE_MEMBER = "invite-member",
   IMPERSONATE = "impersonate"
 }
+
+export enum Genders {
+  MALE = "m",
+  FEMALE = "f",
+  NON_BINARY = "n",
+  UNKNOWN = "x"
+}

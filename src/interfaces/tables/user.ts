@@ -1,4 +1,4 @@
-import { UserRole, NotificationEmails } from "../enum";
+import { UserRole, NotificationEmails, Genders } from "../enum";
 
 export interface User {
   id?: number;
@@ -13,6 +13,7 @@ export interface User {
   notificationEmails?: NotificationEmails;
   preferredLanguage?: string;
   prefersReducedMotion?: boolean;
+  gender?: Genders;
   role?: UserRole;
   createdAt?: Date;
   updatedAt?: Date;
