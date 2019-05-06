@@ -58,8 +58,8 @@ export const routeAuthResetPasswordRequest = async (
 ) => {
   const email = req.body && req.body.email;
   if (!email) throw new Error(ErrorCode.MISSING_FIELD);
+  await sendPasswordReset(email, res.locals);
   res.json({ queued: true });
-  return await sendPasswordReset(email, res.locals);
 };
 
 export const routeAuthResetPasswordRecover = async (
