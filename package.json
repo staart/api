@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "build": "touch .env && mkdir -p dist && cp .env dist/.env && tsc",
-    "start": "pm2 start dist/index.js",
+    "start": "pm2-runtime start dist/index.js --env production",
     "dev": "concurrently 'yarn watch-build' 'yarn watch-prettier' 'yarn watch-server'",
     "prettier-all": "prettier '{src,examples}/**/*.{ts,json}' --write",
     "watch-build": "onchange '{src,examples}/**/*.ts' -- yarn build",
