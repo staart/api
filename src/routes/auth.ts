@@ -78,7 +78,9 @@ export const routeAuthLoginWithGoogleLink = async (
   req: Request,
   res: Response
 ) => {
-  res.json({ redirect: loginWithGoogleLink(req.body.redirect_uri) });
+  res.json({
+    redirect: loginWithGoogleLink(req.body.redirect_uri, req.body.client_id)
+  });
 };
 
 export const routeAuthLoginWithGoogleVerify = async (
