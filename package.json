@@ -7,7 +7,8 @@
   "license": "MIT",
   "scripts": {
     "build": "touch .env && mkdir -p dist && cp .env dist/.env && tsc",
-    "start": "concurrently 'yarn watch-build' 'yarn watch-prettier' 'yarn watch-server'",
+    "start": "pm2 start dist/index.js",
+    "dev": "concurrently 'yarn watch-build' 'yarn watch-prettier' 'yarn watch-server'",
     "prettier-all": "prettier '{src,examples}/**/*.{ts,json}' --write",
     "watch-build": "onchange '{src,examples}/**/*.ts' -- yarn build",
     "watch-prettier": "onchange '{src,examples}/**/*.{ts,json}' -- prettier --write {{changed}}",
@@ -33,6 +34,7 @@
     "jest": "^24.8.0",
     "nodemon": "^1.19.0",
     "onchange": "^5.2.0",
+    "pm2": "^3.5.0",
     "prettier": "^1.17.0",
     "ts-jest": "^24.0.2",
     "typedoc": "^0.14.2",
