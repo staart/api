@@ -21,20 +21,14 @@ export const googleCreateConnection = () => {
 /**
  * Get the URL for "Login with Google"
  */
-export const googleGetConnectionUrl = (
-  redirectUri: string,
-  clientId: string
-) => {
+export const googleGetConnectionUrl = () => {
   const auth = googleCreateConnection();
   return auth.generateAuthUrl({
     access_type: "offline",
     prompt: "consent",
-    scope: [
-      "https://www.googleapis.com/auth/plus.me",
-      "https://www.googleapis.com/auth/userinfo.email"
-    ],
-    redirect_uri: redirectUri,
-    client_id: clientId
+    scope: ["https://www.googleapis.com/auth/userinfo.email"],
+    client_id: GOOGLE_CLIENT_ID,
+    redirect_uri: GOOGLE_CLIENT_REDIRECT
   });
 };
 
@@ -43,9 +37,12 @@ export const googleGetConnectionUrl = (
  */
 export const googleGetTokensFromCode = async (code: string) => {
   const auth = googleCreateConnection();
-  const tokens = await auth.getToken(code);
-  if (!tokens) throw new Error(ErrorCode.GOOGLE_AUTH_ERROR);
-  return tokens;
+  try {
+    return await auth.getToken(code);
+  } catch (error) {
+    console.log("Got error", error);
+    throw new Error(ErrorCode.GOOGLE_AUTH_ERROR);
+  }
 };
 
 /**

@@ -63,7 +63,7 @@ const routesAuth = (app: Application) => {
     "/auth/reset-password/recover",
     asyncHandler(routeAuthResetPasswordRecover)
   );
-  app.post("/auth/google/link", asyncHandler(routeAuthLoginWithGoogleLink));
+  app.get("/auth/google/link", asyncHandler(routeAuthLoginWithGoogleLink));
   app.post("/auth/google/verify", asyncHandler(routeAuthLoginWithGoogleVerify));
   app.get(
     "/auth/impersonate/:id",
