@@ -1,3 +1,4 @@
+import { normalizeEmail } from "validator";
 import {
   query,
   tableValues,
@@ -74,6 +75,7 @@ export const getUser = async (id: number, secureOrigin = false) => {
  * Get the details of a user by their email
  */
 export const getUserByEmail = async (email: string, secureOrigin = false) => {
+  email = normalizeEmail(email) || email;
   const emailObject = await getEmailObject(email);
   if (!emailObject) throw new Error(ErrorCode.USER_NOT_FOUND);
   return await getUser(emailObject.userId, secureOrigin);
