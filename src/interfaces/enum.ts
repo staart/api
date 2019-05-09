@@ -53,7 +53,10 @@ export enum ErrorCode {
   EMAIL_CANNOT_DELETE = "400/email.cannotDelete",
   UNVERIFIED_EMAIL = "401/unverified-email",
   GOOGLE_AUTH_ERROR = "401/google-auth-error",
-  UNAPPROVED_LOCATION = "401/unapproved-location"
+  UNAPPROVED_LOCATION = "401/unapproved-location",
+  VALIDATION_EMAIL = "400/validation-email",
+  VALIDATION_PHONE = "400/validation-phone",
+  VALIDATION_URL = "400/validation-url"
 }
 
 export enum Templates {
@@ -100,4 +103,10 @@ export enum Genders {
   FEMALE = "f",
   NON_BINARY = "n",
   UNKNOWN = "x"
+}
+
+export enum ValidationTypes {
+  EMAIL = "email",
+  PHONE = "phone",
+  URL = "url"
 }

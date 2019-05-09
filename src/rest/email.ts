@@ -8,9 +8,10 @@ import {
   getUserEmails
 } from "../crud/email";
 import { createEvent } from "../crud/event";
-import { ErrorCode, EventType, Authorizations } from "../interfaces/enum";
+import { ErrorCode, EventType, Authorizations, ValidationTypes } from "../interfaces/enum";
 import { updateUser } from "../crud/user";
 import { can } from "../helpers/authorization";
+import { validate } from "../helpers/utils";
 
 export const getAllEmailsForUser = async (
   tokenUserId: number,
@@ -26,7 +27,7 @@ export const addEmailToUser = async (
   email: string,
   locals: Locals
 ) => {
-  // Add email validation
+  validate(email, ValidationTypes.EMAIL);
   await createEmail({ email, userId });
   await createEvent(
     { userId, type: EventType.EMAIL_CREATED, data: { email } },

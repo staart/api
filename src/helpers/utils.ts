@@ -1,5 +1,7 @@
 import anonymize from "ip-anonymize";
 import { User } from "../interfaces/tables/user";
+import { isEmail, isURL, isMobilePhone } from "validator";
+import { ValidationTypes, ErrorCode } from "../interfaces/enum";
 
 /**
  * Capitalize each first letter in a string
@@ -75,3 +77,17 @@ export const jsonValues = ["data"];
  * MySQL columns which are read-only
  */
 export const readOnlyValues = ["createdAt", "id"];
+
+/**
+ * Validate strings to type
+ */
+export const validate = (text: string, type: ValidationTypes) => {
+  if (type === ValidationTypes.EMAIL)
+    if (!isEmail(text)) throw new Error(ErrorCode.VALIDATION_EMAIL);
+  
+  if (type === ValidationTypes.URL)
+    if (!isURL(text)) throw new Error(ErrorCode.VALIDATION_URL);
+  
+  if (type === ValidationTypes.PHONE)
+    if (!isMobilePhone(text, "any")) throw new Error(ErrorCode.VALIDATION_PHONE);
+}

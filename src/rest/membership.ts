@@ -1,9 +1,10 @@
-import { MembershipRole, ErrorCode, Authorizations } from "../interfaces/enum";
+import { MembershipRole, ErrorCode, Authorizations, ValidationTypes } from "../interfaces/enum";
 import { getUserByEmail } from "../crud/user";
 import { createMembership, getMembership } from "../crud/membership";
 import { User } from "../interfaces/tables/user";
 import { register } from "./auth";
 import { can } from "../helpers/authorization";
+import { validate } from "../helpers/utils";
 
 export const getMembershipDetailsForUser = async (
   userId: number,
@@ -22,6 +23,7 @@ export const inviteMemberToOrganization = async (
   newMemberEmail: string,
   role: MembershipRole
 ) => {
+  validate(newMemberEmail, ValidationTypes.EMAIL);
   if (
     await can(
       userId,
@@ -31,12 +33,17 @@ export const inviteMemberToOrganization = async (
     )
   ) {
     let newUser: User;
+    let userExists = false;
     try {
+      newUser = await getUserByEmail(newMemberEmail);
+      userExists = true;
+    } catch (error) {}
+    if (userExists) {
       newUser = await getUserByEmail(newMemberEmail);
       if (!newUser.id) throw new Error(ErrorCode.USER_NOT_FOUND);
       await createMembership({ userId: newUser.id, organizationId, role });
       return;
-    } catch (error) {
+    } else {
       await register(
         { name: newMemberName },
         newMemberEmail,

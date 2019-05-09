@@ -22,7 +22,8 @@ import {
   MembershipRole,
   Templates,
   Tokens,
-  Authorizations
+  Authorizations,
+  ValidationTypes
 } from "../interfaces/enum";
 import { compare, hash } from "bcrypt";
 import { createMembership } from "../crud/membership";
@@ -32,6 +33,7 @@ import {
   googleGetEmailFromToken
 } from "../helpers/google";
 import { can } from "../helpers/authorization";
+import { validate } from "../helpers/utils";
 
 export const validateRefreshToken = async (token: string, locals: Locals) => {
   const data = <User>await verifyToken(token, Tokens.REFRESH);
@@ -50,6 +52,7 @@ export const login = async (
   password: string,
   locals: Locals
 ) => {
+  validate(email, ValidationTypes.EMAIL);
   const user = await getUserByEmail(email, true);
   if (!user.password) throw new Error(ErrorCode.MISSING_PASSWORD);
   if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
@@ -71,6 +74,7 @@ export const register = async (
   const userId = result.insertId;
   // Set email
   if (email) {
+    validate(email, ValidationTypes.EMAIL);
     const newEmail = <InsertResult>await createEmail({
       userId,
       email
@@ -89,6 +93,7 @@ export const register = async (
 };
 
 export const sendPasswordReset = async (email: string, locals: Locals) => {
+  validate(email, ValidationTypes.EMAIL);
   const user = await getUserByEmail(email);
   if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
   const token = await passwordResetToken(user.id);
