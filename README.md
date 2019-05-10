@@ -1,13 +1,13 @@
-![Staart](https://raw.githubusercontent.com/AnandChowdhary/staart/master/assets/logo.png)
+![Staart](https://raw.githubusercontent.com/o15y/staart/master/assets/logo.png)
 
-[![Travis CI](https://img.shields.io/travis/AnandChowdhary/staart.svg)](https://travis-ci.org/AnandChowdhary/staart)
+[![Travis CI](https://img.shields.io/travis/o15y/staart.svg)](https://travis-ci.org/o15y/staart)
 ![Netlify status](https://img.shields.io/endpoint.svg?url=https://platform.oswaldlabs.com/netlify-status/560804f0-60ab-4172-9af8-f38e0dd675f6)
-[![GitHub](https://img.shields.io/github/license/anandchowdhary/staart.svg)](https://github.com/AnandChowdhary/staart/blob/master/LICENSE)
-![Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/github/AnandChowdhary/staart.svg)
+[![GitHub](https://img.shields.io/github/license/o15y/staart.svg)](https://github.com/o15y/staart/blob/master/LICENSE)
+![Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/github/o15y/staart.svg)
 ![Type definitions](https://img.shields.io/badge/types-TypeScript-blue.svg)
 [![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg)](#contributors)
 
-Staart is a Node.js backend starter for SaaS startups written in TypeScript. It has built-in user management and authentication, billing, organizations, GDPR tools, and more. Works with [Staart UI](https://github.com/AnandChowdhary/staart-ui).
+Staart is a Node.js backend starter for SaaS startups written in TypeScript. It has built-in user management and authentication, billing, organizations, GDPR tools, and more. Works with [Staart UI](https://github.com/o15y/staart-ui).
 
 ## ⭐ Features
 
@@ -44,8 +44,8 @@ Staart is a Node.js backend starter for SaaS startups written in TypeScript. It 
 
 1. Clone or fork this repository
 1. Install dependencies with `yarn` or `npm i`
-1. Add a `.env` file based on [config.ts](https://github.com/AnandChowdhary/staart/blob/master/src/config.ts).
-1. Create MariaDB/MySQL tables based on [schema.sql](https://github.com/AnandChowdhary/staart/blob/master/schema.sql)
+1. Add a `.env` file based on [config.ts](https://github.com/o15y/staart/blob/master/src/config.ts).
+1. Create MariaDB/MySQL tables based on [schema.sql](https://github.com/o15y/staart/blob/master/schema.sql)
 1. Add custom helper methods in the `./src/helpers` folder
 1. Add custom services in the `./src/rest` folder using helpers
 1. Add custom routes in the `./src/routes` folder with these services
@@ -63,7 +63,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore -->
-<table><tr><td align="center"><a href="https://anandchowdhary.com/?utm_source=github&utm_campaign=about-link"><img src="https://avatars3.githubusercontent.com/u/2841780?v=4" width="100px;" alt="Anand Chowdhary"/><br /><sub><b>Anand Chowdhary</b></sub></a><br /><a href="https://github.com/AnandChowdhary/staart/commits?author=AnandChowdhary" title="Code">💻</a> <a href="https://github.com/AnandChowdhary/staart/commits?author=AnandChowdhary" title="Documentation">📖</a> <a href="#design-AnandChowdhary" title="Design">🎨</a></td><td align="center"><a href="http://komiserback@gmail.com"><img src="https://avatars3.githubusercontent.com/u/36298335?v=4" width="100px;" alt="reallinfo"/><br /><sub><b>reallinfo</b></sub></a><br /><a href="#design-reallinfo" title="Design">🎨</a></td></tr></table>
+<table><tr><td align="center"><a href="https://anandchowdhary.com/?utm_source=github&utm_campaign=about-link"><img src="https://avatars3.githubusercontent.com/u/2841780?v=4" width="100px;" alt="Anand Chowdhary"/><br /><sub><b>Anand Chowdhary</b></sub></a><br /><a href="https://github.com/o15y/staart/commits?author=AnandChowdhary" title="Code">💻</a> <a href="https://github.com/o15y/staart/commits?author=AnandChowdhary" title="Documentation">📖</a> <a href="#design-AnandChowdhary" title="Design">🎨</a></td><td align="center"><a href="http://komiserback@gmail.com"><img src="https://avatars3.githubusercontent.com/u/36298335?v=4" width="100px;" alt="reallinfo"/><br /><sub><b>reallinfo</b></sub></a><br /><a href="#design-reallinfo" title="Design">🎨</a></td></tr></table>
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
@@ -71,5 +71,5 @@ This project follows the [all-contributors](https://github.com/all-contributors/
 
 ## 📄 License
 
-- Code: [MIT](https://github.com/AnandChowdhary/staart/blob/master/LICENSE)
+- Code: [MIT](https://github.com/o15y/staart/blob/master/LICENSE)
 - Logo and assets: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
