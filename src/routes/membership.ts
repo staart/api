@@ -2,7 +2,8 @@ import { Request, Response } from "express";
 import { ErrorCode } from "../interfaces/enum";
 import {
   getMembershipDetailsForUser,
-  inviteMemberToOrganization
+  inviteMemberToOrganization,
+  deleteMembershipForUser
 } from "../rest/membership";
 import { getOrganizationMemberDetails } from "../crud/membership";
 
@@ -34,6 +35,14 @@ export const routeMembershipCreate = async (req: Request, res: Response) => {
     newMemberEmail,
     role
   );
+};
+
+export const routeMembershipDelete = async (req: Request, res: Response) => {
+  const id = res.locals.token.id;
+  const membershipId = req.params.id;
+  if (!id || !membershipId) throw new Error(ErrorCode.MISSING_FIELD);
+  await deleteMembershipForUser(id, membershipId, res.locals);
+  res.json({ deleted: true });
 };
 
 export const routeMembershipList = async (req: Request, res: Response) => {

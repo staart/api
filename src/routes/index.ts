@@ -37,7 +37,8 @@ import {
 import {
   routeMembershipGet,
   routeMembershipCreate,
-  routeMembershipList
+  routeMembershipList,
+  routeMembershipDelete
 } from "./membership";
 
 export const router = (app: Application) => {
@@ -130,9 +131,10 @@ const routesMembership = (app: Application) => {
     authHandler,
     asyncHandler(routeMembershipCreate)
   );
-  app.get(
-    "/organizations/:organizationId/memberships/:id",
+  app.get("/memberships/:id", authHandler, asyncHandler(routeMembershipGet));
+  app.delete(
+    "/memberships/:id",
     authHandler,
-    asyncHandler(routeMembershipGet)
+    asyncHandler(routeMembershipDelete)
   );
 };

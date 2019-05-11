@@ -36,7 +36,10 @@ export enum EventType {
   EMAIL_CREATED = "email.created",
   EMAIL_UPDATED = "email.updated",
   EMAIL_DELETED = "email.deleted",
-  EMAIL_VERIFIED = "email.verified"
+  EMAIL_VERIFIED = "email.verified",
+  MEMBERSHIP_CREATED = "membership.created",
+  MEMBERSHIP_UPDATED = "membership.updated",
+  MEMBERSHIP_DELETED = "membership.deleted"
 }
 
 export enum ErrorCode {
@@ -48,6 +51,8 @@ export enum ErrorCode {
   MISSING_FIELD = "422/missing-field",
   EMAIL_EXISTS = "422/email-exists",
   USER_NOT_FOUND = "404/user-not-found",
+  MEMBERSHIP_NOT_FOUND = "404/membership-not-found",
+  ORGANIZATION_NOT_FOUND = "404/organization-not-found",
   INVALID_LOGIN = "401/invalid-login",
   INSUFFICIENT_PERMISSION = "401/insufficient-permission",
   DEFAULT = "500/server-error",
@@ -57,7 +62,8 @@ export enum ErrorCode {
   UNAPPROVED_LOCATION = "401/unapproved-location",
   VALIDATION_EMAIL = "400/validation-email",
   VALIDATION_PHONE = "400/validation-phone",
-  VALIDATION_URL = "400/validation-url"
+  VALIDATION_URL = "400/validation-url",
+  CANNOT_DELETE_SOLE_OWNER = "400/cannot-delete-sole-owner"
 }
 
 export enum Templates {
