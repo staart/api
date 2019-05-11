@@ -146,6 +146,7 @@ export const loginWithGoogleLink = () => googleGetConnectionUrl();
 export const loginWithGoogleVerify = async (code: string, locals: Locals) => {
   const data = await googleGetTokensFromCode(code);
   const email = await googleGetEmailFromToken(data);
+  if (!email) throw new Error(ErrorCode.USER_NOT_FOUND);
   const user = await getUserByEmail(email);
   if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
   return await getLoginResponse(user, EventType.AUTH_LOGIN, "google", locals);

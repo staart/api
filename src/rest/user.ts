@@ -1,5 +1,10 @@
 import { ErrorCode, EventType, Authorizations } from "../interfaces/enum";
-import { getUser, updateUser, getUserApprovedLocations } from "../crud/user";
+import {
+  getUser,
+  updateUser,
+  getUserApprovedLocations,
+  deleteUser
+} from "../crud/user";
 import {
   getUserMembershipObject,
   getUserOrganization
@@ -29,6 +34,26 @@ export const updateUserForUser = async (
         userId: tokenUserId,
         type: EventType.USER_UPDATED,
         data: { id: updateUserId, data }
+      },
+      locals
+    );
+    return;
+  }
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const deleteUserForUser = async (
+  tokenUserId: number,
+  updateUserId: number,
+  locals: Locals
+) => {
+  if (await can(tokenUserId, Authorizations.DELETE, "user", updateUserId)) {
+    await deleteUser(updateUserId);
+    await createEvent(
+      {
+        userId: tokenUserId,
+        type: EventType.USER_DELETED,
+        data: { id: updateUserId }
       },
       locals
     );

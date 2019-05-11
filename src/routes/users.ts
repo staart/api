@@ -3,7 +3,8 @@ import {
   getUserFromId,
   updateUserForUser,
   getAllDataForUser,
-  getRecentEventsForUser
+  getRecentEventsForUser,
+  deleteUserForUser
 } from "../rest/user";
 import { ErrorCode } from "../interfaces/enum";
 
@@ -34,4 +35,11 @@ export const routeUserAllData = async (req: Request, res: Response) => {
   if (id === "me") id = res.locals.token.id;
   if (!id) throw new Error(ErrorCode.MISSING_FIELD);
   res.json(await getAllDataForUser(res.locals.token.id, id));
+};
+
+export const routeUserDelete = async (req: Request, res: Response) => {
+  let id = req.params.id;
+  if (id === "me") id = res.locals.token.id;
+  if (!id) throw new Error(ErrorCode.MISSING_FIELD);
+  res.json(await deleteUserForUser(res.locals.token.id, id, res.locals));
 };

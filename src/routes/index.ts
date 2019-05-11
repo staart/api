@@ -4,7 +4,8 @@ import {
   routeUserId,
   routeUserUpdate,
   routeUserAllData,
-  routeUserRecentEvents
+  routeUserRecentEvents,
+  routeUserDelete
 } from "./users";
 import {
   routeEmailVerify,
@@ -75,6 +76,7 @@ const routesAuth = (app: Application) => {
 const routesUser = (app: Application) => {
   app.put("/users", asyncHandler(routeAuthRegister));
   app.get("/users/:id", authHandler, asyncHandler(routeUserId));
+  app.delete("/users/:id", authHandler, asyncHandler(routeUserDelete));
   app.patch("/users/:id", authHandler, asyncHandler(routeUserUpdate));
   app.get(
     "/users/:id/events",

@@ -106,6 +106,21 @@ export const deleteEmail = async (id: number) => {
 };
 
 /**
+ * Delete a user's email
+ */
+export const deleteAllUserEmails = async (userId: number) => {
+  deleteItemFromCache(CacheCategories.USER_EMAILS, userId);
+  const allEmails = await getUserEmails(userId);
+  allEmails.forEach(email => {
+    if (email.id && email.email) {
+      deleteItemFromCache(CacheCategories.EMAIL, email.id);
+      deleteItemFromCache(CacheCategories.EMAIL, email.email);
+    }
+  });
+  return await query("DELETE FROM emails WHERE userId = ?", [userId]);
+};
+
+/**
  * Get details about a user's email
  */
 export const getEmail = async (id: number) => {

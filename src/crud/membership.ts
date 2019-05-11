@@ -62,6 +62,13 @@ export const deleteAllOrganizationMemberships = async (
 };
 
 /*
+ * Delete all memberships for a user
+ */
+export const deleteAllUserMemberships = async (userId: number) => {
+  return await query("DELETE FROM memberships WHERE userId = ?", [userId]);
+};
+
+/*
  * Get details about a specific organization membership
  */
 export const getMembership = async (id: number) => {
