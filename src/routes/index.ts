@@ -5,7 +5,8 @@ import {
   routeUserUpdate,
   routeUserAllData,
   routeUserRecentEvents,
-  routeUserDelete
+  routeUserDelete,
+  routeUserMemberships
 } from "./users";
 import {
   routeEmailVerify,
@@ -85,6 +86,11 @@ const routesUser = (app: Application) => {
   );
   app.get("/users/:id/data", authHandler, asyncHandler(routeUserAllData));
   app.get("/users/:id/emails", authHandler, asyncHandler(routeEmailList));
+  app.get(
+    "/users/:id/memberships",
+    authHandler,
+    asyncHandler(routeUserMemberships)
+  );
 };
 
 const routesEmail = (app: Application) => {

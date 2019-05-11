@@ -81,6 +81,15 @@ export const getRecentEventsForUser = async (
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
 
+export const getMembershipsForUser = async (
+  tokenUserId: number,
+  dataUserId: number
+) => {
+  if (await can(tokenUserId, Authorizations.READ, "user", dataUserId))
+    return await getUserMembershipsDetailed(dataUserId);
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
 export const getAllDataForUser = async (
   tokenUserId: number,
   userId: number

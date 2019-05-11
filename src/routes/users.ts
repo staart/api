@@ -4,7 +4,8 @@ import {
   updateUserForUser,
   getAllDataForUser,
   getRecentEventsForUser,
-  deleteUserForUser
+  deleteUserForUser,
+  getMembershipsForUser
 } from "../rest/user";
 import { ErrorCode } from "../interfaces/enum";
 
@@ -28,6 +29,12 @@ export const routeUserRecentEvents = async (req: Request, res: Response) => {
   if (id === "me") id = res.locals.token.id;
   if (!id) throw new Error(ErrorCode.MISSING_FIELD);
   res.json(await getRecentEventsForUser(res.locals.token.id, id));
+};
+export const routeUserMemberships = async (req: Request, res: Response) => {
+  let id = req.params.id;
+  if (id === "me") id = res.locals.token.id;
+  if (!id) throw new Error(ErrorCode.MISSING_FIELD);
+  res.json(await getMembershipsForUser(res.locals.token.id, id));
 };
 
 export const routeUserAllData = async (req: Request, res: Response) => {
