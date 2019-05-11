@@ -70,6 +70,7 @@ export const login = async (
 
 export const register = async (
   user: User,
+  locals: Locals,
   email?: string,
   organizationId?: number,
   role?: MembershipRole
@@ -95,6 +96,7 @@ export const register = async (
       role
     });
   }
+  await addApprovedLocation(userId, locals.ipAddress);
   return { created: true };
 };
 

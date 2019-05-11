@@ -48,7 +48,13 @@ export const routeAuthRegister = async (req: Request, res: Response) => {
   if (user.role == UserRole.ADMIN) delete user.role;
   delete user.membershipRole;
   if (!req.body.name || !email) throw new Error(ErrorCode.MISSING_FIELD);
-  await register(user, email, req.body.organizationId, req.body.membershipRole);
+  await register(
+    user,
+    res.locals,
+    email,
+    req.body.organizationId,
+    req.body.membershipRole
+  );
   res.json({ success: true });
 };
 
