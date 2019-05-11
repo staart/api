@@ -22,6 +22,7 @@ export const createMembership = async (membership: Membership) => {
     CacheCategories.ORGANIZATION_MEMBERSHIPS,
     membership.organizationId
   );
+  deleteItemFromCache(CacheCategories.USER_MEMBERSHIPS, membership.userId);
   return await query(
     `INSERT INTO memberships ${tableValues(membership)}`,
     Object.values(membership)
@@ -34,6 +35,9 @@ export const createMembership = async (membership: Membership) => {
 export const updateMembership = async (id: number, membership: KeyValue) => {
   membership.updatedAt = dateToDateTime(new Date());
   membership = removeReadOnlyValues(membership);
+  const membershipDetails = await getMembership(id);
+  if (membershipDetails.id)
+    deleteItemFromCache(CacheCategories.USER_MEMBERSHIPS, membershipDetails.id);
   deleteItemFromCache(CacheCategories.MEMBERSHIP, id);
   return await query(
     `UPDATE memberships SET ${setValues(membership)} WHERE id = ?`,
@@ -45,6 +49,9 @@ export const updateMembership = async (id: number, membership: KeyValue) => {
  * Delete an organization membership
  */
 export const deleteMembership = async (id: number) => {
+  const membershipDetails = await getMembership(id);
+  if (membershipDetails.id)
+    deleteItemFromCache(CacheCategories.USER_MEMBERSHIPS, membershipDetails.id);
   deleteItemFromCache(CacheCategories.MEMBERSHIP, id);
   return await query("DELETE FROM memberships WHERE id = ?", [id]);
 };
@@ -56,6 +63,11 @@ export const deleteAllOrganizationMemberships = async (
   organizationId: number
 ) => {
   deleteItemFromCache(CacheCategories.ORGANIZATION_MEMBERSHIPS, organizationId);
+  const allMemberships = await getOrganizationMembers(organizationId);
+  for await (const membership of allMemberships) {
+    if (membership.id)
+      deleteItemFromCache(CacheCategories.USER_MEMBERSHIPS, membership.id);
+  }
   return await query("DELETE FROM memberships WHERE organizationId = ?", [
     organizationId
   ]);
@@ -65,6 +77,11 @@ export const deleteAllOrganizationMemberships = async (
  * Delete all memberships for a user
  */
 export const deleteAllUserMemberships = async (userId: number) => {
+  const allMemberships = await getUserMemberships(userId);
+  for await (const membership of allMemberships) {
+    if (membership.id)
+      deleteItemFromCache(CacheCategories.USER_MEMBERSHIPS, membership.id);
+  }
   return await query("DELETE FROM memberships WHERE userId = ?", [userId]);
 };
 
