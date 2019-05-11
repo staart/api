@@ -19,8 +19,9 @@ import {
   NotificationEmails,
   CacheCategories
 } from "../interfaces/enum";
-import { getEmailObject } from "./email";
+import { getEmailObject, getEmail } from "./email";
 import { cachedQuery, deleteItemFromCache } from "../helpers/cache";
+import md5 from "md5";
 
 /**
  * Get a list of all users
@@ -90,6 +91,17 @@ export const getUserByEmail = async (email: string, secureOrigin = false) => {
 export const updateUser = async (id: number, user: KeyValue) => {
   user.updatedAt = dateToDateTime(new Date());
   user = removeReadOnlyValues(user);
+  if (user.primaryEmail) {
+    const originalUser = await getUser(id);
+    if ((originalUser.profilePicture || "").includes("ui-avatars.com")) {
+      const emailDetails = await getEmail(user.primaryEmail);
+      user.profilePicture = `https://www.gravatar.com/avatar/${md5(
+        emailDetails.email
+      )}?d=${encodeURIComponent(
+        `https://ui-avatars.com/api/?bold=true&name=${user.name}`
+      )}`;
+    }
+  }
   deleteItemFromCache(CacheCategories.USER, id);
   deleteItemFromCache(CacheCategories.USER_EMAILS, id);
   return await query(`UPDATE users SET ${setValues(user)} WHERE id = ?`, [

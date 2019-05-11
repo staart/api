@@ -55,13 +55,9 @@ export const cachedQuery = async (
   values?: (string | number | boolean | Date | undefined)[]
 ) => {
   const cachedItem = getItemFromCache(category, item);
-  if (cachedItem) {
-    console.log("Returned from cache");
-    return cachedItem;
-  }
+  if (cachedItem) return cachedItem;
   const databaseItem = await query(queryString, values);
   if (databaseItem) {
-    console.log("Returned from database");
     storeItemInCache(category, item, databaseItem);
     return databaseItem;
   }
