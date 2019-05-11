@@ -81,6 +81,7 @@ export enum CacheCategories {
   EMAIL = "email",
   USER_EVENT = "user-event",
   USER_RECENT_EVENTS = "user-recent-events",
+  USER_MEMBERSHIPS = "user-memberships",
   ORGANIZATION_MEMBERSHIPS = "memberships",
   MEMBERSHIP = "membership",
   ORGANIZATION = "organization",

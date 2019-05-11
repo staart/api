@@ -7,7 +7,7 @@ import {
   MembershipRole
 } from "../interfaces/enum";
 import { getUser } from "../crud/user";
-import { getUserMembershipObject, getMembership } from "../crud/membership";
+import { getUserMemberships, getMembership } from "../crud/membership";
 import { getOrganization } from "../crud/organization";
 import { Membership } from "../interfaces/tables/memberships";
 
@@ -25,31 +25,35 @@ const canUserUser = async (
   // A user can do anything to herself
   if (user.id === target.id) return true;
 
-  const userMembership = await getUserMembershipObject(user);
-  const userOrganizationId = userMembership.organizationId;
-  const targetMembership = await getUserMembershipObject(target);
-  const targetOrganizationId = targetMembership.organizationId;
+  const userMemberships = await getUserMemberships(user);
+  const targetMemberships = await getUserMemberships(target);
 
-  // A reseller can view/edit/delete users in her organization
-  if (
-    userOrganizationId === targetOrganizationId &&
-    user.role == UserRole.RESELLER &&
-    [
-      Authorizations.READ,
-      Authorizations.UPDATE,
-      Authorizations.DELETE
-    ].includes(action)
-  )
-    return true;
+  const similarMemberships: number[] = [];
+  userMemberships.forEach((userMembership, index) => {
+    targetMemberships.forEach(targetMembership => {
+      if (userMembership.id && userMembership.id === targetMembership.id)
+        similarMemberships.push(index);
+    });
+  });
 
-  if (action == Authorizations.READ) {
-    // A user can read another user in the same organization, as long as they're not a basic member
+  similarMemberships.forEach(similarMembership => {
+    // A reseller can view/edit/delete users in her organization
     if (
-      userOrganizationId === targetOrganizationId &&
-      userMembership.role != MembershipRole.BASIC
+      user.role == UserRole.RESELLER &&
+      [
+        Authorizations.READ,
+        Authorizations.UPDATE,
+        Authorizations.DELETE
+      ].includes(action)
     )
       return true;
-  }
+
+    if (action == Authorizations.READ) {
+      // A user can read another user in the same organization, as long as they're not a basic member
+      if (userMemberships[similarMembership].role != MembershipRole.BASIC)
+        return true;
+    }
+  });
 
   return false;
 };
@@ -65,27 +69,35 @@ const canUserOrganization = async (
   // A super user can do anything
   if (user.role == UserRole.ADMIN) return true;
 
-  const membership = await getUserMembershipObject(user);
+  const memberships = await getUserMemberships(user);
+  const targetMemberships = memberships.filter(
+    m => m.organizationId === target.id
+  );
 
-  // A non-member cannot do anything
-  if (membership.organizationId != target.id) return false;
+  targetMemberships.forEach(membership => {
+    // A non-member cannot do anything
+    if (membership.organizationId != target.id) return false;
 
-  // An organization owner can do anything
-  if (membership.role == MembershipRole.OWNER) return true;
+    // An organization owner can do anything
+    if (membership.role == MembershipRole.OWNER) return true;
 
-  // An organization admin can do anything too
-  if (membership.role == MembershipRole.ADMIN) return true;
+    // An organization admin can do anything too
+    if (membership.role == MembershipRole.ADMIN) return true;
 
-  // An organization manager can do anything but delete
-  if (
-    membership.role == MembershipRole.MANAGER &&
-    action != Authorizations.DELETE
-  )
-    return true;
+    // An organization manager can do anything but delete
+    if (
+      membership.role == MembershipRole.MANAGER &&
+      action != Authorizations.DELETE
+    )
+      return true;
 
-  // An organization member can read, not edit/delete/invite
-  if (membership.role == MembershipRole.MEMBER && action == Authorizations.READ)
-    return true;
+    // An organization member can read, not edit/delete/invite
+    if (
+      membership.role == MembershipRole.MEMBER &&
+      action == Authorizations.READ
+    )
+      return true;
+  });
 
   return false;
 };
@@ -104,20 +116,21 @@ const canUserMembership = async (
   // A member can do anything to herself
   if (user.id == target.userId) return true;
 
-  const membership = await getUserMembershipObject(user);
+  const memberships = await getUserMemberships(user);
+  memberships.forEach(membership => {
+    // A different organization member cannot edit a membership
+    if (membership.organizationId != target.organizationId) return false;
 
-  // A different organization member cannot edit a membership
-  if (membership.organizationId != target.organizationId) return false;
-
-  // An admin, owner, or manager can edit
-  if (
-    [
-      MembershipRole.OWNER,
-      MembershipRole.ADMIN,
-      MembershipRole.MANAGER
-    ].includes(membership.role)
-  )
-    return true;
+    // An admin, owner, or manager can edit
+    if (
+      [
+        MembershipRole.OWNER,
+        MembershipRole.ADMIN,
+        MembershipRole.MANAGER
+      ].includes(membership.role)
+    )
+      return true;
+  });
 
   return false;
 };

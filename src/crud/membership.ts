@@ -82,28 +82,6 @@ export const getMembership = async (id: number) => {
   ))[0];
 };
 
-export const getUserMembershipObject = async (user: User | number) => {
-  let userId: number = 0;
-  if (typeof user === "number") {
-    userId = user;
-  } else if (user.id) {
-    userId = user.id;
-  }
-  if (!userId) throw new Error(ErrorCode.USER_NOT_FOUND);
-  return (<Membership[]>(
-    await query(`SELECT * FROM memberships WHERE userId = ? LIMIT 1`, [userId])
-  ))[0];
-};
-
-export const getUserOrganizationId = async (user: User | number) => {
-  return (await getUserMembershipObject(user)).organizationId;
-};
-
-export const getUserOrganization = async (user: User | number) => {
-  const organizationId = await getUserOrganizationId(user);
-  return await getOrganization(organizationId);
-};
-
 /*
  * Get a list of all members in an organization
  */
@@ -124,4 +102,30 @@ export const getOrganizationMembers = async (organizationId: number) => {
 export const getOrganizationMemberDetails = async (organizationId: number) => {
   const members = await getOrganizationMembers(organizationId);
   return members;
+};
+
+export const getUserMemberships = async (user: User | number) => {
+  if (typeof user !== "number" && typeof user !== "string") {
+    if (user.id) {
+      user = user.id;
+    } else {
+      throw new Error(ErrorCode.USER_NOT_FOUND);
+    }
+  }
+  return <Membership[]>(
+    await cachedQuery(
+      CacheCategories.USER_MEMBERSHIPS,
+      user,
+      `SELECT * FROM memberships WHERE userId = ?`,
+      [user]
+    )
+  );
+};
+
+export const getUserMembershipsDetailed = async (user: User | number) => {
+  const memberships: any = await getUserMemberships(user);
+  for await (const membership of memberships) {
+    membership.organization = await getOrganization(membership.organizationId);
+  }
+  return memberships;
 };

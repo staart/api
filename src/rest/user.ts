@@ -7,9 +7,8 @@ import {
   deleteAllUserApprovedLocations
 } from "../crud/user";
 import {
-  getUserMembershipObject,
-  getUserOrganization,
-  deleteAllUserMemberships
+  deleteAllUserMemberships,
+  getUserMembershipsDetailed
 } from "../crud/membership";
 import { User } from "../interfaces/tables/user";
 import { Locals } from "../interfaces/general";
@@ -89,10 +88,9 @@ export const getAllDataForUser = async (
   if (!(await can(tokenUserId, Authorizations.READ_SECURE, "user", userId)))
     throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
   const user = await getUser(userId);
-  const organization = await getUserOrganization(userId);
-  const membership = await getUserMembershipObject(userId);
+  const memberships = await getUserMembershipsDetailed(userId);
   const emails = await getUserEmails(userId);
   const events = await getUserEvents(userId);
   const approvedLocations = await getUserApprovedLocations(userId);
-  return { user, organization, membership, emails, events, approvedLocations };
+  return { user, memberships, emails, events, approvedLocations };
 };
