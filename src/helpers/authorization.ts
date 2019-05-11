@@ -23,7 +23,7 @@ const canUserUser = async (
   if (user.role == UserRole.ADMIN) return true;
 
   // A user can do anything to herself
-  if (user.id === target.id) return true;
+  if (user.id == target.id) return true;
 
   const userMemberships = await getUserMemberships(user);
   const targetMemberships = await getUserMemberships(target);
@@ -31,11 +31,12 @@ const canUserUser = async (
   const similarMemberships: number[] = [];
   userMemberships.forEach((userMembership, index) => {
     targetMemberships.forEach(targetMembership => {
-      if (userMembership.id && userMembership.id === targetMembership.id)
+      if (userMembership.id && userMembership.id == targetMembership.id)
         similarMemberships.push(index);
     });
   });
 
+  let allowed = false;
   similarMemberships.forEach(similarMembership => {
     // A reseller can view/edit/delete users in her organization
     if (
@@ -46,16 +47,16 @@ const canUserUser = async (
         Authorizations.DELETE
       ].includes(action)
     )
-      return true;
+      allowed = true;
 
     if (action == Authorizations.READ) {
       // A user can read another user in the same organization, as long as they're not a basic member
       if (userMemberships[similarMembership].role != MembershipRole.BASIC)
-        return true;
+        allowed = true;
     }
   });
 
-  return false;
+  return allowed;
 };
 
 /**
@@ -71,35 +72,34 @@ const canUserOrganization = async (
 
   const memberships = await getUserMemberships(user);
   const targetMemberships = memberships.filter(
-    m => m.organizationId === target.id
+    m => m.organizationId == target.id
   );
 
+  let allowed = false;
   targetMemberships.forEach(membership => {
-    // A non-member cannot do anything
-    if (membership.organizationId != target.id) return false;
-
     // An organization owner can do anything
-    if (membership.role == MembershipRole.OWNER) return true;
+    if (membership.role == MembershipRole.OWNER) allowed = true;
 
     // An organization admin can do anything too
-    if (membership.role == MembershipRole.ADMIN) return true;
+    if (membership.role == MembershipRole.ADMIN) allowed = true;
 
     // An organization manager can do anything but delete
     if (
       membership.role == MembershipRole.MANAGER &&
       action != Authorizations.DELETE
     )
-      return true;
+      allowed = true;
 
     // An organization member can read, not edit/delete/invite
     if (
       membership.role == MembershipRole.MEMBER &&
       action == Authorizations.READ
     )
-      return true;
+      allowed = true;
+    
   });
 
-  return false;
+  return allowed;
 };
 
 /**
@@ -117,10 +117,9 @@ const canUserMembership = async (
   if (user.id == target.userId) return true;
 
   const memberships = await getUserMemberships(user);
-  memberships.forEach(membership => {
-    // A different organization member cannot edit a membership
-    if (membership.organizationId != target.organizationId) return false;
 
+  let allowed = false;
+  memberships.forEach(membership => {
     // An admin, owner, or manager can edit
     if (
       [
@@ -129,10 +128,10 @@ const canUserMembership = async (
         MembershipRole.MANAGER
       ].includes(membership.role)
     )
-      return true;
+      allowed = true;
   });
 
-  return false;
+  return allowed;
 };
 
 /**
