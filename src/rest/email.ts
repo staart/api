@@ -5,10 +5,16 @@ import {
   getUserVerifiedEmails,
   getUserPrimaryEmailObject,
   deleteEmail,
-  getUserEmails
+  getUserEmails,
+  checkIfNewEmail
 } from "../crud/email";
 import { createEvent } from "../crud/event";
-import { ErrorCode, EventType, Authorizations, ValidationTypes } from "../interfaces/enum";
+import {
+  ErrorCode,
+  EventType,
+  Authorizations,
+  ValidationTypes
+} from "../interfaces/enum";
 import { updateUser } from "../crud/user";
 import { can } from "../helpers/authorization";
 import { validate } from "../helpers/utils";
@@ -28,6 +34,7 @@ export const addEmailToUser = async (
   locals: Locals
 ) => {
   validate(email, ValidationTypes.EMAIL);
+  await checkIfNewEmail(email);
   await createEmail({ email, userId });
   await createEvent(
     { userId, type: EventType.EMAIL_CREATED, data: { email } },

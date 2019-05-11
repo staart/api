@@ -7,7 +7,12 @@ import {
   addApprovedLocation
 } from "../crud/user";
 import { InsertResult } from "../interfaces/mysql";
-import { createEmail, updateEmail, getEmail } from "../crud/email";
+import {
+  createEmail,
+  updateEmail,
+  getEmail,
+  checkIfNewEmail
+} from "../crud/email";
 import { mail } from "../helpers/mail";
 import {
   verifyToken,
@@ -69,6 +74,7 @@ export const register = async (
   organizationId?: number,
   role?: MembershipRole
 ) => {
+  if (email) await checkIfNewEmail(email);
   // Create user
   const result = <InsertResult>await createUser(user);
   const userId = result.insertId;

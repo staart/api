@@ -189,6 +189,20 @@ export const getEmailObject = async (email: string) => {
 };
 
 /**
+ * Get the detailed email object from a verified email
+ */
+export const getVerifiedEmailObject = async (email: string) => {
+  return (<Email[]>(
+    await cachedQuery(
+      CacheCategories.EMAIL,
+      email,
+      "SELECT * FROM emails WHERE email = ? AND isVerified = 1 LIMIT 1",
+      [email]
+    )
+  ))[0];
+};
+
+/**
  * Get a list of all verified emails of a user
  */
 export const getUserVerifiedEmails = async (user: User | number) => {
@@ -207,4 +221,16 @@ export const getUserVerifiedEmails = async (user: User | number) => {
       [userId]
     )
   ));
+};
+
+export const checkIfNewEmail = async (email: string) => {
+  email = normalizeEmail(email) || email;
+  let hasEmail = true;
+  try {
+    (await getVerifiedEmailObject(email)).id;
+  } catch (error) {
+    hasEmail = false;
+  }
+  if (hasEmail) throw new Error(ErrorCode.EMAIL_EXISTS);
+  return;
 };

@@ -46,6 +46,7 @@ export enum ErrorCode {
   MISSING_PRIMARY_EMAIL = "422/missing-primary-email",
   MISSING_PASSWORD = "422/missing-password",
   MISSING_FIELD = "422/missing-field",
+  EMAIL_EXISTS = "422/email-exists",
   USER_NOT_FOUND = "404/user-not-found",
   INVALID_LOGIN = "401/invalid-login",
   INSUFFICIENT_PERMISSION = "401/insufficient-permission",
