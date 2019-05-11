@@ -28,6 +28,7 @@ export const routeMembershipCreate = async (req: Request, res: Response) => {
     throw new Error(ErrorCode.MISSING_FIELD);
   await inviteMemberToOrganization(
     res.locals.token.id,
+    res.locals,
     organizationId,
     newMemberName,
     newMemberEmail,

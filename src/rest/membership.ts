@@ -5,6 +5,7 @@ import { User } from "../interfaces/tables/user";
 import { register } from "./auth";
 import { can } from "../helpers/authorization";
 import { validate } from "../helpers/utils";
+import { Locals } from "../interfaces/general";
 
 export const getMembershipDetailsForUser = async (
   userId: number,
@@ -21,7 +22,8 @@ export const inviteMemberToOrganization = async (
   organizationId: number,
   newMemberName: string,
   newMemberEmail: string,
-  role: MembershipRole
+  role: MembershipRole,
+  locals: Locals
 ) => {
   validate(newMemberEmail, ValidationTypes.EMAIL);
   if (
@@ -46,6 +48,7 @@ export const inviteMemberToOrganization = async (
     } else {
       await register(
         { name: newMemberName },
+        locals,
         newMemberEmail,
         organizationId,
         role
