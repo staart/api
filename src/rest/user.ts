@@ -55,11 +55,11 @@ export const deleteUserForUser = async (
   locals: Locals
 ) => {
   if (await can(tokenUserId, Authorizations.DELETE, "user", updateUserId)) {
-    await deleteUser(updateUserId);
     await deleteAllUserEmails(updateUserId);
     await deleteAllUserMemberships(updateUserId);
     await deleteAllUserApprovedLocations(updateUserId);
     await deleteAllUserEvents(updateUserId);
+    await deleteUser(updateUserId);
     await createEvent(
       {
         userId: tokenUserId,
