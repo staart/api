@@ -49,3 +49,10 @@ export const getUserRecentEvents = async (userId: number) => {
     )
   ));
 };
+
+/*
+ * Delete all security events for a user
+ */
+export const deleteAllUserEvents = async (userId: number) => {
+  return await query(`DELETE FROM events WHERE userId = ?`, [userId]);
+};

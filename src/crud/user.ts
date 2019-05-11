@@ -44,6 +44,9 @@ export const createUser = async (user: User) => {
     user.notificationEmails || NotificationEmails.GENERAL;
   user.preferredLanguage = user.preferredLanguage || "en-us";
   user.prefersReducedMotion = user.prefersReducedMotion || false;
+  user.profilePicture =
+    user.profilePicture ||
+    `https://ui-avatars.com/api/?bold=true&name=${user.name}`;
   user.createdAt = new Date();
   user.updatedAt = user.createdAt;
   // Create user
@@ -135,6 +138,16 @@ export const getUserApprovedLocations = async (userId: number) => {
     "SELECT * FROM `approved-locations` WHERE userId = ?",
     [userId]
   );
+};
+
+/**
+ * Delete all approved locations for a user
+ */
+export const deleteAllUserApprovedLocations = async (userId: number) => {
+  deleteItemFromCache(CacheCategories.APPROVE_LOCATIONS, userId);
+  return await query("DELETE FROM `approved-locations` WHERE userId = ?", [
+    userId
+  ]);
 };
 
 /**

@@ -3,16 +3,23 @@ import {
   getUser,
   updateUser,
   getUserApprovedLocations,
-  deleteUser
+  deleteUser,
+  deleteAllUserApprovedLocations
 } from "../crud/user";
 import {
   getUserMembershipObject,
-  getUserOrganization
+  getUserOrganization,
+  deleteAllUserMemberships
 } from "../crud/membership";
 import { User } from "../interfaces/tables/user";
 import { Locals } from "../interfaces/general";
-import { createEvent, getUserEvents, getUserRecentEvents } from "../crud/event";
-import { getUserEmails } from "../crud/email";
+import {
+  createEvent,
+  getUserEvents,
+  getUserRecentEvents,
+  deleteAllUserEvents
+} from "../crud/event";
+import { getUserEmails, deleteAllUserEmails } from "../crud/email";
 import { can } from "../helpers/authorization";
 
 export const getUserFromId = async (userId: number, tokenUserId: number) => {
@@ -49,6 +56,10 @@ export const deleteUserForUser = async (
 ) => {
   if (await can(tokenUserId, Authorizations.DELETE, "user", updateUserId)) {
     await deleteUser(updateUserId);
+    await deleteAllUserEmails(updateUserId);
+    await deleteAllUserMemberships(updateUserId);
+    await deleteAllUserApprovedLocations(updateUserId);
+    await deleteAllUserEvents(updateUserId);
     await createEvent(
       {
         userId: tokenUserId,

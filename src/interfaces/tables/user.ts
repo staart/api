@@ -15,6 +15,7 @@ export interface User {
   prefersReducedMotion?: boolean;
   gender?: Genders;
   role?: UserRole;
+  profilePicture?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
