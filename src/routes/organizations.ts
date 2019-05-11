@@ -12,7 +12,7 @@ export const routeOrganizationGet = async (req: Request, res: Response) => {
     res.locals.token.id,
     req.params.id
   );
-  res.json({ organization });
+  res.json(organization);
 };
 
 export const routeOrganizationCreate = async (req: Request, res: Response) => {

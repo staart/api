@@ -11,6 +11,7 @@ import { User } from "../interfaces/tables/user";
 import { getOrganization } from "./organization";
 import { ErrorCode, CacheCategories } from "../interfaces/enum";
 import { deleteItemFromCache, cachedQuery } from "../helpers/cache";
+import { getUser } from "./user";
 
 /*
  * Create a new organization membership for a user
@@ -117,7 +118,10 @@ export const getOrganizationMembers = async (organizationId: number) => {
  * Get a detailed list of all members in an organization
  */
 export const getOrganizationMemberDetails = async (organizationId: number) => {
-  const members = await getOrganizationMembers(organizationId);
+  const members: any = await getOrganizationMembers(organizationId);
+  for await (const member of members) {
+    member.user = await getUser(member.userId);
+  }
   return members;
 };
 
