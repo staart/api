@@ -45,6 +45,7 @@ export const createUser = async (user: User) => {
     user.notificationEmails || NotificationEmails.GENERAL;
   user.preferredLanguage = user.preferredLanguage || "en-us";
   user.prefersReducedMotion = user.prefersReducedMotion || false;
+  user.prefersColorSchemeDark = user.prefersColorSchemeDark || false;
   user.profilePicture =
     user.profilePicture ||
     `https://ui-avatars.com/api/?bold=true&name=${user.name}`;

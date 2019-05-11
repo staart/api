@@ -13,6 +13,7 @@ export interface User {
   notificationEmails?: NotificationEmails;
   preferredLanguage?: string;
   prefersReducedMotion?: boolean;
+  prefersColorSchemeDark?: boolean;
   gender?: Genders;
   role?: UserRole;
   profilePicture?: string;

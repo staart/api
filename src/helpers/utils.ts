@@ -59,6 +59,7 @@ export const anonymizeIpAddress = (ipAddress: string) =>
 export const boolValues = [
   "twoFactorEnabled",
   "prefersReducedMotion",
+  "prefersColorSchemeDark",
   "used",
   "isVerified"
 ];
@@ -84,10 +85,11 @@ export const readOnlyValues = ["createdAt", "id"];
 export const validate = (text: string, type: ValidationTypes) => {
   if (type === ValidationTypes.EMAIL)
     if (!isEmail(text)) throw new Error(ErrorCode.VALIDATION_EMAIL);
-  
+
   if (type === ValidationTypes.URL)
     if (!isURL(text)) throw new Error(ErrorCode.VALIDATION_URL);
-  
+
   if (type === ValidationTypes.PHONE)
-    if (!isMobilePhone(text, "any")) throw new Error(ErrorCode.VALIDATION_PHONE);
-}
+    if (!isMobilePhone(text, "any"))
+      throw new Error(ErrorCode.VALIDATION_PHONE);
+};
