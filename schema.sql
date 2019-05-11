@@ -11,7 +11,7 @@ CREATE TABLE `approved-locations` (
   `subnet` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `createdAt` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- ----------------------------
 -- Table structure for backup-codes
@@ -40,7 +40,7 @@ CREATE TABLE `emails` (
   `updatedAt` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `userId` (`userId`)
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- ----------------------------
 -- Table structure for events
@@ -56,7 +56,7 @@ CREATE TABLE `events` (
   `userAgent` text,
   `createdAt` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=72 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- ----------------------------
 -- Table structure for memberships
@@ -72,7 +72,7 @@ CREATE TABLE `memberships` (
   PRIMARY KEY (`id`),
   KEY `org` (`organizationId`),
   KEY `user` (`userId`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- ----------------------------
 -- Table structure for organizations
@@ -85,7 +85,7 @@ CREATE TABLE `organizations` (
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- ----------------------------
 -- Table structure for users
@@ -104,10 +104,13 @@ CREATE TABLE `users` (
   `notificationEmails` int(1) NOT NULL DEFAULT '1',
   `preferredLanguage` varchar(5) NOT NULL DEFAULT 'en-us',
   `prefersReducedMotion` int(1) NOT NULL DEFAULT '0',
+  `prefersColorSchemeDark` int(1) NOT NULL DEFAULT '0',
   `role` int(1) NOT NULL DEFAULT '1',
+  `gender` varchar(1) NOT NULL DEFAULT 'x',
+  `profilePicture` varchar(255) NOT NULL,
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 SET FOREIGN_KEY_CHECKS = 1;
