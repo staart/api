@@ -35,6 +35,7 @@ export const routeMembershipCreate = async (req: Request, res: Response) => {
     role,
     res.locals
   );
+  res.json({ invited: true });
 };
 
 export const routeMembershipDelete = async (req: Request, res: Response) => {
