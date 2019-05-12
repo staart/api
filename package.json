@@ -8,6 +8,7 @@
   "scripts": {
     "build-babel": "babel src -d dist --extensions '.ts' && cp .env dist/.env",
     "build": "touch .env && mkdir -p dist && cp .env dist/.env && tsc",
+    "check-types": "tsc",
     "start": "pm2-runtime start dist/index.js --env production",
     "dev": "concurrently 'yarn watch-build' 'yarn watch-prettier' 'yarn watch-server'",
     "prettier-all": "prettier '{src,examples}/**/*.{ts,json}' --write",
@@ -15,6 +16,11 @@
     "watch-prettier": "onchange '{src,examples}/**/*.{ts,json}' -- prettier --write {{changed}}",
     "watch-server": "cd dist && nodemon index.js",
     "generate-docs": "typedoc --out docs ./src"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn check-types"
+    }
   },
   "devDependencies": {
     "@babel/cli": "^7.4.4",
@@ -40,6 +46,7 @@
     "concurrently": "^4.1.0",
     "coveralls": "^3.0.3",
     "dotenv": "^8.0.0",
+    "husky": "^2.2.0",
     "jest": "^24.8.0",
     "nodemon": "^1.19.0",
     "onchange": "^5.2.0",
