@@ -39,7 +39,8 @@ export enum EventType {
   EMAIL_VERIFIED = "email.verified",
   MEMBERSHIP_CREATED = "membership.created",
   MEMBERSHIP_UPDATED = "membership.updated",
-  MEMBERSHIP_DELETED = "membership.deleted"
+  MEMBERSHIP_DELETED = "membership.deleted",
+  BILLING_UPDATED = "billing.updated"
 }
 
 export enum ErrorCode {

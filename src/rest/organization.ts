@@ -123,15 +123,27 @@ export const getOrganizationBillingForUser = async (
 export const updateOrganizationBillingForUser = async (
   userId: number,
   organizationId: number,
-  data: customers.ICustomerCardSourceCreationOptions
+  data: customers.ICustomerCardSourceCreationOptions,
+  locals: Locals
 ) => {
   if (await can(userId, Authorizations.READ, "organization", organizationId)) {
     const organization = await getOrganization(organizationId);
+    let result;
     if (organization.stripeCustomerId) {
-      return await updateStripeCustomer(organization.stripeCustomerId, data);
+      result = await updateStripeCustomer(organization.stripeCustomerId, data);
     } else {
-      return await createStripeCustomer(organizationId, data);
+      result = await createStripeCustomer(organizationId, data);
     }
+    await createEvent(
+      {
+        userId,
+        organizationId,
+        type: EventType.BILLING_UPDATED,
+        data
+      },
+      locals
+    );
+    return result;
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };

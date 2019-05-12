@@ -4,7 +4,8 @@ import {
   updateOrganizationForUser,
   deleteOrganizationForUser,
   getOrganizationForUser,
-  getOrganizationBillingForUser
+  getOrganizationBillingForUser,
+  updateOrganizationBillingForUser
 } from "../rest/organization";
 import { ErrorCode } from "../interfaces/enum";
 
@@ -62,7 +63,7 @@ export const routeOrganizationBillingUpdate = async (
   req: Request,
   res: Response
 ) => {
-  await updateOrganizationForUser(
+  await updateOrganizationBillingForUser(
     res.locals.token.id,
     req.params.id,
     req.body,
