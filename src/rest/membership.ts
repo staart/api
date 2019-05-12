@@ -12,13 +12,14 @@ import {
   deleteMembership,
   getOrganizationMembers,
   getUserOrganizationMembership,
-  getMembershipDetailed
+  getMembershipDetailed,
+  updateMembership
 } from "../crud/membership";
 import { User } from "../interfaces/tables/user";
 import { register } from "./auth";
 import { can } from "../helpers/authorization";
 import { validate } from "../helpers/utils";
-import { Locals } from "../interfaces/general";
+import { Locals, KeyValue } from "../interfaces/general";
 import { createEvent } from "../crud/event";
 
 export const getMembershipDetailsForUser = async (
@@ -104,6 +105,29 @@ export const deleteMembershipForUser = async (
         organizationId: membership.organizationId,
         type: EventType.MEMBERSHIP_DELETED,
         data: { membership }
+      },
+      locals
+    );
+    return;
+  }
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const updateMembershipForUser = async (
+  userId: number,
+  membershipId: number,
+  data: KeyValue,
+  locals: Locals
+) => {
+  if (await can(userId, Authorizations.UPDATE, "membership", membershipId)) {
+    const membership = await getMembership(membershipId);
+    await updateMembership(membershipId, data);
+    await createEvent(
+      {
+        userId,
+        organizationId: membership.organizationId,
+        type: EventType.MEMBERSHIP_UPDATED,
+        data: { membership: data }
       },
       locals
     );

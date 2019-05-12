@@ -3,7 +3,8 @@ import { ErrorCode } from "../interfaces/enum";
 import {
   getMembershipDetailsForUser,
   inviteMemberToOrganization,
-  deleteMembershipForUser
+  deleteMembershipForUser,
+  updateMembershipForUser
 } from "../rest/membership";
 import { getOrganizationMemberDetails } from "../crud/membership";
 
@@ -37,6 +38,16 @@ export const routeMembershipDelete = async (req: Request, res: Response) => {
   if (!id || !membershipId) throw new Error(ErrorCode.MISSING_FIELD);
   await deleteMembershipForUser(id, membershipId, res.locals);
   res.json({ deleted: true });
+};
+
+export const routeMembershipUpdate = async (req: Request, res: Response) => {
+  const userId = res.locals.token.id;
+  const membershipId = req.params.id;
+  if (!userId || !membershipId) throw new Error(ErrorCode.MISSING_FIELD);
+  const data = req.body;
+  delete req.body.id;
+  await updateMembershipForUser(userId, membershipId, data, res.locals);
+  res.json({ updated: true });
 };
 
 export const routeMembershipList = async (req: Request, res: Response) => {
