@@ -6,16 +6,22 @@
   "author": "Anand Chowdhary <mail@anandchowdhary.com>",
   "license": "MIT",
   "scripts": {
+    "build-babel": "babel src -d dist --extensions '.ts' && cp .env dist/.env",
     "build": "touch .env && mkdir -p dist && cp .env dist/.env && tsc",
     "start": "pm2-runtime start dist/index.js --env production",
     "dev": "concurrently 'yarn watch-build' 'yarn watch-prettier' 'yarn watch-server'",
     "prettier-all": "prettier '{src,examples}/**/*.{ts,json}' --write",
-    "watch-build": "onchange '{src,examples}/**/*.ts' -- yarn build",
+    "watch-build": "onchange '{src,examples}/**/*.ts' -- yarn build-babel",
     "watch-prettier": "onchange '{src,examples}/**/*.{ts,json}' -- prettier --write {{changed}}",
     "watch-server": "cd dist && nodemon index.js",
     "generate-docs": "typedoc --out docs ./src"
   },
   "devDependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.4",
+    "@babel/polyfill": "^7.4.4",
+    "@babel/preset-env": "^7.4.4",
+    "@babel/preset-typescript": "^7.3.3",
     "@types/bcrypt": "^3.0.0",
     "@types/cors": "^2.8.5",
     "@types/dotenv": "^6.1.1",
