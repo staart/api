@@ -132,6 +132,18 @@ export const getMembership = async (id: number) => {
 };
 
 /*
+ * Get a detailed version of a membership
+ */
+export const getMembershipDetailed = async (id: number) => {
+  const membership = (await getMembership(id)) as any;
+  if (!membership || !membership.id)
+    throw new Error(ErrorCode.MEMBERSHIP_NOT_FOUND);
+  membership.organization = await getOrganization(membership.organizationId);
+  membership.user = await getUser(membership.organizationId);
+  return membership;
+};
+
+/*
  * Get a list of all members in an organization
  */
 export const getOrganizationMembers = async (organizationId: number) => {

@@ -11,7 +11,8 @@ import {
   getMembership,
   deleteMembership,
   getOrganizationMembers,
-  getUserOrganizationMembership
+  getUserOrganizationMembership,
+  getMembershipDetailed
 } from "../crud/membership";
 import { User } from "../interfaces/tables/user";
 import { register } from "./auth";
@@ -25,7 +26,7 @@ export const getMembershipDetailsForUser = async (
   membershipId: number
 ) => {
   if (await can(userId, Authorizations.READ, "membership", membershipId))
-    return await getMembership(membershipId);
+    return await getMembershipDetailed(membershipId);
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
 
