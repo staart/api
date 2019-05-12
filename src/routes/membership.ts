@@ -10,9 +10,7 @@ import { getOrganizationMemberDetails } from "../crud/membership";
 export const routeMembershipGet = async (req: Request, res: Response) => {
   const id = req.params.id;
   if (!id) throw new Error(ErrorCode.MISSING_FIELD);
-  res.json({
-    membership: await getMembershipDetailsForUser(res.locals.token.id, id)
-  });
+  res.json(await getMembershipDetailsForUser(res.locals.token.id, id));
 };
 
 export const routeMembershipCreate = async (req: Request, res: Response) => {
