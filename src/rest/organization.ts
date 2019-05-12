@@ -22,7 +22,8 @@ import { can } from "../helpers/authorization";
 import {
   getStripeCustomer,
   createStripeCustomer,
-  updateStripeCustomer
+  updateStripeCustomer,
+  getStripeInvoices
 } from "../helpers/stripe";
 import { customers } from "stripe";
 
@@ -144,6 +145,19 @@ export const updateOrganizationBillingForUser = async (
       locals
     );
     return result;
+  }
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const getOrganizationInvoicesForUser = async (
+  userId: number,
+  organizationId: number
+) => {
+  if (await can(userId, Authorizations.READ, "organization", organizationId)) {
+    const organization = await getOrganization(organizationId);
+    if (organization.stripeCustomerId)
+      return await getStripeInvoices(organization.stripeCustomerId);
+    throw new Error(ErrorCode.STRIPE_NO_CUSTOMER);
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };

@@ -18,7 +18,10 @@ export const createStripeCustomer = async (
   organizationId: number,
   customer: Stripe.customers.ICustomerCardSourceCreationOptions
 ) => {
-  const created = await stripe.customers.create(customer);
+  const created = await stripe.customers.create({
+    ...customer,
+    metadata: { organizationId }
+  });
   await updateOrganization(organizationId, { stripeCustomerId: created.id });
   return created;
 };
@@ -31,4 +34,12 @@ export const updateStripeCustomer = async (
   customer: Stripe.customers.ICustomerUpdateOptions
 ) => {
   return await stripe.customers.update(id, customer);
+};
+
+/**
+ * Get the details of a customer
+ * @param id - Stripe customer ID
+ */
+export const getStripeInvoices = async (id: string) => {
+  return await stripe.invoices.list({ customer: id });
 };

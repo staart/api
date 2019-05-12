@@ -5,7 +5,8 @@ import {
   deleteOrganizationForUser,
   getOrganizationForUser,
   getOrganizationBillingForUser,
-  updateOrganizationBillingForUser
+  updateOrganizationBillingForUser,
+  getOrganizationInvoicesForUser
 } from "../rest/organization";
 import { ErrorCode } from "../interfaces/enum";
 
@@ -52,11 +53,9 @@ export const routeOrganizationBillingGet = async (
   req: Request,
   res: Response
 ) => {
-  const billing = await getOrganizationBillingForUser(
-    res.locals.token.id,
-    req.params.id
+  res.json(
+    await getOrganizationBillingForUser(res.locals.token.id, req.params.id)
   );
-  res.json(billing);
 };
 
 export const routeOrganizationBillingUpdate = async (
@@ -70,4 +69,13 @@ export const routeOrganizationBillingUpdate = async (
     res.locals
   );
   res.json({ updated: true });
+};
+
+export const routeOrganizationInvoicesGet = async (
+  req: Request,
+  res: Response
+) => {
+  res.json(
+    await getOrganizationInvoicesForUser(res.locals.token.id, req.params.id)
+  );
 };
