@@ -65,7 +65,8 @@ export enum ErrorCode {
   VALIDATION_URL = "400/validation-url",
   CANNOT_DELETE_SOLE_OWNER = "400/cannot-delete-sole-owner",
   CANNOT_UPDATE_SOLE_OWNER = "400/cannot-update-sole-owner",
-  USER_IS_MEMBER_ALREADY = "400/user-is-member-already"
+  USER_IS_MEMBER_ALREADY = "400/user-is-member-already",
+  STRIPE_NO_CUSTOMER = "404/no-customer"
 }
 
 export enum Templates {

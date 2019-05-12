@@ -3,7 +3,8 @@ import {
   newOrganizationForUser,
   updateOrganizationForUser,
   deleteOrganizationForUser,
-  getOrganizationForUser
+  getOrganizationForUser,
+  getOrganizationBillingForUser
 } from "../rest/organization";
 import { ErrorCode } from "../interfaces/enum";
 
@@ -44,4 +45,28 @@ export const routeOrganizationDelete = async (req: Request, res: Response) => {
   if (!organizationId) throw new Error(ErrorCode.MISSING_FIELD);
   await deleteOrganizationForUser(userId, organizationId, res.locals);
   res.json({ success: true });
+};
+
+export const routeOrganizationBillingGet = async (
+  req: Request,
+  res: Response
+) => {
+  const billing = await getOrganizationBillingForUser(
+    res.locals.token.id,
+    req.params.id
+  );
+  res.json(billing);
+};
+
+export const routeOrganizationBillingUpdate = async (
+  req: Request,
+  res: Response
+) => {
+  await updateOrganizationForUser(
+    res.locals.token.id,
+    req.params.id,
+    req.body,
+    res.locals
+  );
+  res.json({ updated: true });
 };

@@ -19,6 +19,12 @@ import {
 import { createEvent } from "../crud/event";
 import { Locals } from "../interfaces/general";
 import { can } from "../helpers/authorization";
+import {
+  getStripeCustomer,
+  createStripeCustomer,
+  updateStripeCustomer
+} from "../helpers/stripe";
+import { customers } from "stripe";
 
 export const getOrganizationForUser = async (
   userId: number,
@@ -97,6 +103,35 @@ export const deleteOrganizationForUser = async (
       locals
     );
     return;
+  }
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const getOrganizationBillingForUser = async (
+  userId: number,
+  organizationId: number
+) => {
+  if (await can(userId, Authorizations.READ, "organization", organizationId)) {
+    const organization = await getOrganization(organizationId);
+    if (organization.stripeCustomerId)
+      return await getStripeCustomer(organization.stripeCustomerId);
+    throw new Error(ErrorCode.STRIPE_NO_CUSTOMER);
+  }
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const updateOrganizationBillingForUser = async (
+  userId: number,
+  organizationId: number,
+  data: customers.ICustomerCardSourceCreationOptions
+) => {
+  if (await can(userId, Authorizations.READ, "organization", organizationId)) {
+    const organization = await getOrganization(organizationId);
+    if (organization.stripeCustomerId) {
+      return await updateStripeCustomer(organization.stripeCustomerId, data);
+    } else {
+      return await createStripeCustomer(organizationId, data);
+    }
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
