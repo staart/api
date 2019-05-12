@@ -22,8 +22,7 @@ import { createEvent } from "../crud/event";
 
 export const getMembershipDetailsForUser = async (
   userId: number,
-  membershipId: number,
-  organizationId: number
+  membershipId: number
 ) => {
   if (await can(userId, Authorizations.READ, "membership", membershipId))
     return await getMembership(membershipId);
