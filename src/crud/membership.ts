@@ -139,7 +139,7 @@ export const getMembershipDetailed = async (id: number) => {
   if (!membership || !membership.id)
     throw new Error(ErrorCode.MEMBERSHIP_NOT_FOUND);
   membership.organization = await getOrganization(membership.organizationId);
-  membership.user = await getUser(membership.organizationId);
+  membership.user = await getUser(membership.userId);
   return membership;
 };
 
