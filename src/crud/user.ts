@@ -26,7 +26,7 @@ import md5 from "md5";
 /**
  * Get a list of all users
  */
-export const listAllUsers = async () => {
+export const getAllUsers = async () => {
   return <User[]>await query("SELECT * from users");
 };
 

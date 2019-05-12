@@ -62,3 +62,10 @@ export const deleteOrganization = async (id: number) => {
   deleteItemFromCache(CacheCategories.ORGANIZATION, id);
   return await query("DELETE FROM organizations WHERE id = ?", [id]);
 };
+
+/*
+ * Get all organizations
+ */
+export const getAllOrganizations = async () => {
+  return <Organization[]>await query("SELECT * FROM organizations");
+};

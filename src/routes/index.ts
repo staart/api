@@ -44,6 +44,7 @@ import {
   routeMembershipDelete,
   routeMembershipUpdate
 } from "./membership";
+import { routeAdminUsers, routeAdminOrganizations } from "./admin";
 
 export const router = (app: Application) => {
   app.get("/", (req, res) => res.json({ hello: "world" }));
@@ -53,6 +54,7 @@ export const router = (app: Application) => {
   routesEmail(app);
   routesOrganization(app);
   routesMembership(app);
+  routesAdmin(app);
 
   return app;
 };
@@ -166,4 +168,9 @@ const routesMembership = (app: Application) => {
     authHandler,
     asyncHandler(routeMembershipDelete)
   );
+};
+
+const routesAdmin = (app: Application) => {
+  app.get("/users", authHandler, asyncHandler(routeAdminUsers));
+  app.get("/organizations", authHandler, asyncHandler(routeAdminOrganizations));
 };

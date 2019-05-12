@@ -139,14 +139,24 @@ const canUserMembership = async (
 };
 
 /**
+ * Whether a user can perform an action for the backend
+ */
+const canUserGeneral = async (user: User, action: Authorizations) => {
+  // A super user can do anything
+  if (user.role == UserRole.ADMIN) return true;
+
+  return false;
+};
+
+/**
  * Whether a user has authorization to perform an action
  * @param ipAddress  IP address for the new location
  */
 export const can = async (
   user: User | number,
   action: Authorizations,
-  targetType: "user" | "organization" | "membership",
-  target: User | Organization | Membership | number
+  targetType: "user" | "organization" | "membership" | "general",
+  target?: User | Organization | Membership | number
 ) => {
   let userObject;
   if (typeof user === "number") {
@@ -174,9 +184,11 @@ export const can = async (
     return await canUserOrganization(userObject, action, <Organization>(
       targetObject
     ));
-  } else {
+  } else if (targetType === "membership") {
     return await canUserMembership(userObject, action, <Membership>(
       targetObject
     ));
+  } else {
+    return await canUserGeneral(userObject, action);
   }
 };
