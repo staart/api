@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { safeError, sendError } from "./errors";
+import { safeError } from "./errors";
 import { verifyToken } from "./jwt";
 import { ErrorCode, Tokens } from "../interfaces/enum";
 
@@ -46,7 +46,7 @@ export const authHandler = async (
 ) => {
   let token = req.get("Authorization") || req.get("X-Api-Key");
   if (!token) {
-    const error = sendError(ErrorCode.MISSING_TOKEN);
+    const error = safeError(ErrorCode.MISSING_TOKEN);
     res.status(error.status);
     return res.json(error);
   }
@@ -55,7 +55,7 @@ export const authHandler = async (
     res.locals.token = await verifyToken(token, Tokens.LOGIN);
     next();
   } catch (e) {
-    const error = sendError(ErrorCode.INVALID_TOKEN);
+    const error = safeError(ErrorCode.INVALID_TOKEN);
     res.status(error.status);
     return res.json(error);
   }
