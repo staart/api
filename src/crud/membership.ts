@@ -12,6 +12,7 @@ import { getOrganization } from "./organization";
 import { ErrorCode, CacheCategories } from "../interfaces/enum";
 import { deleteItemFromCache, cachedQuery } from "../helpers/cache";
 import { getUser } from "./user";
+import { Organization } from "../interfaces/tables/organization";
 
 /*
  * Create a new organization membership for a user
@@ -127,11 +128,8 @@ export const getOrganizationMemberDetails = async (organizationId: number) => {
 
 export const getUserMemberships = async (user: User | number) => {
   if (typeof user !== "number" && typeof user !== "string") {
-    if (user.id) {
-      user = user.id;
-    } else {
-      throw new Error(ErrorCode.USER_NOT_FOUND);
-    }
+    if (user.id) user = user.id;
+    else throw new Error(ErrorCode.USER_NOT_FOUND);
   }
   return <Membership[]>(
     await cachedQuery(
@@ -143,10 +141,38 @@ export const getUserMemberships = async (user: User | number) => {
   );
 };
 
+/**
+ * Get a detailed object of a user's membership
+ */
 export const getUserMembershipsDetailed = async (user: User | number) => {
   const memberships: any = await getUserMemberships(user);
   for await (const membership of memberships) {
     membership.organization = await getOrganization(membership.organizationId);
   }
   return memberships;
+};
+
+/**
+ * Get a user membership of a particular organization
+ */
+export const getUserOrganizationMembership = async (
+  user: User | number,
+  organization: Organization | number
+) => {
+  if (typeof user !== "number" && typeof user !== "string") {
+    if (user.id) user = user.id;
+    else throw new Error(ErrorCode.USER_NOT_FOUND);
+  }
+  if (typeof organization !== "number" && typeof organization !== "string") {
+    if (organization.id) organization = organization.id;
+    else throw new Error(ErrorCode.ORGANIZATION_NOT_FOUND);
+  }
+  return (<Membership[]>(
+    await cachedQuery(
+      CacheCategories.USER_MEMBERSHIP_ORGANIZATION,
+      `${user}_${organization}`,
+      `SELECT * FROM memberships WHERE userId = ? AND organizationId = ?`,
+      [user, organization]
+    )
+  ))[0];
 };

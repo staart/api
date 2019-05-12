@@ -10,7 +10,8 @@ import {
   createMembership,
   getMembership,
   deleteMembership,
-  getOrganizationMembers
+  getOrganizationMembers,
+  getUserOrganizationMembership
 } from "../crud/membership";
 import { User } from "../interfaces/tables/user";
 import { register } from "./auth";
@@ -55,6 +56,12 @@ export const inviteMemberToOrganization = async (
     if (userExists) {
       newUser = await getUserByEmail(newMemberEmail);
       if (!newUser.id) throw new Error(ErrorCode.USER_NOT_FOUND);
+      let isMemberAlready = false;
+      try {
+        await getUserOrganizationMembership(newUser.id, organizationId);
+        isMemberAlready = true;
+      } catch (error) {}
+      if (isMemberAlready) throw new Error(ErrorCode.USER_IS_MEMBER_ALREADY);
       await createMembership({ userId: newUser.id, organizationId, role });
       return;
     } else {

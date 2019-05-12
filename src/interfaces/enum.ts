@@ -63,7 +63,8 @@ export enum ErrorCode {
   VALIDATION_EMAIL = "400/validation-email",
   VALIDATION_PHONE = "400/validation-phone",
   VALIDATION_URL = "400/validation-url",
-  CANNOT_DELETE_SOLE_OWNER = "400/cannot-delete-sole-owner"
+  CANNOT_DELETE_SOLE_OWNER = "400/cannot-delete-sole-owner",
+  USER_IS_MEMBER_ALREADY = "400/user-is-member-already"
 }
 
 export enum Templates {
@@ -88,6 +89,7 @@ export enum CacheCategories {
   USER_EVENT = "user-event",
   USER_RECENT_EVENTS = "user-recent-events",
   USER_MEMBERSHIPS = "user-memberships",
+  USER_MEMBERSHIP_ORGANIZATION = "user-membership-org",
   ORGANIZATION_MEMBERSHIPS = "memberships",
   MEMBERSHIP = "membership",
   ORGANIZATION = "organization",
