@@ -64,6 +64,7 @@ export enum ErrorCode {
   VALIDATION_PHONE = "400/validation-phone",
   VALIDATION_URL = "400/validation-url",
   CANNOT_DELETE_SOLE_OWNER = "400/cannot-delete-sole-owner",
+  CANNOT_UPDATE_SOLE_OWNER = "400/cannot-update-sole-owner",
   USER_IS_MEMBER_ALREADY = "400/user-is-member-already"
 }
 

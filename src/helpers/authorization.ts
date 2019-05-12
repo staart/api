@@ -41,11 +41,9 @@ const canUserUser = async (
     // A reseller can view/edit/delete users in her organization
     if (
       user.role == UserRole.RESELLER &&
-      [
-        Authorizations.READ,
-        Authorizations.UPDATE,
-        Authorizations.DELETE
-      ].includes(action)
+      (action == Authorizations.READ ||
+        action == Authorizations.UPDATE ||
+        action == Authorizations.DELETE)
     )
       allowed = true;
 
@@ -96,7 +94,6 @@ const canUserOrganization = async (
       action == Authorizations.READ
     )
       allowed = true;
-    
   });
 
   return allowed;
@@ -122,11 +119,18 @@ const canUserMembership = async (
   memberships.forEach(membership => {
     // An admin, owner, or manager can edit
     if (
-      [
-        MembershipRole.OWNER,
-        MembershipRole.ADMIN,
-        MembershipRole.MANAGER
-      ].includes(membership.role)
+      membership.organizationId == target.organizationId &&
+      (membership.role == MembershipRole.OWNER ||
+        membership.role == MembershipRole.ADMIN ||
+        membership.role == MembershipRole.MANAGER)
+    )
+      allowed = true;
+
+    // Another member can view
+    if (
+      membership.organizationId == target.organizationId &&
+      membership.role == MembershipRole.MEMBER &&
+      action == Authorizations.READ
     )
       allowed = true;
   });

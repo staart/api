@@ -121,6 +121,18 @@ export const updateMembershipForUser = async (
 ) => {
   if (await can(userId, Authorizations.UPDATE, "membership", membershipId)) {
     const membership = await getMembership(membershipId);
+    if (data.role != membership.role) {
+      if (membership.role == MembershipRole.OWNER) {
+        const organizationMembers = await getOrganizationMembers(
+          membership.organizationId
+        );
+        const currentMembers = organizationMembers.filter(
+          member => member.role == MembershipRole.OWNER
+        );
+        if (currentMembers.length < 2)
+          throw new Error(ErrorCode.CANNOT_UPDATE_SOLE_OWNER);
+      }
+    }
     await updateMembership(membershipId, data);
     await createEvent(
       {
