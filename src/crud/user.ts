@@ -100,7 +100,7 @@ export const updateUser = async (id: number, user: KeyValue) => {
       user.profilePicture = `https://www.gravatar.com/avatar/${md5(
         emailDetails.email
       )}?d=${encodeURIComponent(
-        `https://ui-avatars.com/api/?bold=true&name=${user.name}`
+        `https://ui-avatars.com/api/?bold=true&name=${originalUser.name}`
       )}`;
     }
   }
