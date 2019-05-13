@@ -13,7 +13,9 @@ import {
   getOrganizationSourceForUser,
   createOrganizationSourceForUser,
   updateOrganizationSourceForUser,
-  deleteOrganizationSourceForUser
+  deleteOrganizationSourceForUser,
+  getAllOrganizationDataForUser,
+  getOrganizationRecentEventsForUser
 } from "../rest/organization";
 import { ErrorCode } from "../interfaces/enum";
 
@@ -179,5 +181,20 @@ export const routeOrganizationSourcesPut = async (
       req.params.id,
       req.body
     )
+  );
+};
+
+export const routeOrganizationDataGet = async (req: Request, res: Response) => {
+  res.json(
+    await getAllOrganizationDataForUser(res.locals.token.id, req.params.id)
+  );
+};
+
+export const routeOrganizationRecentEventsGet = async (
+  req: Request,
+  res: Response
+) => {
+  res.json(
+    await getOrganizationRecentEventsForUser(res.locals.token.id, req.params.id)
   );
 };

@@ -51,6 +51,34 @@ export const getUserRecentEvents = async (userId: number) => {
 };
 
 /*
+ * Get all security events for a user
+ */
+export const getOrganizationEvents = async (organizationId: number) => {
+  return <Event[]>(
+    await cachedQuery(
+      CacheCategories.ORGANIZATION_EVENT,
+      organizationId,
+      `SELECT * FROM events WHERE organizationId = ?`,
+      [organizationId]
+    )
+  );
+};
+
+/*
+ * Get the 10 most recent security events for a user
+ */
+export const getOrganizationRecentEvents = async (organizationId: number) => {
+  return await addLocationToEvents(<Event[]>(
+    await cachedQuery(
+      CacheCategories.ORGANIZATION_RECENT_EVENTS,
+      organizationId,
+      `SELECT * FROM events WHERE organizationId = ? ORDER BY id DESC LIMIT 10`,
+      [organizationId]
+    )
+  ));
+};
+
+/*
  * Delete all security events for a user
  */
 export const deleteAllUserEvents = async (userId: number) => {

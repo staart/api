@@ -8,7 +8,8 @@ import {
 import { InsertResult } from "../interfaces/mysql";
 import {
   createMembership,
-  deleteAllOrganizationMemberships
+  deleteAllOrganizationMemberships,
+  getOrganizationMemberDetails
 } from "../crud/membership";
 import {
   MembershipRole,
@@ -16,7 +17,11 @@ import {
   EventType,
   Authorizations
 } from "../interfaces/enum";
-import { createEvent } from "../crud/event";
+import {
+  createEvent,
+  getOrganizationEvents,
+  getOrganizationRecentEvents
+} from "../crud/event";
 import { Locals } from "../interfaces/general";
 import { can } from "../helpers/authorization";
 import {
@@ -271,5 +276,54 @@ export const createOrganizationSourceForUser = async (
       return await createStripeSource(organization.stripeCustomerId, card);
     throw new Error(ErrorCode.STRIPE_NO_CUSTOMER);
   }
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const getAllOrganizationDataForUser = async (
+  userId: number,
+  organizationId: number
+) => {
+  if (
+    await can(
+      userId,
+      Authorizations.READ_SECURE,
+      "organization",
+      organizationId
+    )
+  ) {
+    const organization = await getOrganization(organizationId);
+    const memberships = await getOrganizationMemberDetails(organizationId);
+    const events = await getOrganizationEvents(organizationId);
+    let billing = {};
+    let subscriptions = {};
+    let invoices = {};
+    let sources = {};
+    if (organization.stripeCustomerId) {
+      billing = await getStripeCustomer(organization.stripeCustomerId);
+      subscriptions = await getStripeSubscriptions(
+        organization.stripeCustomerId
+      );
+      invoices = await getStripeInvoices(organization.stripeCustomerId);
+      sources = await getStripeSources(organization.stripeCustomerId);
+    }
+    return {
+      organization,
+      memberships,
+      events,
+      billing,
+      subscriptions,
+      invoices,
+      sources
+    };
+  }
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const getOrganizationRecentEventsForUser = async (
+  userId: number,
+  organizationId: number
+) => {
+  if (await can(userId, Authorizations.READ, "organization", organizationId))
+    return await getOrganizationRecentEvents(organizationId);
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
