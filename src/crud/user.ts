@@ -244,7 +244,9 @@ export const updateApiKey = async (apiKey: string, data: KeyValue) => {
  * Delete an API key
  */
 export const deleteApiKey = async (apiKey: string) => {
+  const apiKeyDetails = await getApiKey(apiKey);
   deleteItemFromCache(CacheCategories.API_KEY, apiKey);
+  deleteItemFromCache(CacheCategories.API_KEYS, apiKeyDetails.userId);
   return await query("DELETE FROM `api-keys` WHERE apiKey = ? LIMIT 1", [
     apiKey
   ]);
