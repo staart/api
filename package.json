@@ -63,7 +63,7 @@
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "express-async-handler": "^1.1.4",
-    "fs-extra": "^7.0.1",
+    "fs-extra": "^8.0.0",
     "geolite2": "^1.2.1",
     "googleapis": "^39.2.0",
     "helmet": "^3.18.0",
