@@ -220,7 +220,7 @@ export const createApiKey = async (apiKey: ApiKey) => {
   apiKey.updatedAt = apiKey.createdAt;
   deleteItemFromCache(CacheCategories.API_KEYS, apiKey.userId);
   return await query(
-    `INSERT INTO 'api-key' ${tableValues(apiKey)}`,
+    `INSERT INTO \`api-keys\` ${tableValues(apiKey)}`,
     Object.values(apiKey)
   );
 };
@@ -235,7 +235,7 @@ export const updateApiKey = async (apiKey: string, data: KeyValue) => {
   deleteItemFromCache(CacheCategories.API_KEY, apiKey);
   deleteItemFromCache(CacheCategories.API_KEYS, apiKeyDetails.userId);
   return await query(
-    `UPDATE 'api-keys' SET ${setValues(data)} WHERE apiKey = ?`,
+    `UPDATE \`api-keys\` SET ${setValues(data)} WHERE apiKey = ?`,
     [...Object.values(data), apiKey]
   );
 };
