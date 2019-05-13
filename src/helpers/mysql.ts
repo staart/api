@@ -87,13 +87,16 @@ export const cleanValues = (
   values: (string | number | boolean | Date | undefined)[]
 ) => {
   values = values.map(value => {
-    if (!value) return;
     // Clean up strings
     if (typeof value === "string") value = value.trim();
     // Convert true to 1, false to 0
-    if (typeof value === "boolean") value = !!value;
+    if (typeof value === "boolean") value = value ? 1 : 0;
     // Convert Date to mysql datetime
-    if (typeof value === "object" && typeof value.getMonth === "function")
+    if (
+      value &&
+      typeof value === "object" &&
+      typeof value.getMonth === "function"
+    )
       value = value
         .toISOString()
         .slice(0, 19)
