@@ -27,3 +27,12 @@ export interface ApprovedLocation {
   subnet?: string;
   createdAt?: Date;
 }
+
+export interface ApiKey {
+  apiKey?: string;
+  secretKey?: string;
+  userId: number;
+  organizationId?: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+}

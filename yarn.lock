@@ -2170,6 +2170,13 @@ crypto-random-string@^1.0.0:
   resolved "https://registry.yarnpkg.com/crypto-random-string/-/crypto-random-string-1.0.0.tgz#a230f64f568310e1498009940790ec99545bca7e"
   integrity sha1-ojD2T1aDEOFJgAmUB5DsmVRbyn4=
 
+crypto-random-string@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/crypto-random-string/-/crypto-random-string-3.0.0.tgz#b173d4228bf42a6cd38447129f579133438c50d4"
+  integrity sha512-HJJQbkbJmYRCBDhgmEoU9Z0tseO2Xlbyg3bV56wShnCWnhnoAyhF2qwy1SBlhOcILkZeEUNzrrAcQQKK/JGFkw==
+  dependencies:
+    type-fest "^0.4.1"
+
 cssom@0.3.x, "cssom@>= 0.3.2 < 0.4.0":
   version "0.3.6"
   resolved "https://registry.yarnpkg.com/cssom/-/cssom-0.3.6.tgz#f85206cee04efa841f3c5982a74ba96ab20d65ad"

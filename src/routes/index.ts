@@ -6,7 +6,12 @@ import {
   routeUserAllData,
   routeUserRecentEvents,
   routeUserDelete,
-  routeUserMemberships
+  routeUserMemberships,
+  routeUserApiKeysGet,
+  routeUserApiKeysPut,
+  routeUserApiKeyGet,
+  routeUserApiKeyUpdate,
+  routeUserApiKeyDelete
 } from "./users";
 import {
   routeEmailVerify,
@@ -106,6 +111,31 @@ const routesUser = (app: Application) => {
     "/users/:id/memberships",
     authHandler,
     asyncHandler(routeUserMemberships)
+  );
+  app.get(
+    "/users/:id/api-keys",
+    authHandler,
+    asyncHandler(routeUserApiKeysGet)
+  );
+  app.put(
+    "/users/:id/api-keys",
+    authHandler,
+    asyncHandler(routeUserApiKeysPut)
+  );
+  app.get(
+    "/users/:id/api-key/:apiKey",
+    authHandler,
+    asyncHandler(routeUserApiKeyGet)
+  );
+  app.patch(
+    "/users/:id/api-key/:apiKey",
+    authHandler,
+    asyncHandler(routeUserApiKeyUpdate)
+  );
+  app.delete(
+    "/users/:id/api-key/:apiKey",
+    authHandler,
+    asyncHandler(routeUserApiKeyDelete)
   );
 };
 

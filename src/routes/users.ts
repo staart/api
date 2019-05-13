@@ -5,7 +5,12 @@ import {
   getAllDataForUser,
   getRecentEventsForUser,
   deleteUserForUser,
-  getMembershipsForUser
+  getMembershipsForUser,
+  getApiKeysForUser,
+  createApiKeyForUser,
+  getApiKeyForUser,
+  updateApiKeyForUser,
+  deleteApiKeyForUser
 } from "../rest/user";
 import { ErrorCode } from "../interfaces/enum";
 
@@ -49,4 +54,52 @@ export const routeUserDelete = async (req: Request, res: Response) => {
   if (id === "me") id = res.locals.token.id;
   if (!id) throw new Error(ErrorCode.MISSING_FIELD);
   res.json(await deleteUserForUser(res.locals.token.id, id, res.locals));
+};
+
+export const routeUserApiKeysGet = async (req: Request, res: Response) => {
+  let id = req.params.id;
+  if (id === "me") id = res.locals.token.id;
+  if (!id) throw new Error(ErrorCode.MISSING_FIELD);
+  res.json(await getApiKeysForUser(res.locals.token.id, id));
+};
+
+export const routeUserApiKeysPut = async (req: Request, res: Response) => {
+  let id = req.params.id;
+  if (id === "me") id = res.locals.token.id;
+  if (!id) throw new Error(ErrorCode.MISSING_FIELD);
+  res.json(await createApiKeyForUser(res.locals.token.id, id, res.locals));
+};
+
+export const routeUserApiKeyGet = async (req: Request, res: Response) => {
+  let id = req.params.id;
+  if (id === "me") id = res.locals.token.id;
+  const apiKey = req.params.apiKey;
+  if (!id || !apiKey) throw new Error(ErrorCode.MISSING_FIELD);
+  res.json(await getApiKeyForUser(res.locals.token.id, id, apiKey));
+};
+
+export const routeUserApiKeyUpdate = async (req: Request, res: Response) => {
+  let id = req.params.id;
+  if (id === "me") id = res.locals.token.id;
+  const apiKey = req.params.apiKey;
+  if (!id || !apiKey) throw new Error(ErrorCode.MISSING_FIELD);
+  res.json(
+    await updateApiKeyForUser(
+      res.locals.token.id,
+      id,
+      apiKey,
+      req.body,
+      res.locals
+    )
+  );
+};
+
+export const routeUserApiKeyDelete = async (req: Request, res: Response) => {
+  let id = req.params.id;
+  if (id === "me") id = res.locals.token.id;
+  const apiKey = req.params.apiKey;
+  if (!id || !apiKey) throw new Error(ErrorCode.MISSING_FIELD);
+  res.json(
+    await deleteApiKeyForUser(res.locals.token.id, id, apiKey, res.locals)
+  );
 };

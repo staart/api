@@ -40,7 +40,10 @@ export enum EventType {
   MEMBERSHIP_CREATED = "membership.created",
   MEMBERSHIP_UPDATED = "membership.updated",
   MEMBERSHIP_DELETED = "membership.deleted",
-  BILLING_UPDATED = "billing.updated"
+  BILLING_UPDATED = "billing.updated",
+  API_KEY_CREATED = "apiKey.created",
+  API_KEY_UPDATED = "apiKey.updated",
+  API_KEY_DELETED = "apiKey.deleted"
 }
 
 export enum ErrorCode {
@@ -107,15 +110,20 @@ export enum CacheCategories {
   ORGANIZATION = "organization",
   APPROVE_LOCATIONS = "approved-locations",
   APPROVE_LOCATION = "approved-location",
-  IP_LOOKUP = "ip-lookup"
+  IP_LOOKUP = "ip-lookup",
+  API_KEYS = "api-keys",
+  API_KEY = "api-key"
 }
 
 export enum Authorizations {
   CREATE = "create",
   READ = "read",
+  CREATE_SECURE = "create-secure",
   READ_SECURE = "read-secure",
   UPDATE = "update",
+  UPDATE_SECURE = "update-secure",
   DELETE = "delete",
+  DELETE_SECURE = "delete-secure",
   INVITE_MEMBER = "invite-member",
   IMPERSONATE = "impersonate"
 }

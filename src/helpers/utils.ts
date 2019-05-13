@@ -77,7 +77,7 @@ export const jsonValues = ["data"];
 /**
  * MySQL columns which are read-only
  */
-export const readOnlyValues = ["createdAt", "id"];
+export const readOnlyValues = ["createdAt", "id", "apiKey", "secretKey"];
 
 /**
  * Validate strings to type

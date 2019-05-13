@@ -2,6 +2,20 @@ SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
+-- Table structure for api-keys
+-- ----------------------------
+DROP TABLE IF EXISTS `api-keys`;
+CREATE TABLE `api-keys` (
+  `apiKey` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `secretKey` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `userId` int(12) NOT NULL,
+  `organizationId` int(12) DEFAULT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`apiKey`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
+-- ----------------------------
 -- Table structure for approved-locations
 -- ----------------------------
 DROP TABLE IF EXISTS `approved-locations`;
@@ -11,7 +25,7 @@ CREATE TABLE `approved-locations` (
   `subnet` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `createdAt` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- ----------------------------
 -- Table structure for backup-codes
@@ -40,7 +54,7 @@ CREATE TABLE `emails` (
   `updatedAt` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `userId` (`userId`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- ----------------------------
 -- Table structure for events
@@ -56,7 +70,7 @@ CREATE TABLE `events` (
   `userAgent` text,
   `createdAt` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=148 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- ----------------------------
 -- Table structure for memberships
@@ -72,6 +86,22 @@ CREATE TABLE `memberships` (
   PRIMARY KEY (`id`),
   KEY `org` (`organizationId`),
   KEY `user` (`userId`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
+-- ----------------------------
+-- Table structure for notifications
+-- ----------------------------
+DROP TABLE IF EXISTS `notifications`;
+CREATE TABLE `notifications` (
+  `id` int(12) NOT NULL AUTO_INCREMENT,
+  `userId` int(12) NOT NULL,
+  `category` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `text` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `link` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
+  `read` int(1) NOT NULL DEFAULT '0',
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- ----------------------------
@@ -82,11 +112,11 @@ CREATE TABLE `organizations` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `invitationDomain` varchar(255) DEFAULT NULL,
-  `stripeCustomierId` varchar(255) DEFAULT NULL,
+  `stripeCustomerId` varchar(255) DEFAULT NULL,
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- ----------------------------
 -- Table structure for users
@@ -112,6 +142,6 @@ CREATE TABLE `users` (
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 SET FOREIGN_KEY_CHECKS = 1;
