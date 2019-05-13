@@ -123,17 +123,17 @@ const routesUser = (app: Application) => {
     asyncHandler(routeUserApiKeysPut)
   );
   app.get(
-    "/users/:id/api-key/:apiKey",
+    "/users/:id/api-keys/:apiKey",
     authHandler,
     asyncHandler(routeUserApiKeyGet)
   );
   app.patch(
-    "/users/:id/api-key/:apiKey",
+    "/users/:id/api-keys/:apiKey",
     authHandler,
     asyncHandler(routeUserApiKeyUpdate)
   );
   app.delete(
-    "/users/:id/api-key/:apiKey",
+    "/users/:id/api-keys/:apiKey",
     authHandler,
     asyncHandler(routeUserApiKeyDelete)
   );
