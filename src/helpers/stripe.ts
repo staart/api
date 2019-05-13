@@ -85,6 +85,14 @@ export const getStripeSource = async (id: string, sourceId: string) => {
  * Get the details of a customer
  * @param id - Stripe customer ID
  */
+export const deleteStripeSource = async (id: string, sourceId: string) => {
+  return await stripe.customers.deleteSource(id, sourceId);
+};
+
+/**
+ * Get the details of a customer
+ * @param id - Stripe customer ID
+ */
 export const createStripeSource = async (
   id: string,
   card: Stripe.cards.ISourceCreationOptionsExtended

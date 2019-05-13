@@ -28,7 +28,8 @@ import {
   routeOrganizationSourcesGet,
   routeOrganizationSourceGet,
   routeOrganizationSourcesPut,
-  routeOrganizationSourceUpdate
+  routeOrganizationSourceUpdate,
+  routeOrganizationSourceDelete
 } from "./organizations";
 import { authHandler } from "../helpers/middleware";
 import {
@@ -189,6 +190,11 @@ const routesOrganization = (app: Application) => {
     "/organizations/:id/sources/:sourceId",
     authHandler,
     asyncHandler(routeOrganizationSourceUpdate)
+  );
+  app.delete(
+    "/organizations/:id/sources/:sourceId",
+    authHandler,
+    asyncHandler(routeOrganizationSourceDelete)
   );
 };
 

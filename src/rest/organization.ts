@@ -29,7 +29,8 @@ import {
   getStripeSources,
   getStripeSource,
   createStripeSource,
-  updateStripeSource
+  updateStripeSource,
+  deleteStripeSource
 } from "../helpers/stripe";
 import { customers, cards } from "stripe";
 
@@ -213,6 +214,20 @@ export const getOrganizationSourceForUser = async (
     const organization = await getOrganization(organizationId);
     if (organization.stripeCustomerId)
       return await getStripeSource(organization.stripeCustomerId, sourceId);
+    throw new Error(ErrorCode.STRIPE_NO_CUSTOMER);
+  }
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const deleteOrganizationSourceForUser = async (
+  userId: number,
+  organizationId: number,
+  sourceId: string
+) => {
+  if (await can(userId, Authorizations.READ, "organization", organizationId)) {
+    const organization = await getOrganization(organizationId);
+    if (organization.stripeCustomerId)
+      return await deleteStripeSource(organization.stripeCustomerId, sourceId);
     throw new Error(ErrorCode.STRIPE_NO_CUSTOMER);
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);

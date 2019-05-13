@@ -12,7 +12,8 @@ import {
   getOrganizationSourcesForUser,
   getOrganizationSourceForUser,
   createOrganizationSourceForUser,
-  updateOrganizationSourceForUser
+  updateOrganizationSourceForUser,
+  deleteOrganizationSourceForUser
 } from "../rest/organization";
 import { ErrorCode } from "../interfaces/enum";
 
@@ -130,6 +131,21 @@ export const routeOrganizationSourceGet = async (
   if (!sourceId) throw new Error(ErrorCode.MISSING_FIELD);
   res.json(
     await getOrganizationSourceForUser(
+      res.locals.token.id,
+      req.params.id,
+      sourceId
+    )
+  );
+};
+
+export const routeOrganizationSourceDelete = async (
+  req: Request,
+  res: Response
+) => {
+  const sourceId = req.params.sourceId;
+  if (!sourceId) throw new Error(ErrorCode.MISSING_FIELD);
+  res.json(
+    await deleteOrganizationSourceForUser(
       res.locals.token.id,
       req.params.id,
       sourceId
