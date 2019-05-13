@@ -169,6 +169,7 @@ export const updateApiKeyForUser = async (
       },
       locals
     );
+    return;
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
@@ -216,6 +217,7 @@ export const deleteApiKeyForUser = async (
       },
       locals
     );
+    return;
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
