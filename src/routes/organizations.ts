@@ -10,7 +10,9 @@ import {
   getOrganizationSubscriptionsForUser,
   getOrganizationPricingPlansForUser,
   getOrganizationSourcesForUser,
-  getOrganizationSourceForUser
+  getOrganizationSourceForUser,
+  createOrganizationSourceForUser,
+  updateOrganizationSourceForUser
 } from "../rest/organization";
 import { ErrorCode } from "../interfaces/enum";
 
@@ -131,6 +133,35 @@ export const routeOrganizationSourceGet = async (
       res.locals.token.id,
       req.params.id,
       sourceId
+    )
+  );
+};
+
+export const routeOrganizationSourceUpdate = async (
+  req: Request,
+  res: Response
+) => {
+  const sourceId = req.params.sourceId;
+  if (!sourceId) throw new Error(ErrorCode.MISSING_FIELD);
+  res.json(
+    await updateOrganizationSourceForUser(
+      res.locals.token.id,
+      req.params.id,
+      sourceId,
+      req.body
+    )
+  );
+};
+
+export const routeOrganizationSourcesPut = async (
+  req: Request,
+  res: Response
+) => {
+  res.json(
+    await createOrganizationSourceForUser(
+      res.locals.token.id,
+      req.params.id,
+      req.body
     )
   );
 };

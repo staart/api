@@ -80,3 +80,26 @@ export const getStripeSources = async (id: string) => {
 export const getStripeSource = async (id: string, sourceId: string) => {
   return await stripe.customers.retrieveSource(id, sourceId);
 };
+
+/**
+ * Get the details of a customer
+ * @param id - Stripe customer ID
+ */
+export const createStripeSource = async (
+  id: string,
+  card: Stripe.cards.ISourceCreationOptionsExtended
+) => {
+  return await stripe.customers.createCard(id, { card });
+};
+
+/**
+ * Get the details of a customer
+ * @param id - Stripe customer ID
+ */
+export const updateStripeSource = async (
+  id: string,
+  cardId: string,
+  data: Stripe.cards.ISourceCreationOptionsExtended
+) => {
+  return await stripe.customers.updateCard(id, cardId, data);
+};

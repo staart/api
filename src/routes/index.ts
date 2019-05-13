@@ -26,7 +26,9 @@ import {
   routeOrganizationSubscriptionsGet,
   routeOrganizationPricingPlansGet,
   routeOrganizationSourcesGet,
-  routeOrganizationSourceGet
+  routeOrganizationSourceGet,
+  routeOrganizationSourcesPut,
+  routeOrganizationSourceUpdate
 } from "./organizations";
 import { authHandler } from "../helpers/middleware";
 import {
@@ -173,10 +175,20 @@ const routesOrganization = (app: Application) => {
     authHandler,
     asyncHandler(routeOrganizationSourcesGet)
   );
+  app.put(
+    "/organizations/:id/sources",
+    authHandler,
+    asyncHandler(routeOrganizationSourcesPut)
+  );
   app.get(
     "/organizations/:id/sources/:sourceId",
     authHandler,
     asyncHandler(routeOrganizationSourceGet)
+  );
+  app.patch(
+    "/organizations/:id/sources/:sourceId",
+    authHandler,
+    asyncHandler(routeOrganizationSourceUpdate)
   );
 };
 

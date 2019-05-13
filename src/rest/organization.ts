@@ -27,9 +27,11 @@ import {
   getStripeSubscriptions,
   getStripeProductPricing,
   getStripeSources,
-  getStripeSource
+  getStripeSource,
+  createStripeSource,
+  updateStripeSource
 } from "../helpers/stripe";
-import { customers } from "stripe";
+import { customers, cards } from "stripe";
 
 export const getOrganizationForUser = async (
   userId: number,
@@ -211,6 +213,43 @@ export const getOrganizationSourceForUser = async (
     const organization = await getOrganization(organizationId);
     if (organization.stripeCustomerId)
       return await getStripeSource(organization.stripeCustomerId, sourceId);
+    throw new Error(ErrorCode.STRIPE_NO_CUSTOMER);
+  }
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const updateOrganizationSourceForUser = async (
+  userId: number,
+  organizationId: number,
+  sourceId: string,
+  data: cards.ISourceCreationOptionsExtended
+) => {
+  if (
+    await can(userId, Authorizations.UPDATE, "organization", organizationId)
+  ) {
+    const organization = await getOrganization(organizationId);
+    if (organization.stripeCustomerId)
+      return await updateStripeSource(
+        organization.stripeCustomerId,
+        sourceId,
+        data
+      );
+    throw new Error(ErrorCode.STRIPE_NO_CUSTOMER);
+  }
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const createOrganizationSourceForUser = async (
+  userId: number,
+  organizationId: number,
+  card: cards.ISourceCreationOptionsExtended
+) => {
+  if (
+    await can(userId, Authorizations.CREATE, "organization", organizationId)
+  ) {
+    const organization = await getOrganization(organizationId);
+    if (organization.stripeCustomerId)
+      return await createStripeSource(organization.stripeCustomerId, card);
     throw new Error(ErrorCode.STRIPE_NO_CUSTOMER);
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
