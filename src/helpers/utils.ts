@@ -82,7 +82,11 @@ export const readOnlyValues = ["createdAt", "id"];
 /**
  * Validate strings to type
  */
-export const validate = (text: string, type: ValidationTypes) => {
+export const validate = (
+  text: string,
+  type: ValidationTypes,
+  maxLength?: number
+) => {
   if (type === ValidationTypes.EMAIL)
     if (!isEmail(text)) throw new Error(ErrorCode.VALIDATION_EMAIL);
 
@@ -92,4 +96,29 @@ export const validate = (text: string, type: ValidationTypes) => {
   if (type === ValidationTypes.PHONE)
     if (!isMobilePhone(text, "any"))
       throw new Error(ErrorCode.VALIDATION_PHONE);
+
+  if (type === ValidationTypes.TEXT)
+    if (!text || !text.trim()) throw new Error(ErrorCode.VALIDATION_TEXT);
+
+  if (maxLength && type === ValidationTypes.TEXT)
+    if (text.length > maxLength)
+      throw new Error(ErrorCode.VALIDATION_TEXT_LENGTH);
+
+  if (type === ValidationTypes.DOMAIN)
+    if (!text || !text.includes("."))
+      throw new Error(ErrorCode.VALIDATION_DOMAIN);
+
+  if (type === ValidationTypes.COUNTRY_CODE)
+    if (!text || text.length !== 2)
+      throw new Error(ErrorCode.VALIDATION_COUNTRY_CODE);
+
+  if (type === ValidationTypes.GENDER)
+    if (!text || text.length !== 1)
+      throw new Error(ErrorCode.VALIDATION_GENDER);
+
+  if (type === ValidationTypes.LANGUAGE)
+    if (!text || !text.trim()) throw new Error(ErrorCode.VALIDATION_LANGUAGE);
+
+  if (type === ValidationTypes.TIMEZONE)
+    if (!text || !text.trim()) throw new Error(ErrorCode.VALIDATION_TIMEZONE);
 };

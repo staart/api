@@ -1,4 +1,9 @@
-import { ErrorCode, EventType, Authorizations } from "../interfaces/enum";
+import {
+  ErrorCode,
+  EventType,
+  Authorizations,
+  ValidationTypes
+} from "../interfaces/enum";
 import {
   getUser,
   updateUser,
@@ -20,6 +25,7 @@ import {
 } from "../crud/event";
 import { getUserEmails, deleteAllUserEmails } from "../crud/email";
 import { can } from "../helpers/authorization";
+import { validate } from "../helpers/utils";
 
 export const getUserFromId = async (userId: number, tokenUserId: number) => {
   if (await can(tokenUserId, Authorizations.READ, "user", userId))
@@ -33,6 +39,14 @@ export const updateUserForUser = async (
   data: User,
   locals: Locals
 ) => {
+  if (data.name) validate(data.name, ValidationTypes.TEXT);
+  if (data.nickname) validate(data.name, ValidationTypes.TEXT);
+  if (data.countryCode) validate(data.name, ValidationTypes.COUNTRY_CODE);
+  if (data.password) validate(data.password, ValidationTypes.TEXT);
+  if (data.gender) validate(data.gender, ValidationTypes.GENDER);
+  if (data.preferredLanguage)
+    validate(data.preferredLanguage, ValidationTypes.LANGUAGE);
+  if (data.timezone) validate(data.timezone, ValidationTypes.TIMEZONE);
   if (await can(tokenUserId, Authorizations.UPDATE, "user", updateUserId)) {
     await updateUser(updateUserId, data);
     await createEvent(

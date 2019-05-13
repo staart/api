@@ -39,6 +39,7 @@ export const inviteMemberToOrganization = async (
   role: MembershipRole,
   locals: Locals
 ) => {
+  validate(newMemberName, ValidationTypes.TEXT);
   validate(newMemberEmail, ValidationTypes.EMAIL);
   if (
     await can(

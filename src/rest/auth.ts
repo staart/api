@@ -53,6 +53,7 @@ export const login = async (
   locals: Locals
 ) => {
   validate(email, ValidationTypes.EMAIL);
+  validate(password, ValidationTypes.TEXT);
   const user = await getUserByEmail(email, true);
   if (!user.password) throw new Error(ErrorCode.MISSING_PASSWORD);
   if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
@@ -72,6 +73,14 @@ export const register = async (
 ) => {
   if (email) await checkIfNewEmail(email);
   // Create user
+  if (user.name) validate(user.name, ValidationTypes.TEXT);
+  if (user.nickname) validate(user.name, ValidationTypes.TEXT);
+  if (user.countryCode) validate(user.name, ValidationTypes.COUNTRY_CODE);
+  if (user.password) validate(user.password, ValidationTypes.TEXT);
+  if (user.gender) validate(user.gender, ValidationTypes.GENDER);
+  if (user.preferredLanguage)
+    validate(user.preferredLanguage, ValidationTypes.LANGUAGE);
+  if (user.timezone) validate(user.timezone, ValidationTypes.TIMEZONE);
   const result = <InsertResult>await createUser(user);
   const userId = result.insertId;
   // Set email
@@ -131,6 +140,7 @@ export const updatePassword = async (
   password: string,
   locals: Locals
 ) => {
+  validate(password, ValidationTypes.TEXT);
   const userId = (<KeyValue>await verifyToken(token, Tokens.PASSWORD_RESET)).id;
   const hashedPassword = await hash(password || "", 8);
   await updateUser(userId, { password: hashedPassword });

@@ -87,6 +87,7 @@ export const cleanValues = (
   values: (string | number | boolean | Date | undefined)[]
 ) => {
   values = values.map(value => {
+    if (!value) return;
     // Clean up strings
     if (typeof value === "string") value = value.trim();
     // Convert true to 1, false to 0
