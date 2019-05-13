@@ -127,6 +127,10 @@ export const routeOrganizationSourceGet = async (
   const sourceId = req.params.sourceId;
   if (!sourceId) throw new Error(ErrorCode.MISSING_FIELD);
   res.json(
-    await getOrganizationSourceForUser(res.locals.token.id, req.params.id, sourceId)
+    await getOrganizationSourceForUser(
+      res.locals.token.id,
+      req.params.id,
+      sourceId
+    )
   );
 };

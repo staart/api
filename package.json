@@ -19,7 +19,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn check-types && yarn prettier-all"
+      "pre-commit": "yarn prettier-all && git add . && yarn check-types"
     }
   },
   "devDependencies": {
