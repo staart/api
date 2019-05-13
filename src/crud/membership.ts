@@ -43,7 +43,10 @@ export const updateMembership = async (id: number, membership: KeyValue) => {
   membership = removeReadOnlyValues(membership);
   const membershipDetails = await getMembership(id);
   if (membershipDetails.id)
-    deleteItemFromCache(CacheCategories.USER_MEMBERSHIPS, membershipDetails.id);
+    deleteItemFromCache(
+      CacheCategories.USER_MEMBERSHIPS,
+      membershipDetails.userId
+    );
   deleteItemFromCache(CacheCategories.MEMBERSHIP, id);
   deleteItemFromCache(
     CacheCategories.ORGANIZATION_MEMBERSHIPS,
@@ -65,7 +68,10 @@ export const updateMembership = async (id: number, membership: KeyValue) => {
 export const deleteMembership = async (id: number) => {
   const membershipDetails = await getMembership(id);
   if (membershipDetails.id)
-    deleteItemFromCache(CacheCategories.USER_MEMBERSHIPS, membershipDetails.id);
+    deleteItemFromCache(
+      CacheCategories.USER_MEMBERSHIPS,
+      membershipDetails.userId
+    );
   deleteItemFromCache(CacheCategories.MEMBERSHIP, id);
   deleteItemFromCache(
     CacheCategories.ORGANIZATION_MEMBERSHIPS,
@@ -88,7 +94,7 @@ export const deleteAllOrganizationMemberships = async (
   const allMemberships = await getOrganizationMembers(organizationId);
   for await (const membership of allMemberships) {
     if (membership.id) {
-      deleteItemFromCache(CacheCategories.USER_MEMBERSHIPS, membership.id);
+      deleteItemFromCache(CacheCategories.USER_MEMBERSHIPS, membership.userId);
       deleteItemFromCache(
         CacheCategories.USER_MEMBERSHIP_ORGANIZATION,
         `${membership.userId}_${membership.organizationId}`
@@ -107,7 +113,7 @@ export const deleteAllUserMemberships = async (userId: number) => {
   const allMemberships = await getUserMemberships(userId);
   for await (const membership of allMemberships) {
     if (membership.id) {
-      deleteItemFromCache(CacheCategories.USER_MEMBERSHIPS, membership.id);
+      deleteItemFromCache(CacheCategories.USER_MEMBERSHIPS, membership.userId);
       deleteItemFromCache(
         CacheCategories.USER_MEMBERSHIP_ORGANIZATION,
         `${membership.userId}_${membership.organizationId}`
