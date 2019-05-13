@@ -74,8 +74,9 @@ export const register = async (
   if (email) await checkIfNewEmail(email);
   // Create user
   if (user.name) validate(user.name, ValidationTypes.TEXT);
-  if (user.nickname) validate(user.name, ValidationTypes.TEXT);
-  if (user.countryCode) validate(user.name, ValidationTypes.COUNTRY_CODE);
+  if (user.nickname) validate(user.nickname, ValidationTypes.TEXT);
+  if (user.countryCode)
+    validate(user.countryCode, ValidationTypes.COUNTRY_CODE);
   if (user.password) validate(user.password, ValidationTypes.TEXT);
   if (user.gender) validate(user.gender, ValidationTypes.GENDER);
   if (user.preferredLanguage)

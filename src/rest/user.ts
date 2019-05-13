@@ -40,8 +40,9 @@ export const updateUserForUser = async (
   locals: Locals
 ) => {
   if (data.name) validate(data.name, ValidationTypes.TEXT);
-  if (data.nickname) validate(data.name, ValidationTypes.TEXT);
-  if (data.countryCode) validate(data.name, ValidationTypes.COUNTRY_CODE);
+  if (data.nickname) validate(data.nickname, ValidationTypes.TEXT);
+  if (data.countryCode)
+    validate(data.countryCode, ValidationTypes.COUNTRY_CODE);
   if (data.password) validate(data.password, ValidationTypes.TEXT);
   if (data.gender) validate(data.gender, ValidationTypes.GENDER);
   if (data.preferredLanguage)
