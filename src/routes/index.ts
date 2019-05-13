@@ -22,7 +22,9 @@ import {
   routeOrganizationGet,
   routeOrganizationBillingGet,
   routeOrganizationBillingUpdate,
-  routeOrganizationInvoicesGet
+  routeOrganizationInvoicesGet,
+  routeOrganizationSubscriptionsGet,
+  routeOrganizationPricingPlansGet
 } from "./organizations";
 import { authHandler } from "../helpers/middleware";
 import {
@@ -153,6 +155,16 @@ const routesOrganization = (app: Application) => {
     "/organizations/:id/invoices",
     authHandler,
     asyncHandler(routeOrganizationInvoicesGet)
+  );
+  app.get(
+    "/organizations/:id/subscriptions",
+    authHandler,
+    asyncHandler(routeOrganizationSubscriptionsGet)
+  );
+  app.get(
+    "/organizations/:id/pricing/:product",
+    authHandler,
+    asyncHandler(routeOrganizationPricingPlansGet)
   );
 };
 

@@ -43,3 +43,24 @@ export const updateStripeCustomer = async (
 export const getStripeInvoices = async (id: string) => {
   return await stripe.invoices.list({ customer: id });
 };
+
+/**
+ * Get the details of a customer
+ * @param id - Stripe customer ID
+ */
+export const getStripeSubscriptions = async (id: string) => {
+  return await stripe.subscriptions.list({ customer: id });
+};
+
+/**
+ * Get the details of a customer
+ * @param id - Stripe customer ID
+ */
+export const getStripeProductPricing = async (product: string) => {
+  const plans = await stripe.plans.list({ product });
+  // If you have a custom plan for a client, don't show that
+  plans.data = plans.data.filter(
+    plan => !(plan.nickname || "").toLowerCase().startsWith("custom plan")
+  );
+  return plans;
+};

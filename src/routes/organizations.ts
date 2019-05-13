@@ -6,7 +6,9 @@ import {
   getOrganizationForUser,
   getOrganizationBillingForUser,
   updateOrganizationBillingForUser,
-  getOrganizationInvoicesForUser
+  getOrganizationInvoicesForUser,
+  getOrganizationSubscriptionsForUser,
+  getOrganizationPricingPlansForUser
 } from "../rest/organization";
 import { ErrorCode } from "../interfaces/enum";
 
@@ -77,5 +79,32 @@ export const routeOrganizationInvoicesGet = async (
 ) => {
   res.json(
     await getOrganizationInvoicesForUser(res.locals.token.id, req.params.id)
+  );
+};
+
+export const routeOrganizationSubscriptionsGet = async (
+  req: Request,
+  res: Response
+) => {
+  res.json(
+    await getOrganizationSubscriptionsForUser(
+      res.locals.token.id,
+      req.params.id
+    )
+  );
+};
+
+export const routeOrganizationPricingPlansGet = async (
+  req: Request,
+  res: Response
+) => {
+  const product = req.params.product;
+  if (!product) throw new Error(ErrorCode.MISSING_FIELD);
+  res.json(
+    await getOrganizationPricingPlansForUser(
+      res.locals.token.id,
+      req.params.id,
+      product
+    )
   );
 };
