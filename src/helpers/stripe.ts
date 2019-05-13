@@ -27,6 +27,14 @@ export const createStripeCustomer = async (
 };
 
 /**
+ * Get the details of a customer
+ * @param id - Stripe customer ID
+ */
+export const deleteStripeCustomer = async (id: string) => {
+  return await stripe.customers.del(id);
+};
+
+/**
  * Update the details of a customer
  */
 export const updateStripeCustomer = async (

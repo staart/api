@@ -30,7 +30,8 @@ import {
   getStripeSource,
   createStripeSource,
   updateStripeSource,
-  deleteStripeSource
+  deleteStripeSource,
+  deleteStripeCustomer
 } from "../helpers/stripe";
 import { customers, cards } from "stripe";
 
@@ -99,6 +100,9 @@ export const deleteOrganizationForUser = async (
   if (
     await can(userId, Authorizations.DELETE, "organization", organizationId)
   ) {
+    const organizationDetails = await getOrganization(organizationId);
+    if (organizationDetails.stripeCustomerId)
+      await deleteStripeCustomer(organizationDetails.stripeCustomerId);
     await deleteOrganization(organizationId);
     await deleteAllOrganizationMemberships(organizationId);
     await createEvent(
