@@ -10,7 +10,7 @@
     "build": "touch .env && mkdir -p dist && cp .env dist/.env && tsc",
     "check-types": "tsc",
     "start": "pm2-runtime start dist/index.js --env production",
-    "dev": "concurrently 'yarn watch-build' 'yarn watch-prettier' 'yarn watch-server'",
+    "dev": "concurrently 'yarn watch-build' 'yarn watch-server'",
     "prettier-all": "prettier '{src,examples}/**/*.{ts,json}' --write",
     "watch-build": "onchange '{src,examples}/**/*.ts' -- yarn build-babel",
     "watch-prettier": "onchange '{src,examples}/**/*.{ts,json}' -- prettier --write {{changed}}",
@@ -19,7 +19,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn check-types"
+      "pre-commit": "yarn check-types && yarn prettier-all"
     }
   },
   "devDependencies": {

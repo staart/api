@@ -64,3 +64,19 @@ export const getStripeProductPricing = async (product: string) => {
   );
   return plans;
 };
+
+/**
+ * Get the details of a customer
+ * @param id - Stripe customer ID
+ */
+export const getStripeSources = async (id: string) => {
+  return await stripe.customers.listSources(id, { object: "card" });
+};
+
+/**
+ * Get the details of a customer
+ * @param id - Stripe customer ID
+ */
+export const getStripeSource = async (id: string, sourceId: string) => {
+  return await stripe.customers.retrieveSource(id, sourceId);
+};

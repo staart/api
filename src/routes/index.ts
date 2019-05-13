@@ -24,7 +24,9 @@ import {
   routeOrganizationBillingUpdate,
   routeOrganizationInvoicesGet,
   routeOrganizationSubscriptionsGet,
-  routeOrganizationPricingPlansGet
+  routeOrganizationPricingPlansGet,
+  routeOrganizationSourcesGet,
+  routeOrganizationSourceGet
 } from "./organizations";
 import { authHandler } from "../helpers/middleware";
 import {
@@ -165,6 +167,16 @@ const routesOrganization = (app: Application) => {
     "/organizations/:id/pricing/:product",
     authHandler,
     asyncHandler(routeOrganizationPricingPlansGet)
+  );
+  app.get(
+    "/organizations/:id/sources",
+    authHandler,
+    asyncHandler(routeOrganizationSourcesGet)
+  );
+  app.get(
+    "/organizations/:id/sources/:sourceId",
+    authHandler,
+    asyncHandler(routeOrganizationSourceGet)
   );
 };
 

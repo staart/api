@@ -8,7 +8,9 @@ import {
   updateOrganizationBillingForUser,
   getOrganizationInvoicesForUser,
   getOrganizationSubscriptionsForUser,
-  getOrganizationPricingPlansForUser
+  getOrganizationPricingPlansForUser,
+  getOrganizationSourcesForUser,
+  getOrganizationSourceForUser
 } from "../rest/organization";
 import { ErrorCode } from "../interfaces/enum";
 
@@ -106,5 +108,25 @@ export const routeOrganizationPricingPlansGet = async (
       req.params.id,
       product
     )
+  );
+};
+
+export const routeOrganizationSourcesGet = async (
+  req: Request,
+  res: Response
+) => {
+  res.json(
+    await getOrganizationSourcesForUser(res.locals.token.id, req.params.id)
+  );
+};
+
+export const routeOrganizationSourceGet = async (
+  req: Request,
+  res: Response
+) => {
+  const sourceId = req.params.sourceId;
+  if (!sourceId) throw new Error(ErrorCode.MISSING_FIELD);
+  res.json(
+    await getOrganizationSourceForUser(res.locals.token.id, req.params.id, sourceId)
   );
 };
