@@ -214,8 +214,8 @@ export const getApiKey = async (apiKey: string) => {
  * Create an API key
  */
 export const createApiKey = async (apiKey: ApiKey) => {
-  apiKey.apiKey = cryptoRandomString({ length: 10, type: "url-safe" });
-  apiKey.secretKey = cryptoRandomString({ length: 10, type: "url-safe" });
+  apiKey.apiKey = cryptoRandomString({ length: 20, type: "url-safe" });
+  apiKey.secretKey = cryptoRandomString({ length: 20, type: "url-safe" });
   apiKey.createdAt = new Date();
   apiKey.updatedAt = apiKey.createdAt;
   deleteItemFromCache(CacheCategories.API_KEYS, apiKey.userId);
