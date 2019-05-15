@@ -66,7 +66,7 @@
     "express-async-handler": "^1.1.4",
     "fs-extra": "^8.0.0",
     "geolite2": "^1.2.1",
-    "googleapis": "^39.2.0",
+    "googleapis": "^40.0.0",
     "helmet": "^3.18.0",
     "ip-anonymize": "^0.0.6",
     "jsonwebtoken": "^8.5.1",
