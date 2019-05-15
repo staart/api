@@ -138,12 +138,9 @@ export const getApiKeyForUser = async (
   dataUserId: number,
   apiKey: string
 ) => {
-  if (await can(tokenUserId, Authorizations.READ_SECURE, "user", dataUserId)) {
-    const apiKeyDetails = await getApiKey(apiKey);
-    if (apiKeyDetails.userId != dataUserId)
-      throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+  const apiKeyDetails = await getApiKey(apiKey);
+  if (await can(tokenUserId, Authorizations.READ, "api-key", apiKeyDetails))
     return apiKeyDetails;
-  }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
 
@@ -154,12 +151,8 @@ export const updateApiKeyForUser = async (
   data: KeyValue,
   locals: Locals
 ) => {
-  if (
-    await can(tokenUserId, Authorizations.UPDATE_SECURE, "user", dataUserId)
-  ) {
-    const apiKeyDetails = await getApiKey(apiKey);
-    if (apiKeyDetails.userId != dataUserId)
-      throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+  const apiKeyDetails = await getApiKey(apiKey);
+  if (await can(tokenUserId, Authorizations.UPDATE, "api-key", apiKeyDetails)) {
     await updateApiKey(apiKey, data);
     await createEvent(
       {
@@ -202,12 +195,8 @@ export const deleteApiKeyForUser = async (
   apiKey: string,
   locals: Locals
 ) => {
-  if (
-    await can(tokenUserId, Authorizations.DELETE_SECURE, "user", dataUserId)
-  ) {
-    const apiKeyDetails = await getApiKey(apiKey);
-    if (apiKeyDetails.userId != dataUserId)
-      throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+  const apiKeyDetails = await getApiKey(apiKey);
+  if (await can(tokenUserId, Authorizations.DELETE, "api-key", apiKeyDetails)) {
     await deleteApiKey(apiKey);
     await createEvent(
       {

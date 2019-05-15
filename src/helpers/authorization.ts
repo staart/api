@@ -1,4 +1,4 @@
-import { User } from "../interfaces/tables/user";
+import { User, ApiKey } from "../interfaces/tables/user";
 import { Organization } from "../interfaces/tables/organization";
 import {
   ErrorCode,
@@ -148,6 +148,27 @@ const canUserGeneral = async (user: User, action: Authorizations) => {
   return false;
 };
 
+const canUserApiKey = async (
+  user: User,
+  action: Authorizations,
+  target: ApiKey
+) => {
+  // A user can do anything to her API key
+  if (target.userId == user.id) return true;
+
+  let secureAction = action;
+  if (action === Authorizations.CREATE)
+    secureAction = Authorizations.CREATE_SECURE;
+  if (action === Authorizations.READ) secureAction = Authorizations.READ_SECURE;
+  if (action === Authorizations.UPDATE)
+    secureAction = Authorizations.UPDATE_SECURE;
+  if (action === Authorizations.DELETE)
+    secureAction = Authorizations.DELETE_SECURE;
+
+  const owner = await getUser(target.userId);
+  return await canUserUser(user, secureAction, owner);
+};
+
 /**
  * Whether a user has authorization to perform an action
  * @param ipAddress  IP address for the new location
@@ -155,8 +176,8 @@ const canUserGeneral = async (user: User, action: Authorizations) => {
 export const can = async (
   user: User | number,
   action: Authorizations,
-  targetType: "user" | "organization" | "membership" | "general",
-  target?: User | Organization | Membership | number
+  targetType: "user" | "organization" | "membership" | "api-key" | "general",
+  target?: User | Organization | Membership | ApiKey | number
 ) => {
   let userObject;
   if (typeof user === "number") {
@@ -165,7 +186,10 @@ export const can = async (
     userObject = user;
   }
   let targetObject;
-  if (typeof target === "string") target = parseInt(target);
+  if (typeof target === "string") {
+    let newTarget = parseInt(target);
+    if (!isNaN(newTarget)) target = newTarget;
+  }
   if (typeof target == "number") {
     if (targetType === "user") {
       targetObject = await getUser(target);
@@ -188,6 +212,8 @@ export const can = async (
     return await canUserMembership(userObject, action, <Membership>(
       targetObject
     ));
+  } else if (targetType === "api-key") {
+    return await canUserApiKey(userObject, action, <ApiKey>targetObject);
   } else {
     return await canUserGeneral(userObject, action);
   }
