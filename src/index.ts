@@ -9,7 +9,7 @@ import { router } from "./routes";
 
 const app = express();
 
-app.use(helmet());
+app.use(helmet({ hsts: { maxAge: 31536000 } }));
 app.use(cors());
 app.use(json({ limit: "50mb" }));
 app.use(trackingHandler);
