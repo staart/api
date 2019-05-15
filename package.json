@@ -47,7 +47,7 @@
     "concurrently": "^4.1.0",
     "coveralls": "^3.0.3",
     "dotenv": "^8.0.0",
-    "husky": "^2.2.0",
+    "husky": "^2.3.0",
     "jest": "^24.8.0",
     "nodemon": "^1.19.0",
     "onchange": "^5.2.0",
