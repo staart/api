@@ -4469,10 +4469,10 @@ marked@^0.6.2:
   resolved "https://registry.yarnpkg.com/marked/-/marked-0.6.2.tgz#c574be8b545a8b48641456ca1dbe0e37b6dccc1a"
   integrity sha512-LqxwVH3P/rqKX4EKGz7+c2G9r98WeM/SW34ybhgNGhUQNKtf1GmmSkJ6cDGJ/t6tiyae49qRkpyTw2B9HOrgUA==
 
-maxmind@^3.0.3:
-  version "3.0.3"
-  resolved "https://registry.yarnpkg.com/maxmind/-/maxmind-3.0.3.tgz#f771af8cc10a6a3481a42c3f374af9448a0689c8"
-  integrity sha512-E/AvmqI1bfYU1c8p+Q7xCc9TGoTOp/yV8WsUHuJ+eGYEHmakEazbl3OrJCYkacBdLEqq19p/G3OyjBSDUJTUqA==
+maxmind@^3.0.4:
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/maxmind/-/maxmind-3.0.4.tgz#f8257ec6d352c8a7e486dffdb636bb8704f502fc"
+  integrity sha512-q6mB5COkgAM+KQgromGXyTn0CBwVgcfja2B42aMoFAJah87rN2Joq0WNB981QnNlwVtiDsLZgMRCPP8PvpOt4w==
   dependencies:
     tiny-lru "6.0.1"
 
