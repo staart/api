@@ -64,7 +64,7 @@
     "crypto-random-string": "^3.0.0",
     "express": "^4.17.0",
     "express-async-handler": "^1.1.4",
-    "fs-extra": "^8.0.0",
+    "fs-extra": "^8.0.1",
     "geolite2": "^1.2.1",
     "googleapis": "^40.0.0",
     "helmet": "^3.18.0",
