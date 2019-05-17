@@ -10,7 +10,8 @@ import {
   createApiKeyForUser,
   getApiKeyForUser,
   updateApiKeyForUser,
-  deleteApiKeyForUser
+  deleteApiKeyForUser,
+  getNotificationsForUser
 } from "../rest/user";
 import { ErrorCode } from "../interfaces/enum";
 
@@ -102,4 +103,14 @@ export const routeUserApiKeyDelete = async (req: Request, res: Response) => {
   res.json(
     await deleteApiKeyForUser(res.locals.token.id, id, apiKey, res.locals)
   );
+};
+
+export const routeUserNotificationsGet = async (
+  req: Request,
+  res: Response
+) => {
+  let id = req.params.id;
+  if (id === "me") id = res.locals.token.id;
+  if (!id) throw new Error(ErrorCode.MISSING_FIELD);
+  res.json(await getNotificationsForUser(res.locals.token.id, id));
 };

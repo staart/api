@@ -11,7 +11,8 @@ import {
   routeUserApiKeysPut,
   routeUserApiKeyGet,
   routeUserApiKeyUpdate,
-  routeUserApiKeyDelete
+  routeUserApiKeyDelete,
+  routeUserNotificationsGet
 } from "./users";
 import {
   routeEmailVerify,
@@ -136,6 +137,11 @@ const routesUser = (app: Application) => {
     "/users/:id/api-keys/:apiKey",
     authHandler,
     asyncHandler(routeUserApiKeyDelete)
+  );
+  app.get(
+    "/users/:id/notifications",
+    authHandler,
+    asyncHandler(routeUserNotificationsGet)
   );
 };
 

@@ -112,7 +112,9 @@ export enum CacheCategories {
   APPROVE_LOCATION = "approved-location",
   IP_LOOKUP = "ip-lookup",
   API_KEYS = "api-keys",
-  API_KEY = "api-key"
+  API_KEY = "api-key",
+  NOTIFICATION = "notification",
+  USER_NOTIFICATIONS = "user-notifications"
 }
 
 export enum Authorizations {
@@ -145,4 +147,8 @@ export enum ValidationTypes {
   TIMEZONE = "timezone",
   COUNTRY_CODE = "country-code",
   TEXT = "text"
+}
+
+export enum NotificationCategories {
+  JOINED_ORGANIZATION = "joined-organization"
 }

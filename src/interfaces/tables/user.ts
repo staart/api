@@ -1,4 +1,9 @@
-import { UserRole, NotificationEmails, Genders } from "../enum";
+import {
+  UserRole,
+  NotificationEmails,
+  Genders,
+  NotificationCategories
+} from "../enum";
 
 export interface User {
   id?: number;
@@ -33,6 +38,17 @@ export interface ApiKey {
   secretKey?: string;
   userId: number;
   organizationId?: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface Notification {
+  id?: number;
+  userId: number;
+  category: NotificationCategories;
+  text: string;
+  link: string;
+  read: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }

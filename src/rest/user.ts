@@ -31,6 +31,7 @@ import {
 import { getUserEmails, deleteAllUserEmails } from "../crud/email";
 import { can } from "../helpers/authorization";
 import { validate } from "../helpers/utils";
+import { getUserNotifications } from "../crud/notification";
 
 export const getUserFromId = async (userId: number, tokenUserId: number) => {
   if (await can(tokenUserId, Authorizations.READ, "user", userId))
@@ -208,5 +209,14 @@ export const deleteApiKeyForUser = async (
     );
     return;
   }
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const getNotificationsForUser = async (
+  tokenUserId: number,
+  dataUserId: number
+) => {
+  if (await can(tokenUserId, Authorizations.READ, "user", dataUserId))
+    return await getUserNotifications(dataUserId);
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
