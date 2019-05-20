@@ -77,9 +77,9 @@ export const newOrganizationForUser = async (
   await createNotification({
     userId,
     category: NotificationCategories.JOINED_ORGANIZATION,
-    text: `You created the organization <strong>${
+    text: `You created the organization **${
       (await getOrganization(organizationId)).name
-    }</strong>`,
+    }**`,
     link: "/settings/organizations"
   });
   await createEvent(

@@ -71,9 +71,9 @@ export const inviteMemberToOrganization = async (
       await createNotification({
         userId: newUser.id,
         category: NotificationCategories.JOINED_ORGANIZATION,
-        text: `You were invited to the organization <strong>${
+        text: `You were invited to the organization **${
           (await getOrganization(organizationId)).name
-        }</strong>`,
+        }**`,
         link: "/settings/organizations"
       });
       return;

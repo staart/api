@@ -16,10 +16,10 @@ import { dateToDateTime } from "../helpers/utils";
 export const createNotification = async (notification: Notification) => {
   notification.createdAt = new Date();
   notification.updatedAt = notification.createdAt;
-  notification.read = !!notification.read;
+  notification.isRead = !!notification.isRead;
   deleteItemFromCache(CacheCategories.USER_NOTIFICATIONS, notification.userId);
   return await query(
-    `INSERT INTO \`api-keys\` ${tableValues(notification)}`,
+    `INSERT INTO notifications ${tableValues(notification)}`,
     Object.values(notification)
   );
 };
@@ -70,7 +70,7 @@ export const deleteNotification = async (notificationId: number) => {
     CacheCategories.USER_NOTIFICATIONS,
     notificationDetails.userId
   );
-  return await query("DELETE FROM `api-keys` WHERE id = ? LIMIT 1", [
+  return await query("DELETE FROM `notifications` WHERE id = ? LIMIT 1", [
     notificationId
   ]);
 };
@@ -79,12 +79,12 @@ export const deleteNotification = async (notificationId: number) => {
  * Get notifications for a user
  */
 export const getUserNotifications = async (userId: number) => {
-  return (<Notification[]>(
+  return <Notification[]>(
     await cachedQuery(
       CacheCategories.USER_NOTIFICATIONS,
       userId,
       "SELECT * FROM notifications WHERE userId = ?",
       [userId]
     )
-  ))[0];
+  );
 };

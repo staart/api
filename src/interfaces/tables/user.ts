@@ -48,7 +48,7 @@ export interface Notification {
   category: NotificationCategories;
   text: string;
   link: string;
-  read?: boolean;
+  isRead?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
