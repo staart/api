@@ -16,7 +16,8 @@ import {
   ErrorCode,
   EventType,
   Authorizations,
-  ValidationTypes
+  ValidationTypes,
+  NotificationCategories
 } from "../interfaces/enum";
 import {
   createEvent,
@@ -42,6 +43,7 @@ import {
 import { customers, cards } from "stripe";
 import { validate } from "../helpers/utils";
 import { getUser } from "../crud/user";
+import { createNotification } from "../crud/notification";
 
 export const getOrganizationForUser = async (
   userId: number,
@@ -71,6 +73,14 @@ export const newOrganizationForUser = async (
     organizationId,
     userId,
     role: MembershipRole.OWNER
+  });
+  await createNotification({
+    userId,
+    category: NotificationCategories.JOINED_ORGANIZATION,
+    text: `You created the organization <strong>${
+      (await getOrganization(organizationId)).name
+    }</strong>`,
+    link: "/settings/organizations"
   });
   await createEvent(
     {

@@ -3,7 +3,8 @@ import {
   ErrorCode,
   Authorizations,
   ValidationTypes,
-  EventType
+  EventType,
+  NotificationCategories
 } from "../interfaces/enum";
 import { getUserByEmail } from "../crud/user";
 import {
@@ -21,6 +22,8 @@ import { can } from "../helpers/authorization";
 import { validate } from "../helpers/utils";
 import { Locals, KeyValue } from "../interfaces/general";
 import { createEvent } from "../crud/event";
+import { createNotification } from "../crud/notification";
+import { getOrganization } from "../crud/organization";
 
 export const getMembershipDetailsForUser = async (
   userId: number,
@@ -65,6 +68,14 @@ export const inviteMemberToOrganization = async (
       } catch (error) {}
       if (isMemberAlready) throw new Error(ErrorCode.USER_IS_MEMBER_ALREADY);
       await createMembership({ userId: newUser.id, organizationId, role });
+      await createNotification({
+        userId: newUser.id,
+        category: NotificationCategories.JOINED_ORGANIZATION,
+        text: `You were invited to the organization <strong>${
+          (await getOrganization(organizationId)).name
+        }</strong>`,
+        link: "/settings/organizations"
+      });
       return;
     } else {
       await register(
