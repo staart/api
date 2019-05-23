@@ -79,6 +79,6 @@
     "node-emoji": "^1.10.0",
     "node-ses": "^2.2.0",
     "stripe": "^7.0.0",
-    "validator": "^10.11.0"
+    "validator": "^11.0.0"
   }
 }
