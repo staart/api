@@ -1,4 +1,5 @@
-import * as ses from "node-ses";
+import { createClient, SendEmailError, SendEmailData } from "node-ses";
+import { Response } from "request";
 import { Mail } from "../interfaces/mail";
 import {
   SES_SECRET,
@@ -13,7 +14,7 @@ import { render } from "mustache";
 import marked from "marked";
 import i18n from "../i18n";
 
-const client = ses.createClient({
+const client = createClient({
   key: SES_ACCESS,
   secret: SES_SECRET,
   amazon: `https://email.${SES_REGION}.amazonaws.com`
@@ -24,10 +25,13 @@ const client = ses.createClient({
  */
 const sendMail = (mail: Mail) =>
   new Promise((resolve, reject) => {
-    client.sendEmail(mail, (error: Error, data: any, response: any) => {
-      if (error) return reject(error);
-      resolve(response);
-    });
+    client.sendEmail(
+      mail,
+      (error: SendEmailError, data: SendEmailData, response: Response) => {
+        if (error) return reject(error);
+        resolve(response);
+      }
+    );
   });
 
 /**
