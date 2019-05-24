@@ -4853,10 +4853,10 @@ node-releases@^1.1.17:
   dependencies:
     semver "^5.3.0"
 
-node-ses@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/node-ses/-/node-ses-2.2.0.tgz#a96902fad74ab3b694fe61c0a2559fa8358de15b"
-  integrity sha512-NtQZhKS0LZkl7W3GiFa7jF2RdUY3IYmkiwv+cUnDYy9q18XQDyGGXOf9tncjRluONWjDWwXNVbq6NDaWAXlkfA==
+node-ses@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/node-ses/-/node-ses-2.2.1.tgz#41b113b2a4561fc0e9ede1f72705821a172b73b0"
+  integrity sha512-+vfOKdvb99LgbEKmL7rTw9GbNZ71fetJ4vseYsoHkfdzRXWsBalepf7LEn5Wsg/swoLM3dzxvWfOigm9KtkYgQ==
   dependencies:
     aws4 "^1.8.0"
     debug "^2.6.9"
