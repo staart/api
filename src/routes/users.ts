@@ -14,15 +14,23 @@ import {
   getNotificationsForUser
 } from "../rest/user";
 import { ErrorCode } from "../interfaces/enum";
+import {
+  Get,
+  Post,
+  Put,
+  Delete,
+  Middleware,
+  Controller
+} from "@overnightjs/core";
 
-export const routeUserId = async (req: Request, res: Response) => {
+const routeUserId = async (req: Request, res: Response) => {
   let id = req.body.id || req.params.id;
   if (id === "me") id = res.locals.token.id;
   if (!id) throw new Error(ErrorCode.MISSING_FIELD);
   res.json(await getUserFromId(id, res.locals.token.id));
 };
 
-export const routeUserUpdate = async (req: Request, res: Response) => {
+const routeUserUpdate = async (req: Request, res: Response) => {
   let id = req.params.id;
   if (id === "me") id = res.locals.token.id;
   if (!id) throw new Error(ErrorCode.MISSING_FIELD);
@@ -30,48 +38,48 @@ export const routeUserUpdate = async (req: Request, res: Response) => {
   res.json({ success: true });
 };
 
-export const routeUserRecentEvents = async (req: Request, res: Response) => {
+const routeUserRecentEvents = async (req: Request, res: Response) => {
   let id = req.params.id;
   if (id === "me") id = res.locals.token.id;
   if (!id) throw new Error(ErrorCode.MISSING_FIELD);
   res.json(await getRecentEventsForUser(res.locals.token.id, id));
 };
-export const routeUserMemberships = async (req: Request, res: Response) => {
+const routeUserMemberships = async (req: Request, res: Response) => {
   let id = req.params.id;
   if (id === "me") id = res.locals.token.id;
   if (!id) throw new Error(ErrorCode.MISSING_FIELD);
   res.json(await getMembershipsForUser(res.locals.token.id, id));
 };
 
-export const routeUserAllData = async (req: Request, res: Response) => {
+const routeUserAllData = async (req: Request, res: Response) => {
   let id = req.params.id;
   if (id === "me") id = res.locals.token.id;
   if (!id) throw new Error(ErrorCode.MISSING_FIELD);
   res.json(await getAllDataForUser(res.locals.token.id, id));
 };
 
-export const routeUserDelete = async (req: Request, res: Response) => {
+const routeUserDelete = async (req: Request, res: Response) => {
   let id = req.params.id;
   if (id === "me") id = res.locals.token.id;
   if (!id) throw new Error(ErrorCode.MISSING_FIELD);
   res.json(await deleteUserForUser(res.locals.token.id, id, res.locals));
 };
 
-export const routeUserApiKeysGet = async (req: Request, res: Response) => {
+const routeUserApiKeysGet = async (req: Request, res: Response) => {
   let id = req.params.id;
   if (id === "me") id = res.locals.token.id;
   if (!id) throw new Error(ErrorCode.MISSING_FIELD);
   res.json(await getApiKeysForUser(res.locals.token.id, id));
 };
 
-export const routeUserApiKeysPut = async (req: Request, res: Response) => {
+const routeUserApiKeysPut = async (req: Request, res: Response) => {
   let id = req.params.id;
   if (id === "me") id = res.locals.token.id;
   if (!id) throw new Error(ErrorCode.MISSING_FIELD);
   res.json(await createApiKeyForUser(res.locals.token.id, id, res.locals));
 };
 
-export const routeUserApiKeyGet = async (req: Request, res: Response) => {
+const routeUserApiKeyGet = async (req: Request, res: Response) => {
   let id = req.params.id;
   if (id === "me") id = res.locals.token.id;
   const apiKey = req.params.apiKey;
@@ -79,7 +87,7 @@ export const routeUserApiKeyGet = async (req: Request, res: Response) => {
   res.json(await getApiKeyForUser(res.locals.token.id, id, apiKey));
 };
 
-export const routeUserApiKeyUpdate = async (req: Request, res: Response) => {
+const routeUserApiKeyUpdate = async (req: Request, res: Response) => {
   let id = req.params.id;
   if (id === "me") id = res.locals.token.id;
   const apiKey = req.params.apiKey;
@@ -95,7 +103,7 @@ export const routeUserApiKeyUpdate = async (req: Request, res: Response) => {
   );
 };
 
-export const routeUserApiKeyDelete = async (req: Request, res: Response) => {
+const routeUserApiKeyDelete = async (req: Request, res: Response) => {
   let id = req.params.id;
   if (id === "me") id = res.locals.token.id;
   const apiKey = req.params.apiKey;
@@ -105,12 +113,18 @@ export const routeUserApiKeyDelete = async (req: Request, res: Response) => {
   );
 };
 
-export const routeUserNotificationsGet = async (
-  req: Request,
-  res: Response
-) => {
+const routeUserNotificationsGet = async (req: Request, res: Response) => {
   let id = req.params.id;
   if (id === "me") id = res.locals.token.id;
   if (!id) throw new Error(ErrorCode.MISSING_FIELD);
   res.json(await getNotificationsForUser(res.locals.token.id, id));
 };
+
+@Controller("user")
+export class UserController {
+  @Get(":id")
+  get(req: Request, res: Response) {
+    console.log(req.params.id);
+    res.status(200).json({ msg: "get_called" });
+  }
+}

@@ -1,6 +1,4 @@
 {
-  "presets": [
-    "@babel/typescript",
-    "@babel/preset-env"
-  ]
+  "presets": ["@babel/typescript", "@babel/preset-env"],
+  "plugins": [["@babel/plugin-proposal-decorators", { "legacy": true }]]
 }

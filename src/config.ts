@@ -2,7 +2,7 @@ import { config } from "dotenv";
 config();
 
 // Server
-export const PORT = process.env.PORT || 7007;
+export const PORT = process.env.PORT ? parseInt(process.env.PORT) : 7007;
 
 // Database
 export const DB_HOST = process.env.DB_HOST || "localhost";
