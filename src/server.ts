@@ -3,12 +3,12 @@ import cors from "cors";
 import helmet from "helmet";
 import { json, urlencoded } from "body-parser";
 import { Server } from "@overnightjs/core";
-import { UserController } from "./routes/users";
+import { UserController } from "./controllers/user";
 import { errorHandler, trackingHandler } from "./helpers/middleware";
-import { OrganizationController } from "./routes/organizations";
-import { AdminController } from "./routes/admin";
-import { AuthController } from "./routes/auth";
-import { MembershipController } from "./routes/membership";
+import { OrganizationController } from "./controllers/organization";
+import { AdminController } from "./controllers/admin";
+import { AuthController } from "./controllers/auth";
+import { MembershipController } from "./controllers/membership";
 
 export class Staart extends Server {
   constructor() {
