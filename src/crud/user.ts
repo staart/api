@@ -19,7 +19,7 @@ import {
   NotificationEmails,
   CacheCategories
 } from "../interfaces/enum";
-import { getEmailObject, getEmail } from "./email";
+import { getEmail, getVerifiedEmailObject } from "./email";
 import { cachedQuery, deleteItemFromCache } from "../helpers/cache";
 import md5 from "md5";
 import cryptoRandomString from "crypto-random-string";
@@ -82,7 +82,7 @@ export const getUser = async (id: number, secureOrigin = false) => {
  */
 export const getUserByEmail = async (email: string, secureOrigin = false) => {
   email = normalizeEmail(email) || email;
-  const emailObject = await getEmailObject(email);
+  const emailObject = await getVerifiedEmailObject(email);
   if (!emailObject || !emailObject.userId)
     throw new Error(ErrorCode.USER_NOT_FOUND);
   return await getUser(emailObject.userId, secureOrigin);

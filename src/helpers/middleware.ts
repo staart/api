@@ -12,7 +12,7 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  console.log(JSON.stringify(error));
+  console.log("HELLO THERE error \n ERROR", JSON.stringify(error));
   const response = safeError(error.toString().replace("Error: ", ""));
   res.status(response.status);
   res.json({ error: response.code, message: response.message });

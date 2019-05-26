@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ErrorCode } from "../interfaces/enum";
+import { ErrorCode, UserRole } from "../interfaces/enum";
 import {
   sendPasswordReset,
   login,
@@ -9,20 +9,34 @@ import {
   loginWithGoogleVerify,
   impersonate,
   approveLocation,
-  verifyEmail
+  verifyEmail,
+  register
 } from "../rest/auth";
 import { verifyToken } from "../helpers/jwt";
-import {
-  Get,
-  Post,
-  Controller,
-  ClassMiddleware,
-  Middleware
-} from "@overnightjs/core";
+import { Get, Post, Controller, Middleware } from "@overnightjs/core";
 import { authHandler } from "../helpers/middleware";
 
 @Controller("auth")
 export class AuthController {
+  @Post("register")
+  async register(req: Request, res: Response) {
+    const email = req.body.email;
+    const user = req.body;
+    delete user.organizationId;
+    delete user.email;
+    if (user.role == UserRole.ADMIN) delete user.role;
+    delete user.membershipRole;
+    if (!req.body.name || !email) throw new Error(ErrorCode.MISSING_FIELD);
+    await register(
+      user,
+      res.locals,
+      email,
+      req.body.organizationId,
+      req.body.membershipRole
+    );
+    res.json({ success: true });
+  }
+
   @Post("login")
   async login(req: Request, res: Response) {
     const email = req.body.email;

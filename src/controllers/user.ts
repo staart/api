@@ -13,7 +13,7 @@ import {
   deleteApiKeyForUser,
   getNotificationsForUser
 } from "../rest/user";
-import { ErrorCode, UserRole } from "../interfaces/enum";
+import { ErrorCode } from "../interfaces/enum";
 import {
   Get,
   Post,
@@ -23,7 +23,6 @@ import {
   ClassMiddleware
 } from "@overnightjs/core";
 import { authHandler } from "../helpers/middleware";
-import { register } from "../rest/auth";
 import {
   getAllEmailsForUser,
   addEmailToUserForUser,
@@ -35,25 +34,6 @@ import {
 @Controller("user")
 @ClassMiddleware(authHandler)
 export class UserController {
-  @Put()
-  async put(req: Request, res: Response) {
-    const email = req.body.email;
-    const user = req.body;
-    delete user.organizationId;
-    delete user.email;
-    if (user.role == UserRole.ADMIN) delete user.role;
-    delete user.membershipRole;
-    if (!req.body.name || !email) throw new Error(ErrorCode.MISSING_FIELD);
-    await register(
-      user,
-      res.locals,
-      email,
-      req.body.organizationId,
-      req.body.membershipRole
-    );
-    res.json({ success: true });
-  }
-
   @Get(":id")
   async get(req: Request, res: Response) {
     let id = req.body.id || req.params.id;
