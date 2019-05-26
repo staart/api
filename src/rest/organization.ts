@@ -351,3 +351,12 @@ export const getOrganizationRecentEventsForUser = async (
     return await getOrganizationRecentEvents(organizationId);
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
+
+export const getOrganizationMembershipsForUser = async (
+  userId: number,
+  organizationId: number
+) => {
+  if (await can(userId, Authorizations.READ, "organization", organizationId))
+    return await getOrganizationMemberDetails(organizationId);
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};

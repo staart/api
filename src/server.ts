@@ -5,6 +5,10 @@ import { json, urlencoded } from "body-parser";
 import { Server } from "@overnightjs/core";
 import { UserController } from "./routes/users";
 import { errorHandler, trackingHandler } from "./helpers/middleware";
+import { OrganizationController } from "./routes/organizations";
+import { AdminController } from "./routes/admin";
+import { AuthController } from "./routes/auth";
+import { MembershipController } from "./routes/membership";
 
 export class Staart extends Server {
   constructor() {
@@ -19,8 +23,19 @@ export class Staart extends Server {
   }
 
   private setupControllers() {
+    const authController = new AuthController();
     const userController = new UserController();
-    super.addControllers([userController]);
+    const organizationController = new OrganizationController();
+    const membershipController = new MembershipController();
+    const adminController = new AdminController();
+
+    super.addControllers([
+      authController,
+      userController,
+      organizationController,
+      membershipController,
+      adminController
+    ]);
   }
 
   public start(port: number): void {

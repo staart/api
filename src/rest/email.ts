@@ -6,7 +6,8 @@ import {
   getUserPrimaryEmailObject,
   deleteEmail,
   getUserEmails,
-  checkIfNewEmail
+  checkIfNewEmail,
+  resendEmailVerification
 } from "../crud/email";
 import { createEvent } from "../crud/event";
 import {
@@ -28,11 +29,34 @@ export const getAllEmailsForUser = async (
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
 
-export const addEmailToUser = async (
+export const getEmailForUser = async (
+  tokenUserId: number,
+  userId: number,
+  emailId: number
+) => {
+  if (await can(tokenUserId, Authorizations.READ, "user", userId))
+    return await getEmail(emailId);
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const resendEmailVerificationForUser = async (
+  tokenUserId: number,
+  userId: number,
+  emailId: number
+) => {
+  if (await can(tokenUserId, Authorizations.UPDATE, "user", userId))
+    return await resendEmailVerification(emailId);
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const addEmailToUserForUser = async (
+  tokenUserId: number,
   userId: number,
   email: string,
   locals: Locals
 ) => {
+  if (await can(tokenUserId, Authorizations.UPDATE, "user", userId))
+    throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
   validate(email, ValidationTypes.EMAIL);
   await checkIfNewEmail(email);
   await createEmail({ email, userId });
@@ -43,11 +67,14 @@ export const addEmailToUser = async (
   return;
 };
 
-export const deleteEmailFromUser = async (
-  emailId: number,
+export const deleteEmailFromUserForUser = async (
+  tokenUserId: number,
   userId: number,
+  emailId: number,
   locals: Locals
 ) => {
+  if (await can(tokenUserId, Authorizations.UPDATE, "user", userId))
+    throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
   const email = await getEmail(emailId);
   if (email.userId != userId)
     throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
