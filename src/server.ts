@@ -3,6 +3,7 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import rfs from "rotating-file-stream";
+import responseTime from "response-time";
 import { json, urlencoded } from "body-parser";
 import { Server } from "@overnightjs/core";
 import { UserController } from "./controllers/user";
@@ -24,11 +25,12 @@ const accessLogStream = rfs("access.log", {
 export class Staart extends Server {
   constructor() {
     super();
-    this.app.use(helmet({ hsts: { maxAge: 31536000 } }));
+    this.app.use(helmet({ hsts: { maxAge: 31536000, preload: true } }));
     this.app.use(morgan("combined", { stream: accessLogStream }));
     this.app.use(cors());
     this.app.use(json({ limit: "50mb" }));
     this.app.use(urlencoded({ extended: true }));
+    this.app.use(responseTime());
     this.app.use(trackingHandler);
     this.setupControllers();
     this.app.use(errorHandler);
