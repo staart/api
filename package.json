@@ -68,7 +68,7 @@
     "chargebee": ">=2 <3",
     "cors": "^2.8.5",
     "crypto-random-string": "^3.0.0",
-    "express": "^4.17.0",
+    "express": "^4.17.1",
     "express-async-handler": "^1.1.4",
     "fs-extra": "^8.0.1",
     "geolite2": "^1.2.1",
