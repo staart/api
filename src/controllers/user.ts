@@ -30,6 +30,7 @@ import {
   getEmailForUser,
   resendEmailVerificationForUser
 } from "../rest/email";
+import { CREATED } from "http-status-codes";
 
 @Controller("user")
 @ClassMiddleware(authHandler)
@@ -97,7 +98,9 @@ export class UserController {
     let id = req.params.id;
     if (id === "me") id = res.locals.token.id;
     if (!id) throw new Error(ErrorCode.MISSING_FIELD);
-    res.json(await createApiKeyForUser(res.locals.token.id, id, res.locals));
+    res
+      .status(CREATED)
+      .json(await createApiKeyForUser(res.locals.token.id, id, res.locals));
   }
 
   @Get(":id/api-keys/:apiKey")
@@ -153,7 +156,7 @@ export class UserController {
     const email = req.body.email;
     if (!email) throw new Error(ErrorCode.MISSING_FIELD);
     await addEmailToUserForUser(res.locals.token.id, id, email, res.locals);
-    res.json({ success: true });
+    res.status(CREATED).json({ success: true });
   }
 
   @Get(":id/emails/:emailId")

@@ -15,6 +15,7 @@ import {
   ClassMiddleware
 } from "@overnightjs/core";
 import { authHandler } from "../helpers/middleware";
+import { CREATED } from "http-status-codes";
 
 @Controller("membership")
 @ClassMiddleware(authHandler)
@@ -35,7 +36,7 @@ export class MembershipController {
       role,
       res.locals
     );
-    res.json({ invited: true });
+    res.status(CREATED).json({ invited: true });
   }
 
   @Get(":id")

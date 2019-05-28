@@ -28,6 +28,7 @@ import {
 } from "@overnightjs/core";
 import { authHandler } from "../helpers/middleware";
 import { ErrorCode } from "../interfaces/enum";
+import { CREATED } from "http-status-codes";
 
 @Controller("organization")
 @ClassMiddleware(authHandler)
@@ -41,7 +42,7 @@ export class OrganizationController {
       { name, invitationDomain },
       res.locals
     );
-    res.json({ success: true });
+    res.status(CREATED).json({ success: true });
   }
 
   @Get(":id")
@@ -132,13 +133,15 @@ export class OrganizationController {
 
   @Put(":id/sources")
   async putSources(req: Request, res: Response) {
-    res.json(
-      await createOrganizationSourceForUser(
-        res.locals.token.id,
-        req.params.id,
-        req.body
-      )
-    );
+    res
+      .status(CREATED)
+      .json(
+        await createOrganizationSourceForUser(
+          res.locals.token.id,
+          req.params.id,
+          req.body
+        )
+      );
   }
 
   @Get(":id/source/:sourceId")

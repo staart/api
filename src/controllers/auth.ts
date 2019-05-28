@@ -15,6 +15,7 @@ import {
 import { verifyToken } from "../helpers/jwt";
 import { Get, Post, Controller, Middleware } from "@overnightjs/core";
 import { authHandler } from "../helpers/middleware";
+import { CREATED } from "http-status-codes";
 
 @Controller("auth")
 export class AuthController {
@@ -34,7 +35,7 @@ export class AuthController {
       req.body.organizationId,
       req.body.membershipRole
     );
-    res.json({ success: true });
+    res.status(CREATED).json({ success: true });
   }
 
   @Post("login")
