@@ -38,6 +38,7 @@
     "@types/geolite2": "^1.2.0",
     "@types/helmet": "^0.0.43",
     "@types/jest": "^24.0.13",
+    "@types/joi": "^14.3.3",
     "@types/jsonwebtoken": "^8.3.2",
     "@types/marked": "^0.6.5",
     "@types/md5": "^2.1.33",
@@ -63,6 +64,7 @@
     "typescript": "^3.4.5"
   },
   "dependencies": {
+    "@hapi/joi": "^15.0.3",
     "bcrypt": "^3.0.6",
     "body-parser": "^1.19.0",
     "chargebee": ">=2 <3",
