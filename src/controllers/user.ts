@@ -16,6 +16,7 @@ import {
 import { ErrorCode } from "../interfaces/enum";
 import {
   Get,
+  Patch,
   Post,
   Put,
   Delete,
@@ -44,7 +45,7 @@ export class UserController {
     res.json(await getUserFromId(id, res.locals.token.id));
   }
 
-  @Post(":id")
+  @Patch(":id")
   async patch(req: Request, res: Response) {
     let id = req.params.id;
     if (id === "me") id = res.locals.token.id;
@@ -112,7 +113,7 @@ export class UserController {
     res.json(await getApiKeyForUser(res.locals.token.id, id, apiKey));
   }
 
-  @Post(":id/api-keys/:apiKey")
+  @Patch(":id/api-keys/:apiKey")
   async patchUserApiKey(req: Request, res: Response) {
     let id = req.params.id;
     if (id === "me") id = res.locals.token.id;

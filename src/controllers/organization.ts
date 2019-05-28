@@ -20,8 +20,8 @@ import {
 } from "../rest/organization";
 import {
   Get,
-  Post,
   Put,
+  Patch,
   Delete,
   Controller,
   ClassMiddleware
@@ -54,7 +54,7 @@ export class OrganizationController {
     res.json(organization);
   }
 
-  @Post(":id")
+  @Patch(":id")
   async patch(req: Request, res: Response) {
     const id = req.params.id;
     if (!id) throw new Error(ErrorCode.MISSING_FIELD);
@@ -83,7 +83,7 @@ export class OrganizationController {
     );
   }
 
-  @Post(":id/billing")
+  @Patch(":id/billing")
   async patchBilling(req: Request, res: Response) {
     await updateOrganizationBillingForUser(
       res.locals.token.id,
@@ -170,7 +170,7 @@ export class OrganizationController {
     );
   }
 
-  @Post(":id/source/:sourceId")
+  @Patch(":id/source/:sourceId")
   async patchSource(req: Request, res: Response) {
     const sourceId = req.params.sourceId;
     if (!sourceId) throw new Error(ErrorCode.MISSING_FIELD);

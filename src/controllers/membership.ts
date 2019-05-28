@@ -8,7 +8,7 @@ import {
 } from "../rest/membership";
 import {
   Get,
-  Post,
+  Patch,
   Put,
   Delete,
   Controller,
@@ -55,7 +55,7 @@ export class MembershipController {
     res.json({ deleted: true });
   }
 
-  @Post(":id")
+  @Patch(":id")
   async patch(req: Request, res: Response) {
     const userId = res.locals.token.id;
     const membershipId = req.params.id;
