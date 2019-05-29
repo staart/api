@@ -29,7 +29,7 @@
     "@babel/polyfill": "^7.4.4",
     "@babel/preset-env": "^7.4.4",
     "@babel/preset-typescript": "^7.3.3",
-    "@overnightjs/core": "^1.6.3",
+    "@overnightjs/core": "^1.6.4",
     "@types/bcrypt": "^3.0.0",
     "@types/cors": "^2.8.5",
     "@types/dotenv": "^6.1.1",

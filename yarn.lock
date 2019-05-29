@@ -968,10 +968,10 @@
     "@opencensus/core" "^0.0.8"
     uuid "^3.2.1"
 
-"@overnightjs/core@^1.6.3":
-  version "1.6.3"
-  resolved "https://registry.yarnpkg.com/@overnightjs/core/-/core-1.6.3.tgz#695d609dea28cd02604332b8aaf8e57023386b4a"
-  integrity sha512-gin0ZGmgYdGG5JgHzBRlqFeKbowpgk6KliTIe5E8MjGG4iveBRJ2DNqNVZaybEdNfB0kyk6SH1LnYct64NPYFw==
+"@overnightjs/core@^1.6.4":
+  version "1.6.4"
+  resolved "https://registry.yarnpkg.com/@overnightjs/core/-/core-1.6.4.tgz#d60b242b3c0030a7160f9857d7811892ac831c00"
+  integrity sha512-aauveXbAkaWxwUEgIRZo/udVGXxH5UcFRlLWI1Qjpcdblm1TMsH49BWZjTuSsSu4l8cOQw0jZwiC4dYlpssAHg==
   dependencies:
     express "^4.16.3"
     reflect-metadata "^0.1.13"
