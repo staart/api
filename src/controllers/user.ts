@@ -21,7 +21,8 @@ import {
   Put,
   Delete,
   Controller,
-  ClassMiddleware
+  ClassMiddleware,
+  ClassWrapper
 } from "@overnightjs/core";
 import { authHandler } from "../helpers/middleware";
 import {
@@ -32,14 +33,15 @@ import {
   resendEmailVerificationForUser
 } from "../rest/email";
 import { CREATED } from "http-status-codes";
+import asyncHandler from "express-async-handler";
 
-@Controller("user")
+@Controller("users")
 @ClassMiddleware(authHandler)
+@ClassWrapper(asyncHandler)
 export class UserController {
   @Get(":id")
   async get(req: Request, res: Response) {
     let id = req.body.id || req.params.id;
-    console.log(id, "Locals are", res.locals);
     if (id === "me") id = res.locals.token.id;
     if (!id) throw new Error(ErrorCode.MISSING_FIELD);
     res.json(await getUserFromId(id, res.locals.token.id));

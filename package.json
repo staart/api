@@ -9,7 +9,7 @@
     "build-babel": "babel src -d dist --extensions '.ts' && cp .env dist/.env",
     "build": "touch .env && mkdir -p dist && cp .env dist/.env && tsc",
     "check-types": "tsc",
-    "start": "pm2-runtime start dist/index.js --env production",
+    "start": "npm run build-babel && node dist/index.js",
     "dev": "concurrently 'yarn watch-build' 'yarn watch-server'",
     "prettier-all": "prettier '{src,examples}/**/*.{ts,json}' --write",
     "watch-build": "onchange '{src,examples}/**/*.ts' -- yarn build-babel",
@@ -22,6 +22,9 @@
       "pre-commit": "yarn prettier-all && git add . && yarn check-types"
     }
   },
+  "engines": {
+    "node": "10.16.0"
+  },
   "devDependencies": {
     "@babel/cli": "^7.4.4",
     "@babel/core": "^7.4.4",
@@ -29,7 +32,7 @@
     "@babel/polyfill": "^7.4.4",
     "@babel/preset-env": "^7.4.4",
     "@babel/preset-typescript": "^7.3.3",
-    "@overnightjs/core": "^1.6.3",
+    "@overnightjs/core": "^1.6.4",
     "@types/bcrypt": "^3.0.0",
     "@types/cors": "^2.8.5",
     "@types/dotenv": "^6.1.1",
@@ -45,7 +48,7 @@
     "@types/morgan": "^1.7.35",
     "@types/mustache": "^0.8.32",
     "@types/mysql": "^2.15.6",
-    "@types/node": "^12.0.2",
+    "@types/node": "^12.0.3",
     "@types/request": "^2.48.1",
     "@types/response-time": "^2.3.3",
     "@types/stripe": "^6.26.3",
@@ -57,7 +60,6 @@
     "jest": "^24.8.0",
     "nodemon": "^1.19.1",
     "onchange": "^6.0.0",
-    "pm2": "^3.5.1",
     "prettier": "^1.17.1",
     "ts-jest": "^24.0.2",
     "typedoc": "^0.14.2",

@@ -13,11 +13,19 @@ import {
   register
 } from "../rest/auth";
 import { verifyToken } from "../helpers/jwt";
-import { Get, Post, Controller, Middleware } from "@overnightjs/core";
+import {
+  Get,
+  Post,
+  Controller,
+  Middleware,
+  ClassWrapper
+} from "@overnightjs/core";
 import { authHandler } from "../helpers/middleware";
 import { CREATED } from "http-status-codes";
+import asyncHandler from "express-async-handler";
 
 @Controller("auth")
+@ClassWrapper(asyncHandler)
 export class AuthController {
   @Post("register")
   async register(req: Request, res: Response) {
@@ -122,9 +130,11 @@ export class AuthController {
     res.json(await approveLocation(token, res.locals));
   }
 
-  @Get("verify-email")
+  @Post("verify-email")
   async postVerifyEmail(req: Request, res: Response) {
-    await verifyEmail(req.body.token || req.params.token, res.locals);
+    const token = req.body.token || req.params.token;
+    if (!token) throw new Error(ErrorCode.MISSING_FIELD);
+    await verifyEmail(token, res.locals);
     res.json({ success: true });
   }
 }

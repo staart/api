@@ -24,13 +24,16 @@ import {
   Patch,
   Delete,
   Controller,
-  ClassMiddleware
+  ClassMiddleware,
+  ClassWrapper
 } from "@overnightjs/core";
 import { authHandler } from "../helpers/middleware";
 import { ErrorCode } from "../interfaces/enum";
 import { CREATED } from "http-status-codes";
+import asyncHandler from "express-async-handler";
 
-@Controller("organization")
+@Controller("organizations")
+@ClassWrapper(asyncHandler)
 @ClassMiddleware(authHandler)
 export class OrganizationController {
   @Put()
