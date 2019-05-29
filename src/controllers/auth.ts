@@ -13,11 +13,19 @@ import {
   register
 } from "../rest/auth";
 import { verifyToken } from "../helpers/jwt";
-import { Get, Post, Controller, Middleware } from "@overnightjs/core";
+import {
+  Get,
+  Post,
+  Controller,
+  Middleware,
+  ClassWrapper
+} from "@overnightjs/core";
 import { authHandler } from "../helpers/middleware";
 import { CREATED } from "http-status-codes";
+import asyncHandler from "express-async-handler";
 
 @Controller("auth")
+@ClassWrapper(asyncHandler)
 export class AuthController {
   @Post("register")
   async register(req: Request, res: Response) {

@@ -58,9 +58,8 @@ export const login = async (
   if (!user.password) throw new Error(ErrorCode.MISSING_PASSWORD);
   if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
   const correctPassword = await compare(password, user.password);
-  if (correctPassword) {
+  if (correctPassword)
     return await getLoginResponse(user, EventType.AUTH_LOGIN, "local", locals);
-  }
   throw new Error(ErrorCode.INVALID_LOGIN);
 };
 

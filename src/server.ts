@@ -25,6 +25,12 @@ const accessLogStream = rfs("access.log", {
 export class Staart extends Server {
   constructor() {
     super();
+    this.setupHandlers();
+    this.setupControllers();
+    this.app.use(errorHandler);
+  }
+
+  private setupHandlers() {
     this.app.use(helmet({ hsts: { maxAge: 31536000, preload: true } }));
     this.app.use(morgan("combined", { stream: accessLogStream }));
     this.app.use(cors());
@@ -32,8 +38,6 @@ export class Staart extends Server {
     this.app.use(urlencoded({ extended: true }));
     this.app.use(responseTime());
     this.app.use(trackingHandler);
-    this.setupControllers();
-    this.app.use(errorHandler);
   }
 
   private setupControllers() {
