@@ -30,7 +30,7 @@ import { authHandler } from "../helpers/middleware";
 import { ErrorCode } from "../interfaces/enum";
 import { CREATED } from "http-status-codes";
 
-@Controller("organization")
+@Controller("organizations")
 @ClassMiddleware(authHandler)
 export class OrganizationController {
   @Put()

@@ -17,7 +17,7 @@ import {
 import { authHandler } from "../helpers/middleware";
 import { CREATED } from "http-status-codes";
 
-@Controller("membership")
+@Controller("memberships")
 @ClassMiddleware(authHandler)
 export class MembershipController {
   @Put()

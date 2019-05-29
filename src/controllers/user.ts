@@ -33,7 +33,7 @@ import {
 } from "../rest/email";
 import { CREATED } from "http-status-codes";
 
-@Controller("user")
+@Controller("users")
 @ClassMiddleware(authHandler)
 export class UserController {
   @Get(":id")
