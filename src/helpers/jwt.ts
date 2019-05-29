@@ -117,13 +117,8 @@ export const getLoginResponse = async (
       },
       locals
     );
-  try {
-    return {
-      token: await loginToken(deleteSensitiveInfoUser(user)),
-      refresh: await refreshToken(user.id)
-    };
-  } catch (error) {
-    console.log("Got error 1", error);
-    throw new Error(error);
-  }
+  return {
+    token: await loginToken(deleteSensitiveInfoUser(user)),
+    refresh: await refreshToken(user.id)
+  };
 };

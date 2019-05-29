@@ -133,7 +133,6 @@ export class AuthController {
   @Post("verify-email")
   async postVerifyEmail(req: Request, res: Response) {
     const token = req.body.token || req.params.token;
-    console.log(JSON.stringify(req.body), JSON.stringify(req.params), "Okay");
     if (!token) throw new Error(ErrorCode.MISSING_FIELD);
     await verifyEmail(token, res.locals);
     res.json({ success: true });
