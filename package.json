@@ -9,7 +9,7 @@
     "build-babel": "babel src -d dist --extensions '.ts' && cp .env dist/.env",
     "build": "touch .env && mkdir -p dist && cp .env dist/.env && tsc",
     "check-types": "tsc",
-    "start": "yarn build && node dist/index.js",
+    "start": "npm run build && node dist/index.js",
     "dev": "concurrently 'yarn watch-build' 'yarn watch-server'",
     "prettier-all": "prettier '{src,examples}/**/*.{ts,json}' --write",
     "watch-build": "onchange '{src,examples}/**/*.ts' -- yarn build-babel",
