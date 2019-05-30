@@ -127,6 +127,6 @@ export const validate = (
 export const joiValidate = (schemaMap: Joi.SchemaMap, data: any) => {
   const schema = Joi.object().keys(schemaMap);
   const result = Joi.validate(data, schema);
-  if (result.error) throw new Error(result.error.details[0].message);
+  if (result.error) throw new Error(`joi:${JSON.stringify(result.error)}`);
   return true;
 };

@@ -28,9 +28,12 @@ import {
   ClassWrapper
 } from "@overnightjs/core";
 import { authHandler } from "../helpers/middleware";
-import { ErrorCode } from "../interfaces/enum";
+import { ErrorCode, MembershipRole } from "../interfaces/enum";
 import { CREATED } from "http-status-codes";
 import asyncHandler from "express-async-handler";
+import { inviteMemberToOrganization } from "../rest/membership";
+import { joiValidate } from "../helpers/utils";
+import Joi from "@hapi/joi";
 
 @Controller("organizations")
 @ClassWrapper(asyncHandler)
@@ -206,7 +209,7 @@ export class OrganizationController {
 
   @Get(":id/memberships")
   async getMemberships(req: Request, res: Response) {
-    const organizationId = req.params.organizationId;
+    const organizationId = req.params.id;
     if (!organizationId) throw new Error(ErrorCode.MISSING_FIELD);
     res.json(
       await getOrganizationMembershipsForUser(
@@ -214,5 +217,40 @@ export class OrganizationController {
         organizationId
       )
     );
+  }
+
+  @Put(":id/memberships")
+  async putMemberships(req: Request, res: Response) {
+    const organizationId = req.params.id;
+    const newMemberName = req.body.name;
+    const newMemberEmail = req.body.email;
+    const role = req.body.role;
+    joiValidate(
+      {
+        organizationId: Joi.number().required(),
+        newMemberName: Joi.string()
+          .min(6)
+          .required(),
+        newMemberEmail: Joi.string()
+          .email()
+          .required(),
+        role: Joi.number()
+      },
+      {
+        organizationId,
+        newMemberName,
+        newMemberEmail,
+        role
+      }
+    );
+    await inviteMemberToOrganization(
+      res.locals.token.id,
+      organizationId,
+      newMemberName,
+      newMemberEmail,
+      role || MembershipRole.MEMBER,
+      res.locals
+    );
+    res.status(CREATED).json({ invited: true });
   }
 }
