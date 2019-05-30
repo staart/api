@@ -48,7 +48,7 @@ export const validateRefreshToken = async (token: string, locals: Locals) => {
   const data = <User>await verifyToken(token, Tokens.REFRESH);
   if (!data.id) throw new Error(ErrorCode.USER_NOT_FOUND);
   const user = await getUser(data.id);
-  return await getLoginResponse(user);
+  return await postLoginTokens(user);
 };
 
 export const login = async (
