@@ -318,10 +318,10 @@ export const getAllOrganizationDataForUser = async (
     const organization = await getOrganization(organizationId);
     const memberships = await getOrganizationMemberDetails(organizationId);
     const events = await getOrganizationEvents(organizationId);
-    let billing = {};
-    let subscriptions = {};
-    let invoices = {};
-    let sources = {};
+    let billing = {} as any;
+    let subscriptions = {} as any;
+    let invoices = {} as any;
+    let sources = {} as any;
     if (organization.stripeCustomerId) {
       billing = await getStripeCustomer(organization.stripeCustomerId);
       subscriptions = await getStripeSubscriptions(

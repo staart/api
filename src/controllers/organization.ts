@@ -201,7 +201,7 @@ export class OrganizationController {
       );
   }
 
-  @Get(":id/source/:sourceId")
+  @Get(":id/sources/:sourceId")
   async getSource(req: Request, res: Response) {
     const sourceId = req.params.sourceId;
     const organizationId = req.params.id;
@@ -221,7 +221,7 @@ export class OrganizationController {
     );
   }
 
-  @Delete(":id/source/:sourceId")
+  @Delete(":id/sources/:sourceId")
   async deleteSource(req: Request, res: Response) {
     const sourceId = req.params.sourceId;
     const organizationId = req.params.id;
@@ -241,7 +241,7 @@ export class OrganizationController {
     );
   }
 
-  @Patch(":id/source/:sourceId")
+  @Patch(":id/sources/:sourceId")
   async patchSource(req: Request, res: Response) {
     const sourceId = req.params.sourceId;
     const organizationId = req.params.id;

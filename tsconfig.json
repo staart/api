@@ -13,8 +13,8 @@
     "emitDecoratorMetadata": true,
     "declarationDir": "./dist",
     "outDir": "./dist",
-    "typeRoots": ["node_modules/@types"]
+    "typeRoots": ["src/types"]
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["node_modues"]
+  "exclude": ["node_modules"]
 }

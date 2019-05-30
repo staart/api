@@ -12,6 +12,10 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
+  if (error.api_error_code) {
+    // Handle Chargebee errors
+    error = error.message;
+  }
   const response = safeError(error.toString().replace("Error: ", ""));
   res.status(response.status);
   res.json({ error: response.code, message: response.message });
