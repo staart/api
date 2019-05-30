@@ -90,6 +90,7 @@ export enum Templates {
 
 export enum Tokens {
   LOGIN = "auth",
+  TWO_FACTOR = "2fa",
   REFRESH = "refresh",
   PASSWORD_RESET = "password-reset",
   EMAIL_VERIFY = "email-verify",

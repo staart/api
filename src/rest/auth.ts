@@ -4,7 +4,9 @@ import {
   updateUser,
   getUserByEmail,
   getUser,
-  addApprovedLocation
+  addApprovedLocation,
+  getUserBackupCode,
+  updateBackupCode
 } from "../crud/user";
 import { InsertResult } from "../interfaces/mysql";
 import {
@@ -17,7 +19,8 @@ import { mail } from "../helpers/mail";
 import {
   verifyToken,
   passwordResetToken,
-  getLoginResponse
+  getLoginResponse,
+  postLoginTokens
 } from "../helpers/jwt";
 import { KeyValue, Locals } from "../interfaces/general";
 import { createEvent } from "../crud/event";
@@ -39,6 +42,7 @@ import {
 } from "../helpers/google";
 import { can } from "../helpers/authorization";
 import { validate } from "../helpers/utils";
+import { authenticator } from "otplib";
 
 export const validateRefreshToken = async (token: string, locals: Locals) => {
   const data = <User>await verifyToken(token, Tokens.REFRESH);
@@ -59,6 +63,22 @@ export const login = async (
   if (correctPassword)
     return await getLoginResponse(user, EventType.AUTH_LOGIN, "local", locals);
   throw new Error(ErrorCode.INVALID_LOGIN);
+};
+
+export const login2FA = async (code: number, token: string, locals: Locals) => {
+  const data = (await verifyToken(token, Tokens.TWO_FACTOR)) as any;
+  const user = await getUser(data.userId, true);
+  const secret = user.twoFactorSecret;
+  if (!secret) throw new Error(ErrorCode.NOT_ENABLED_2FA);
+  if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
+  if (authenticator.check(code.toString(), secret))
+    return await postLoginTokens(user);
+  const backupCode = await getUserBackupCode(data.userId, code);
+  if (!backupCode.used) {
+    await updateBackupCode(backupCode.code, { used: true });
+    return await postLoginTokens(user);
+  }
+  throw new Error(ErrorCode.INVALID_2FA_TOKEN);
 };
 
 export const register = async (

@@ -72,6 +72,12 @@ export const loginToken = (user: User) =>
   generateToken(user, TOKEN_EXPIRY_LOGIN, Tokens.LOGIN);
 
 /**
+ * Generate a new 2FA JWT
+ */
+export const twoFactorToken = (user: User) =>
+  generateToken({ userId: user.id }, TOKEN_EXPIRY_LOGIN, Tokens.TWO_FACTOR);
+
+/**
  * Generate a new approve location JWT
  */
 export const approveLocationToken = (id: number) =>
@@ -82,6 +88,14 @@ export const approveLocationToken = (id: number) =>
  */
 export const refreshToken = (id: number) =>
   generateToken({ id }, TOKEN_EXPIRY_REFRESH, Tokens.REFRESH);
+
+export const postLoginTokens = async (user: User) => {
+  if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
+  return {
+    token: await loginToken(deleteSensitiveInfoUser(user)),
+    refresh: await refreshToken(user.id)
+  };
+};
 
 /**
  * Get the token response after logging in a user
@@ -117,8 +131,9 @@ export const getLoginResponse = async (
       },
       locals
     );
-  return {
-    token: await loginToken(deleteSensitiveInfoUser(user)),
-    refresh: await refreshToken(user.id)
-  };
+  if (user.twoFactorEnabled)
+    return {
+      twoFactorToken: await twoFactorToken(user)
+    };
+  return await postLoginTokens(user);
 };

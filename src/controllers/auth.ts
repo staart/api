@@ -10,7 +10,8 @@ import {
   impersonate,
   approveLocation,
   verifyEmail,
-  register
+  register,
+  login2FA
 } from "../rest/auth";
 import { verifyToken } from "../helpers/jwt";
 import {
@@ -88,6 +89,22 @@ export class AuthController {
       { email, password }
     );
     res.json(await login(email, password, res.locals));
+  }
+
+  @Post("2fa")
+  async twoFactor(req: Request, res: Response) {
+    const code = req.body.code;
+    const token = req.body.token;
+    joiValidate(
+      {
+        token: Joi.string().required(),
+        code: Joi.number()
+          .min(5)
+          .required()
+      },
+      { code, token }
+    );
+    res.json(await login2FA(code, token, res.locals));
   }
 
   @Post("verify-token")

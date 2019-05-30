@@ -16,7 +16,8 @@ import {
   updateApiKey,
   deleteApiKey,
   createBackupCodes,
-  deleteUserBackupCodes
+  deleteUserBackupCodes,
+  getUserBackupCodes
 } from "../crud/user";
 import {
   deleteAllUserMemberships,
@@ -270,4 +271,24 @@ export const disable2FAForUser = async (
     throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
   await deleteUserBackupCodes(userId);
   await updateUser(userId, { twoFactorEnabled: false, twoFactorSecret: "" });
+};
+
+export const getBackupCodesForUser = async (
+  tokenUserId: number,
+  userId: number
+) => {
+  if (!(await can(tokenUserId, Authorizations.READ_SECURE, "user", userId)))
+    throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+  return await getUserBackupCodes(userId);
+};
+
+export const regenerateBackupCodesForUser = async (
+  tokenUserId: number,
+  userId: number
+) => {
+  if (!(await can(tokenUserId, Authorizations.READ_SECURE, "user", userId)))
+    throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+  await deleteUserBackupCodes(userId);
+  await createBackupCodes(userId, 10);
+  return await getUserBackupCodes(userId);
 };

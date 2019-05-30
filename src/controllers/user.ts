@@ -15,7 +15,9 @@ import {
   updateNotificationForUser,
   enable2FAForUser,
   disable2FAForUser,
-  verify2FAForUser
+  verify2FAForUser,
+  getBackupCodesForUser,
+  regenerateBackupCodesForUser
 } from "../rest/user";
 import { ErrorCode } from "../interfaces/enum";
 import {
@@ -343,5 +345,27 @@ export class UserController {
       { id }
     );
     res.json(await disable2FAForUser(res.locals.token.id, id));
+  }
+
+  @Get(":id/backup-codes")
+  async getBackupCodes(req: Request, res: Response) {
+    let id = req.params.id;
+    if (id === "me") id = res.locals.token.id;
+    joiValidate(
+      { id: [Joi.string().required(), Joi.number().required()] },
+      { id }
+    );
+    res.json(await getBackupCodesForUser(res.locals.token.id, id));
+  }
+
+  @Get(":id/backup-codes/regenerate")
+  async getRegenerateBackupCodes(req: Request, res: Response) {
+    let id = req.params.id;
+    if (id === "me") id = res.locals.token.id;
+    joiValidate(
+      { id: [Joi.string().required(), Joi.number().required()] },
+      { id }
+    );
+    res.json(await regenerateBackupCodesForUser(res.locals.token.id, id));
   }
 }
