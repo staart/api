@@ -43,6 +43,18 @@ export class OrganizationController {
   async put(req: Request, res: Response) {
     const name = req.body.name;
     const invitationDomain = req.body.invitationDomain;
+    joiValidate(
+      {
+        name: Joi.string()
+          .min(3)
+          .required(),
+        invitationDomain: Joi.string().min(3)
+      },
+      {
+        name,
+        invitationDomain
+      }
+    );
     await newOrganizationForUser(
       res.locals.token.id,
       { name, invitationDomain },
@@ -53,17 +65,16 @@ export class OrganizationController {
 
   @Get(":id")
   async get(req: Request, res: Response) {
-    const organization = await getOrganizationForUser(
-      res.locals.token.id,
-      req.params.id
-    );
+    const id = req.params.id;
+    joiValidate({ id: Joi.number().required() }, { id });
+    const organization = await getOrganizationForUser(res.locals.token.id, id);
     res.json(organization);
   }
 
   @Patch(":id")
   async patch(req: Request, res: Response) {
     const id = req.params.id;
-    if (!id) throw new Error(ErrorCode.MISSING_FIELD);
+    joiValidate({ id: Joi.number().required() }, { id });
     await updateOrganizationForUser(
       res.locals.token.id,
       id,
@@ -77,23 +88,36 @@ export class OrganizationController {
   async delete(req: Request, res: Response) {
     const organizationId = req.params.id;
     const userId = res.locals.token.id;
-    if (!organizationId) throw new Error(ErrorCode.MISSING_FIELD);
+    joiValidate(
+      { organizationId: Joi.number().required() },
+      { organizationId }
+    );
     await deleteOrganizationForUser(userId, organizationId, res.locals);
     res.json({ success: true });
   }
 
   @Get(":id/billing")
   async getBilling(req: Request, res: Response) {
+    const organizationId = req.params.id;
+    joiValidate(
+      { organizationId: Joi.number().required() },
+      { organizationId }
+    );
     res.json(
-      await getOrganizationBillingForUser(res.locals.token.id, req.params.id)
+      await getOrganizationBillingForUser(res.locals.token.id, organizationId)
     );
   }
 
   @Patch(":id/billing")
   async patchBilling(req: Request, res: Response) {
+    const organizationId = req.params.id;
+    joiValidate(
+      { organizationId: Joi.number().required() },
+      { organizationId }
+    );
     await updateOrganizationBillingForUser(
       res.locals.token.id,
-      req.params.id,
+      organizationId,
       req.body,
       res.locals
     );
@@ -102,17 +126,27 @@ export class OrganizationController {
 
   @Get(":id/invoices")
   async getInvoices(req: Request, res: Response) {
+    const organizationId = req.params.id;
+    joiValidate(
+      { organizationId: Joi.number().required() },
+      { organizationId }
+    );
     res.json(
-      await getOrganizationInvoicesForUser(res.locals.token.id, req.params.id)
+      await getOrganizationInvoicesForUser(res.locals.token.id, organizationId)
     );
   }
 
   @Get(":id/subscriptions")
   async getSubscriptions(req: Request, res: Response) {
+    const organizationId = req.params.id;
+    joiValidate(
+      { organizationId: Joi.number().required() },
+      { organizationId }
+    );
     res.json(
       await getOrganizationSubscriptionsForUser(
         res.locals.token.id,
-        req.params.id
+        organizationId
       )
     );
   }
@@ -120,11 +154,18 @@ export class OrganizationController {
   @Get(":id/plans")
   async getPlans(req: Request, res: Response) {
     const product = req.params.product;
-    if (!product) throw new Error(ErrorCode.MISSING_FIELD);
+    const organizationId = req.params.id;
+    joiValidate(
+      {
+        organizationId: Joi.number().required(),
+        product: Joi.string().required()
+      },
+      { organizationId, product }
+    );
     res.json(
       await getOrganizationPricingPlansForUser(
         res.locals.token.id,
-        req.params.id,
+        organizationId,
         product
       )
     );
@@ -132,19 +173,29 @@ export class OrganizationController {
 
   @Get(":id/sources")
   async getSources(req: Request, res: Response) {
+    const organizationId = req.params.id;
+    joiValidate(
+      { organizationId: Joi.number().required() },
+      { organizationId }
+    );
     res.json(
-      await getOrganizationSourcesForUser(res.locals.token.id, req.params.id)
+      await getOrganizationSourcesForUser(res.locals.token.id, organizationId)
     );
   }
 
   @Put(":id/sources")
   async putSources(req: Request, res: Response) {
+    const organizationId = req.params.id;
+    joiValidate(
+      { organizationId: Joi.number().required() },
+      { organizationId }
+    );
     res
       .status(CREATED)
       .json(
         await createOrganizationSourceForUser(
           res.locals.token.id,
-          req.params.id,
+          organizationId,
           req.body
         )
       );
@@ -153,11 +204,18 @@ export class OrganizationController {
   @Get(":id/source/:sourceId")
   async getSource(req: Request, res: Response) {
     const sourceId = req.params.sourceId;
-    if (!sourceId) throw new Error(ErrorCode.MISSING_FIELD);
+    const organizationId = req.params.id;
+    joiValidate(
+      {
+        organizationId: Joi.number().required(),
+        sourceId: Joi.number().required()
+      },
+      { organizationId, sourceId }
+    );
     res.json(
       await getOrganizationSourceForUser(
         res.locals.token.id,
-        req.params.id,
+        organizationId,
         sourceId
       )
     );
@@ -166,11 +224,18 @@ export class OrganizationController {
   @Delete(":id/source/:sourceId")
   async deleteSource(req: Request, res: Response) {
     const sourceId = req.params.sourceId;
-    if (!sourceId) throw new Error(ErrorCode.MISSING_FIELD);
+    const organizationId = req.params.id;
+    joiValidate(
+      {
+        organizationId: Joi.number().required(),
+        sourceId: Joi.number().required()
+      },
+      { organizationId, sourceId }
+    );
     res.json(
       await deleteOrganizationSourceForUser(
         res.locals.token.id,
-        req.params.id,
+        organizationId,
         sourceId
       )
     );
@@ -179,11 +244,18 @@ export class OrganizationController {
   @Patch(":id/source/:sourceId")
   async patchSource(req: Request, res: Response) {
     const sourceId = req.params.sourceId;
-    if (!sourceId) throw new Error(ErrorCode.MISSING_FIELD);
+    const organizationId = req.params.id;
+    joiValidate(
+      {
+        organizationId: Joi.number().required(),
+        sourceId: Joi.number().required()
+      },
+      { organizationId, sourceId }
+    );
     res.json(
       await updateOrganizationSourceForUser(
         res.locals.token.id,
-        req.params.id,
+        organizationId,
         sourceId,
         req.body
       )
@@ -192,17 +264,27 @@ export class OrganizationController {
 
   @Get(":id/data")
   async getData(req: Request, res: Response) {
+    const organizationId = req.params.id;
+    joiValidate(
+      { organizationId: Joi.number().required() },
+      { organizationId }
+    );
     res.json(
-      await getAllOrganizationDataForUser(res.locals.token.id, req.params.id)
+      await getAllOrganizationDataForUser(res.locals.token.id, organizationId)
     );
   }
 
   @Get(":id/events")
   async getEvents(req: Request, res: Response) {
+    const organizationId = req.params.id;
+    joiValidate(
+      { organizationId: Joi.number().required() },
+      { organizationId }
+    );
     res.json(
       await getOrganizationRecentEventsForUser(
         res.locals.token.id,
-        req.params.id
+        organizationId
       )
     );
   }
@@ -210,7 +292,10 @@ export class OrganizationController {
   @Get(":id/memberships")
   async getMemberships(req: Request, res: Response) {
     const organizationId = req.params.id;
-    if (!organizationId) throw new Error(ErrorCode.MISSING_FIELD);
+    joiValidate(
+      { organizationId: Joi.number().required() },
+      { organizationId }
+    );
     res.json(
       await getOrganizationMembershipsForUser(
         res.locals.token.id,

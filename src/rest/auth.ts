@@ -69,16 +69,6 @@ export const register = async (
   role?: MembershipRole
 ) => {
   if (email) await checkIfNewEmail(email);
-  // Create user
-  if (user.name) validate(user.name, ValidationTypes.TEXT);
-  if (user.nickname) validate(user.nickname, ValidationTypes.TEXT);
-  if (user.countryCode)
-    validate(user.countryCode, ValidationTypes.COUNTRY_CODE);
-  if (user.password) validate(user.password, ValidationTypes.TEXT);
-  if (user.gender) validate(user.gender, ValidationTypes.GENDER);
-  if (user.preferredLanguage)
-    validate(user.preferredLanguage, ValidationTypes.LANGUAGE);
-  if (user.timezone) validate(user.timezone, ValidationTypes.TIMEZONE);
   const result = <InsertResult>await createUser(user);
   const userId = result.insertId;
   // Set email

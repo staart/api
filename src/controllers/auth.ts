@@ -31,13 +31,37 @@ import Joi from "@hapi/joi";
 export class AuthController {
   @Post("register")
   async register(req: Request, res: Response) {
+    const name = req.body.name;
     const email = req.body.email;
+    joiValidate(
+      {
+        email: Joi.string()
+          .email()
+          .required(),
+        name: Joi.string()
+          .min(3)
+          .required()
+      },
+      { email, name }
+    );
     const user = req.body;
     delete user.organizationId;
     delete user.email;
     if (user.role == UserRole.ADMIN) delete user.role;
     delete user.membershipRole;
-    if (!req.body.name || !email) throw new Error(ErrorCode.MISSING_FIELD);
+    joiValidate(
+      {
+        nickname: Joi.string().min(3),
+        countryCode: Joi.string().length(2),
+        password: Joi.string().min(6),
+        gender: Joi.string().length(1),
+        preferredLanguage: Joi.string()
+          .min(2)
+          .max(5),
+        timezone: Joi.string()
+      },
+      user
+    );
     await register(
       user,
       res.locals,
@@ -72,7 +96,13 @@ export class AuthController {
     const token =
       req.body.token || (req.get("Authorization") || "").replace("Bearer ", "");
     const subject = req.body.subject;
-    if (!token || !subject) throw new Error(ErrorCode.MISSING_FIELD);
+    joiValidate(
+      {
+        token: Joi.string().required(),
+        subject: Joi.string().required()
+      },
+      { token, subject }
+    );
     try {
       const data = await verifyToken(token, subject);
       res.json({ verified: true, data });
@@ -86,14 +116,21 @@ export class AuthController {
   async postRefreshToken(req: Request, res: Response) {
     const token =
       req.body.token || (req.get("Authorization") || "").replace("Bearer ", "");
-    if (!token) throw new Error(ErrorCode.MISSING_TOKEN);
+    joiValidate({ token: Joi.string().required() }, { token });
     res.json(await validateRefreshToken(token, res.locals));
   }
 
   @Post("reset-password/request")
   async postResetPasswordRequest(req: Request, res: Response) {
-    const email = req.body && req.body.email;
-    if (!email) throw new Error(ErrorCode.MISSING_FIELD);
+    const email = req.body.email;
+    joiValidate(
+      {
+        email: Joi.string()
+          .email()
+          .required()
+      },
+      { email }
+    );
     await sendPasswordReset(email, res.locals);
     res.json({ queued: true });
   }
@@ -103,7 +140,15 @@ export class AuthController {
     const token =
       req.body.token || (req.get("Authorization") || "").replace("Bearer ", "");
     const password = req.body.password;
-    if (!token || !password) throw new Error(ErrorCode.MISSING_FIELD);
+    joiValidate(
+      {
+        token: Joi.string().required(),
+        password: Joi.string()
+          .min(6)
+          .required()
+      },
+      { token, password }
+    );
     await updatePassword(token, password, res.locals);
     res.json({ success: true });
   }
@@ -119,7 +164,7 @@ export class AuthController {
   async postLoginWithGoogleVerify(req: Request, res: Response) {
     const code =
       req.body.code || (req.get("Authorization") || "").replace("Bearer ", "");
-    if (!code) throw new Error(ErrorCode.MISSING_TOKEN);
+    joiValidate({ code: Joi.string().required() }, { code });
     res.json(await loginWithGoogleVerify(code, res.locals));
   }
 
@@ -128,8 +173,16 @@ export class AuthController {
   async getImpersonate(req: Request, res: Response) {
     const tokenUserId = res.locals.token.id;
     const impersonateUserId = req.params.id;
-    if (!tokenUserId || !impersonateUserId)
-      throw new Error(ErrorCode.MISSING_FIELD);
+    joiValidate(
+      {
+        tokenUserId: Joi.number().required(),
+        impersonateUserId: Joi.number().required()
+      },
+      {
+        tokenUserId,
+        impersonateUserId
+      }
+    );
     res.json(await impersonate(tokenUserId, impersonateUserId));
   }
 
@@ -138,14 +191,14 @@ export class AuthController {
   async getApproveLocation(req: Request, res: Response) {
     const token =
       req.body.token || (req.get("Authorization") || "").replace("Bearer ", "");
-    if (!token) throw new Error(ErrorCode.MISSING_FIELD);
+    joiValidate({ token: Joi.string().required() }, { token });
     res.json(await approveLocation(token, res.locals));
   }
 
   @Post("verify-email")
   async postVerifyEmail(req: Request, res: Response) {
     const token = req.body.token || req.params.token;
-    if (!token) throw new Error(ErrorCode.MISSING_FIELD);
+    joiValidate({ token: Joi.string().required() }, { token });
     await verifyEmail(token, res.locals);
     res.json({ success: true });
   }

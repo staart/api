@@ -35,6 +35,8 @@ import {
 } from "../rest/email";
 import { CREATED } from "http-status-codes";
 import asyncHandler from "express-async-handler";
+import { joiValidate } from "../helpers/utils";
+import Joi from "@hapi/joi";
 
 @Controller("users")
 @ClassMiddleware(authHandler)
@@ -44,7 +46,10 @@ export class UserController {
   async get(req: Request, res: Response) {
     let id = req.body.id || req.params.id;
     if (id === "me") id = res.locals.token.id;
-    if (!id) throw new Error(ErrorCode.MISSING_FIELD);
+    joiValidate(
+      { id: [Joi.string().required(), Joi.number().required()] },
+      { id }
+    );
     res.json(await getUserFromId(id, res.locals.token.id));
   }
 
@@ -52,7 +57,10 @@ export class UserController {
   async patch(req: Request, res: Response) {
     let id = req.params.id;
     if (id === "me") id = res.locals.token.id;
-    if (!id) throw new Error(ErrorCode.MISSING_FIELD);
+    joiValidate(
+      { id: [Joi.string().required(), Joi.number().required()] },
+      { id }
+    );
     await updateUserForUser(res.locals.token.id, id, req.body, res.locals);
     res.json({ success: true });
   }
@@ -61,7 +69,10 @@ export class UserController {
   async delete(req: Request, res: Response) {
     let id = req.params.id;
     if (id === "me") id = res.locals.token.id;
-    if (!id) throw new Error(ErrorCode.MISSING_FIELD);
+    joiValidate(
+      { id: [Joi.string().required(), Joi.number().required()] },
+      { id }
+    );
     res.json(await deleteUserForUser(res.locals.token.id, id, res.locals));
   }
 
@@ -69,7 +80,10 @@ export class UserController {
   async getRecentEvents(req: Request, res: Response) {
     let id = req.params.id;
     if (id === "me") id = res.locals.token.id;
-    if (!id) throw new Error(ErrorCode.MISSING_FIELD);
+    joiValidate(
+      { id: [Joi.string().required(), Joi.number().required()] },
+      { id }
+    );
     res.json(await getRecentEventsForUser(res.locals.token.id, id));
   }
 
@@ -77,7 +91,10 @@ export class UserController {
   async getMemberships(req: Request, res: Response) {
     let id = req.params.id;
     if (id === "me") id = res.locals.token.id;
-    if (!id) throw new Error(ErrorCode.MISSING_FIELD);
+    joiValidate(
+      { id: [Joi.string().required(), Joi.number().required()] },
+      { id }
+    );
     res.json(await getMembershipsForUser(res.locals.token.id, id));
   }
 
@@ -85,7 +102,10 @@ export class UserController {
   async getUserData(req: Request, res: Response) {
     let id = req.params.id;
     if (id === "me") id = res.locals.token.id;
-    if (!id) throw new Error(ErrorCode.MISSING_FIELD);
+    joiValidate(
+      { id: [Joi.string().required(), Joi.number().required()] },
+      { id }
+    );
     res.json(await getAllDataForUser(res.locals.token.id, id));
   }
 
@@ -93,7 +113,10 @@ export class UserController {
   async getUserApiKeys(req: Request, res: Response) {
     let id = req.params.id;
     if (id === "me") id = res.locals.token.id;
-    if (!id) throw new Error(ErrorCode.MISSING_FIELD);
+    joiValidate(
+      { id: [Joi.string().required(), Joi.number().required()] },
+      { id }
+    );
     res.json(await getApiKeysForUser(res.locals.token.id, id));
   }
 
@@ -101,7 +124,10 @@ export class UserController {
   async putUserApiKeys(req: Request, res: Response) {
     let id = req.params.id;
     if (id === "me") id = res.locals.token.id;
-    if (!id) throw new Error(ErrorCode.MISSING_FIELD);
+    joiValidate(
+      { id: [Joi.string().required(), Joi.number().required()] },
+      { id }
+    );
     res
       .status(CREATED)
       .json(await createApiKeyForUser(res.locals.token.id, id, res.locals));
@@ -112,7 +138,13 @@ export class UserController {
     let id = req.params.id;
     if (id === "me") id = res.locals.token.id;
     const apiKey = req.params.apiKey;
-    if (!id || !apiKey) throw new Error(ErrorCode.MISSING_FIELD);
+    joiValidate(
+      {
+        id: [Joi.string().required(), Joi.number().required()],
+        apiKey: Joi.string().required()
+      },
+      { id, apiKey }
+    );
     res.json(await getApiKeyForUser(res.locals.token.id, id, apiKey));
   }
 
@@ -121,7 +153,13 @@ export class UserController {
     let id = req.params.id;
     if (id === "me") id = res.locals.token.id;
     const apiKey = req.params.apiKey;
-    if (!id || !apiKey) throw new Error(ErrorCode.MISSING_FIELD);
+    joiValidate(
+      {
+        id: [Joi.string().required(), Joi.number().required()],
+        apiKey: Joi.string().required()
+      },
+      { id, apiKey }
+    );
     res.json(
       await updateApiKeyForUser(
         res.locals.token.id,
@@ -138,7 +176,13 @@ export class UserController {
     let id = req.params.id;
     if (id === "me") id = res.locals.token.id;
     const apiKey = req.params.apiKey;
-    if (!id || !apiKey) throw new Error(ErrorCode.MISSING_FIELD);
+    joiValidate(
+      {
+        id: [Joi.string().required(), Joi.number().required()],
+        apiKey: Joi.string().required()
+      },
+      { id, apiKey }
+    );
     res.json(
       await deleteApiKeyForUser(res.locals.token.id, id, apiKey, res.locals)
     );
@@ -148,7 +192,10 @@ export class UserController {
   async getEmails(req: Request, res: Response) {
     let id = req.params.id;
     if (id === "me") id = res.locals.token.id;
-    if (!id) throw new Error(ErrorCode.MISSING_FIELD);
+    joiValidate(
+      { id: [Joi.string().required(), Joi.number().required()] },
+      { id }
+    );
     res.json(await getAllEmailsForUser(res.locals.token.id, id));
   }
 
@@ -156,9 +203,16 @@ export class UserController {
   async putEmails(req: Request, res: Response) {
     let id = req.params.id;
     if (id === "me") id = res.locals.token.id;
-    if (!id) throw new Error(ErrorCode.MISSING_FIELD);
     const email = req.body.email;
-    if (!email) throw new Error(ErrorCode.MISSING_FIELD);
+    joiValidate(
+      {
+        id: [Joi.string().required(), Joi.number().required()],
+        email: Joi.string()
+          .email()
+          .required()
+      },
+      { id, email }
+    );
     await addEmailToUserForUser(res.locals.token.id, id, email, res.locals);
     res.status(CREATED).json({ success: true });
   }
@@ -167,9 +221,14 @@ export class UserController {
   async getEmail(req: Request, res: Response) {
     let id = req.params.id;
     if (id === "me") id = res.locals.token.id;
-    if (!id) throw new Error(ErrorCode.MISSING_FIELD);
     const emailId = req.params.emailId;
-    if (!emailId) throw new Error(ErrorCode.MISSING_FIELD);
+    joiValidate(
+      {
+        id: [Joi.string().required(), Joi.number().required()],
+        emailId: Joi.number().required()
+      },
+      { id, emailId }
+    );
     await getEmailForUser(res.locals.token.id, id, emailId);
     res.json({ success: true });
   }
@@ -178,9 +237,14 @@ export class UserController {
   async postResend(req: Request, res: Response) {
     let id = req.params.id;
     if (id === "me") id = res.locals.token.id;
-    if (!id) throw new Error(ErrorCode.MISSING_FIELD);
     const emailId = req.params.emailId;
-    if (!emailId) throw new Error(ErrorCode.MISSING_FIELD);
+    joiValidate(
+      {
+        id: [Joi.string().required(), Joi.number().required()],
+        emailId: Joi.number().required()
+      },
+      { id, emailId }
+    );
     await resendEmailVerificationForUser(res.locals.token.id, id, emailId);
     res.json({ success: true });
   }
@@ -189,9 +253,14 @@ export class UserController {
   async deleteEmail(req: Request, res: Response) {
     let id = req.params.id;
     if (id === "me") id = res.locals.token.id;
-    if (!id) throw new Error(ErrorCode.MISSING_FIELD);
     const emailId = req.params.emailId;
-    if (!emailId) throw new Error(ErrorCode.MISSING_FIELD);
+    joiValidate(
+      {
+        id: [Joi.string().required(), Joi.number().required()],
+        emailId: Joi.number().required()
+      },
+      { id, emailId }
+    );
     await deleteEmailFromUserForUser(
       res.locals.token.id,
       id,
@@ -205,7 +274,10 @@ export class UserController {
   async getUserNotifications(req: Request, res: Response) {
     let id = req.params.id;
     if (id === "me") id = res.locals.token.id;
-    if (!id) throw new Error(ErrorCode.MISSING_FIELD);
+    joiValidate(
+      { id: [Joi.string().required(), Joi.number().required()] },
+      { id }
+    );
     res.json(await getNotificationsForUser(res.locals.token.id, id));
   }
 
@@ -214,7 +286,13 @@ export class UserController {
     let id = req.params.id;
     if (id === "me") id = res.locals.token.id;
     const notificationId = req.params.notificationId;
-    if (!id || !notificationId) throw new Error(ErrorCode.MISSING_FIELD);
+    joiValidate(
+      {
+        id: [Joi.string().required(), Joi.number().required()],
+        notificationId: Joi.number().required()
+      },
+      { id, notificationId }
+    );
     res.json(
       await updateNotificationForUser(
         res.locals.token.id,

@@ -16,45 +16,40 @@ import {
   ClassWrapper
 } from "@overnightjs/core";
 import { authHandler } from "../helpers/middleware";
-import { CREATED } from "http-status-codes";
 import asyncHandler from "express-async-handler";
+import Joi from "@hapi/joi";
+import { joiValidate } from "../helpers/utils";
 
 @Controller("memberships")
 @ClassWrapper(asyncHandler)
 @ClassMiddleware(authHandler)
 export class MembershipController {
-  @Put()
-  async put(req: Request, res: Response) {
-    const organizationId = req.params.organizationId;
-    const newMemberName = req.body.name;
-    const newMemberEmail = req.body.email;
-    const role = req.body.role;
-    if (!organizationId || !newMemberName || !newMemberEmail || !role)
-      throw new Error(ErrorCode.MISSING_FIELD);
-    await inviteMemberToOrganization(
-      res.locals.token.id,
-      organizationId,
-      newMemberName,
-      newMemberEmail,
-      role,
-      res.locals
-    );
-    res.status(CREATED).json({ invited: true });
-  }
-
   @Get(":id")
   async get(req: Request, res: Response) {
-    const id = req.params.id;
-    if (!id) throw new Error(ErrorCode.MISSING_FIELD);
-    res.json(await getMembershipDetailsForUser(res.locals.token.id, id));
+    const membershipId = req.params.id;
+    const userId = res.locals.token.id;
+    joiValidate(
+      {
+        membershipId: Joi.number().required(),
+        userId: Joi.number().required()
+      },
+      { membershipId, userId }
+    );
+    res.json(await getMembershipDetailsForUser(userId, membershipId));
   }
 
   @Delete(":id")
   async delete(req: Request, res: Response) {
-    const id = res.locals.token.id;
+    const userId = res.locals.token.id;
     const membershipId = req.params.id;
-    if (!id || !membershipId) throw new Error(ErrorCode.MISSING_FIELD);
-    await deleteMembershipForUser(id, membershipId, res.locals);
+    joiValidate(
+      {
+        membershipId: Joi.number().required(),
+        userId: Joi.number().required()
+      },
+      { membershipId, userId }
+    );
+    await deleteMembershipForUser(userId, membershipId, res.locals);
     res.json({ deleted: true });
   }
 
@@ -62,7 +57,13 @@ export class MembershipController {
   async patch(req: Request, res: Response) {
     const userId = res.locals.token.id;
     const membershipId = req.params.id;
-    if (!userId || !membershipId) throw new Error(ErrorCode.MISSING_FIELD);
+    joiValidate(
+      {
+        membershipId: Joi.number().required(),
+        userId: Joi.number().required()
+      },
+      { membershipId, userId }
+    );
     const data = req.body;
     delete req.body.id;
     await updateMembershipForUser(userId, membershipId, data, res.locals);
