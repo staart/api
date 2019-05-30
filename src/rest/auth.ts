@@ -30,7 +30,7 @@ import {
   Authorizations,
   ValidationTypes
 } from "../interfaces/enum";
-import { compare, hash } from "bcrypt";
+import { compare, hash } from "bcryptjs";
 import { createMembership } from "../crud/membership";
 import {
   googleGetConnectionUrl,

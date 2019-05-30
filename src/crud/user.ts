@@ -12,7 +12,7 @@ import {
   deleteSensitiveInfoUser,
   anonymizeIpAddress
 } from "../helpers/utils";
-import { hash } from "bcrypt";
+import { hash } from "bcryptjs";
 import { KeyValue } from "../interfaces/general";
 import {
   ErrorCode,
