@@ -12,12 +12,15 @@ import {
   Put,
   Delete,
   Controller,
-  ClassMiddleware
+  ClassMiddleware,
+  ClassWrapper
 } from "@overnightjs/core";
 import { authHandler } from "../helpers/middleware";
 import { CREATED } from "http-status-codes";
+import asyncHandler from "express-async-handler";
 
 @Controller("memberships")
+@ClassWrapper(asyncHandler)
 @ClassMiddleware(authHandler)
 export class MembershipController {
   @Put()
