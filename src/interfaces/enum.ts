@@ -77,7 +77,9 @@ export enum ErrorCode {
   CANNOT_DELETE_SOLE_OWNER = "400/cannot-delete-sole-owner",
   CANNOT_UPDATE_SOLE_OWNER = "400/cannot-update-sole-owner",
   USER_IS_MEMBER_ALREADY = "400/user-is-member-already",
-  STRIPE_NO_CUSTOMER = "404/no-customer"
+  STRIPE_NO_CUSTOMER = "404/no-customer",
+  NOT_ENABLED_2FA = "400/invalid-2fa-token",
+  INVALID_2FA_TOKEN = "401/invalid-2fa-token"
 }
 
 export enum Templates {

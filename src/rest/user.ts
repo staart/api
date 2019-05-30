@@ -14,13 +14,15 @@ import {
   createApiKey,
   getApiKey,
   updateApiKey,
-  deleteApiKey
+  deleteApiKey,
+  createBackupCodes,
+  deleteUserBackupCodes
 } from "../crud/user";
 import {
   deleteAllUserMemberships,
   getUserMembershipsDetailed
 } from "../crud/membership";
-import { User, ApiKey } from "../interfaces/tables/user";
+import { User } from "../interfaces/tables/user";
 import { Locals, KeyValue } from "../interfaces/general";
 import {
   createEvent,
@@ -32,6 +34,9 @@ import { getUserEmails, deleteAllUserEmails } from "../crud/email";
 import { can } from "../helpers/authorization";
 import { validate } from "../helpers/utils";
 import { getUserNotifications, updateNotification } from "../crud/notification";
+import { authenticator } from "otplib";
+import { toDataURL } from "qrcode";
+import { SERVICE_2FA } from "../config";
 
 export const getUserFromId = async (userId: number, tokenUserId: number) => {
   if (await can(tokenUserId, Authorizations.READ, "user", userId))
@@ -230,4 +235,39 @@ export const updateNotificationForUser = async (
   if (await can(tokenUserId, Authorizations.UPDATE, "user", dataUserId))
     return await updateNotification(notificationId, data);
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const enable2FAForUser = async (tokenUserId: number, userId: number) => {
+  if (!(await can(tokenUserId, Authorizations.UPDATE_SECURE, "user", userId)))
+    throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+  const secret = authenticator.generateSecret();
+  await updateUser(userId, { twoFactorSecret: secret });
+  const authPath = authenticator.keyuri(`user-${userId}`, SERVICE_2FA, secret);
+  const qrCode = await toDataURL(authPath);
+  return { qrCode };
+};
+
+export const verify2FAForUser = async (
+  tokenUserId: number,
+  userId: number,
+  verificationCode: number
+) => {
+  if (!(await can(tokenUserId, Authorizations.UPDATE_SECURE, "user", userId)))
+    throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+  const secret = (await getUser(userId, true)).twoFactorSecret as string;
+  if (!secret) throw new Error(ErrorCode.NOT_ENABLED_2FA);
+  if (!authenticator.check(verificationCode.toString(), secret))
+    throw new Error(ErrorCode.INVALID_2FA_TOKEN);
+  await createBackupCodes(userId, 10);
+  await updateUser(userId, { twoFactorEnabled: true });
+};
+
+export const disable2FAForUser = async (
+  tokenUserId: number,
+  userId: number
+) => {
+  if (!(await can(tokenUserId, Authorizations.UPDATE_SECURE, "user", userId)))
+    throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+  await deleteUserBackupCodes(userId);
+  await updateUser(userId, { twoFactorEnabled: false, twoFactorSecret: "" });
 };

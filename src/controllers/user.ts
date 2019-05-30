@@ -12,7 +12,10 @@ import {
   updateApiKeyForUser,
   deleteApiKeyForUser,
   getNotificationsForUser,
-  updateNotificationForUser
+  updateNotificationForUser,
+  enable2FAForUser,
+  disable2FAForUser,
+  verify2FAForUser
 } from "../rest/user";
 import { ErrorCode } from "../interfaces/enum";
 import {
@@ -301,5 +304,44 @@ export class UserController {
         req.body
       )
     );
+  }
+
+  @Get(":id/2fa/enable")
+  async getEnable2FA(req: Request, res: Response) {
+    let id = req.params.id;
+    if (id === "me") id = res.locals.token.id;
+    joiValidate(
+      { id: [Joi.string().required(), Joi.number().required()] },
+      { id }
+    );
+    res.json(await enable2FAForUser(res.locals.token.id, id));
+  }
+
+  @Post(":id/2fa/verify")
+  async postVerify2FA(req: Request, res: Response) {
+    let id = req.params.id;
+    if (id === "me") id = res.locals.token.id;
+    const code = req.body.code;
+    joiValidate(
+      {
+        id: [Joi.string().required(), Joi.number().required()],
+        code: Joi.number()
+          .min(5)
+          .required()
+      },
+      { id, code }
+    );
+    res.json(await verify2FAForUser(res.locals.token.id, id, code));
+  }
+
+  @Delete(":id/2fa")
+  async delete2FA(req: Request, res: Response) {
+    let id = req.params.id;
+    if (id === "me") id = res.locals.token.id;
+    joiValidate(
+      { id: [Joi.string().required(), Joi.number().required()] },
+      { id }
+    );
+    res.json(await disable2FAForUser(res.locals.token.id, id));
   }
 }

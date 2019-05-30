@@ -31,6 +31,8 @@ export const SES_SECRET = process.env.SES_SECRET || "";
 // Auth and tokens
 export const JWT_SECRET = process.env.JWT_SECRET || "staart";
 export const JWT_ISSUER = process.env.JWT_ISSUER || "staart";
+export const SERVICE_2FA = process.env.SERVICE_2FA || "staart";
+
 export const TOKEN_EXPIRY_EMAIL_VERIFICATION =
   process.env.TOKEN_EXPIRY_EMAIL_VERIFICATION || "7d";
 export const TOKEN_EXPIRY_PASSWORD_RESET =

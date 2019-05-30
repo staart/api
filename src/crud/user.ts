@@ -23,6 +23,8 @@ import { getEmail, getVerifiedEmailObject } from "./email";
 import { cachedQuery, deleteItemFromCache } from "../helpers/cache";
 import md5 from "md5";
 import cryptoRandomString from "crypto-random-string";
+import randomInt from "random-int";
+import { BackupCode } from "../interfaces/tables/backup-codes";
 
 /**
  * Get a list of all users
@@ -250,4 +252,56 @@ export const deleteApiKey = async (apiKey: string) => {
   return await query("DELETE FROM `api-keys` WHERE apiKey = ? LIMIT 1", [
     apiKey
   ]);
+};
+
+/**
+ * Create 2FA backup codes for user
+ * @param count - Number of backup codes to create
+ */
+export const createBackupCodes = async (userId: number, count = 1) => {
+  for await (const x of Array.from(Array(count).keys())) {
+    const code: BackupCode = { code: randomInt(100000, 999999), userId };
+    code.createdAt = new Date();
+    code.updatedAt = code.createdAt;
+    await query(
+      `INSERT INTO \`backup-codes\` ${tableValues(code)}`,
+      Object.values(code)
+    );
+  }
+  return;
+};
+
+/**
+ * Update a backup code
+ */
+export const updateBackupCode = async (
+  backupCodeId: number,
+  code: KeyValue
+) => {
+  code.updatedAt = new Date();
+  return await query(
+    `UPDATE \`backup-codes\` SET ${setValues(code)} WHERE id = ?`,
+    [...Object.values(code), backupCodeId]
+  );
+};
+
+/**
+ * Delete a backup code
+ */
+export const deleteBackupCode = async (backupCodeId: number) => {
+  return await query("DELETE FROM `backup-codes` WHERE id = ?", [backupCodeId]);
+};
+
+/**
+ * Delete all backup codes of a user
+ */
+export const deleteUserBackupCodes = async (userId: number) => {
+  return await query("DELETE FROM `backup-codes` WHERE userId = ?", [userId]);
+};
+
+/**
+ * Get all backup codes of a user
+ */
+export const getUserBackupCodes = async (userId: number) => {
+  return await query("SELECT * FROM `backup-codes` WHERE userId = ?", [userId]);
 };
