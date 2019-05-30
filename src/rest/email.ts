@@ -55,7 +55,7 @@ export const addEmailToUserForUser = async (
   email: string,
   locals: Locals
 ) => {
-  if (await can(tokenUserId, Authorizations.UPDATE, "user", userId))
+  if (!(await can(tokenUserId, Authorizations.UPDATE, "user", userId)))
     throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
   validate(email, ValidationTypes.EMAIL);
   await checkIfNewEmail(email);
@@ -73,7 +73,7 @@ export const deleteEmailFromUserForUser = async (
   emailId: number,
   locals: Locals
 ) => {
-  if (await can(tokenUserId, Authorizations.UPDATE, "user", userId))
+  if (!(await can(tokenUserId, Authorizations.UPDATE, "user", userId)))
     throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
   const email = await getEmail(emailId);
   if (email.userId != userId)

@@ -7,7 +7,6 @@ import Joi from "@hapi/joi";
  */
 export const safeError = (error: string) => {
   const errorString = error.toString();
-  console.log("Got", errorString);
   if (errorString.startsWith("joi:")) {
     const joiError = JSON.parse(
       errorString.split("joi:")[1]
@@ -28,5 +27,6 @@ export const sendError = (error: string) => {
     const code = error.split("/")[1];
     return { status, code } as HTTPError;
   }
+  console.log("Backup error", error);
   return { status: 500, code: error } as HTTPError;
 };

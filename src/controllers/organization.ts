@@ -151,7 +151,7 @@ export class OrganizationController {
     );
   }
 
-  @Get(":id/plans")
+  @Get(":id/pricing/:product")
   async getPlans(req: Request, res: Response) {
     const product = req.params.product;
     const organizationId = req.params.id;
