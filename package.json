@@ -6,7 +6,7 @@
   "author": "Anand Chowdhary <mail@anandchowdhary.com>",
   "license": "MIT",
   "scripts": {
-    "build-babel": "babel src -d dist --extensions '.ts' && cp .env dist/.env",
+    "build-babel": "touch .env && babel src -d dist --extensions '.ts' && cp .env dist/.env",
     "build": "touch .env && mkdir -p dist && cp .env dist/.env && tsc",
     "check-types": "tsc",
     "start": "npm run build-babel && node dist/index.js",
