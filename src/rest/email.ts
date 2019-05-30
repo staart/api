@@ -79,16 +79,14 @@ export const deleteEmailFromUserForUser = async (
   if (email.userId != userId)
     throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
   const verifiedEmails = await getUserVerifiedEmails(userId);
-  if (verifiedEmails.length > 1) {
-    const currentPrimaryEmailId = (await getUserPrimaryEmailObject(userId)).id;
-    if (currentPrimaryEmailId == emailId) {
-      const nextVerifiedEmail = verifiedEmails.filter(
-        emailObject => emailObject.id != emailId
-      )[0];
-      await updateUser(userId, { primaryEmail: nextVerifiedEmail });
-    }
-  } else {
+  if (verifiedEmails.length === 1 && email.isVerified)
     throw new Error(ErrorCode.EMAIL_CANNOT_DELETE);
+  const currentPrimaryEmailId = (await getUserPrimaryEmailObject(userId)).id;
+  if (currentPrimaryEmailId == emailId) {
+    const nextVerifiedEmail = verifiedEmails.filter(
+      emailObject => emailObject.id != emailId
+    )[0];
+    await updateUser(userId, { primaryEmail: nextVerifiedEmail });
   }
   await deleteEmail(emailId);
   await createEvent(
