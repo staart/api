@@ -11,7 +11,8 @@ import {
   getApiKeyForUser,
   updateApiKeyForUser,
   deleteApiKeyForUser,
-  getNotificationsForUser
+  getNotificationsForUser,
+  updateNotificationForUser
 } from "../rest/user";
 import { ErrorCode } from "../interfaces/enum";
 import {
@@ -64,7 +65,7 @@ export class UserController {
     res.json(await deleteUserForUser(res.locals.token.id, id, res.locals));
   }
 
-  @Get(":id/recent-events")
+  @Get(":id/events")
   async getRecentEvents(req: Request, res: Response) {
     let id = req.params.id;
     if (id === "me") id = res.locals.token.id;
@@ -206,5 +207,21 @@ export class UserController {
     if (id === "me") id = res.locals.token.id;
     if (!id) throw new Error(ErrorCode.MISSING_FIELD);
     res.json(await getNotificationsForUser(res.locals.token.id, id));
+  }
+
+  @Patch(":id/notifications/:notificationId")
+  async updateUserNotification(req: Request, res: Response) {
+    let id = req.params.id;
+    if (id === "me") id = res.locals.token.id;
+    const notificationId = req.params.notificationId;
+    if (!id || !notificationId) throw new Error(ErrorCode.MISSING_FIELD);
+    res.json(
+      await updateNotificationForUser(
+        res.locals.token.id,
+        id,
+        notificationId,
+        req.body
+      )
+    );
   }
 }

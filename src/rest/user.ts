@@ -31,7 +31,7 @@ import {
 import { getUserEmails, deleteAllUserEmails } from "../crud/email";
 import { can } from "../helpers/authorization";
 import { validate } from "../helpers/utils";
-import { getUserNotifications } from "../crud/notification";
+import { getUserNotifications, updateNotification } from "../crud/notification";
 
 export const getUserFromId = async (userId: number, tokenUserId: number) => {
   if (await can(tokenUserId, Authorizations.READ, "user", userId))
@@ -218,5 +218,16 @@ export const getNotificationsForUser = async (
 ) => {
   if (await can(tokenUserId, Authorizations.READ, "user", dataUserId))
     return await getUserNotifications(dataUserId);
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const updateNotificationForUser = async (
+  tokenUserId: number,
+  dataUserId: number,
+  notificationId: number,
+  data: KeyValue
+) => {
+  if (await can(tokenUserId, Authorizations.UPDATE, "user", dataUserId))
+    return await updateNotification(notificationId, data);
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };

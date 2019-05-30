@@ -133,7 +133,7 @@ export class AuthController {
     res.json(await impersonate(tokenUserId, impersonateUserId));
   }
 
-  @Get("approve-location")
+  @Post("approve-location")
   @Middleware(authHandler)
   async getApproveLocation(req: Request, res: Response) {
     const token =
