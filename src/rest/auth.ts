@@ -52,8 +52,6 @@ export const login = async (
   password: string,
   locals: Locals
 ) => {
-  validate(email, ValidationTypes.EMAIL);
-  validate(password, ValidationTypes.TEXT);
   const user = await getUserByEmail(email, true);
   if (!user.password) throw new Error(ErrorCode.MISSING_PASSWORD);
   if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);

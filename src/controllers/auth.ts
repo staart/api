@@ -23,6 +23,8 @@ import {
 import { authHandler } from "../helpers/middleware";
 import { CREATED } from "http-status-codes";
 import asyncHandler from "express-async-handler";
+import { joiValidate } from "../helpers/utils";
+import Joi from "@hapi/joi";
 
 @Controller("auth")
 @ClassWrapper(asyncHandler)
@@ -50,7 +52,17 @@ export class AuthController {
   async login(req: Request, res: Response) {
     const email = req.body.email;
     const password = req.body.password;
-    if (!email || !password) throw new Error(ErrorCode.MISSING_FIELD);
+    joiValidate(
+      {
+        email: Joi.string()
+          .email()
+          .required(),
+        password: Joi.string()
+          .min(6)
+          .required()
+      },
+      { email, password }
+    );
     res.json(await login(email, password, res.locals));
   }
 

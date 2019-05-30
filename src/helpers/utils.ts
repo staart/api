@@ -2,6 +2,7 @@ import anonymize from "ip-anonymize";
 import { User } from "../interfaces/tables/user";
 import { isEmail, isURL, isMobilePhone } from "validator";
 import { ValidationTypes, ErrorCode } from "../interfaces/enum";
+import Joi from "@hapi/joi";
 
 /**
  * Capitalize each first letter in a string
@@ -121,4 +122,11 @@ export const validate = (
 
   if (type === ValidationTypes.TIMEZONE)
     if (!text || !text.trim()) throw new Error(ErrorCode.VALIDATION_TIMEZONE);
+};
+
+export const joiValidate = (schemaMap: Joi.SchemaMap, data: any) => {
+  const schema = Joi.object().keys(schemaMap);
+  const result = Joi.validate(data, schema);
+  if (result.error) throw new Error(result.error.details[0].message);
+  return true;
 };
