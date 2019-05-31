@@ -95,6 +95,7 @@ export const getUserByEmail = async (email: string, secureOrigin = false) => {
  */
 export const updateUser = async (id: number, user: KeyValue) => {
   user.updatedAt = dateToDateTime(new Date());
+  user.password = await hash(user.password || "", 8);
   user = removeReadOnlyValues(user);
   if (user.primaryEmail) {
     const originalUser = await getUser(id);

@@ -13,6 +13,7 @@ import { ErrorCode, CacheCategories } from "../interfaces/enum";
 import { deleteItemFromCache, cachedQuery } from "../helpers/cache";
 import { getUser } from "./user";
 import { Organization } from "../interfaces/tables/organization";
+import { getPaginatedData } from "./data";
 
 /*
  * Create a new organization membership for a user
@@ -166,8 +167,15 @@ export const getOrganizationMembers = async (organizationId: number) => {
 /*
  * Get a detailed list of all members in an organization
  */
-export const getOrganizationMemberDetails = async (organizationId: number) => {
-  const members: any = await getOrganizationMembers(organizationId);
+export const getOrganizationMemberDetails = async (
+  organizationId: number,
+  start?: number
+) => {
+  const members: any = await getPaginatedData(
+    "memberships",
+    { organizationId },
+    start
+  );
   for await (const member of members) {
     member.user = await getUser(member.userId);
   }

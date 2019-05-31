@@ -150,8 +150,7 @@ export const updatePassword = async (
 ) => {
   validate(password, ValidationTypes.TEXT);
   const userId = (<KeyValue>await verifyToken(token, Tokens.PASSWORD_RESET)).id;
-  const hashedPassword = await hash(password || "", 8);
-  await updateUser(userId, { password: hashedPassword });
+  await updateUser(userId, { password });
   await createEvent(
     {
       userId,

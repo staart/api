@@ -354,9 +354,10 @@ export const getOrganizationRecentEventsForUser = async (
 
 export const getOrganizationMembershipsForUser = async (
   userId: number,
-  organizationId: number
+  organizationId: number,
+  start?: number
 ) => {
   if (await can(userId, Authorizations.READ, "organization", organizationId))
-    return await getOrganizationMemberDetails(organizationId);
+    return await getOrganizationMemberDetails(organizationId, start);
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
