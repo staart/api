@@ -176,7 +176,7 @@ export const getOrganizationMemberDetails = async (
     { organizationId },
     start
   );
-  for await (const member of members) {
+  for await (const member of members.data) {
     member.user = await getUser(member.userId);
   }
   return members;

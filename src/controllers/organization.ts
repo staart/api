@@ -300,7 +300,7 @@ export class OrganizationController {
       await getOrganizationMembershipsForUser(
         res.locals.token.id,
         organizationId,
-        req.params.start
+        req.query.start
       )
     );
   }

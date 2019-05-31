@@ -21,9 +21,19 @@ export const getPaginatedData = async (
     } ORDER BY ${primaryKey} ASC LIMIT ${itemsPerPage}`,
     [index, ...(conditions ? Object.values(conditions) : [])]
   )) as any[];
+  console.log(
+    `SELECT * FROM \`${table}\` WHERE ${primaryKey} > ? ${
+      conditions
+        ? `AND ${Object.keys(conditions)
+            .map(condition => `${condition} = ?`)
+            .join(" AND ")}`
+        : ""
+    } ORDER BY ${primaryKey} ASC LIMIT ${itemsPerPage}`,
+    [index, ...(conditions ? Object.values(conditions) : [])]
+  );
   return {
     data,
-    has_more: data.length === itemsPerPage,
+    hasMore: data.length === itemsPerPage,
     next: data.length && data[data.length - 1][primaryKey]
   };
 };
