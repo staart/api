@@ -38,6 +38,7 @@ import { getUserNotifications, updateNotification } from "../crud/notification";
 import { authenticator } from "otplib";
 import { toDataURL } from "qrcode";
 import { SERVICE_2FA } from "../config";
+import { compare } from "bcryptjs";
 
 export const getUserFromId = async (userId: number, tokenUserId: number) => {
   if (await can(tokenUserId, Authorizations.READ, "user", userId))
@@ -51,6 +52,7 @@ export const updateUserForUser = async (
   data: User,
   locals: Locals
 ) => {
+  delete data.password;
   if (data.name) validate(data.name, ValidationTypes.TEXT);
   if (data.nickname) validate(data.nickname, ValidationTypes.TEXT);
   if (data.countryCode)
@@ -67,6 +69,35 @@ export const updateUserForUser = async (
         userId: tokenUserId,
         type: EventType.USER_UPDATED,
         data: { id: updateUserId, data }
+      },
+      locals
+    );
+    return;
+  }
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const updatePasswordForUser = async (
+  tokenUserId: number,
+  updateUserId: number,
+  oldPassword: string,
+  newPassword: string,
+  locals: Locals
+) => {
+  if (
+    await can(tokenUserId, Authorizations.UPDATE_SECURE, "user", updateUserId)
+  ) {
+    const user = await getUser(updateUserId, true);
+    const correctPassword = await compare(oldPassword, user.password as string);
+    if (!correctPassword) throw new Error(ErrorCode.INCORRECT_PASSWORD);
+    console.log("Reached here 3");
+    await updateUser(updateUserId, { password: newPassword });
+    console.log("Reached here 4");
+    await createEvent(
+      {
+        userId: tokenUserId,
+        type: EventType.AUTH_PASSWORD_CHANGED,
+        data: { id: updateUserId }
       },
       locals
     );

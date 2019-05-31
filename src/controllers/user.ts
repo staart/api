@@ -17,7 +17,8 @@ import {
   disable2FAForUser,
   verify2FAForUser,
   getBackupCodesForUser,
-  regenerateBackupCodesForUser
+  regenerateBackupCodesForUser,
+  updatePasswordForUser
 } from "../rest/user";
 import { ErrorCode } from "../interfaces/enum";
 import {
@@ -79,6 +80,34 @@ export class UserController {
       { id }
     );
     res.json(await deleteUserForUser(res.locals.token.id, id, res.locals));
+  }
+
+  @Put(":id/password")
+  async updatePassword(req: Request, res: Response) {
+    let id = req.params.id;
+    if (id === "me") id = res.locals.token.id;
+    const oldPassword = req.body.oldPassword;
+    const newPassword = req.body.newPassword;
+    joiValidate(
+      {
+        id: [Joi.string().required(), Joi.number().required()],
+        oldPassword: Joi.string()
+          .min(6)
+          .required(),
+        newPassword: Joi.string()
+          .min(6)
+          .required()
+      },
+      { id, oldPassword, newPassword }
+    );
+    await updatePasswordForUser(
+      res.locals.token.id,
+      id,
+      oldPassword,
+      newPassword,
+      res.locals
+    );
+    res.json({ success: true });
   }
 
   @Get(":id/events")
