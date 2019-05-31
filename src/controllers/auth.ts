@@ -206,8 +206,7 @@ export class AuthController {
   @Post("approve-location")
   @Middleware(authHandler)
   async getApproveLocation(req: Request, res: Response) {
-    const token =
-      req.body.token || (req.get("Authorization") || "").replace("Bearer ", "");
+    const token = req.body.token || req.params.token;
     joiValidate({ token: Joi.string().required() }, { token });
     res.json(await approveLocation(token, res.locals));
   }
