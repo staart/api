@@ -58,6 +58,7 @@ export enum ErrorCode {
   MEMBERSHIP_NOT_FOUND = "404/membership-not-found",
   ORGANIZATION_NOT_FOUND = "404/organization-not-found",
   INVALID_LOGIN = "401/invalid-login",
+  INCORRECT_PASSWORD = "401/incorrect-password",
   INSUFFICIENT_PERMISSION = "401/insufficient-permission",
   DEFAULT = "500/server-error",
   EMAIL_CANNOT_DELETE = "400/email.cannotDelete",

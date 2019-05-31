@@ -16,7 +16,7 @@ import { dateToDateTime } from "../helpers/utils";
 export const createNotification = async (notification: Notification) => {
   notification.createdAt = new Date();
   notification.updatedAt = notification.createdAt;
-  notification.isRead = !!notification.isRead;
+  notification.read = !!notification.read;
   deleteItemFromCache(CacheCategories.USER_NOTIFICATIONS, notification.userId);
   return await query(
     `INSERT INTO notifications ${tableValues(notification)}`,
