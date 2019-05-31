@@ -108,7 +108,6 @@ export class AuthController {
   }
 
   @Post("verify-token")
-  @Middleware(authHandler)
   async postVerifyToken(req: Request, res: Response) {
     const token =
       req.body.token || (req.get("Authorization") || "").replace("Bearer ", "");
