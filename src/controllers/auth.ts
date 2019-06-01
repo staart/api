@@ -38,12 +38,9 @@ export class AuthController {
       {
         email: Joi.string()
           .email()
-          .required(),
-        name: Joi.string()
-          .min(3)
           .required()
       },
-      { email, name }
+      { email }
     );
     const user = req.body;
     delete user.organizationId;
@@ -52,6 +49,9 @@ export class AuthController {
     delete user.membershipRole;
     joiValidate(
       {
+        name: Joi.string()
+          .min(3)
+          .required(),
         nickname: Joi.string().min(3),
         countryCode: Joi.string().length(2),
         password: Joi.string().min(6),
