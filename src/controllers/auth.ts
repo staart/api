@@ -19,20 +19,21 @@ import {
   Post,
   Controller,
   Middleware,
-  ClassWrapper
+  ClassWrapper,
+  ClassMiddleware
 } from "@overnightjs/core";
-import { authHandler } from "../helpers/middleware";
+import { authHandler, bruteForceHandler } from "../helpers/middleware";
 import { CREATED } from "http-status-codes";
 import asyncHandler from "express-async-handler";
 import { joiValidate } from "../helpers/utils";
 import Joi from "@hapi/joi";
 
 @Controller("auth")
+@ClassMiddleware(bruteForceHandler)
 @ClassWrapper(asyncHandler)
 export class AuthController {
   @Post("register")
   async register(req: Request, res: Response) {
-    const name = req.body.name;
     const email = req.body.email;
     joiValidate(
       {

@@ -1,7 +1,14 @@
 import { Request, Response, NextFunction } from "express";
+import Brute from "express-brute";
 import { safeError } from "./errors";
 import { verifyToken } from "./jwt";
 import { ErrorCode, Tokens } from "../interfaces/enum";
+import { BRUTE_LIFETIME, BRUTE_FREE_RETRIES } from "../config";
+const store = new Brute.MemoryStore();
+const bruteForce = new Brute(store, {
+  freeRetries: BRUTE_FREE_RETRIES,
+  lifetime: BRUTE_LIFETIME
+});
 
 /**
  * Handle any errors for Express
@@ -63,3 +70,8 @@ export const authHandler = async (
     return res.json(error);
   }
 };
+
+/**
+ * Brute force middleware
+ */
+export const bruteForceHandler = bruteForce.prevent;
