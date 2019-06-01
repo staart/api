@@ -1121,6 +1121,13 @@
     "@types/node" "*"
     "@types/range-parser" "*"
 
+"@types/express-slow-down@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@types/express-slow-down/-/express-slow-down-1.1.0.tgz#bbca86683d86dc21d740aa6e336fba4dc1e77309"
+  integrity sha512-216eW7oONH1L1dddDO4cv9bdZzakSJylBxC3Yxkx6j8k4bc/c8PSlszIFq7yKQHqeA1vloyxAc50qwTxUGCTqg==
+  dependencies:
+    "@types/express" "*"
+
 "@types/express@*", "@types/express@^4.16.1":
   version "4.16.1"
   resolved "https://registry.yarnpkg.com/@types/express/-/express-4.16.1.tgz#d756bd1a85c34d87eaf44c888bad27ba8a4b7cf0"
@@ -1978,6 +1985,11 @@ clone@2.x:
   resolved "https://registry.yarnpkg.com/clone/-/clone-2.1.2.tgz#1b7f4b9f591f1e8f83670401600345a02887435f"
   integrity sha1-G39Ln1kfHo+DZwQBYANFoCiHQ18=
 
+clone@^1.0.2:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/clone/-/clone-1.0.4.tgz#da309cc263df15994c688ca902179ca3c7cd7c7e"
+  integrity sha1-2jCcwmPfFZlMaIypAheco8fNfH4=
+
 co@^4.6.0:
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/co/-/co-4.6.0.tgz#6ea6bdf3d853ae54ccb8e47bfa0bf3f9031fb184"
@@ -2288,6 +2300,13 @@ deep-is@~0.1.3:
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/deep-is/-/deep-is-0.1.3.tgz#b369d6fb5dbc13eecf524f91b070feedc357cf34"
   integrity sha1-s2nW+128E+7PUk+RsHD+7cNXzzQ=
+
+defaults@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/defaults/-/defaults-1.0.3.tgz#c656051e9817d9ff08ed881477f3fe4019f3ef7d"
+  integrity sha1-xlYFHpgX2f8I7YgUd/P+QBnz730=
+  dependencies:
+    clone "^1.0.2"
 
 define-properties@^1.1.2:
   version "1.1.3"
@@ -2604,6 +2623,18 @@ express-brute@^1.0.1:
   dependencies:
     long-timeout "~0.1.1"
     underscore "~1.8.3"
+
+express-rate-limit@^4.0.3:
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/express-rate-limit/-/express-rate-limit-4.0.3.tgz#70ec815f6ba2d6a62400c8a7bd341c420b4330cc"
+  integrity sha512-9+v6DXQdLLd4EqdEkXXM1ctdVNgjw4w8V1WLvlpnIb2SZ5wJ3Kvu8FOMzBPIAX+iO1F24AG640eOOHCv/0GmKg==
+
+express-slow-down@^1.3.1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/express-slow-down/-/express-slow-down-1.3.1.tgz#0458bb8670ea1cbedaa00bae4293024ee4e9445e"
+  integrity sha512-mkxVJt3z2e0/LIVp144xpaPw8Ku2f6XS9ftjgwMsUtp+4a84hk6NI6/KTEPkq1kjCsJuXeG6SA/izCWxaErBdg==
+  dependencies:
+    defaults "^1.0.3"
 
 express@^4.16.3, express@^4.17.0:
   version "4.17.1"

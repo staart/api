@@ -1,13 +1,32 @@
 import { Request, Response, NextFunction } from "express";
 import Brute from "express-brute";
+import { RateLimit } from "express-rate-limit";
+import slowDown from "express-slow-down";
 import { safeError } from "./errors";
 import { verifyToken } from "./jwt";
 import { ErrorCode, Tokens } from "../interfaces/enum";
-import { BRUTE_LIFETIME, BRUTE_FREE_RETRIES } from "../config";
+import {
+  BRUTE_LIFETIME,
+  BRUTE_FREE_RETRIES,
+  RATE_LIMIT_MAX,
+  RATE_LIMIT_TIME,
+  SPEED_LIMIT_DELAY,
+  SPEED_LIMIT_COUNT,
+  SPEED_LIMIT_TIME
+} from "../config";
 const store = new Brute.MemoryStore();
 const bruteForce = new Brute(store, {
   freeRetries: BRUTE_FREE_RETRIES,
   lifetime: BRUTE_LIFETIME
+});
+const rateLimiter = RateLimit({
+  windowMs: RATE_LIMIT_TIME,
+  max: RATE_LIMIT_MAX
+});
+const speedLimiter = slowDown({
+  windowMs: SPEED_LIMIT_TIME,
+  delayAfter: SPEED_LIMIT_COUNT,
+  delayMs: SPEED_LIMIT_DELAY
 });
 
 /**
@@ -75,3 +94,13 @@ export const authHandler = async (
  * Brute force middleware
  */
 export const bruteForceHandler = bruteForce.prevent;
+
+/**
+ * Rate limiting middleware
+ */
+export const rateLimitHandler = rateLimiter;
+
+/**
+ * Speed limiting middleware
+ */
+export const speedLimitHandler = speedLimiter;

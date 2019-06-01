@@ -4,12 +4,29 @@ config();
 // Server
 export const PORT = process.env.PORT ? parseInt(process.env.PORT) : 7007;
 export const SENTRY_DSN = process.env.SENTRY_DSN || "";
+
+// Rate limiting
 export const BRUTE_FREE_RETRIES = process.env.BRUTE_FREE_RETRIES
   ? parseInt(process.env.BRUTE_FREE_RETRIES)
   : 10;
 export const BRUTE_LIFETIME = process.env.BRUTE_LIFETIME
   ? parseInt(process.env.BRUTE_LIFETIME)
   : 300000;
+export const RATE_LIMIT_TIME = process.env.RATE_LIMIT_TIME
+  ? parseInt(process.env.RATE_LIMIT_TIME)
+  : 60000; // 1 minute
+export const RATE_LIMIT_MAX = process.env.RATE_LIMIT_MAX
+  ? parseInt(process.env.RATE_LIMIT_MAX)
+  : 200; // Max 200 requests/minute from an IP
+export const SPEED_LIMIT_TIME = process.env.SPEED_LIMIT_TIME
+  ? parseInt(process.env.SPEED_LIMIT_TIME)
+  : 600000; // 10 minutes
+export const SPEED_LIMIT_DELAY = process.env.SPEED_LIMIT_DELAY
+  ? parseInt(process.env.SPEED_LIMIT_DELAY)
+  : 100; // 100ms per request delay
+export const SPEED_LIMIT_COUNT = process.env.SPEED_LIMIT_COUNT
+  ? parseInt(process.env.SPEED_LIMIT_COUNT)
+  : 1000; // Start delaying after 1000 requests
 
 // Database
 export const DB_HOST = process.env.DB_HOST || "localhost";
