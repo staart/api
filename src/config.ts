@@ -3,6 +3,7 @@ config();
 
 // Server
 export const PORT = process.env.PORT ? parseInt(process.env.PORT) : 7007;
+export const SENTRY_DSN = process.env.SENTRY_DSN || "";
 
 // Database
 export const DB_HOST = process.env.DB_HOST || "localhost";
