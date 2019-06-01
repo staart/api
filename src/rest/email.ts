@@ -19,13 +19,25 @@ import {
 import { updateUser } from "../crud/user";
 import { can } from "../helpers/authorization";
 import { validate } from "../helpers/utils";
+import { getPaginatedData } from "../crud/data";
+import { addIsPrimaryToEmails } from "../helpers/mysql";
 
 export const getAllEmailsForUser = async (
   tokenUserId: number,
-  userId: number
+  userId: number,
+  index?: number,
+  itemsPerPage?: number
 ) => {
-  if (await can(tokenUserId, Authorizations.READ, "user", userId))
-    return await getUserEmails(userId);
+  if (await can(tokenUserId, Authorizations.READ, "user", userId)) {
+    const emails = await getPaginatedData(
+      "emails",
+      { userId },
+      index,
+      itemsPerPage
+    );
+    emails.data = await addIsPrimaryToEmails(emails.data);
+    return emails;
+  }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
 

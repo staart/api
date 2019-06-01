@@ -21,7 +21,8 @@ import {
 } from "../crud/user";
 import {
   deleteAllUserMemberships,
-  getUserMembershipsDetailed
+  getUserMembershipsDetailed,
+  addOrganizationToMemberships
 } from "../crud/membership";
 import { User } from "../interfaces/tables/user";
 import { Locals, KeyValue } from "../interfaces/general";
@@ -39,6 +40,8 @@ import { authenticator } from "otplib";
 import { toDataURL } from "qrcode";
 import { SERVICE_2FA } from "../config";
 import { compare } from "bcryptjs";
+import { getPaginatedData } from "../crud/data";
+import { addLocationToEvents } from "../helpers/location";
 
 export const getUserFromId = async (userId: number, tokenUserId: number) => {
   if (await can(tokenUserId, Authorizations.READ, "user", userId))
@@ -132,19 +135,35 @@ export const deleteUserForUser = async (
 
 export const getRecentEventsForUser = async (
   tokenUserId: number,
-  dataUserId: number
+  dataUserId: number,
+  index?: number
 ) => {
-  if (await can(tokenUserId, Authorizations.READ_SECURE, "user", dataUserId))
-    return await getUserRecentEvents(dataUserId);
+  if (await can(tokenUserId, Authorizations.READ_SECURE, "user", dataUserId)) {
+    const events = await getPaginatedData(
+      "events",
+      { userId: dataUserId },
+      index
+    );
+    events.data = await addLocationToEvents(events.data);
+    return events;
+  }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
 
 export const getMembershipsForUser = async (
   tokenUserId: number,
-  dataUserId: number
+  dataUserId: number,
+  index?: number
 ) => {
-  if (await can(tokenUserId, Authorizations.READ, "user", dataUserId))
-    return await getUserMembershipsDetailed(dataUserId);
+  if (await can(tokenUserId, Authorizations.READ, "user", dataUserId)) {
+    const memberships = await getPaginatedData(
+      "memberships",
+      { userId: dataUserId },
+      index
+    );
+    memberships.data = await addOrganizationToMemberships(memberships.data);
+    return memberships;
+  }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
 

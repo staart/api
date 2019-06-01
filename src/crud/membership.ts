@@ -198,6 +198,30 @@ export const getUserMemberships = async (user: User | number) => {
 };
 
 /**
+ * Add organization details to membership
+ */
+export const addOrganizationToMembership = async (membership: Membership) => {
+  (membership as any).organization = await getOrganization(
+    membership.organizationId
+  );
+  return membership;
+};
+
+/**
+ * Add organization details to memberships
+ */
+export const addOrganizationToMemberships = async (
+  memberships: Membership[]
+) => {
+  for await (const membership of memberships) {
+    (membership as any).organization = await getOrganization(
+      membership.organizationId
+    );
+  }
+  return memberships;
+};
+
+/**
  * Get a detailed object of a user's membership
  */
 export const getUserMembershipsDetailed = async (user: User | number) => {
