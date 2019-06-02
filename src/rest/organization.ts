@@ -16,7 +16,6 @@ import {
   ErrorCode,
   EventType,
   Authorizations,
-  ValidationTypes,
   NotificationCategories
 } from "../interfaces/enum";
 import {
@@ -41,7 +40,6 @@ import {
   deleteStripeCustomer
 } from "../helpers/stripe";
 import { customers, cards } from "stripe";
-import { validate } from "../helpers/utils";
 import { getUser } from "../crud/user";
 import { createNotification } from "../crud/notification";
 
@@ -59,14 +57,10 @@ export const newOrganizationForUser = async (
   organization: Organization,
   locals: Locals
 ) => {
-  if (organization.name) {
-    validate(organization.name, ValidationTypes.TEXT);
-  } else {
+  if (!organization.name) {
     const user = await getUser(userId);
     organization.name = `${user.name}'s Team`;
   }
-  if (organization.invitationDomain)
-    validate(organization.invitationDomain, ValidationTypes.DOMAIN);
   const org = <InsertResult>await createOrganization(organization);
   const organizationId = org.insertId;
   await createMembership({
@@ -100,9 +94,6 @@ export const updateOrganizationForUser = async (
   data: Organization,
   locals: Locals
 ) => {
-  if (data.name) validate(data.name, ValidationTypes.TEXT);
-  if (data.invitationDomain)
-    validate(data.invitationDomain, ValidationTypes.DOMAIN);
   if (
     await can(userId, Authorizations.UPDATE, "organization", organizationId)
   ) {

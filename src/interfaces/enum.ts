@@ -65,16 +65,6 @@ export enum ErrorCode {
   UNVERIFIED_EMAIL = "401/unverified-email",
   GOOGLE_AUTH_ERROR = "401/google-auth-error",
   UNAPPROVED_LOCATION = "401/unapproved-location",
-  VALIDATION_EMAIL = "400/validation-email",
-  VALIDATION_PHONE = "400/validation-phone",
-  VALIDATION_URL = "400/validation-url",
-  VALIDATION_DOMAIN = "400/validation-domain",
-  VALIDATION_LANGUAGE = "400/validation-language",
-  VALIDATION_TIMEZONE = "400/validation-timezone",
-  VALIDATION_GENDER = "400/validation-gender",
-  VALIDATION_COUNTRY_CODE = "400/validation-country-code",
-  VALIDATION_TEXT = "400/validation-text",
-  VALIDATION_TEXT_LENGTH = "400/validation-text-length",
   CANNOT_DELETE_SOLE_OWNER = "400/cannot-delete-sole-owner",
   CANNOT_UPDATE_SOLE_OWNER = "400/cannot-update-sole-owner",
   USER_IS_MEMBER_ALREADY = "400/user-is-member-already",
@@ -139,18 +129,6 @@ export enum Genders {
   FEMALE = "f",
   NON_BINARY = "n",
   UNKNOWN = "x"
-}
-
-export enum ValidationTypes {
-  EMAIL = "email",
-  PHONE = "phone",
-  URL = "url",
-  GENDER = "gender",
-  DOMAIN = "domain",
-  LANGUAGE = "language",
-  TIMEZONE = "timezone",
-  COUNTRY_CODE = "country-code",
-  TEXT = "text"
 }
 
 export enum NotificationCategories {

@@ -2,7 +2,6 @@ import {
   MembershipRole,
   ErrorCode,
   Authorizations,
-  ValidationTypes,
   EventType,
   NotificationCategories
 } from "../interfaces/enum";
@@ -19,7 +18,6 @@ import {
 import { User } from "../interfaces/tables/user";
 import { register } from "./auth";
 import { can } from "../helpers/authorization";
-import { validate } from "../helpers/utils";
 import { Locals, KeyValue } from "../interfaces/general";
 import { createEvent } from "../crud/event";
 import { createNotification } from "../crud/notification";
@@ -42,8 +40,6 @@ export const inviteMemberToOrganization = async (
   role: MembershipRole,
   locals: Locals
 ) => {
-  validate(newMemberName, ValidationTypes.TEXT);
-  validate(newMemberEmail, ValidationTypes.EMAIL);
   if (
     await can(
       userId,

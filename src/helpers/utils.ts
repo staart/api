@@ -1,7 +1,5 @@
 import anonymize from "ip-anonymize";
 import { User } from "../interfaces/tables/user";
-import { isEmail, isURL, isMobilePhone } from "validator";
-import { ValidationTypes, ErrorCode } from "../interfaces/enum";
 import Joi from "@hapi/joi";
 
 /**
@@ -78,51 +76,14 @@ export const jsonValues = ["data"];
 /**
  * MySQL columns which are read-only
  */
-export const readOnlyValues = ["createdAt", "id", "apiKey", "secretKey"];
-
-/**
- * Validate strings to type
- */
-export const validate = (
-  text: string,
-  type: ValidationTypes,
-  maxLength?: number
-) => {
-  if (type === ValidationTypes.EMAIL)
-    if (!isEmail(text)) throw new Error(ErrorCode.VALIDATION_EMAIL);
-
-  if (type === ValidationTypes.URL)
-    if (!isURL(text)) throw new Error(ErrorCode.VALIDATION_URL);
-
-  if (type === ValidationTypes.PHONE)
-    if (!isMobilePhone(text, "any"))
-      throw new Error(ErrorCode.VALIDATION_PHONE);
-
-  if (type === ValidationTypes.TEXT)
-    if (!text || !text.trim()) throw new Error(ErrorCode.VALIDATION_TEXT);
-
-  if (maxLength && type === ValidationTypes.TEXT)
-    if (text.length > maxLength)
-      throw new Error(ErrorCode.VALIDATION_TEXT_LENGTH);
-
-  if (type === ValidationTypes.DOMAIN)
-    if (!text || !text.includes("."))
-      throw new Error(ErrorCode.VALIDATION_DOMAIN);
-
-  if (type === ValidationTypes.COUNTRY_CODE)
-    if (!text || text.length !== 2)
-      throw new Error(ErrorCode.VALIDATION_COUNTRY_CODE);
-
-  if (type === ValidationTypes.GENDER)
-    if (!text || text.length !== 1)
-      throw new Error(ErrorCode.VALIDATION_GENDER);
-
-  if (type === ValidationTypes.LANGUAGE)
-    if (!text || !text.trim()) throw new Error(ErrorCode.VALIDATION_LANGUAGE);
-
-  if (type === ValidationTypes.TIMEZONE)
-    if (!text || !text.trim()) throw new Error(ErrorCode.VALIDATION_TIMEZONE);
-};
+export const readOnlyValues = [
+  "createdAt",
+  "id",
+  "apiKey",
+  "secretKey",
+  "userId",
+  "organizationId"
+];
 
 export const joiValidate = (schemaMap: Joi.SchemaMap, data: any) => {
   const schema = Joi.object().keys(schemaMap);

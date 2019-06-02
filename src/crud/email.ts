@@ -1,4 +1,3 @@
-import { normalizeEmail } from "validator";
 import {
   query,
   tableValues,
@@ -28,7 +27,6 @@ export const createEmail = async (
   sendVerification = true,
   isVerified = false
 ) => {
-  email.email = normalizeEmail(email.email) || email.email;
   email.isVerified = isVerified;
   email.createdAt = new Date();
   email.updatedAt = email.createdAt;
@@ -224,7 +222,6 @@ export const getUserVerifiedEmails = async (user: User | number) => {
 };
 
 export const checkIfNewEmail = async (email: string) => {
-  email = normalizeEmail(email) || email;
   let hasEmail = true;
   try {
     (await getVerifiedEmailObject(email)).id;

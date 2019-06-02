@@ -5,20 +5,13 @@ import {
   getUserVerifiedEmails,
   getUserPrimaryEmailObject,
   deleteEmail,
-  getUserEmails,
   checkIfNewEmail,
   resendEmailVerification
 } from "../crud/email";
 import { createEvent } from "../crud/event";
-import {
-  ErrorCode,
-  EventType,
-  Authorizations,
-  ValidationTypes
-} from "../interfaces/enum";
+import { ErrorCode, EventType, Authorizations } from "../interfaces/enum";
 import { updateUser } from "../crud/user";
 import { can } from "../helpers/authorization";
-import { validate } from "../helpers/utils";
 import { getPaginatedData } from "../crud/data";
 import { addIsPrimaryToEmails } from "../helpers/mysql";
 
@@ -69,7 +62,6 @@ export const addEmailToUserForUser = async (
 ) => {
   if (!(await can(tokenUserId, Authorizations.UPDATE, "user", userId)))
     throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
-  validate(email, ValidationTypes.EMAIL);
   await checkIfNewEmail(email);
   await createEmail({ email, userId });
   await createEvent(

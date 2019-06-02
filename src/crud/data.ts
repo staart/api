@@ -1,5 +1,6 @@
-import { query } from "../helpers/mysql";
+import { query, setValues, removeReadOnlyValues } from "../helpers/mysql";
 import { KeyValue } from "../interfaces/general";
+import { dateToDateTime } from "../helpers/utils";
 
 /*
  * Get pagination data
@@ -26,4 +27,34 @@ export const getPaginatedData = async (
     hasMore: data.length === itemsPerPage,
     next: data.length === itemsPerPage && data[data.length - 1][primaryKey]
   };
+};
+
+/**
+ * Update general data
+ */
+export const updateData = async (
+  table: string,
+  conditions: KeyValue,
+  data: KeyValue
+) => {
+  data.updatedAt = dateToDateTime(new Date());
+  data = removeReadOnlyValues(data);
+  return await query(
+    `UPDATE \`${table}\` SET ${setValues(data)} WHERE ${Object.keys(conditions)
+      .map(condition => `${condition} = ?`)
+      .join(" AND ")}`,
+    [...Object.values(data), ...Object.values(conditions)]
+  );
+};
+
+/**
+ * Update general data
+ */
+export const deleteData = async (table: string, conditions: KeyValue) => {
+  return await query(
+    `DELETE FROM \`${table}\` WHERE ${Object.keys(conditions)
+      .map(condition => `${condition} = ?`)
+      .join(" AND ")}`,
+    [...Object.values(conditions)]
+  );
 };

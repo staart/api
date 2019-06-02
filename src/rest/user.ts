@@ -1,9 +1,4 @@
-import {
-  ErrorCode,
-  EventType,
-  Authorizations,
-  ValidationTypes
-} from "../interfaces/enum";
+import { ErrorCode, EventType, Authorizations } from "../interfaces/enum";
 import {
   getUser,
   updateUser,
@@ -26,15 +21,9 @@ import {
 } from "../crud/membership";
 import { User } from "../interfaces/tables/user";
 import { Locals, KeyValue } from "../interfaces/general";
-import {
-  createEvent,
-  getUserEvents,
-  getUserRecentEvents,
-  deleteAllUserEvents
-} from "../crud/event";
+import { createEvent, getUserEvents, deleteAllUserEvents } from "../crud/event";
 import { getUserEmails, deleteAllUserEmails } from "../crud/email";
 import { can } from "../helpers/authorization";
-import { validate } from "../helpers/utils";
 import { getUserNotifications, updateNotification } from "../crud/notification";
 import { authenticator } from "otplib";
 import { toDataURL } from "qrcode";
@@ -56,15 +45,6 @@ export const updateUserForUser = async (
   locals: Locals
 ) => {
   delete data.password;
-  if (data.name) validate(data.name, ValidationTypes.TEXT);
-  if (data.nickname) validate(data.nickname, ValidationTypes.TEXT);
-  if (data.countryCode)
-    validate(data.countryCode, ValidationTypes.COUNTRY_CODE);
-  if (data.password) validate(data.password, ValidationTypes.TEXT);
-  if (data.gender) validate(data.gender, ValidationTypes.GENDER);
-  if (data.preferredLanguage)
-    validate(data.preferredLanguage, ValidationTypes.LANGUAGE);
-  if (data.timezone) validate(data.timezone, ValidationTypes.TIMEZONE);
   if (await can(tokenUserId, Authorizations.UPDATE, "user", updateUserId)) {
     await updateUser(updateUserId, data);
     await createEvent(

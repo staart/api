@@ -30,10 +30,9 @@ import {
   MembershipRole,
   Templates,
   Tokens,
-  Authorizations,
-  ValidationTypes
+  Authorizations
 } from "../interfaces/enum";
-import { compare, hash } from "bcryptjs";
+import { compare } from "bcryptjs";
 import { createMembership } from "../crud/membership";
 import {
   googleGetConnectionUrl,
@@ -41,7 +40,6 @@ import {
   googleGetEmailFromToken
 } from "../helpers/google";
 import { can } from "../helpers/authorization";
-import { validate } from "../helpers/utils";
 import { authenticator } from "otplib";
 
 export const validateRefreshToken = async (token: string, locals: Locals) => {
@@ -93,7 +91,6 @@ export const register = async (
   const userId = result.insertId;
   // Set email
   if (email) {
-    validate(email, ValidationTypes.EMAIL);
     const newEmail = <InsertResult>await createEmail({
       userId,
       email
@@ -113,7 +110,6 @@ export const register = async (
 };
 
 export const sendPasswordReset = async (email: string, locals: Locals) => {
-  validate(email, ValidationTypes.EMAIL);
   const user = await getUserByEmail(email);
   if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
   const token = await passwordResetToken(user.id);
@@ -148,7 +144,6 @@ export const updatePassword = async (
   password: string,
   locals: Locals
 ) => {
-  validate(password, ValidationTypes.TEXT);
   const userId = (<KeyValue>await verifyToken(token, Tokens.PASSWORD_RESET)).id;
   await updateUser(userId, { password });
   await createEvent(
