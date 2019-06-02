@@ -2624,10 +2624,10 @@ express-brute@^1.0.1:
     long-timeout "~0.1.1"
     underscore "~1.8.3"
 
-express-rate-limit@^4.0.3:
-  version "4.0.3"
-  resolved "https://registry.yarnpkg.com/express-rate-limit/-/express-rate-limit-4.0.3.tgz#70ec815f6ba2d6a62400c8a7bd341c420b4330cc"
-  integrity sha512-9+v6DXQdLLd4EqdEkXXM1ctdVNgjw4w8V1WLvlpnIb2SZ5wJ3Kvu8FOMzBPIAX+iO1F24AG640eOOHCv/0GmKg==
+express-rate-limit@^4.0.4:
+  version "4.0.4"
+  resolved "https://registry.yarnpkg.com/express-rate-limit/-/express-rate-limit-4.0.4.tgz#a495338ae9e58c856b66d1346ec0d86f43ba2e43"
+  integrity sha512-DLRj2vMO7Xgai8qWKU9O6ZztF2bdDmfFNFi9k3G9BPzJ+7MG7eWaaBikbe0eBpNGSxU8JziwW0PQKG78aNWa6g==
 
 express-slow-down@^1.3.1:
   version "1.3.1"

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import Brute from "express-brute";
-import { RateLimit } from "express-rate-limit";
+import RateLimit from "express-rate-limit";
 import slowDown from "express-slow-down";
 import { safeError } from "./errors";
 import { verifyToken } from "./jwt";
