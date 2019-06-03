@@ -1,0 +1,8 @@
+environment:
+  nodejs_version: "10.16.0"
+install:
+  - ps: Install-Product node $env:nodejs_version
+  - ps: Update-NodeJsInstallation 10.16.0
+  - npm install
+test_script:
+  - npm run build
