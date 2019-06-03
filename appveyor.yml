@@ -1,8 +1,0 @@
-environment:
-  nodejs_version: "10.16.0"
-install:
-  - ps: Install-Product node ""
-  - ps: Update-NodeJsInstallation 10.16.0
-  - npm install
-test_script:
-  - npm run build

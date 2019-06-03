@@ -1,7 +1,11 @@
+os:
+  - linux
+  - windows
+  - osx
 language: node_js
 node_js:
- - "10.16.0"
+  - "10.16.0"
 install:
- - "yarn"
+  - "yarn"
 script:
- - "yarn build"
+  - "yarn build"
