@@ -9,3 +9,5 @@ install:
   - "yarn"
 script:
   - "yarn build"
+env:
+  - YARN_GPG=no
