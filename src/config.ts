@@ -17,7 +17,13 @@ export const RATE_LIMIT_TIME = process.env.RATE_LIMIT_TIME
   : 60000; // 1 minute
 export const RATE_LIMIT_MAX = process.env.RATE_LIMIT_MAX
   ? parseInt(process.env.RATE_LIMIT_MAX)
-  : 200; // Max 200 requests/minute from an IP
+  : 300; // Max 300 requests/minute from an IP
+export const PUBLIC_RATE_LIMIT_TIME = process.env.PUBLIC_RATE_LIMIT_TIME
+  ? parseInt(process.env.PUBLIC_RATE_LIMIT_TIME)
+  : 60000; // 1 minute
+export const PUBLIC_RATE_LIMIT_MAX = process.env.PUBLIC_RATE_LIMIT_MAX
+  ? parseInt(process.env.PUBLIC_RATE_LIMIT_MAX)
+  : 60; // Max 60 requests/minute from an IP
 export const SPEED_LIMIT_TIME = process.env.SPEED_LIMIT_TIME
   ? parseInt(process.env.SPEED_LIMIT_TIME)
   : 600000; // 10 minutes

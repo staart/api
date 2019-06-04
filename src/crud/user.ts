@@ -212,6 +212,19 @@ export const getApiKey = async (apiKey: string) => {
 };
 
 /**
+ * Get an API key/secret
+ */
+export const getApiKeySecret = async (apiKey: string, secretKey: string) => {
+  deleteItemFromCache(CacheCategories.API_KEY, apiKey);
+  return (<ApiKey[]>(
+    await query(
+      "SELECT * FROM `api-keys` WHERE apiKey = ? AND secretKey = ? LIMIT 1",
+      [apiKey, secretKey]
+    )
+  ))[0];
+};
+
+/**
  * Create an API key
  */
 export const createApiKey = async (apiKey: ApiKey) => {

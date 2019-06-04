@@ -12,8 +12,11 @@ import {
   RATE_LIMIT_TIME,
   SPEED_LIMIT_DELAY,
   SPEED_LIMIT_COUNT,
-  SPEED_LIMIT_TIME
+  SPEED_LIMIT_TIME,
+  PUBLIC_RATE_LIMIT_TIME,
+  PUBLIC_RATE_LIMIT_MAX
 } from "../config";
+import { getApiKey, getApiKeySecret } from "../crud/user";
 const store = new Brute.MemoryStore();
 const bruteForce = new Brute(store, {
   freeRetries: BRUTE_FREE_RETRIES,
@@ -22,6 +25,10 @@ const bruteForce = new Brute(store, {
 const rateLimiter = RateLimit({
   windowMs: RATE_LIMIT_TIME,
   max: RATE_LIMIT_MAX
+});
+const publicRateLimiter = RateLimit({
+  windowMs: PUBLIC_RATE_LIMIT_TIME,
+  max: PUBLIC_RATE_LIMIT_MAX
 });
 const speedLimiter = slowDown({
   windowMs: SPEED_LIMIT_TIME,
@@ -80,10 +87,23 @@ export const authHandler = async (
     return res.json(error);
   }
   if (token.startsWith("Bearer ")) token = token.replace("Bearer ", "");
+  let localsToken;
   try {
-    res.locals.token = await verifyToken(token, Tokens.LOGIN);
+    localsToken = await verifyToken(token, Tokens.LOGIN);
+  } catch (e) {}
+  const secretKey = req.get("X-Api-Secret");
+  try {
+    if (secretKey) {
+      const apiKey = await getApiKeySecret(token, secretKey);
+      if (apiKey.userId) {
+        localsToken = { id: apiKey.userId };
+      }
+    }
+  } catch (e) {}
+  if (localsToken) {
+    res.locals.token = localsToken;
     next();
-  } catch (e) {
+  } else {
     const error = safeError(ErrorCode.INVALID_TOKEN);
     res.status(error.status);
     return res.json(error);
@@ -98,9 +118,36 @@ export const bruteForceHandler = bruteForce.prevent;
 /**
  * Rate limiting middleware
  */
-export const rateLimitHandler = rateLimiter;
+export const rateLimitHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const apiKey = req.get("X-Api-Key");
+  if (apiKey) {
+    const apiKeyDetails = await getApiKey(apiKey);
+    if (apiKeyDetails.userId) {
+      return rateLimiter(req, res, next);
+    }
+  }
+  return publicRateLimiter(req, res, next);
+};
 
 /**
  * Speed limiting middleware
  */
-export const speedLimitHandler = speedLimiter;
+export const speedLimitHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const apiKey = req.get("X-Api-Key");
+  if (apiKey) {
+    const apiKeyDetails = await getApiKey(apiKey);
+    if (apiKeyDetails.userId) {
+      // Don't slow down requests if an API key is used
+      return next();
+    }
+  }
+  return speedLimiter(req, res, next);
+};
