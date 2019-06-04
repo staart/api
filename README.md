@@ -7,38 +7,38 @@
 ![Type definitions](https://img.shields.io/badge/types-TypeScript-blue.svg)
 [![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg)](#contributors)
 
-Staart is a Node.js backend starter for SaaS startups written in TypeScript. It has built-in user management and authentication, billing, organizations, GDPR tools, and more. Works with [Staart UI](https://github.com/o15y/staart-ui).
+Staart is a Node.js backend starter for SaaS startups written in TypeScript. It has built-in user management and authentication, billing, organizations, GDPR tools, and more.
+
+Works with [Staart UI](https://github.com/o15y/staart-ui), the frontend starter for SaaS.
 
 ## ⭐ Features
 
-| Emoji | Category |
-| ----- | -------- |
-| 👩‍💻 | Developer utilities |
-| 🔐 | Authentication and security |
-| 💳 | Organizations, users, and billing |
-| 🇪🇺 | GDPR and privacy |
+### 🔐 Security
 
-- [x] 👩‍💻 Helpers for database query, finding users, creating tokens, etc.
-- [x] 🔐 JWT-based authentication with email/password and scopes
-- [x] 💳 Support for multiple emails per user account
-- [x] 🔐 Login with Google
-- [x] 👩‍💻 TypeScript interfaces for tables and helpers
-- [ ] 💳 Organizations and inviting team members with scopes
-- [ ] 💳 Stripe for subscriptions, billing, cards, invoices, etc.
-- [ ] 🇪🇺 Check for authorized devices when logging in (i.e., "Your devices" with approved fingerprints)
-- [x] 🇪🇺 Check for location with logging in (i.e., "New location" with approved subnets)
-- [x] 👩‍💻 Built-in caching and invalidation for common database queries
-- [x] 🔐 Event logging and history endpoints (logins, settings changes, etc.)
-- [x] 💳 "Magic wand" for user impersonation by super-admins
-- [x] 👩‍💻 Express middleware for login token validation
-- [x] 🔐 Support for refresh tokens (i.e., "Keep me logged in for 30 days")
-- [ ] 🔐 Two-factor authentication with TOTP (and Twilio?)
-- [ ] 🇪🇺 Email preferences (1 = security, 2 = notifications, 3 = promotions, etc.)
-- [x] 👩‍💻 Sending rich HTML transactional emails with AWS SES
-- [ ] 🇪🇺 GDPR data export, delete (schedule deletion for 30 days)
-- [ ] 💳 Affiliate accounts, dashboard, commissions
-- [ ] 👩‍💻 Generate and manage API keys per user
-- [ ] 👩‍💻 Access endpoints via API keys
+- [x] Authentication and user management with JWT
+- [x] Two-factor authentication with TOTP
+- [x] Multiple emails per account and Login with Google
+- [x] Location-based login verification
+- [x] Security event logging and history
+
+### 💳 SaaS
+
+- [x] Subscriptions management with Stripe
+- [x] Organizations, teams, and user permissions
+- [x] Invoices, billing, credit cards, payments
+- [x] Rich HTML transactional emails with SES
+- [x] GDPR-proof data export and delete
+- [ ] Affiliates and commission management
+- [x] API key management with rate limiting
+
+### 👩‍💻 Developer utilities
+
+- [x] Injection-proof helpers for querying databases
+- [x] Data pagination and CRUD utilities for all tables
+- [x] Authorization helpers (can a user do this?)
+- [x] TypeScript interfaces for tables (ORM)
+- [x] Caching and invalidation for common queries
+- [x] User impersonation for super-admin
 
 ## 🛠 Usage
 
@@ -49,7 +49,7 @@ Staart is a Node.js backend starter for SaaS startups written in TypeScript. It 
 1. Add custom helper methods in the `./src/helpers` folder
 1. Add custom services in the `./src/rest` folder using helpers
 1. Add custom routes in the `./src/routes` folder with these services
-1. Build with `yarn build` and deploy with `pm2 start dist/index.js`
+1. Build with `yarn build` and deploy with `yarn start`
 
 ## 💻 API
 
