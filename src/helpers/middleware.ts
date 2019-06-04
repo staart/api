@@ -127,9 +127,11 @@ export const rateLimitHandler = async (
   if (apiKey) {
     const apiKeyDetails = await getApiKey(apiKey);
     if (apiKeyDetails.userId) {
+      res.setHeader("X-RateLimit-Limit-Type", "api-key");
       return rateLimiter(req, res, next);
     }
   }
+  res.setHeader("X-RateLimit-Limit-Type", "public");
   return publicRateLimiter(req, res, next);
 };
 
