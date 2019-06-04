@@ -2,9 +2,9 @@
   "files": [
     "README.md"
   ],
-  "badgeTemplate": "[![All contributors](https://img.shields.io/badge/all_contributors-<%= contributors.length %>-orange.svg)](#contributors)",
   "imageSize": 100,
   "commit": false,
+  "commitConvention": "atom",
   "contributors": [
     {
       "login": "AnandChowdhary",

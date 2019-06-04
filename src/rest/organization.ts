@@ -38,7 +38,7 @@ import {
   updateStripeSource,
   deleteStripeSource,
   deleteStripeCustomer
-} from "../helpers/stripe";
+} from "../crud/billing";
 import { customers, cards } from "stripe";
 import { getUser } from "../crud/user";
 import { createNotification } from "../crud/notification";

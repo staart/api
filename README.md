@@ -2,10 +2,11 @@
 
 [![Travis CI](https://img.shields.io/travis/o15y/staart.svg)](https://travis-ci.org/o15y/staart)
 ![Netlify status](https://img.shields.io/endpoint.svg?url=https://platform.oswaldlabs.com/netlify-status/560804f0-60ab-4172-9af8-f38e0dd675f6)
+[![Dependencies](https://img.shields.io/david/o15y/staart.svg)](https://github.com/o15y/staart/blob/master/package.json)
 [![GitHub](https://img.shields.io/github/license/o15y/staart.svg)](https://github.com/o15y/staart/blob/master/LICENSE)
 ![Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/github/o15y/staart.svg)
 ![Type definitions](https://img.shields.io/badge/types-TypeScript-blue.svg)
-[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg)](#contributors)
+[![Contributors](https://img.shields.io/github/contributors/o15y/staart.svg)](https://github.com/o15y/staart/graphs/contributors)
 
 Staart is a Node.js backend starter for SaaS startups written in TypeScript. It has built-in user management and authentication, billing, organizations, GDPR tools, and more.
 
@@ -33,6 +34,7 @@ Works with [Staart UI](https://github.com/o15y/staart-ui), the frontend starter 
 
 ### 👩‍💻 Developer utilities
 
+- [x] Decorators and class syntax with OvernightJS
 - [x] Injection-proof helpers for querying databases
 - [x] Data pagination and CRUD utilities for all tables
 - [x] Authorization helpers (can a user do this?)
@@ -55,7 +57,7 @@ Works with [Staart UI](https://github.com/o15y/staart-ui), the frontend starter 
 
 Staart comes with tens of helper and CRUD methods for users, organizations, and more.
 
-**[View documentation →](https://staart.anandchowdhary.com)**
+**[View documentation →](https://staart-docs.o15y.com)**
 
 ## 👥 Contributors
 
