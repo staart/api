@@ -44,13 +44,12 @@ Works with [Staart UI](https://github.com/o15y/staart-ui), the frontend starter 
 
 ## 🛠 Usage
 
-1. Clone or fork this repository
+1. Fork this repository
 1. Install dependencies with `yarn` or `npm i`
 1. Add a `.env` file based on [config.ts](https://github.com/o15y/staart/blob/master/src/config.ts).
 1. Create MariaDB/MySQL tables based on [schema.sql](https://github.com/o15y/staart/blob/master/schema.sql)
-1. Add custom helper methods in the `./src/helpers` folder
-1. Add custom services in the `./src/rest` folder using helpers
-1. Add custom routes in the `./src/routes` folder with these services
+1. Add your controllers in the `./src/controllers` directory
+1. Generate your `app.ts` file using `yarn generate-routes`
 1. Build with `yarn build` and deploy with `yarn start`
 
 ## 💻 API
