@@ -7,15 +7,15 @@
   "license": "MIT",
   "scripts": {
     "build-babel": "touch .env && babel src -d dist --extensions '.ts' && cp .env dist/.env",
-    "build": "touch .env && mkdir -p dist && cp .env dist/.env && tsc",
-    "check-types": "tsc",
-    "start": "npm run build-babel && node dist/index.js",
+    "build": "touch .env && mkdir -p dist && cp .env dist/.env && npm run generate-routes && tsc",
+    "start": "npm run build && node dist/index.js",
     "dev": "concurrently 'yarn watch-build' 'yarn watch-server'",
-    "prettier-all": "prettier '{src,examples}/**/*.{ts,json}' --write",
+    "prettier-all": "prettier '{src,examples,setup}/**/*.{ts,js,json}' --write",
     "watch-build": "onchange '{src,examples}/**/*.ts' -- yarn build-babel",
     "watch-prettier": "onchange '{src,examples}/**/*.{ts,json}' -- prettier --write {{changed}}",
     "watch-server": "cd dist && nodemon index.js",
-    "generate-docs": "typedoc --out docs ./src"
+    "generate-docs": "typedoc --out docs ./src",
+    "generate-routes": "node setup/controllers.js"
   },
   "husky": {
     "hooks": {

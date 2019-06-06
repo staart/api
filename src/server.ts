@@ -6,17 +6,12 @@ import rfs from "rotating-file-stream";
 import responseTime from "response-time";
 import { json, urlencoded } from "body-parser";
 import { Server } from "@overnightjs/core";
-import { UserController } from "./controllers/user";
 import {
   errorHandler,
   trackingHandler,
   rateLimitHandler,
   speedLimitHandler
 } from "./helpers/middleware";
-import { OrganizationController } from "./controllers/organization";
-import { AdminController } from "./controllers/admin";
-import { AuthController } from "./controllers/auth";
-import { MembershipController } from "./controllers/membership";
 import { mkdirSync, existsSync } from "fs";
 import { join } from "path";
 
@@ -48,19 +43,7 @@ export class Staart extends Server {
   }
 
   private setupControllers() {
-    const authController = new AuthController();
-    const userController = new UserController();
-    const organizationController = new OrganizationController();
-    const membershipController = new MembershipController();
-    const adminController = new AdminController();
-
-    super.addControllers([
-      authController,
-      userController,
-      organizationController,
-      membershipController,
-      adminController
-    ]);
+    // staart:setup/controllers
   }
 
   public start(port: number): void {
