@@ -57,7 +57,7 @@
     "@types/stripe": "^6.26.3",
     "@types/validator": "^10.11.0",
     "concurrently": "^4.1.0",
-    "coveralls": "^3.0.3",
+    "coveralls": "^3.0.4",
     "dotenv": "^8.0.0",
     "husky": "^2.4.0",
     "jest": "^24.8.0",
