@@ -14,7 +14,7 @@
     "watch-build": "onchange '{src,examples}/**/*.ts' -- yarn build-babel",
     "watch-prettier": "onchange '{src,examples}/**/*.{ts,json}' -- prettier --write {{changed}}",
     "watch-server": "cd dist && nodemon index.js",
-    "generate-docs": "typedoc --out docs ./src",
+    "generate-docs": "yarn generate-routes && typedoc --out docs ./src",
     "generate-routes": "node setup/controllers.js"
   },
   "husky": {
