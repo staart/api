@@ -63,7 +63,7 @@
     "jest": "^24.8.0",
     "nodemon": "^1.19.1",
     "onchange": "^6.0.0",
-    "prettier": "^1.18.0",
+    "prettier": "^1.18.2",
     "ts-jest": "^24.0.2",
     "typedoc": "^0.14.2",
     "typescript": "^3.5.1"
