@@ -101,10 +101,7 @@ export const deleteStripeSource = async (id: string, sourceId: string) => {
  * Get the details of a customer
  * @param id - Stripe customer ID
  */
-export const createStripeSource = async (
-  id: string,
-  card: Stripe.cards.ISourceCreationOptionsExtended
-) => {
+export const createStripeSource = async (id: string, card: any) => {
   return await stripe.customers.createCard(id, { card });
 };
 
@@ -115,7 +112,7 @@ export const createStripeSource = async (
 export const updateStripeSource = async (
   id: string,
   cardId: string,
-  data: Stripe.cards.ISourceCreationOptionsExtended
+  data: any
 ) => {
   return await stripe.customers.updateCard(id, cardId, data);
 };
