@@ -1,7 +1,7 @@
 ![Staart](https://raw.githubusercontent.com/o15y/staart/master/assets/logo.png)
 
 [![Travis CI](https://img.shields.io/travis/o15y/staart.svg)](https://travis-ci.org/o15y/staart)
-![Netlify status](https://img.shields.io/endpoint.svg?url=https://platform.oswaldlabs.com/netlify-status/560804f0-60ab-4172-9af8-f38e0dd675f6)
+![Netlify status](https://img.shields.io/endpoint.svg?url=https://platform.oswaldlabs.com/netlify-status/733928c0-f533-485f-90e9-680be56794a9)
 [![Dependencies](https://img.shields.io/david/o15y/staart.svg)](https://github.com/o15y/staart/blob/master/package.json)
 [![Contributors](https://img.shields.io/github/contributors/o15y/staart.svg)](https://github.com/o15y/staart/graphs/contributors)
 [![GitHub](https://img.shields.io/github/license/o15y/staart.svg)](https://github.com/o15y/staart/blob/master/LICENSE)
@@ -57,6 +57,10 @@ Works with [Staart UI](https://github.com/o15y/staart-ui), the frontend starter 
 Staart comes with tens of helper and CRUD methods for users, organizations, and more.
 
 **[View documentation →](https://staart-docs.o15y.com)**
+
+**[View API demo →](https://staart.caprover.oswaldlabs.com)**
+
+**[View frontend demo →](https://staart-demo.o15y.com)**
 
 ## 👥 Contributors
 
