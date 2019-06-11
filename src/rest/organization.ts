@@ -39,7 +39,7 @@ import {
   deleteStripeSource,
   deleteStripeCustomer
 } from "../crud/billing";
-import { customers, cards } from "stripe";
+import { customers } from "stripe";
 import { getUser } from "../crud/user";
 import { createNotification } from "../crud/notification";
 
@@ -155,7 +155,7 @@ export const getOrganizationBillingForUser = async (
 export const updateOrganizationBillingForUser = async (
   userId: number,
   organizationId: number,
-  data: customers.ICustomerCardSourceCreationOptions,
+  data: any,
   locals: Locals
 ) => {
   if (await can(userId, Authorizations.READ, "organization", organizationId)) {
@@ -261,7 +261,7 @@ export const updateOrganizationSourceForUser = async (
   userId: number,
   organizationId: number,
   sourceId: string,
-  data: cards.ISourceCreationOptionsExtended
+  data: any
 ) => {
   if (
     await can(userId, Authorizations.UPDATE, "organization", organizationId)
@@ -281,7 +281,7 @@ export const updateOrganizationSourceForUser = async (
 export const createOrganizationSourceForUser = async (
   userId: number,
   organizationId: number,
-  card: cards.ISourceCreationOptionsExtended
+  card: any
 ) => {
   if (
     await can(userId, Authorizations.CREATE, "organization", organizationId)
