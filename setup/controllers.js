@@ -27,9 +27,14 @@ const insertCode = `
 server = importCode + server.replace("// staart:setup/controllers", insertCode);
 console.log("✅  Generated paths");
 
-const redirects = yaml.parse(
-  fs.readFileSync(path.join(SRC, "redirects.yml")).toString()
-);
+let redirects = [];
+try {
+  redirects = yaml.parse(
+    fs.readFileSync(path.join(SRC, "redirects.yml")).toString()
+  );
+} catch (error) {
+  console.log("✅  No redirect rules");
+}
 
 const redirectCode = `
   ${redirects
@@ -43,7 +48,8 @@ const redirectCode = `
     .join("")}
 `;
 server = server.replace("// staart:setup/redirects", redirectCode);
-console.log("✅  Generated redirects");
+if (redirects.length) console.log("✅  Generated redirects");
 
 fs.writeFileSync(path.join(SRC, "app.ts"), server);
+console.log("✅  Generated app.ts file");
 process.exit(0);
