@@ -171,6 +171,23 @@ export const getUserEmails = async (userId: number) => {
 };
 
 /**
+ * Gets the best email to get in touch with a user
+ */
+export const getUserBestEmail = async (userId: number) => {
+  try {
+    return await getUserPrimaryEmail(userId);
+  } catch (error) {}
+  return await (<Email[]>(
+    await cachedQuery(
+      CacheCategories.USER_EMAILS,
+      userId,
+      "SELECT * FROM emails WHERE userId = ? ORDER BY isVerified DESC LIMIT 1",
+      [userId]
+    )
+  ))[0].email;
+};
+
+/**
  * Get the detailed email object from an email
  */
 export const getEmailObject = async (email: string) => {

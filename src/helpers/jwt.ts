@@ -14,7 +14,11 @@ import { deleteSensitiveInfoUser } from "./utils";
 import { checkApprovedLocation } from "../crud/user";
 import { Locals } from "../interfaces/general";
 import { createEvent } from "../crud/event";
-import { getUserVerifiedEmails, getUserPrimaryEmail } from "../crud/email";
+import {
+  getUserVerifiedEmails,
+  getUserPrimaryEmail,
+  getUserBestEmail
+} from "../crud/email";
 import { mail } from "./mail";
 
 /**
@@ -92,7 +96,12 @@ export const refreshToken = (id: number) =>
 export const postLoginTokens = async (user: User) => {
   if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
   return {
-    token: await loginToken(deleteSensitiveInfoUser(user)),
+    token: await loginToken(
+      deleteSensitiveInfoUser({
+        ...user,
+        email: await getUserBestEmail(user.id)
+      })
+    ),
     refresh: await refreshToken(user.id)
   };
 };

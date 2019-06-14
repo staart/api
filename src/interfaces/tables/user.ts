@@ -24,6 +24,9 @@ export interface User {
   profilePicture?: string;
   createdAt?: Date;
   updatedAt?: Date;
+
+  // email is only used for JWT
+  email?: string;
 }
 
 export interface ApprovedLocation {
