@@ -1,6 +1,6 @@
 {
   "name": "staart",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "main": "index.js",
   "repository": "git@github.com:AnandChowdhary/staart.git",
   "author": "Anand Chowdhary <mail@anandchowdhary.com>",
@@ -15,11 +15,13 @@
     "watch-prettier": "onchange '{src,examples}/**/*.{ts,json}' -- prettier --write {{changed}}",
     "watch-server": "cd dist && nodemon index.js",
     "generate-docs": "yarn generate-routes && typedoc --out docs ./src",
-    "generate-routes": "node setup/controllers.js"
+    "generate-routes": "node setup/controllers.js",
+    "increment-package": "versiony --patch",
+    "update": "git pull git@github.com:o15y/staart"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn prettier-all && git add ."
+      "pre-commit": "yarn increment-package && yarn prettier-all && git add ."
     }
   },
   "engines": {
@@ -67,6 +69,7 @@
     "ts-jest": "^24.0.2",
     "typedoc": "^0.14.2",
     "typescript": "^3.5.2",
+    "versiony-cli": "^1.3.0",
     "yaml": "^1.6.0"
   },
   "dependencies": {
