@@ -71,11 +71,10 @@ export const updatePasswordForUser = async (
     await can(tokenUserId, Authorizations.UPDATE_SECURE, "user", updateUserId)
   ) {
     const user = await getUser(updateUserId, true);
-    const correctPassword = await compare(oldPassword, user.password as string);
+    if (!user.password) throw new Error(ErrorCode.MISSING_PASSWORD);
+    const correctPassword = await compare(oldPassword, user.password);
     if (!correctPassword) throw new Error(ErrorCode.INCORRECT_PASSWORD);
-    console.log("Reached here 3");
     await updateUser(updateUserId, { password: newPassword });
-    console.log("Reached here 4");
     await createEvent(
       {
         userId: tokenUserId,
