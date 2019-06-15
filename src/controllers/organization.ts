@@ -31,11 +31,11 @@ import {
   ClassWrapper
 } from "@overnightjs/core";
 import { authHandler } from "../helpers/middleware";
-import { ErrorCode, MembershipRole } from "../interfaces/enum";
+import { MembershipRole } from "../interfaces/enum";
 import { CREATED } from "http-status-codes";
 import asyncHandler from "express-async-handler";
 import { inviteMemberToOrganization } from "../rest/membership";
-import { joiValidate, jsonValues } from "../helpers/utils";
+import { joiValidate } from "../helpers/utils";
 import Joi from "@hapi/joi";
 
 @Controller("organizations")
@@ -63,7 +63,9 @@ export class OrganizationController {
       { name, invitationDomain },
       res.locals
     );
-    res.status(CREATED).json({ success: true });
+    res
+      .status(CREATED)
+      .json({ success: true, message: "organization-created" });
   }
 
   @Get(":id")
@@ -84,7 +86,7 @@ export class OrganizationController {
       req.body,
       res.locals
     );
-    res.json({ success: true });
+    res.json({ success: true, message: "organization-updated" });
   }
 
   @Delete(":id")
@@ -96,7 +98,7 @@ export class OrganizationController {
       { organizationId }
     );
     await deleteOrganizationForUser(userId, organizationId, res.locals);
-    res.json({ success: true });
+    res.json({ success: true, message: "organization-deleted" });
   }
 
   @Get(":id/billing")
@@ -124,7 +126,7 @@ export class OrganizationController {
       req.body,
       res.locals
     );
-    res.json({ updated: true });
+    res.json({ success: true, message: "organization-billing-updated" });
   }
 
   @Get(":id/invoices")

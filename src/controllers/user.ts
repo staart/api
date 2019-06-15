@@ -20,7 +20,6 @@ import {
   regenerateBackupCodesForUser,
   updatePasswordForUser
 } from "../rest/user";
-import { ErrorCode } from "../interfaces/enum";
 import {
   Get,
   Patch,
@@ -68,7 +67,7 @@ export class UserController {
       { id }
     );
     await updateUserForUser(res.locals.token.id, id, req.body, res.locals);
-    res.json({ success: true });
+    res.json({ success: true, message: "user-updated" });
   }
 
   @Delete(":id")
@@ -107,7 +106,7 @@ export class UserController {
       newPassword,
       res.locals
     );
-    res.json({ success: true });
+    res.json({ success: true, message: "user-password-updated" });
   }
 
   @Get(":id/events")
@@ -248,7 +247,7 @@ export class UserController {
       { id, email }
     );
     await addEmailToUserForUser(res.locals.token.id, id, email, res.locals);
-    res.status(CREATED).json({ success: true });
+    res.status(CREATED).json({ success: true, message: "user-email-created" });
   }
 
   @Get(":id/emails/:emailId")
@@ -263,8 +262,7 @@ export class UserController {
       },
       { id, emailId }
     );
-    await getEmailForUser(res.locals.token.id, id, emailId);
-    res.json({ success: true });
+    res.json(await getEmailForUser(res.locals.token.id, id, emailId));
   }
 
   @Post(":id/emails/:emailId/resend")
@@ -280,7 +278,7 @@ export class UserController {
       { id, emailId }
     );
     await resendEmailVerificationForUser(res.locals.token.id, id, emailId);
-    res.json({ success: true });
+    res.json({ success: true, message: "user-email-verify-resent" });
   }
 
   @Delete(":id/emails/:emailId")
@@ -301,7 +299,7 @@ export class UserController {
       emailId,
       res.locals
     );
-    res.json({ success: true });
+    res.json({ success: true, message: "user-email-deleted" });
   }
 
   @Get(":id/notifications")

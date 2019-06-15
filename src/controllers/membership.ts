@@ -19,6 +19,7 @@ import { authHandler } from "../helpers/middleware";
 import asyncHandler from "express-async-handler";
 import Joi from "@hapi/joi";
 import { joiValidate } from "../helpers/utils";
+import i18n from "../i18n";
 
 @Controller("memberships")
 @ClassWrapper(asyncHandler)
@@ -67,6 +68,6 @@ export class MembershipController {
     const data = req.body;
     delete req.body.id;
     await updateMembershipForUser(userId, membershipId, data, res.locals);
-    res.json({ updated: true });
+    res.json({ success: true, message: "membership-updated" });
   }
 }

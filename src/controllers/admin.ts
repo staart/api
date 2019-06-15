@@ -31,7 +31,8 @@ export class AdminController {
   @Get("info")
   async info(req: Request, res: Response) {
     res.json({
-      success: true
+      success: true,
+      message: "admin-info-success"
     });
   }
 }

@@ -71,7 +71,9 @@ export class AuthController {
       req.body.organizationId,
       req.body.membershipRole
     );
-    res.status(CREATED).json({ success: true });
+    res
+      .status(CREATED)
+      .json({ success: true, message: "auth-register-success" });
   }
 
   @Post("login")
@@ -167,7 +169,7 @@ export class AuthController {
       { token, password }
     );
     await updatePassword(token, password, res.locals);
-    res.json({ success: true });
+    res.json({ success: true, message: "auth-recover-success" });
   }
 
   @Get("google/link")
@@ -215,6 +217,6 @@ export class AuthController {
     const token = req.body.token || req.params.token;
     joiValidate({ token: Joi.string().required() }, { token });
     await verifyEmail(token, res.locals);
-    res.json({ success: true });
+    res.json({ success: true, message: "auth-verify-email-success" });
   }
 }

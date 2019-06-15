@@ -7,6 +7,9 @@ const stripe = new Stripe(STRIPE_SECRET_KEY);
 const cleanStripeResponse = (response: IList<any>) => {
   const newResponse = { ...response } as any;
   newResponse.hasMore = response.has_more;
+  if (newResponse.hasMore) {
+    newResponse.next = response.data[response.data.length - 1].id;
+  }
   delete newResponse.has_more;
   delete newResponse.object;
   delete newResponse.url;
@@ -33,7 +36,7 @@ export const createStripeCustomer = async (
     metadata: { organizationId }
   });
   await updateOrganization(organizationId, { stripeCustomerId: created.id });
-  return created;
+  return { success: true, message: "billing-subscription-created" };
 };
 
 /**
@@ -41,7 +44,8 @@ export const createStripeCustomer = async (
  * @param id - Stripe customer ID
  */
 export const deleteStripeCustomer = async (id: string) => {
-  return await stripe.customers.del(id);
+  await stripe.customers.del(id);
+  return { success: true, message: "billing-customer-deleted" };
 };
 
 /**
@@ -51,7 +55,8 @@ export const updateStripeCustomer = async (
   id: string,
   customer: Stripe.customers.ICustomerUpdateOptions
 ) => {
-  return await stripe.customers.update(id, customer);
+  await stripe.customers.update(id, customer);
+  return { success: true, message: "billing-customer-updated" };
 };
 
 /**
@@ -118,7 +123,8 @@ export const updateStripeSubscription = async (
   data: subscriptions.ISubscriptionUpdateItem
 ) => {
   await getStripeSubscription(id, subscriptionId);
-  return await stripe.subscriptions.update(subscriptionId, data);
+  await stripe.subscriptions.update(subscriptionId, data);
+  return { success: true, message: "billing-subscription-updated" };
 };
 
 /**
@@ -146,7 +152,7 @@ export const createStripeSubscription = async (
     items: [{ plan, quantity: number_of_seats }],
     billing
   });
-  return { success: true };
+  return { success: true, message: "billing-subscription-created" };
 };
 
 /**
@@ -183,7 +189,8 @@ export const getStripeSource = async (id: string, sourceId: string) => {
  * @param id - Stripe customer ID
  */
 export const deleteStripeSource = async (id: string, sourceId: string) => {
-  return await stripe.customers.deleteSource(id, sourceId);
+  await stripe.customers.deleteSource(id, sourceId);
+  return { success: true, message: "billing-source-deleted" };
 };
 
 /**
@@ -191,7 +198,8 @@ export const deleteStripeSource = async (id: string, sourceId: string) => {
  * @param id - Stripe customer ID
  */
 export const createStripeSource = async (id: string, card: any) => {
-  return await stripe.customers.createCard(id, { card });
+  await stripe.customers.createCard(id, { card });
+  return { success: true, message: "billing-source-created" };
 };
 
 /**
@@ -203,5 +211,6 @@ export const updateStripeSource = async (
   cardId: string,
   data: any
 ) => {
-  return await stripe.customers.updateCard(id, cardId, data);
+  await stripe.customers.updateCard(id, cardId, data);
+  return { success: true, message: "billing-source-updated" };
 };
