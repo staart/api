@@ -118,9 +118,7 @@ export class UserController {
       { id: [Joi.string().required(), Joi.number().required()] },
       { id }
     );
-    res.json(
-      await getRecentEventsForUser(res.locals.token.id, id, req.query.start)
-    );
+    res.json(await getRecentEventsForUser(res.locals.token.id, id, req.query));
   }
 
   @Get(":id/memberships")
@@ -131,9 +129,7 @@ export class UserController {
       { id: [Joi.string().required(), Joi.number().required()] },
       { id }
     );
-    res.json(
-      await getMembershipsForUser(res.locals.token.id, id, req.query.start)
-    );
+    res.json(await getMembershipsForUser(res.locals.token.id, id, req.query));
   }
 
   @Get(":id/data")
@@ -234,9 +230,7 @@ export class UserController {
       { id: [Joi.string().required(), Joi.number().required()] },
       { id }
     );
-    res.json(
-      await getAllEmailsForUser(res.locals.token.id, id, req.query.start)
-    );
+    res.json(await getAllEmailsForUser(res.locals.token.id, id, req.query));
   }
 
   @Put(":id/emails")

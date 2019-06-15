@@ -115,14 +115,14 @@ export const deleteUserForUser = async (
 export const getRecentEventsForUser = async (
   tokenUserId: number,
   dataUserId: number,
-  index?: number
+  query: KeyValue
 ) => {
   if (await can(tokenUserId, Authorizations.READ_SECURE, "user", dataUserId)) {
-    const events = await getPaginatedData(
-      "events",
-      { userId: dataUserId },
-      index
-    );
+    const events = await getPaginatedData({
+      table: "events",
+      conditions: { userId: dataUserId },
+      ...query
+    });
     events.data = await addLocationToEvents(events.data);
     return events;
   }
@@ -132,14 +132,14 @@ export const getRecentEventsForUser = async (
 export const getMembershipsForUser = async (
   tokenUserId: number,
   dataUserId: number,
-  index?: number
+  query: KeyValue
 ) => {
   if (await can(tokenUserId, Authorizations.READ, "user", dataUserId)) {
-    const memberships = await getPaginatedData(
-      "memberships",
-      { userId: dataUserId },
-      index
-    );
+    const memberships = await getPaginatedData({
+      table: "memberships",
+      conditions: { userId: dataUserId },
+      ...query
+    });
     memberships.data = await addOrganizationToMemberships(memberships.data);
     return memberships;
   }

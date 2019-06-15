@@ -1,4 +1,4 @@
-import { Locals } from "../interfaces/general";
+import { Locals, KeyValue } from "../interfaces/general";
 import {
   createEmail,
   getEmail,
@@ -18,16 +18,14 @@ import { addIsPrimaryToEmails } from "../helpers/mysql";
 export const getAllEmailsForUser = async (
   tokenUserId: number,
   userId: number,
-  index?: number,
-  itemsPerPage?: number
+  query: KeyValue
 ) => {
   if (await can(tokenUserId, Authorizations.READ, "user", userId)) {
-    const emails = await getPaginatedData(
-      "emails",
-      { userId },
-      index,
-      itemsPerPage
-    );
+    const emails = await getPaginatedData({
+      table: "emails",
+      conditions: { userId },
+      ...query
+    });
     emails.data = await addIsPrimaryToEmails(emails.data);
     return emails;
   }

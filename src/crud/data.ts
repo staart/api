@@ -5,22 +5,42 @@ import { dateToDateTime } from "../helpers/utils";
 /*
  * Get pagination data
  */
-export const getPaginatedData = async (
-  table: string,
-  conditions?: KeyValue,
-  index = 0,
+export const getPaginatedData = async ({
+  table,
+  conditions,
+  start = 0,
   itemsPerPage = 5,
-  primaryKey = "id"
-) => {
+  primaryKey = "id",
+  q,
+  search,
+  sort = "asc"
+}: {
+  table: string;
+  conditions?: KeyValue;
+  start?: number;
+  itemsPerPage?: number;
+  primaryKey?: string;
+  q?: string;
+  search?: string;
+  sort?: string;
+}) => {
   const data = (await query(
-    `SELECT * FROM \`${table}\` WHERE ${primaryKey} > ? ${
+    `SELECT * FROM \`${table}\` WHERE ${primaryKey} ${
+      sort === "asc" ? ">" : "<"
+    } ? ${
       conditions
         ? `AND ${Object.keys(conditions)
             .map(condition => `${condition} = ?`)
             .join(" AND ")}`
         : ""
-    } ORDER BY ${primaryKey} ASC LIMIT ${itemsPerPage}`,
-    [index, ...(conditions ? Object.values(conditions) : [])]
+    }${
+      q && search ? ` AND \`${search}\` LIKE "%?%"` : ""
+    } ORDER BY ${primaryKey} ${sort.toUpperCase()} LIMIT ${itemsPerPage}`,
+    [
+      sort === "desc" && start == 0 ? 99999999999 : start,
+      ...(conditions ? Object.values(conditions) : []),
+      q
+    ]
   )) as any[];
   return {
     data,

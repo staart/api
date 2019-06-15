@@ -169,13 +169,13 @@ export const getOrganizationMembers = async (organizationId: number) => {
  */
 export const getOrganizationMemberDetails = async (
   organizationId: number,
-  start?: number
+  query?: KeyValue
 ) => {
-  const members: any = await getPaginatedData(
-    "memberships",
-    { organizationId },
-    start
-  );
+  const members: any = await getPaginatedData({
+    table: "memberships",
+    conditions: { organizationId },
+    ...query
+  });
   for await (const member of members.data) {
     member.user = await getUser(member.userId);
   }

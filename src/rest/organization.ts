@@ -23,7 +23,7 @@ import {
   getOrganizationEvents,
   getOrganizationRecentEvents
 } from "../crud/event";
-import { Locals } from "../interfaces/general";
+import { Locals, KeyValue } from "../interfaces/general";
 import { can } from "../helpers/authorization";
 import {
   getStripeCustomer,
@@ -346,9 +346,9 @@ export const getOrganizationRecentEventsForUser = async (
 export const getOrganizationMembershipsForUser = async (
   userId: number,
   organizationId: number,
-  start?: number
+  query?: KeyValue
 ) => {
   if (await can(userId, Authorizations.READ, "organization", organizationId))
-    return await getOrganizationMemberDetails(organizationId, start);
+    return await getOrganizationMemberDetails(organizationId, query);
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
