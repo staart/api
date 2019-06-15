@@ -40,7 +40,8 @@ import {
   deleteStripeCustomer,
   createStripeSubscription,
   getStripeSubscription,
-  updateStripeSubscription
+  updateStripeSubscription,
+  getStripeInvoice
 } from "../crud/billing";
 import { customers } from "stripe";
 import { getUser } from "../crud/user";
@@ -185,12 +186,27 @@ export const updateOrganizationBillingForUser = async (
 
 export const getOrganizationInvoicesForUser = async (
   userId: number,
-  organizationId: number
+  organizationId: number,
+  params: KeyValue
 ) => {
   if (await can(userId, Authorizations.READ, "organization", organizationId)) {
     const organization = await getOrganization(organizationId);
     if (organization.stripeCustomerId)
-      return await getStripeInvoices(organization.stripeCustomerId);
+      return await getStripeInvoices(organization.stripeCustomerId, params);
+    throw new Error(ErrorCode.STRIPE_NO_CUSTOMER);
+  }
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const getOrganizationInvoiceForUser = async (
+  userId: number,
+  organizationId: number,
+  invoiceId: string
+) => {
+  if (await can(userId, Authorizations.READ, "organization", organizationId)) {
+    const organization = await getOrganization(organizationId);
+    if (organization.stripeCustomerId)
+      return await getStripeInvoice(organization.stripeCustomerId, invoiceId);
     throw new Error(ErrorCode.STRIPE_NO_CUSTOMER);
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
@@ -379,7 +395,7 @@ export const getAllOrganizationDataForUser = async (
         organization.stripeCustomerId,
         {}
       );
-      invoices = await getStripeInvoices(organization.stripeCustomerId);
+      invoices = await getStripeInvoices(organization.stripeCustomerId, {});
       sources = await getStripeSources(organization.stripeCustomerId);
     }
     return {

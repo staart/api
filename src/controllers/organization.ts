@@ -19,7 +19,8 @@ import {
   getOrganizationMembershipsForUser,
   createOrganizationSubscriptionForUser,
   getOrganizationSubscriptionForUser,
-  updateOrganizationSubscriptionForUser
+  updateOrganizationSubscriptionForUser,
+  getOrganizationInvoiceForUser
 } from "../rest/organization";
 import {
   Get,
@@ -136,8 +137,43 @@ export class OrganizationController {
       { organizationId: Joi.number().required() },
       { organizationId }
     );
+    const subscriptionParams = { ...req.query };
+    joiValidate(
+      {
+        start: Joi.string(),
+        billing: Joi.string().valid("charge_automatically", "send_invoice"),
+        itemsPerPage: Joi.number(),
+        plan: Joi.string(),
+        status: Joi.string()
+      },
+      subscriptionParams
+    );
     res.json(
-      await getOrganizationInvoicesForUser(res.locals.token.id, organizationId)
+      await getOrganizationInvoicesForUser(
+        res.locals.token.id,
+        organizationId,
+        subscriptionParams
+      )
+    );
+  }
+
+  @Get(":id/invoices/:invoiceId")
+  async getInvoice(req: Request, res: Response) {
+    const organizationId = req.params.id;
+    const invoiceId = req.params.invoiceId;
+    joiValidate(
+      {
+        organizationId: Joi.number().required(),
+        invoiceId: Joi.string().required()
+      },
+      { organizationId, invoiceId }
+    );
+    res.json(
+      await getOrganizationInvoiceForUser(
+        res.locals.token.id,
+        organizationId,
+        invoiceId
+      )
     );
   }
 

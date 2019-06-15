@@ -63,8 +63,39 @@ export const updateStripeCustomer = async (
  * Get the details of a customer
  * @param id - Stripe customer ID
  */
-export const getStripeInvoices = async (id: string) => {
-  return await stripe.invoices.list({ customer: id });
+export const getStripeInvoices = async (
+  id: string,
+  {
+    start,
+    billing,
+    itemsPerPage,
+    subscription
+  }: {
+    start?: string;
+    billing?: subscriptions.SubscriptionBilling;
+    itemsPerPage?: number;
+    subscription?: string;
+  }
+) => {
+  return cleanStripeResponse(
+    await stripe.invoices.list({
+      customer: id,
+      starting_after: start !== "0" ? start : undefined,
+      billing,
+      limit: itemsPerPage,
+      subscription
+    })
+  );
+};
+
+/**
+ * Get the details of a customer
+ * @param id - Stripe customer ID
+ */
+export const getStripeInvoice = async (id: string, invoiceId: string) => {
+  const invoice = await stripe.invoices.retrieve(invoiceId);
+  if (invoice.customer !== id) throw new Error(ErrorCode.INVOICE_NOT_FOUND);
+  return invoice;
 };
 
 /**
