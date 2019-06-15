@@ -57,6 +57,7 @@ export enum ErrorCode {
   USER_NOT_FOUND = "404/user-not-found",
   MEMBERSHIP_NOT_FOUND = "404/membership-not-found",
   ORGANIZATION_NOT_FOUND = "404/organization-not-found",
+  SUBSCRIPTION_NOT_FOUND = "404/subscription-not-found",
   INVALID_LOGIN = "401/invalid-login",
   INCORRECT_PASSWORD = "401/incorrect-password",
   INSUFFICIENT_PERMISSION = "401/insufficient-permission",

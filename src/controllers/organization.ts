@@ -16,7 +16,10 @@ import {
   deleteOrganizationSourceForUser,
   getAllOrganizationDataForUser,
   getOrganizationRecentEventsForUser,
-  getOrganizationMembershipsForUser
+  getOrganizationMembershipsForUser,
+  createOrganizationSubscriptionForUser,
+  getOrganizationSubscriptionForUser,
+  updateOrganizationSubscriptionForUser
 } from "../rest/organization";
 import {
   Get,
@@ -32,7 +35,7 @@ import { ErrorCode, MembershipRole } from "../interfaces/enum";
 import { CREATED } from "http-status-codes";
 import asyncHandler from "express-async-handler";
 import { inviteMemberToOrganization } from "../rest/membership";
-import { joiValidate } from "../helpers/utils";
+import { joiValidate, jsonValues } from "../helpers/utils";
 import Joi from "@hapi/joi";
 
 @Controller("organizations")
@@ -143,10 +146,99 @@ export class OrganizationController {
       { organizationId: Joi.number().required() },
       { organizationId }
     );
+    const subscriptionParams = { ...req.query };
+    joiValidate(
+      {
+        start: Joi.string(),
+        billing: Joi.string().valid("charge_automatically", "send_invoice"),
+        itemsPerPage: Joi.number(),
+        plan: Joi.string(),
+        status: Joi.string()
+      },
+      subscriptionParams
+    );
     res.json(
       await getOrganizationSubscriptionsForUser(
         res.locals.token.id,
-        organizationId
+        organizationId,
+        subscriptionParams
+      )
+    );
+  }
+
+  @Get(":id/subscriptions/:subscriptionId")
+  async getSubscription(req: Request, res: Response) {
+    const organizationId = req.params.id;
+    const subscriptionId = req.params.subscriptionId;
+    joiValidate(
+      {
+        organizationId: Joi.number().required(),
+        subscriptionId: Joi.string().required()
+      },
+      { organizationId, subscriptionId }
+    );
+    res.json(
+      await getOrganizationSubscriptionForUser(
+        res.locals.token.id,
+        organizationId,
+        subscriptionId
+      )
+    );
+  }
+
+  @Patch(":id/subscriptions/:subscriptionId")
+  async parchSubscription(req: Request, res: Response) {
+    const organizationId = req.params.id;
+    const subscriptionId = req.params.subscriptionId;
+    const data = req.body;
+    joiValidate(
+      {
+        organizationId: Joi.number().required(),
+        subscriptionId: Joi.string().required()
+      },
+      { organizationId, subscriptionId }
+    );
+    joiValidate(
+      {
+        billing: Joi.string().valid("charge_automatically", "send_invoice"),
+        cancel_at_period_end: Joi.boolean(),
+        coupon: Joi.string(),
+        default_source: Joi.string()
+      },
+      data
+    );
+    res.json(
+      await updateOrganizationSubscriptionForUser(
+        res.locals.token.id,
+        organizationId,
+        subscriptionId,
+        data
+      )
+    );
+  }
+
+  @Put(":id/subscriptions")
+  async putSubscriptions(req: Request, res: Response) {
+    const organizationId = req.params.id;
+    joiValidate(
+      { organizationId: Joi.number().required() },
+      { organizationId }
+    );
+    const subscriptionParams = { ...req.body };
+    joiValidate(
+      {
+        plan: Joi.string().required(),
+        billing: Joi.string().valid("charge_automatically", "send_invoice"),
+        tax_percent: Joi.number(),
+        number_of_seats: Joi.number()
+      },
+      subscriptionParams
+    );
+    res.json(
+      await createOrganizationSubscriptionForUser(
+        res.locals.token.id,
+        organizationId,
+        subscriptionParams
       )
     );
   }

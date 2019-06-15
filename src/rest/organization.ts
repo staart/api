@@ -37,7 +37,10 @@ import {
   createStripeSource,
   updateStripeSource,
   deleteStripeSource,
-  deleteStripeCustomer
+  deleteStripeCustomer,
+  createStripeSubscription,
+  getStripeSubscription,
+  updateStripeSubscription
 } from "../crud/billing";
 import { customers } from "stripe";
 import { getUser } from "../crud/user";
@@ -195,12 +198,69 @@ export const getOrganizationInvoicesForUser = async (
 
 export const getOrganizationSubscriptionsForUser = async (
   userId: number,
-  organizationId: number
+  organizationId: number,
+  params: KeyValue
 ) => {
   if (await can(userId, Authorizations.READ, "organization", organizationId)) {
     const organization = await getOrganization(organizationId);
     if (organization.stripeCustomerId)
-      return await getStripeSubscriptions(organization.stripeCustomerId);
+      return await getStripeSubscriptions(
+        organization.stripeCustomerId,
+        params
+      );
+    throw new Error(ErrorCode.STRIPE_NO_CUSTOMER);
+  }
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const getOrganizationSubscriptionForUser = async (
+  userId: number,
+  organizationId: number,
+  subscriptionId: string
+) => {
+  if (await can(userId, Authorizations.READ, "organization", organizationId)) {
+    const organization = await getOrganization(organizationId);
+    if (organization.stripeCustomerId)
+      return await getStripeSubscription(
+        organization.stripeCustomerId,
+        subscriptionId
+      );
+    throw new Error(ErrorCode.STRIPE_NO_CUSTOMER);
+  }
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const updateOrganizationSubscriptionForUser = async (
+  userId: number,
+  organizationId: number,
+  subscriptionId: string,
+  data: KeyValue
+) => {
+  if (await can(userId, Authorizations.READ, "organization", organizationId)) {
+    const organization = await getOrganization(organizationId);
+    if (organization.stripeCustomerId)
+      return await updateStripeSubscription(
+        organization.stripeCustomerId,
+        subscriptionId,
+        data
+      );
+    throw new Error(ErrorCode.STRIPE_NO_CUSTOMER);
+  }
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const createOrganizationSubscriptionForUser = async (
+  userId: number,
+  organizationId: number,
+  params: { plan: string; [index: string]: any }
+) => {
+  if (await can(userId, Authorizations.READ, "organization", organizationId)) {
+    const organization = await getOrganization(organizationId);
+    if (organization.stripeCustomerId)
+      return await createStripeSubscription(
+        organization.stripeCustomerId,
+        params
+      );
     throw new Error(ErrorCode.STRIPE_NO_CUSTOMER);
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
@@ -316,7 +376,8 @@ export const getAllOrganizationDataForUser = async (
     if (organization.stripeCustomerId) {
       billing = await getStripeCustomer(organization.stripeCustomerId);
       subscriptions = await getStripeSubscriptions(
-        organization.stripeCustomerId
+        organization.stripeCustomerId,
+        {}
       );
       invoices = await getStripeInvoices(organization.stripeCustomerId);
       sources = await getStripeSources(organization.stripeCustomerId);

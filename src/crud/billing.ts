@@ -1,7 +1,17 @@
-import Stripe from "stripe";
+import Stripe, { subscriptions, IList } from "stripe";
 import { STRIPE_SECRET_KEY } from "../config";
 import { updateOrganization } from "./organization";
+import { ErrorCode } from "../interfaces/enum";
 const stripe = new Stripe(STRIPE_SECRET_KEY);
+
+const cleanStripeResponse = (response: IList<any>) => {
+  const newResponse = { ...response } as any;
+  newResponse.hasMore = response.has_more;
+  delete newResponse.has_more;
+  delete newResponse.object;
+  delete newResponse.url;
+  return newResponse;
+};
 
 /**
  * Get the details of a customer
@@ -56,8 +66,87 @@ export const getStripeInvoices = async (id: string) => {
  * Get the details of a customer
  * @param id - Stripe customer ID
  */
-export const getStripeSubscriptions = async (id: string) => {
-  return await stripe.subscriptions.list({ customer: id });
+export const getStripeSubscriptions = async (
+  id: string,
+  {
+    start,
+    billing,
+    itemsPerPage,
+    plan,
+    status
+  }: {
+    start?: string;
+    billing?: subscriptions.SubscriptionBilling;
+    itemsPerPage?: number;
+    plan?: string;
+    status?: subscriptions.SubscriptionStatus;
+  }
+) => {
+  return cleanStripeResponse(
+    await stripe.subscriptions.list({
+      customer: id,
+      starting_after: start !== "0" ? start : undefined,
+      billing,
+      limit: itemsPerPage,
+      plan,
+      status
+    })
+  );
+};
+
+/**
+ * Get the details of a customer
+ * @param id - Stripe customer ID
+ */
+export const getStripeSubscription = async (
+  id: string,
+  subscriptionId: string
+) => {
+  const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+  if (subscription.customer !== id)
+    throw new Error(ErrorCode.SUBSCRIPTION_NOT_FOUND);
+  return subscription;
+};
+
+/**
+ * Get the details of a customer
+ * @param id - Stripe customer ID
+ */
+export const updateStripeSubscription = async (
+  id: string,
+  subscriptionId: string,
+  data: subscriptions.ISubscriptionUpdateItem
+) => {
+  await getStripeSubscription(id, subscriptionId);
+  return await stripe.subscriptions.update(subscriptionId, data);
+};
+
+/**
+ * Create a new subscription
+ * @param id - Stripe customer ID
+ */
+export const createStripeSubscription = async (
+  id: string,
+  {
+    tax_percent,
+    plan,
+    billing,
+    number_of_seats
+  }: {
+    tax_percent?: number;
+    plan: string;
+    billing?: subscriptions.SubscriptionBilling;
+    number_of_seats?: number;
+  }
+) => {
+  await stripe.subscriptions.create({
+    customer: id,
+    tax_percent,
+    trial_from_plan: true,
+    items: [{ plan, quantity: number_of_seats }],
+    billing
+  });
+  return { success: true };
 };
 
 /**

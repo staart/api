@@ -71,8 +71,19 @@ export const uncleanValues = (
           item[key] = {};
         }
         if (boolValues.includes(key)) item[key] = !!item[key];
-        if (dateValues.includes(key))
-          item[key] = new Date(item[key]).toISOString();
+        if (dateValues.includes(key)) {
+          const date = item[key] as Date;
+          item[key] = new Date(
+            Date.UTC(
+              date.getFullYear(),
+              date.getMonth(),
+              date.getDate(),
+              date.getHours(),
+              date.getMinutes(),
+              date.getSeconds()
+            )
+          ).toISOString();
+        }
       });
       return item;
     });
