@@ -187,6 +187,32 @@ export const createStripeSubscription = async (
 };
 
 /**
+ * Create a new subscription
+ * @param id - Stripe customer ID
+ */
+export const createStripeSubscriptionSession = async (
+  id: string,
+  {
+    plan
+  }: {
+    tax_percent?: number;
+    plan: string;
+    billing?: subscriptions.SubscriptionBilling;
+    number_of_seats?: number;
+  }
+) => {
+  return await (stripe as any).checkout.sessions.create({
+    customer: id,
+    success_url: "http://localhost:3000/manage/1/subscriptions/success",
+    cancel_url: "http://localhost:3000/manage/1/subscriptions/cancel",
+    payment_method_types: ["card"],
+    subscription_data: {
+      items: [{ plan }]
+    }
+  });
+};
+
+/**
  * Get the details of a customer
  * @param id - Stripe customer ID
  */
@@ -203,8 +229,23 @@ export const getStripeProductPricing = async (product: string) => {
  * Get the details of a customer
  * @param id - Stripe customer ID
  */
-export const getStripeSources = async (id: string) => {
-  return await stripe.customers.listSources(id, { object: "card" });
+export const getStripeSources = async (
+  id: string,
+  {
+    start,
+    itemsPerPage
+  }: {
+    start?: string;
+    itemsPerPage?: number;
+  }
+) => {
+  return cleanStripeResponse(
+    await stripe.customers.listSources(id, {
+      object: "source",
+      starting_after: start !== "0" ? start : undefined,
+      limit: itemsPerPage
+    })
+  );
 };
 
 /**

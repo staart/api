@@ -177,6 +177,50 @@ export class OrganizationController {
     );
   }
 
+  @Get(":id/sources")
+  async getSources(req: Request, res: Response) {
+    const organizationId = req.params.id;
+    joiValidate(
+      { organizationId: Joi.number().required() },
+      { organizationId }
+    );
+    const subscriptionParams = { ...req.query };
+    joiValidate(
+      {
+        start: Joi.string(),
+        itemsPerPage: Joi.number()
+      },
+      subscriptionParams
+    );
+    res.json(
+      await getOrganizationSourcesForUser(
+        res.locals.token.id,
+        organizationId,
+        subscriptionParams
+      )
+    );
+  }
+
+  @Get(":id/sources/:sourceId")
+  async getSource(req: Request, res: Response) {
+    const organizationId = req.params.id;
+    const sourceId = req.params.sourceId;
+    joiValidate(
+      {
+        organizationId: Joi.number().required(),
+        sourceId: Joi.string().required()
+      },
+      { organizationId, sourceId }
+    );
+    res.json(
+      await getOrganizationSourceForUser(
+        res.locals.token.id,
+        organizationId,
+        sourceId
+      )
+    );
+  }
+
   @Get(":id/subscriptions")
   async getSubscriptions(req: Request, res: Response) {
     const organizationId = req.params.id;
@@ -225,7 +269,7 @@ export class OrganizationController {
   }
 
   @Patch(":id/subscriptions/:subscriptionId")
-  async parchSubscription(req: Request, res: Response) {
+  async patchSubscription(req: Request, res: Response) {
     const organizationId = req.params.id;
     const subscriptionId = req.params.subscriptionId;
     const data = req.body;
@@ -301,18 +345,6 @@ export class OrganizationController {
     );
   }
 
-  @Get(":id/sources")
-  async getSources(req: Request, res: Response) {
-    const organizationId = req.params.id;
-    joiValidate(
-      { organizationId: Joi.number().required() },
-      { organizationId }
-    );
-    res.json(
-      await getOrganizationSourcesForUser(res.locals.token.id, organizationId)
-    );
-  }
-
   @Put(":id/sources")
   async putSources(req: Request, res: Response) {
     const organizationId = req.params.id;
@@ -329,26 +361,6 @@ export class OrganizationController {
           req.body
         )
       );
-  }
-
-  @Get(":id/sources/:sourceId")
-  async getSource(req: Request, res: Response) {
-    const sourceId = req.params.sourceId;
-    const organizationId = req.params.id;
-    joiValidate(
-      {
-        organizationId: Joi.number().required(),
-        sourceId: Joi.number().required()
-      },
-      { organizationId, sourceId }
-    );
-    res.json(
-      await getOrganizationSourceForUser(
-        res.locals.token.id,
-        organizationId,
-        sourceId
-      )
-    );
   }
 
   @Delete(":id/sources/:sourceId")
