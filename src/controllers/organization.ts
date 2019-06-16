@@ -52,7 +52,7 @@ export class OrganizationController {
         name: Joi.string()
           .min(3)
           .required(),
-        invitationDomain: (Joi.string() as any).domain()
+        invitationDomain: Joi.string()
       },
       {
         name,

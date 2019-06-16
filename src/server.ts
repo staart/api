@@ -28,7 +28,6 @@ export class Staart extends Server {
     super();
     this.setupHandlers();
     this.setupControllers();
-    this.setupRedirects();
     this.app.use(errorHandler);
   }
 
@@ -46,10 +45,6 @@ export class Staart extends Server {
 
   private setupControllers() {
     // staart:setup/controllers
-  }
-
-  private setupRedirects() {
-    // staart:setup/redirects
   }
 
   public start(port: number): void {

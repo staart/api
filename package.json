@@ -1,6 +1,6 @@
 {
   "name": "staart",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "main": "index.js",
   "repository": "git@github.com:AnandChowdhary/staart.git",
   "author": "Anand Chowdhary <mail@anandchowdhary.com>",
@@ -66,6 +66,7 @@
     "nodemon": "^1.19.1",
     "onchange": "^6.0.0",
     "prettier": "^1.18.2",
+    "recursive-readdir": "^2.2.2",
     "ts-jest": "^24.0.2",
     "typedoc": "^0.14.2",
     "typescript": "^3.5.2",
