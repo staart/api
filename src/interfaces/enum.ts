@@ -104,6 +104,7 @@ export enum CacheCategories {
   ORGANIZATION_MEMBERSHIPS = "memberships",
   MEMBERSHIP = "membership",
   ORGANIZATION = "organization",
+  ORGANIZATION_USERNAME = "organization-username",
   APPROVE_LOCATIONS = "approved-locations",
   APPROVE_LOCATION = "approved-location",
   IP_LOOKUP = "ip-lookup",

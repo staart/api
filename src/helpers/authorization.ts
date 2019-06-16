@@ -6,7 +6,7 @@ import {
   UserRole,
   MembershipRole
 } from "../interfaces/enum";
-import { getUser } from "../crud/user";
+import { getUser, getApiKey } from "../crud/user";
 import { getUserMemberships, getMembership } from "../crud/membership";
 import { getOrganization } from "../crud/organization";
 import { Membership } from "../interfaces/tables/memberships";
@@ -179,42 +179,44 @@ export const can = async (
   targetType: "user" | "organization" | "membership" | "api-key" | "general",
   target?: User | Organization | Membership | ApiKey | number
 ) => {
-  let userObject;
-  if (typeof user === "number") {
-    userObject = await getUser(user);
+  let userObject: User;
+  if (typeof target === "object") {
+    userObject = target as User;
   } else {
-    userObject = user;
-  }
-  let targetObject;
-  if (typeof target === "string") {
-    let newTarget = parseInt(target);
-    if (!isNaN(newTarget)) target = newTarget;
-  }
-  if (typeof target == "number") {
-    if (targetType === "user") {
-      targetObject = await getUser(target);
-    } else if (targetType === "organization") {
-      targetObject = await getOrganization(target);
-    } else {
-      targetObject = await getMembership(target);
-    }
-  } else {
-    targetObject = target;
+    userObject = await getUser(user as number);
   }
   if (!userObject.id) throw new Error(ErrorCode.USER_NOT_FOUND);
+
+  let targetObject: User | Organization | Membership | ApiKey;
   if (targetType === "user") {
-    return await canUserUser(userObject, action, <User>targetObject);
+    if (typeof target === "string" || typeof target === "number")
+      targetObject = await getUser(target);
+    else targetObject = target as User;
+    return await canUserUser(userObject, action, targetObject as User);
   } else if (targetType === "organization") {
-    return await canUserOrganization(userObject, action, <Organization>(
-      targetObject
-    ));
+    if (typeof target === "string" || typeof target === "number")
+      targetObject = await getOrganization(target);
+    else targetObject = target as Organization;
+    return await canUserOrganization(
+      userObject,
+      action,
+      targetObject as Organization
+    );
   } else if (targetType === "membership") {
-    return await canUserMembership(userObject, action, <Membership>(
-      targetObject
-    ));
+    if (typeof target === "string" || typeof target === "number")
+      targetObject = await getMembership(target);
+    else targetObject = target as Membership;
+    return await canUserMembership(
+      userObject,
+      action,
+      targetObject as Membership
+    );
   } else if (targetType === "api-key") {
-    return await canUserApiKey(userObject, action, <ApiKey>targetObject);
-  } else {
-    return await canUserGeneral(userObject, action);
+    if (typeof target === "string" || typeof target === "number")
+      targetObject = await getApiKey(target.toString());
+    else targetObject = target as ApiKey;
+    return await canUserApiKey(userObject, action, targetObject as ApiKey);
   }
+
+  return await canUserGeneral(userObject, action);
 };

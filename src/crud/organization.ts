@@ -8,7 +8,7 @@ import { Organization } from "../interfaces/tables/organization";
 import { capitalizeFirstAndLastLetter, dateToDateTime } from "../helpers/utils";
 import { KeyValue } from "../interfaces/general";
 import { cachedQuery, deleteItemFromCache } from "../helpers/cache";
-import { CacheCategories } from "../interfaces/enum";
+import { CacheCategories, ErrorCode } from "../interfaces/enum";
 
 /*
  * Create a new organization for a user
@@ -29,7 +29,7 @@ export const createOrganization = async (organization: Organization) => {
  * Get the details of a specific organization
  */
 export const getOrganization = async (id: number) => {
-  return (<Organization[]>(
+  const org = (<Organization[]>(
     await cachedQuery(
       CacheCategories.ORGANIZATION,
       id,
@@ -37,6 +37,24 @@ export const getOrganization = async (id: number) => {
       [id]
     )
   ))[0];
+  if (org) return org;
+  throw new Error(ErrorCode.ORGANIZATION_NOT_FOUND);
+};
+
+/*
+ * Get the details of a specific organization
+ */
+export const getOrganizationIdFromUsername = async (username: string) => {
+  const org = (<Organization[]>(
+    await cachedQuery(
+      CacheCategories.ORGANIZATION_USERNAME,
+      username,
+      `SELECT id FROM organizations WHERE username = ? LIMIT 1`,
+      [username]
+    )
+  ))[0];
+  if (org && org.id) return org.id;
+  throw new Error(ErrorCode.ORGANIZATION_NOT_FOUND);
 };
 
 /*

@@ -36,7 +36,7 @@ import { MembershipRole } from "../interfaces/enum";
 import { CREATED } from "http-status-codes";
 import asyncHandler from "express-async-handler";
 import { inviteMemberToOrganization } from "../rest/membership";
-import { joiValidate } from "../helpers/utils";
+import { joiValidate, organizationUsernameToId } from "../helpers/utils";
 import Joi from "@hapi/joi";
 
 @Controller("organizations")
@@ -71,7 +71,7 @@ export class OrganizationController {
 
   @Get(":id")
   async get(req: Request, res: Response) {
-    const id = req.params.id;
+    const id = await organizationUsernameToId(req.params.id);
     joiValidate({ id: Joi.number().required() }, { id });
     const organization = await getOrganizationForUser(res.locals.token.id, id);
     res.json(organization);
@@ -79,7 +79,7 @@ export class OrganizationController {
 
   @Patch(":id")
   async patch(req: Request, res: Response) {
-    const id = req.params.id;
+    const id = await organizationUsernameToId(req.params.id);
     joiValidate({ id: Joi.number().required() }, { id });
     await updateOrganizationForUser(
       res.locals.token.id,
@@ -92,7 +92,7 @@ export class OrganizationController {
 
   @Delete(":id")
   async delete(req: Request, res: Response) {
-    const organizationId = req.params.id;
+    const organizationId = await organizationUsernameToId(req.params.id);
     const userId = res.locals.token.id;
     joiValidate(
       { organizationId: Joi.number().required() },
@@ -104,7 +104,7 @@ export class OrganizationController {
 
   @Get(":id/billing")
   async getBilling(req: Request, res: Response) {
-    const organizationId = req.params.id;
+    const organizationId = await organizationUsernameToId(req.params.id);
     joiValidate(
       { organizationId: Joi.number().required() },
       { organizationId }
@@ -116,7 +116,7 @@ export class OrganizationController {
 
   @Patch(":id/billing")
   async patchBilling(req: Request, res: Response) {
-    const organizationId = req.params.id;
+    const organizationId = await organizationUsernameToId(req.params.id);
     joiValidate(
       { organizationId: Joi.number().required() },
       { organizationId }
@@ -132,7 +132,7 @@ export class OrganizationController {
 
   @Get(":id/invoices")
   async getInvoices(req: Request, res: Response) {
-    const organizationId = req.params.id;
+    const organizationId = await organizationUsernameToId(req.params.id);
     joiValidate(
       { organizationId: Joi.number().required() },
       { organizationId }
@@ -159,7 +159,7 @@ export class OrganizationController {
 
   @Get(":id/invoices/:invoiceId")
   async getInvoice(req: Request, res: Response) {
-    const organizationId = req.params.id;
+    const organizationId = await organizationUsernameToId(req.params.id);
     const invoiceId = req.params.invoiceId;
     joiValidate(
       {
@@ -179,7 +179,7 @@ export class OrganizationController {
 
   @Get(":id/sources")
   async getSources(req: Request, res: Response) {
-    const organizationId = req.params.id;
+    const organizationId = await organizationUsernameToId(req.params.id);
     joiValidate(
       { organizationId: Joi.number().required() },
       { organizationId }
@@ -203,7 +203,7 @@ export class OrganizationController {
 
   @Get(":id/sources/:sourceId")
   async getSource(req: Request, res: Response) {
-    const organizationId = req.params.id;
+    const organizationId = await organizationUsernameToId(req.params.id);
     const sourceId = req.params.sourceId;
     joiValidate(
       {
@@ -223,7 +223,7 @@ export class OrganizationController {
 
   @Get(":id/subscriptions")
   async getSubscriptions(req: Request, res: Response) {
-    const organizationId = req.params.id;
+    const organizationId = await organizationUsernameToId(req.params.id);
     joiValidate(
       { organizationId: Joi.number().required() },
       { organizationId }
@@ -250,7 +250,7 @@ export class OrganizationController {
 
   @Get(":id/subscriptions/:subscriptionId")
   async getSubscription(req: Request, res: Response) {
-    const organizationId = req.params.id;
+    const organizationId = await organizationUsernameToId(req.params.id);
     const subscriptionId = req.params.subscriptionId;
     joiValidate(
       {
@@ -270,7 +270,7 @@ export class OrganizationController {
 
   @Patch(":id/subscriptions/:subscriptionId")
   async patchSubscription(req: Request, res: Response) {
-    const organizationId = req.params.id;
+    const organizationId = await organizationUsernameToId(req.params.id);
     const subscriptionId = req.params.subscriptionId;
     const data = req.body;
     joiValidate(
@@ -301,7 +301,7 @@ export class OrganizationController {
 
   @Put(":id/subscriptions")
   async putSubscriptions(req: Request, res: Response) {
-    const organizationId = req.params.id;
+    const organizationId = await organizationUsernameToId(req.params.id);
     joiValidate(
       { organizationId: Joi.number().required() },
       { organizationId }
@@ -328,7 +328,7 @@ export class OrganizationController {
   @Get(":id/pricing/:product")
   async getPlans(req: Request, res: Response) {
     const product = req.params.product;
-    const organizationId = req.params.id;
+    const organizationId = await organizationUsernameToId(req.params.id);
     joiValidate(
       {
         organizationId: Joi.number().required(),
@@ -347,7 +347,7 @@ export class OrganizationController {
 
   @Put(":id/sources")
   async putSources(req: Request, res: Response) {
-    const organizationId = req.params.id;
+    const organizationId = await organizationUsernameToId(req.params.id);
     joiValidate(
       { organizationId: Joi.number().required() },
       { organizationId }
@@ -366,7 +366,7 @@ export class OrganizationController {
   @Delete(":id/sources/:sourceId")
   async deleteSource(req: Request, res: Response) {
     const sourceId = req.params.sourceId;
-    const organizationId = req.params.id;
+    const organizationId = await organizationUsernameToId(req.params.id);
     joiValidate(
       {
         organizationId: Joi.number().required(),
@@ -386,7 +386,7 @@ export class OrganizationController {
   @Patch(":id/sources/:sourceId")
   async patchSource(req: Request, res: Response) {
     const sourceId = req.params.sourceId;
-    const organizationId = req.params.id;
+    const organizationId = await organizationUsernameToId(req.params.id);
     joiValidate(
       {
         organizationId: Joi.number().required(),
@@ -406,7 +406,7 @@ export class OrganizationController {
 
   @Get(":id/data")
   async getData(req: Request, res: Response) {
-    const organizationId = req.params.id;
+    const organizationId = await organizationUsernameToId(req.params.id);
     joiValidate(
       { organizationId: Joi.number().required() },
       { organizationId }
@@ -418,7 +418,7 @@ export class OrganizationController {
 
   @Get(":id/events")
   async getEvents(req: Request, res: Response) {
-    const organizationId = req.params.id;
+    const organizationId = await organizationUsernameToId(req.params.id);
     joiValidate(
       { organizationId: Joi.number().required() },
       { organizationId }
@@ -433,7 +433,7 @@ export class OrganizationController {
 
   @Get(":id/memberships")
   async getMemberships(req: Request, res: Response) {
-    const organizationId = req.params.id;
+    const organizationId = await organizationUsernameToId(req.params.id);
     joiValidate(
       { organizationId: Joi.number().required() },
       { organizationId }
@@ -449,7 +449,7 @@ export class OrganizationController {
 
   @Put(":id/memberships")
   async putMemberships(req: Request, res: Response) {
-    const organizationId = req.params.id;
+    const organizationId = await organizationUsernameToId(req.params.id);
     const newMemberName = req.body.name;
     const newMemberEmail = req.body.email;
     const role = req.body.role;

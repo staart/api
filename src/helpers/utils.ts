@@ -1,6 +1,7 @@
 import anonymize from "ip-anonymize";
 import { User } from "../interfaces/tables/user";
 import Joi from "@hapi/joi";
+import { getOrganizationIdFromUsername } from "../crud/organization";
 
 /**
  * Capitalize each first letter in a string
@@ -51,6 +52,14 @@ export const deleteSensitiveInfoUser = (user: User) => {
  */
 export const anonymizeIpAddress = (ipAddress: string) =>
   anonymize(ipAddress) || ipAddress;
+
+export const organizationUsernameToId = async (id: string) => {
+  if (isNaN(Number(id))) {
+    return await getOrganizationIdFromUsername(id);
+  } else {
+    return parseInt(id);
+  }
+};
 
 /**
  * MySQL columns which are booleans
