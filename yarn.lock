@@ -1186,10 +1186,10 @@
   dependencies:
     handlebars "*"
 
-"@types/hapi__joi@*", "@types/hapi__joi@^15.0.1":
-  version "15.0.1"
-  resolved "https://registry.yarnpkg.com/@types/hapi__joi/-/hapi__joi-15.0.1.tgz#6038375074af792b765e34dc799c83d30a406fbe"
-  integrity sha512-uqH3kTO1nrhe+Pbq+dQKrulrfscRPjFZNv9UWA3FupJZBHw+miT7yiV6C8A80YLnn0o6zbgTProncBb3d7QohA==
+"@types/hapi__joi@*", "@types/hapi__joi@^15.0.2":
+  version "15.0.2"
+  resolved "https://registry.yarnpkg.com/@types/hapi__joi/-/hapi__joi-15.0.2.tgz#94f37e9afab4db6a03f3d9e80dc939eb1f7b9a4f"
+  integrity sha512-EsOuX8cbAdSgp/9mo5NoI4vMnZ68c8Jk1fl3tyA07zd9aOq4q4udsJ2/YjhaFw0u2Zp6hBonUBrKEWotZg7PDQ==
   dependencies:
     "@types/hapi__joi" "*"
 
