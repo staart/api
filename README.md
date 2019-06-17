@@ -57,7 +57,9 @@ Works with [Staart UI](https://github.com/o15y/staart-ui), the frontend starter 
 
 Staart comes with tens of helper and CRUD methods for users, organizations, and more.
 
-**[View documentation →](https://staart-docs.o15y.com)**
+**[View wiki docs →](https://github.com/o15y/staart/wiki)**
+
+**[View TypeDoc →](https://staart-docs.o15y.com)**
 
 **[View API demo →](https://staart.caprover.oswaldlabs.com)**
 
