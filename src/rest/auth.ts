@@ -41,6 +41,8 @@ import {
 } from "../helpers/google";
 import { can } from "../helpers/authorization";
 import { authenticator } from "otplib";
+import ClientOAuth2 from "client-oauth2";
+import { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from "../config";
 
 export const validateRefreshToken = async (token: string, locals: Locals) => {
   const data = <User>await verifyToken(token, Tokens.REFRESH);
@@ -195,4 +197,24 @@ export const approveLocation = async (token: string, locals: Locals) => {
     locals.ipAddress,
     locals
   );
+};
+
+// OAuth2 clients
+export const github = new ClientOAuth2({
+  clientId: GITHUB_CLIENT_ID,
+  clientSecret: GITHUB_CLIENT_SECRET,
+  accessTokenUri: "https://github.com/login/oauth/access_token",
+  authorizationUri: "https://github.com/login/oauth/authorize",
+  redirectUri: "https://staart-demo.o15y.com/auth/callback/github",
+  scopes: ["user"]
+});
+export const oauthCallback = async (service: ClientOAuth2, url: string) => {
+  const response = await service.code.getToken(url);
+  console.log("Got", response.data);
+  return { hello: "hello world", data: response.data };
+  // const email = response.data.email;
+  // if (!email) throw new Error(ErrorCode.USER_NOT_FOUND);
+  // const user = await getUserByEmail(email);
+  // if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
+  // return await getLoginResponse(user, EventType.AUTH_LOGIN, "github", locals);
 };

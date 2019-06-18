@@ -75,6 +75,8 @@ export const TOKEN_EXPIRY_REFRESH = process.env.TOKEN_EXPIRY_REFRESH || "30d";
 export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || "";
 export const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || "";
 export const GOOGLE_CLIENT_REDIRECT = process.env.GOOGLE_CLIENT_REDIRECT || "";
+export const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID || "";
+export const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET || "";
 
 export const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || "";
 export const CHARGEBEE_SECRET_KEY = process.env.CHARGEBEE_SECRET_KEY || "";

@@ -11,7 +11,9 @@ import {
   approveLocation,
   verifyEmail,
   register,
-  login2FA
+  login2FA,
+  github,
+  oauthCallback
 } from "../rest/auth";
 import { verifyToken } from "../helpers/jwt";
 import {
@@ -25,7 +27,11 @@ import {
 import { authHandler, bruteForceHandler } from "../helpers/middleware";
 import { CREATED } from "http-status-codes";
 import asyncHandler from "express-async-handler";
-import { joiValidate } from "../helpers/utils";
+import {
+  joiValidate,
+  safeRedirect,
+  getCodeFromRequest
+} from "../helpers/utils";
 import Joi from "@hapi/joi";
 
 @Controller("auth")
@@ -218,5 +224,15 @@ export class AuthController {
     joiValidate({ token: Joi.string().required() }, { token });
     await verifyEmail(token, res.locals);
     res.json({ success: true, message: "auth-verify-email-success" });
+  }
+
+  @Get("oauth/github")
+  async oauthGitHub(req: Request, res: Response) {
+    safeRedirect(req, res, github.code.getUri());
+  }
+  @Post("oauth/github")
+  async oauthGitHubCallback(req: Request, res: Response) {
+    const code = getCodeFromRequest(req);
+    res.json(await oauthCallback(github, code));
   }
 }

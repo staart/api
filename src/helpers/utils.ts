@@ -2,6 +2,7 @@ import anonymize from "ip-anonymize";
 import { User } from "../interfaces/tables/user";
 import Joi from "@hapi/joi";
 import { getOrganizationIdFromUsername } from "../crud/organization";
+import { Request, Response } from "express";
 
 /**
  * Capitalize each first letter in a string
@@ -59,6 +60,19 @@ export const organizationUsernameToId = async (id: string) => {
   } else {
     return parseInt(id);
   }
+};
+
+export const safeRedirect = (req: Request, res: Response, url: string) => {
+  if (req.get("X-Requested-With") === "XMLHttpRequest")
+    return res.json({ redirect: url });
+  return res.redirect(url);
+};
+
+export const getCodeFromRequest = (req: Request) => {
+  const code =
+    req.body.code || (req.get("Authorization") || "").replace("Bearer ", "");
+  joiValidate({ code: Joi.string().required() }, { code });
+  return code;
 };
 
 /**
