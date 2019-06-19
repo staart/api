@@ -1,6 +1,6 @@
 {
   "name": "staart",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "main": "index.js",
   "repository": "git@github.com:AnandChowdhary/staart.git",
   "author": "Anand Chowdhary <mail@anandchowdhary.com>",
@@ -76,6 +76,7 @@
   "dependencies": {
     "@hapi/joi": "^15.0.3",
     "@sentry/node": "^5.4.0",
+    "axios": "^0.19.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "client-oauth2": "^4.2.4",

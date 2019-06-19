@@ -25,6 +25,7 @@ export enum EventType {
   USER_DELETED = "user.deleted",
   AUTH_REFRESH = "auth.refresh",
   AUTH_LOGIN = "auth.login",
+  AUTH_LOGIN_OAUTH = "auth.login_oauth",
   AUTH_LOGIN_BACKUP_CODE = "auth.login_backupCode",
   AUTH_LOGIN_GOOGLE = "auth.login_google",
   AUTH_PASSWORD_CHANGED = "auth.password_changed",
@@ -72,7 +73,8 @@ export enum ErrorCode {
   USER_IS_MEMBER_ALREADY = "400/user-is-member-already",
   STRIPE_NO_CUSTOMER = "404/no-customer",
   NOT_ENABLED_2FA = "400/invalid-2fa-token",
-  INVALID_2FA_TOKEN = "401/invalid-2fa-token"
+  INVALID_2FA_TOKEN = "401/invalid-2fa-token",
+  OAUTH_NO_EMAIL = "404/oauth-no-email"
 }
 
 export enum Templates {

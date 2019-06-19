@@ -13,7 +13,7 @@ import {
   register,
   login2FA,
   github,
-  oauthCallback
+  githubCallback
 } from "../rest/auth";
 import { verifyToken } from "../helpers/jwt";
 import {
@@ -233,6 +233,6 @@ export class AuthController {
   @Post("oauth/github")
   async oauthGitHubCallback(req: Request, res: Response) {
     const code = getCodeFromRequest(req);
-    res.json(await oauthCallback(github, code));
+    res.json(await githubCallback(code, res.locals));
   }
 }

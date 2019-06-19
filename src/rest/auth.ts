@@ -43,6 +43,8 @@ import { can } from "../helpers/authorization";
 import { authenticator } from "otplib";
 import ClientOAuth2 from "client-oauth2";
 import { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from "../config";
+import axios from "axios";
+import { GitHubEmail } from "../interfaces/oauth";
 
 export const validateRefreshToken = async (token: string, locals: Locals) => {
   const data = <User>await verifyToken(token, Tokens.REFRESH);
@@ -199,22 +201,44 @@ export const approveLocation = async (token: string, locals: Locals) => {
   );
 };
 
-// OAuth2 clients
+/*
+ OAuth clients
+*/
+
 export const github = new ClientOAuth2({
   clientId: GITHUB_CLIENT_ID,
   clientSecret: GITHUB_CLIENT_SECRET,
   accessTokenUri: "https://github.com/login/oauth/access_token",
   authorizationUri: "https://github.com/login/oauth/authorize",
   redirectUri: "https://staart-demo.o15y.com/auth/callback/github",
-  scopes: ["user"]
+  scopes: ["user:email"]
 });
-export const oauthCallback = async (service: ClientOAuth2, url: string) => {
-  const response = await service.code.getToken(url);
-  console.log("Got", response.data);
-  return { hello: "hello world", data: response.data };
-  // const email = response.data.email;
-  // if (!email) throw new Error(ErrorCode.USER_NOT_FOUND);
-  // const user = await getUserByEmail(email);
-  // if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
-  // return await getLoginResponse(user, EventType.AUTH_LOGIN, "github", locals);
+export const githubCallback = async (url: string, locals: Locals) => {
+  const response = await github.code.getToken(url);
+  const emails = ((await axios.get("https://api.github.com/user/emails", {
+    headers: {
+      Authorization: `token ${response.accessToken}`
+    }
+  })).data as GitHubEmail[]).filter(emails => (emails.verified = true));
+  for await (const email of emails) {
+    try {
+      const user = await getUserByEmail(email.email);
+      return await getLoginResponse(
+        user,
+        EventType.AUTH_LOGIN_OAUTH,
+        "github",
+        locals
+      );
+    } catch (error) {}
+  }
+  throw new Error(ErrorCode.OAUTH_NO_EMAIL);
 };
+
+export const microsoft = new ClientOAuth2({
+  clientId: GITHUB_CLIENT_ID,
+  clientSecret: GITHUB_CLIENT_SECRET,
+  accessTokenUri: "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+  authorizationUri: "https://www.facebook.com/v3.3/dialog/oauth",
+  redirectUri: "https://staart-demo.o15y.com/auth/callback/microsoft",
+  scopes: ["email"]
+});
