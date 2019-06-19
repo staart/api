@@ -51,7 +51,10 @@ import {
   GOOGLE_CLIENT_REDIRECT,
   FACEBOOK_CLIENT_ID,
   FACEBOOK_CLIENT_SECRET,
-  FACEBOOK_CLIENT_REDIRECT
+  FACEBOOK_CLIENT_REDIRECT,
+  SALESFORCE_CLIENT_ID,
+  SALESFORCE_CLIENT_SECRET,
+  SALESFORCE_CLIENT_REDIRECT
 } from "../config";
 import axios from "axios";
 import { GitHubEmail } from "../interfaces/oauth";
@@ -262,7 +265,38 @@ export const facebookCallback = async (url: string, locals: Locals) => {
     return await getLoginResponse(
       user,
       EventType.AUTH_LOGIN_OAUTH,
-      "github",
+      "facebook",
+      locals
+    );
+  } catch (error) {}
+  throw new Error(ErrorCode.OAUTH_NO_EMAIL);
+};
+
+export const salesforce = new ClientOAuth2({
+  clientId: SALESFORCE_CLIENT_ID,
+  clientSecret: SALESFORCE_CLIENT_SECRET,
+  redirectUri: SALESFORCE_CLIENT_REDIRECT,
+  authorizationUri: "https://login.salesforce.com/services/oauth2/authorize",
+  accessTokenUri: "https://login.salesforce.com/services/oauth2/token",
+  scopes: ["email"]
+});
+export const salesforceCallback = async (url: string, locals: Locals) => {
+  const response = await salesforce.code.getToken(url);
+  try {
+    const data = (await axios.get(
+      "https://login.salesforce.com/services/oauth2/userinfo",
+      {
+        headers: {
+          Authorization: `Bearer ${response.data.access_token}`
+        }
+      }
+    )).data;
+    if (!data.email_verified) throw new Error(ErrorCode.OAUTH_NO_EMAIL);
+    const user = await getUserByEmail(data.email);
+    return await getLoginResponse(
+      user,
+      EventType.AUTH_LOGIN_OAUTH,
+      "salesforce",
       locals
     );
   } catch (error) {}

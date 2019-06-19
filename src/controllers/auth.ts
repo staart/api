@@ -15,7 +15,9 @@ import {
   github,
   githubCallback,
   facebook,
-  facebookCallback
+  facebookCallback,
+  salesforceCallback,
+  salesforce
 } from "../rest/auth";
 import { verifyToken } from "../helpers/jwt";
 import {
@@ -239,12 +241,22 @@ export class AuthController {
   }
 
   @Get("oauth/facebook")
-  async oauthGoogle(req: Request, res: Response) {
+  async oauthFacebook(req: Request, res: Response) {
     safeRedirect(req, res, facebook.code.getUri());
   }
   @Post("oauth/facebook")
-  async oauthGoogleCallback(req: Request, res: Response) {
+  async oauthFacebookCallback(req: Request, res: Response) {
     const code = getCodeFromRequest(req);
     res.json(await facebookCallback(code, res.locals));
+  }
+
+  @Get("oauth/salesforce")
+  async oauthSalesforce(req: Request, res: Response) {
+    safeRedirect(req, res, salesforce.code.getUri());
+  }
+  @Post("oauth/salesforce")
+  async oauthSalesforceCallback(req: Request, res: Response) {
+    const code = getCodeFromRequest(req);
+    res.json(await salesforceCallback(code, res.locals));
   }
 }

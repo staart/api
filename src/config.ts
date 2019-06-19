@@ -82,6 +82,11 @@ export const FACEBOOK_CLIENT_ID = process.env.FACEBOOK_CLIENT_ID || "";
 export const FACEBOOK_CLIENT_SECRET = process.env.FACEBOOK_CLIENT_SECRET || "";
 export const FACEBOOK_CLIENT_REDIRECT =
   process.env.FACEBOOK_CLIENT_REDIRECT || "";
+export const SALESFORCE_CLIENT_ID = process.env.SALESFORCE_CLIENT_ID || "";
+export const SALESFORCE_CLIENT_SECRET =
+  process.env.SALESFORCE_CLIENT_SECRET || "";
+export const SALESFORCE_CLIENT_REDIRECT =
+  process.env.SALESFORCE_CLIENT_REDIRECT || "";
 
 export const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || "";
 export const CHARGEBEE_SECRET_KEY = process.env.CHARGEBEE_SECRET_KEY || "";
