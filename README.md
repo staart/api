@@ -18,7 +18,8 @@ Works with [Staart UI](https://github.com/o15y/staart-ui), the frontend starter 
 
 - [x] Authentication and user management with JWT
 - [x] Two-factor authentication with TOTP
-- [x] Multiple emails per account and Login with Google
+- [x] Setup multiple emails for each account
+- [x] OAuth2 login with third-party accounts
 - [x] Location-based login verification
 - [x] Security event logging and history
 
