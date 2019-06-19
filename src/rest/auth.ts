@@ -42,7 +42,17 @@ import {
 import { can } from "../helpers/authorization";
 import { authenticator } from "otplib";
 import ClientOAuth2 from "client-oauth2";
-import { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from "../config";
+import {
+  GITHUB_CLIENT_ID,
+  GITHUB_CLIENT_SECRET,
+  GITHUB_CLIENT_REDIRECT,
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
+  GOOGLE_CLIENT_REDIRECT,
+  FACEBOOK_CLIENT_ID,
+  FACEBOOK_CLIENT_SECRET,
+  FACEBOOK_CLIENT_REDIRECT
+} from "../config";
 import axios from "axios";
 import { GitHubEmail } from "../interfaces/oauth";
 
@@ -208,9 +218,9 @@ export const approveLocation = async (token: string, locals: Locals) => {
 export const github = new ClientOAuth2({
   clientId: GITHUB_CLIENT_ID,
   clientSecret: GITHUB_CLIENT_SECRET,
-  accessTokenUri: "https://github.com/login/oauth/access_token",
+  redirectUri: GITHUB_CLIENT_REDIRECT,
   authorizationUri: "https://github.com/login/oauth/authorize",
-  redirectUri: "https://staart-demo.o15y.com/auth/callback/github",
+  accessTokenUri: "https://github.com/login/oauth/access_token",
   scopes: ["user:email"]
 });
 export const githubCallback = async (url: string, locals: Locals) => {
@@ -234,11 +244,27 @@ export const githubCallback = async (url: string, locals: Locals) => {
   throw new Error(ErrorCode.OAUTH_NO_EMAIL);
 };
 
-export const microsoft = new ClientOAuth2({
-  clientId: GITHUB_CLIENT_ID,
-  clientSecret: GITHUB_CLIENT_SECRET,
-  accessTokenUri: "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+export const facebook = new ClientOAuth2({
+  clientId: FACEBOOK_CLIENT_ID,
+  clientSecret: FACEBOOK_CLIENT_SECRET,
+  redirectUri: FACEBOOK_CLIENT_REDIRECT,
   authorizationUri: "https://www.facebook.com/v3.3/dialog/oauth",
-  redirectUri: "https://staart-demo.o15y.com/auth/callback/microsoft",
+  accessTokenUri: "https://graph.facebook.com/v3.3/oauth/access_token",
   scopes: ["email"]
 });
+export const facebookCallback = async (url: string, locals: Locals) => {
+  const response = await facebook.code.getToken(url);
+  try {
+    const email = (await axios.get(
+      `https://graph.facebook.com/me?fields=email&access_token=${response.data.access_token}`
+    )).data.email;
+    const user = await getUserByEmail(email);
+    return await getLoginResponse(
+      user,
+      EventType.AUTH_LOGIN_OAUTH,
+      "github",
+      locals
+    );
+  } catch (error) {}
+  throw new Error(ErrorCode.OAUTH_NO_EMAIL);
+};

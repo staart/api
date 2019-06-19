@@ -13,7 +13,9 @@ import {
   register,
   login2FA,
   github,
-  githubCallback
+  githubCallback,
+  facebook,
+  facebookCallback
 } from "../rest/auth";
 import { verifyToken } from "../helpers/jwt";
 import {
@@ -234,5 +236,15 @@ export class AuthController {
   async oauthGitHubCallback(req: Request, res: Response) {
     const code = getCodeFromRequest(req);
     res.json(await githubCallback(code, res.locals));
+  }
+
+  @Get("oauth/facebook")
+  async oauthGoogle(req: Request, res: Response) {
+    safeRedirect(req, res, facebook.code.getUri());
+  }
+  @Post("oauth/facebook")
+  async oauthGoogleCallback(req: Request, res: Response) {
+    const code = getCodeFromRequest(req);
+    res.json(await facebookCallback(code, res.locals));
   }
 }
