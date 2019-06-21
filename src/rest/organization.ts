@@ -475,8 +475,14 @@ export const updateApiKeyForUser = async (
   data: KeyValue,
   locals: Locals
 ) => {
-  const apiKeyDetails = await getApiKey(organizationId, apiKey);
-  if (await can(userId, Authorizations.UPDATE, "api-key", apiKeyDetails)) {
+  if (
+    await can(
+      userId,
+      Authorizations.UPDATE_SECURE,
+      "organization",
+      organizationId
+    )
+  ) {
     await updateApiKey(organizationId, apiKey, data);
     await createEvent(
       {
@@ -517,8 +523,14 @@ export const deleteApiKeyForUser = async (
   apiKey: string,
   locals: Locals
 ) => {
-  const apiKeyDetails = await getApiKey(organizationId, apiKey);
-  if (await can(userId, Authorizations.DELETE, "api-key", apiKeyDetails)) {
+  if (
+    await can(
+      userId,
+      Authorizations.DELETE_SECURE,
+      "organization",
+      organizationId
+    )
+  ) {
     await deleteApiKey(organizationId, apiKey);
     await createEvent(
       {

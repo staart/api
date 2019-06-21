@@ -6,7 +6,7 @@ import {
   UserRole,
   MembershipRole
 } from "../interfaces/enum";
-import { getUser, getApiKey } from "../crud/user";
+import { getUser } from "../crud/user";
 import { getUserMemberships, getMembership } from "../crud/membership";
 import { getOrganization } from "../crud/organization";
 import { Membership } from "../interfaces/tables/memberships";
@@ -148,27 +148,6 @@ const canUserGeneral = async (user: User, action: Authorizations) => {
   return false;
 };
 
-const canUserApiKey = async (
-  user: User,
-  action: Authorizations,
-  target: ApiKey
-) => {
-  // A user can do anything to her API key
-  if (target.userId == user.id) return true;
-
-  let secureAction = action;
-  if (action === Authorizations.CREATE)
-    secureAction = Authorizations.CREATE_SECURE;
-  if (action === Authorizations.READ) secureAction = Authorizations.READ_SECURE;
-  if (action === Authorizations.UPDATE)
-    secureAction = Authorizations.UPDATE_SECURE;
-  if (action === Authorizations.DELETE)
-    secureAction = Authorizations.DELETE_SECURE;
-
-  const owner = await getUser(target.userId);
-  return await canUserUser(user, secureAction, owner);
-};
-
 /**
  * Whether a user has authorization to perform an action
  * @param ipAddress  IP address for the new location
@@ -176,8 +155,8 @@ const canUserApiKey = async (
 export const can = async (
   user: User | number,
   action: Authorizations,
-  targetType: "user" | "organization" | "membership" | "api-key" | "general",
-  target?: User | Organization | Membership | ApiKey | number
+  targetType: "user" | "organization" | "membership" | "general",
+  target?: User | Organization | Membership | number
 ) => {
   let userObject: User;
   if (typeof target === "object") {
@@ -211,11 +190,6 @@ export const can = async (
       action,
       targetObject as Membership
     );
-  } else if (targetType === "api-key") {
-    if (typeof target === "string" || typeof target === "number")
-      targetObject = await getApiKey(target.toString());
-    else targetObject = target as ApiKey;
-    return await canUserApiKey(userObject, action, targetObject as ApiKey);
   }
 
   return await canUserGeneral(userObject, action);
