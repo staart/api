@@ -10,17 +10,22 @@ import { KeyValue } from "../interfaces/general";
 import { cachedQuery, deleteItemFromCache } from "../helpers/cache";
 import { CacheCategories, ErrorCode } from "../interfaces/enum";
 import { ApiKey } from "../interfaces/tables/user";
-import cryptoRandomString = require("crypto-random-string");
+import cryptoRandomString from "crypto-random-string";
 import { getPaginatedData } from "./data";
+import slugify from "slugify";
 
 /*
  * Create a new organization for a user
  */
 export const createOrganization = async (organization: Organization) => {
-  if (organization.name)
-    organization.name = capitalizeFirstAndLastLetter(organization.name);
+  if (!organization.name) throw new Error(ErrorCode.INVALID_INPUT);
+  organization.name = capitalizeFirstAndLastLetter(organization.name);
   organization.createdAt = new Date();
   organization.updatedAt = organization.createdAt;
+  organization.username = `${slugify(organization.name).replace(
+    "-s-",
+    "s-"
+  )}-${cryptoRandomString({ length: 5, type: "hex" })}`;
   // Create organization
   return await query(
     `INSERT INTO organizations ${tableValues(organization)}`,
