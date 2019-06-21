@@ -23,7 +23,10 @@ export const safeError = (error: string) => {
  */
 export const sendError = (error: string) => {
   if (error.includes("/")) {
-    const status = parseInt(error.split("/")[0]);
+    let status = 500;
+    try {
+      status = parseInt(error.split("/")[0]);
+    } catch (error) {}
     const code = error.split("/")[1];
     return { status, code } as HTTPError;
   }
