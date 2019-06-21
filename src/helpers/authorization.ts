@@ -166,7 +166,7 @@ export const can = async (
   }
   if (!userObject.id) throw new Error(ErrorCode.USER_NOT_FOUND);
 
-  let targetObject: User | Organization | Membership | ApiKey;
+  let targetObject: User | Organization | Membership;
   if (targetType === "user") {
     if (typeof target === "string" || typeof target === "number")
       targetObject = await getUser(target);

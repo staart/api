@@ -1,8 +1,8 @@
 ![Staart](https://raw.githubusercontent.com/o15y/staart/master/assets/logo.png)
 
 [![Travis CI](https://img.shields.io/travis/o15y/staart.svg)](https://travis-ci.org/o15y/staart)
-![Netlify status](https://img.shields.io/endpoint.svg?url=https://platform.oswaldlabs.com/netlify-status/733928c0-f533-485f-90e9-680be56794a9)
-[![Dependencies](https://img.shields.io/david/o15y/staart.svg)](https://github.com/o15y/staart/blob/master/package.json)
+[![Dependencies](https://img.shields.io/david/o15y/staart.svg)](https://david-dm.org/o15y/staart)
+[![Dev dependencies](https://img.shields.io/david/dev/o15y/staart.svg)](https://david-dm.org/o15y/staart)
 [![Contributors](https://img.shields.io/github/contributors/o15y/staart.svg)](https://github.com/o15y/staart/graphs/contributors)
 [![GitHub](https://img.shields.io/github/license/o15y/staart.svg)](https://github.com/o15y/staart/blob/master/LICENSE)
 ![Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/github/o15y/staart.svg)
