@@ -37,7 +37,7 @@ import {
   ClassWrapper
 } from "@overnightjs/core";
 import { authHandler } from "../helpers/middleware";
-import { MembershipRole } from "../interfaces/enum";
+import { MembershipRole, ApiKeyAccess } from "../interfaces/enum";
 import { CREATED } from "http-status-codes";
 import asyncHandler from "express-async-handler";
 import { inviteMemberToOrganization } from "../rest/membership";
@@ -489,29 +489,42 @@ export class OrganizationController {
 
   @Get(":id/api-keys")
   async getUserApiKeys(req: Request, res: Response) {
-    let id = req.params.id;
+    const id = await organizationUsernameToId(req.params.id);
     joiValidate(
       { id: [Joi.string().required(), Joi.number().required()] },
       { id }
     );
-    res.json(await getOrganizationApiKeysForUser(res.locals.token.id, id));
+    const apiKeyParams = { ...req.query };
+    joiValidate(
+      {
+        start: Joi.string(),
+        itemsPerPage: Joi.number()
+      },
+      apiKeyParams
+    );
+    res.json(
+      await getOrganizationApiKeysForUser(res.locals.token.id, id, apiKeyParams)
+    );
   }
 
   @Put(":id/api-keys")
   async putUserApiKeys(req: Request, res: Response) {
-    let id = req.params.id;
+    const id = await organizationUsernameToId(req.params.id);
+    const access = req.body.access || ApiKeyAccess.READONLY;
     joiValidate(
       { id: [Joi.string().required(), Joi.number().required()] },
       { id }
     );
     res
       .status(CREATED)
-      .json(await createApiKeyForUser(res.locals.token.id, id, res.locals));
+      .json(
+        await createApiKeyForUser(res.locals.token.id, id, access, res.locals)
+      );
   }
 
   @Get(":id/api-keys/:apiKey")
   async getUserApiKey(req: Request, res: Response) {
-    let id = req.params.id;
+    const id = await organizationUsernameToId(req.params.id);
     const apiKey = req.params.apiKey;
     joiValidate(
       {
@@ -527,7 +540,7 @@ export class OrganizationController {
 
   @Patch(":id/api-keys/:apiKey")
   async patchUserApiKey(req: Request, res: Response) {
-    let id = req.params.id;
+    const id = await organizationUsernameToId(req.params.id);
     const apiKey = req.params.apiKey;
     joiValidate(
       {
@@ -549,7 +562,7 @@ export class OrganizationController {
 
   @Delete(":id/api-keys/:apiKey")
   async deleteUserApiKey(req: Request, res: Response) {
-    let id = req.params.id;
+    const id = await organizationUsernameToId(req.params.id);
     const apiKey = req.params.apiKey;
     joiValidate(
       {

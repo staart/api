@@ -11,6 +11,7 @@ import { cachedQuery, deleteItemFromCache } from "../helpers/cache";
 import { CacheCategories, ErrorCode } from "../interfaces/enum";
 import { ApiKey } from "../interfaces/tables/user";
 import cryptoRandomString = require("crypto-random-string");
+import { getPaginatedData } from "./data";
 
 /*
  * Create a new organization for a user
@@ -93,15 +94,18 @@ export const getAllOrganizations = async () => {
 /**
  * Get a list of all approved locations of a user
  */
-export const getOrganizationApiKeys = async (organizationId: number) => {
-  return <ApiKey[]>(
-    await cachedQuery(
-      CacheCategories.API_KEYS,
-      organizationId,
-      "SELECT * FROM `api-keys` WHERE organizationId = ?",
-      [organizationId]
-    )
-  );
+export const getOrganizationApiKeys = async (
+  organizationId: number,
+  query: KeyValue
+) => {
+  return await getPaginatedData({
+    table: "api-keys",
+    primaryKey: "apiKey",
+    conditions: {
+      organizationId
+    },
+    ...query
+  });
 };
 
 /**

@@ -21,7 +21,8 @@ import {
   ErrorCode,
   EventType,
   Authorizations,
-  NotificationCategories
+  NotificationCategories,
+  ApiKeyAccess
 } from "../interfaces/enum";
 import {
   createEvent,
@@ -437,7 +438,8 @@ export const getOrganizationMembershipsForUser = async (
 
 export const getOrganizationApiKeysForUser = async (
   userId: number,
-  organizationId: number
+  organizationId: number,
+  query: KeyValue
 ) => {
   if (
     await can(
@@ -447,7 +449,7 @@ export const getOrganizationApiKeysForUser = async (
       organizationId
     )
   )
-    return await getOrganizationApiKeys(organizationId);
+    return await getOrganizationApiKeys(organizationId, query);
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
 
@@ -500,10 +502,11 @@ export const updateApiKeyForUser = async (
 export const createApiKeyForUser = async (
   userId: number,
   organizationId: number,
+  access: ApiKeyAccess,
   locals: Locals
 ) => {
   if (await can(userId, Authorizations.CREATE_SECURE, "user", organizationId)) {
-    const apiKey = await createApiKey({ organizationId });
+    const apiKey = await createApiKey({ organizationId, access });
     await createEvent(
       {
         userId,
