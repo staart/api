@@ -105,10 +105,18 @@ export const getOrganizationApiKeys = async (organizationId: number) => {
 };
 
 /**
+ * Get an API key without organization ID
+ */
+export const getApiKeyWithoutOrg = async (apiKey: string) => {
+  return (<ApiKey[]>(
+    await query("SELECT * FROM `api-keys` WHERE apiKey = ? LIMIT 1", [apiKey])
+  ))[0];
+};
+
+/**
  * Get an API key
  */
 export const getApiKey = async (organizationId: number, apiKey: string) => {
-  deleteItemFromCache(CacheCategories.API_KEY, apiKey);
   return (<ApiKey[]>(
     await query(
       "SELECT * FROM `api-keys` WHERE apiKey = ? AND organizationId = ? LIMIT 1",

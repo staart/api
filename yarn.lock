@@ -2560,6 +2560,11 @@ escape-string-regexp@^1.0.5:
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"
   integrity sha1-G2HAViGQqN/2rjuyzwIAyhMLhtQ=
 
+escape-string-regexp@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-2.0.0.tgz#a30304e99daa32e23b2fd20f51babd07cffca344"
+  integrity sha512-UpzcLCXolUWcNu5HtVMHYdXJjArjsF9C0aNnquZYY4uW/Vu0miy5YoWvbV345HauVvcAUnpRuhMMcqTcGOY2+w==
+
 escodegen@^1.9.1:
   version "1.11.1"
   resolved "https://registry.yarnpkg.com/escodegen/-/escodegen-1.11.1.tgz#c485ff8d6b4cdb89e27f4a856e91f118401ca510"
@@ -3429,7 +3434,14 @@ ip-anonymize@^0.1.0:
   resolved "https://registry.yarnpkg.com/ip-anonymize/-/ip-anonymize-0.1.0.tgz#5ead504d01871c5c28189a25382f852036b57f7e"
   integrity sha512-cZJu+N5JKKFGMK0eEQWNaQMn2EhCysciVM6eotCJwfqotj16BTfVchKsJCH6mQAT9N0GC7oWRcsZ6Lb8dDiwTA==
 
-ipaddr.js@1.9.0:
+ip-range-check@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/ip-range-check/-/ip-range-check-0.0.2.tgz#605c859687aa4f18463918d46190d8b3699a293c"
+  integrity sha1-YFyFloeqTxhGORjUYZDYs2maKTw=
+  dependencies:
+    ipaddr.js "^1.0.1"
+
+ipaddr.js@1.9.0, ipaddr.js@^1.0.1:
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/ipaddr.js/-/ipaddr.js-1.9.0.tgz#37df74e430a0e47550fe54a2defe30d8acd95f65"
   integrity sha512-M4Sjn6N/+O6/IXSJseKqHoFc+5FdGJ22sXqnjTpdZweHK64MzEPAyQZyEU3R/KRv2GLoa7nNtg/C2Ev6m7z+eA==
@@ -4500,6 +4512,13 @@ marked@^0.6.2:
   version "0.6.2"
   resolved "https://registry.yarnpkg.com/marked/-/marked-0.6.2.tgz#c574be8b545a8b48641456ca1dbe0e37b6dccc1a"
   integrity sha512-LqxwVH3P/rqKX4EKGz7+c2G9r98WeM/SW34ybhgNGhUQNKtf1GmmSkJ6cDGJ/t6tiyae49qRkpyTw2B9HOrgUA==
+
+matcher@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/matcher/-/matcher-2.0.0.tgz#85fe38d97670dbd2a46590cf099401e2ffb4755c"
+  integrity sha512-nlmfSlgHBFx36j/Pl/KQPbIaqE8Zf0TqmSMjsuddHDg6PMSVgmyW9HpkLs0o0M1n2GIZ/S2BZBLIww/xjhiGng==
+  dependencies:
+    escape-string-regexp "^2.0.0"
 
 maxmind@^3.0.4:
   version "3.0.4"
