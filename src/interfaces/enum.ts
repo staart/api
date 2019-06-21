@@ -103,26 +103,13 @@ export enum Tokens {
 
 export enum CacheCategories {
   USER = "user",
-  USER_EMAILS = "user-emails",
-  USER_VERIFIED_EMAILS = "user-verified-emails",
-  EMAIL = "email",
-  USER_EVENT = "user-event",
   ORGANIZATION_EVENT = "organization-event",
-  USER_RECENT_EVENTS = "user-recent-events",
   ORGANIZATION_RECENT_EVENTS = "organization-recent-events",
   USER_MEMBERSHIPS = "user-memberships",
-  USER_MEMBERSHIP_ORGANIZATION = "user-membership-org",
-  ORGANIZATION_MEMBERSHIPS = "memberships",
   MEMBERSHIP = "membership",
   ORGANIZATION = "organization",
   ORGANIZATION_USERNAME = "organization-username",
-  APPROVE_LOCATIONS = "approved-locations",
-  APPROVE_LOCATION = "approved-location",
-  IP_LOOKUP = "ip-lookup",
-  API_KEYS = "api-keys",
-  API_KEY = "api-key",
-  NOTIFICATION = "notification",
-  USER_NOTIFICATIONS = "user-notifications"
+  IP_LOOKUP = "ip-lookup"
 }
 
 export enum Authorizations {

@@ -21,15 +21,7 @@ import { getPaginatedData } from "./data";
 export const createMembership = async (membership: Membership) => {
   membership.createdAt = new Date();
   membership.updatedAt = membership.createdAt;
-  deleteItemFromCache(
-    CacheCategories.ORGANIZATION_MEMBERSHIPS,
-    membership.organizationId
-  );
   deleteItemFromCache(CacheCategories.USER_MEMBERSHIPS, membership.userId);
-  deleteItemFromCache(
-    CacheCategories.USER_MEMBERSHIP_ORGANIZATION,
-    `${membership.userId}_${membership.organizationId}`
-  );
   return await query(
     `INSERT INTO memberships ${tableValues(membership)}`,
     Object.values(membership)
@@ -49,14 +41,6 @@ export const updateMembership = async (id: number, membership: KeyValue) => {
       membershipDetails.userId
     );
   deleteItemFromCache(CacheCategories.MEMBERSHIP, id);
-  deleteItemFromCache(
-    CacheCategories.ORGANIZATION_MEMBERSHIPS,
-    membershipDetails.organizationId
-  );
-  deleteItemFromCache(
-    CacheCategories.USER_MEMBERSHIP_ORGANIZATION,
-    `${membershipDetails.userId}_${membershipDetails.organizationId}`
-  );
   return await query(
     `UPDATE memberships SET ${setValues(membership)} WHERE id = ?`,
     [...Object.values(membership), id]
@@ -74,14 +58,6 @@ export const deleteMembership = async (id: number) => {
       membershipDetails.userId
     );
   deleteItemFromCache(CacheCategories.MEMBERSHIP, id);
-  deleteItemFromCache(
-    CacheCategories.ORGANIZATION_MEMBERSHIPS,
-    membershipDetails.organizationId
-  );
-  deleteItemFromCache(
-    CacheCategories.USER_MEMBERSHIP_ORGANIZATION,
-    `${membershipDetails.userId}_${membershipDetails.organizationId}`
-  );
   return await query("DELETE FROM memberships WHERE id = ?", [id]);
 };
 
@@ -91,15 +67,10 @@ export const deleteMembership = async (id: number) => {
 export const deleteAllOrganizationMemberships = async (
   organizationId: number
 ) => {
-  deleteItemFromCache(CacheCategories.ORGANIZATION_MEMBERSHIPS, organizationId);
   const allMemberships = await getOrganizationMembers(organizationId);
   for await (const membership of allMemberships) {
     if (membership.id) {
       deleteItemFromCache(CacheCategories.USER_MEMBERSHIPS, membership.userId);
-      deleteItemFromCache(
-        CacheCategories.USER_MEMBERSHIP_ORGANIZATION,
-        `${membership.userId}_${membership.organizationId}`
-      );
     }
   }
   return await query("DELETE FROM memberships WHERE organizationId = ?", [
@@ -115,10 +86,6 @@ export const deleteAllUserMemberships = async (userId: number) => {
   for await (const membership of allMemberships) {
     if (membership.id) {
       deleteItemFromCache(CacheCategories.USER_MEMBERSHIPS, membership.userId);
-      deleteItemFromCache(
-        CacheCategories.USER_MEMBERSHIP_ORGANIZATION,
-        `${membership.userId}_${membership.organizationId}`
-      );
     }
   }
   return await query("DELETE FROM memberships WHERE userId = ?", [userId]);
@@ -155,12 +122,9 @@ export const getMembershipDetailed = async (id: number) => {
  */
 export const getOrganizationMembers = async (organizationId: number) => {
   return <Membership[]>(
-    await cachedQuery(
-      CacheCategories.ORGANIZATION_MEMBERSHIPS,
-      organizationId,
-      `SELECT * FROM memberships WHERE organizationId = ?`,
-      [organizationId]
-    )
+    await query(`SELECT * FROM memberships WHERE organizationId = ?`, [
+      organizationId
+    ])
   );
 };
 
@@ -248,9 +212,7 @@ export const getUserOrganizationMembership = async (
     else throw new Error(ErrorCode.ORGANIZATION_NOT_FOUND);
   }
   return (<Membership[]>(
-    await cachedQuery(
-      CacheCategories.USER_MEMBERSHIP_ORGANIZATION,
-      `${user}_${organization}`,
+    await query(
       `SELECT * FROM memberships WHERE userId = ? AND organizationId = ?`,
       [user, organization]
     )

@@ -15,10 +15,6 @@ export const createEvent = async (event: Event, locals?: Locals) => {
     event.ipAddress = locals.ipAddress;
     event.userAgent = locals.userAgent;
   }
-  if (event.userId) {
-    deleteItemFromCache(CacheCategories.USER_EVENT, event.userId);
-    deleteItemFromCache(CacheCategories.USER_RECENT_EVENTS, event.userId);
-  }
   await query(`INSERT INTO events ${tableValues(event)}`, Object.values(event));
 };
 
@@ -27,12 +23,7 @@ export const createEvent = async (event: Event, locals?: Locals) => {
  */
 export const getUserEvents = async (userId: number) => {
   return <Event[]>(
-    await cachedQuery(
-      CacheCategories.USER_EVENT,
-      userId,
-      `SELECT * FROM events WHERE userId = ?`,
-      [userId]
-    )
+    await query(`SELECT * FROM events WHERE userId = ?`, [userId])
   );
 };
 
@@ -41,9 +32,7 @@ export const getUserEvents = async (userId: number) => {
  */
 export const getUserRecentEvents = async (userId: number) => {
   return await addLocationToEvents(<Event[]>(
-    await cachedQuery(
-      CacheCategories.USER_RECENT_EVENTS,
-      userId,
+    await query(
       `SELECT * FROM events WHERE userId = ? ORDER BY id DESC LIMIT 10`,
       [userId]
     )

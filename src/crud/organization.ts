@@ -142,7 +142,6 @@ export const getApiKeyFromKeySecret = async (
   apiKey: string,
   secretKey: string
 ) => {
-  deleteItemFromCache(CacheCategories.API_KEY, apiKey);
   return (<ApiKey[]>(
     await query(
       "SELECT * FROM `api-keys` WHERE apiKey = ? AND secretKey = ? AND organizationId = ? LIMIT 1",
@@ -159,7 +158,6 @@ export const createApiKey = async (apiKey: ApiKey) => {
   apiKey.secretKey = cryptoRandomString({ length: 20, type: "hex" });
   apiKey.createdAt = new Date();
   apiKey.updatedAt = apiKey.createdAt;
-  deleteItemFromCache(CacheCategories.API_KEYS, apiKey.organizationId);
   return await query(
     `INSERT INTO \`api-keys\` ${tableValues(apiKey)}`,
     Object.values(apiKey)
@@ -174,14 +172,13 @@ export const updateApiKey = async (
   apiKey: string,
   data: KeyValue
 ) => {
-  const apiKeyDetails = await getApiKey(organizationId, apiKey);
   data.updatedAt = dateToDateTime(new Date());
   data = removeReadOnlyValues(data);
-  deleteItemFromCache(CacheCategories.API_KEY, apiKey);
-  deleteItemFromCache(CacheCategories.API_KEYS, apiKeyDetails.organizationId);
   return await query(
-    `UPDATE \`api-keys\` SET ${setValues(data)} WHERE apiKey = ?`,
-    [...Object.values(data), apiKey]
+    `UPDATE \`api-keys\` SET ${setValues(
+      data
+    )} WHERE apiKey = ? AND organizationId = ?`,
+    [...Object.values(data), apiKey, organizationId]
   );
 };
 
@@ -189,10 +186,8 @@ export const updateApiKey = async (
  * Delete an API key
  */
 export const deleteApiKey = async (organizationId: number, apiKey: string) => {
-  const apiKeyDetails = await getApiKey(organizationId, apiKey);
-  deleteItemFromCache(CacheCategories.API_KEY, apiKey);
-  deleteItemFromCache(CacheCategories.API_KEYS, apiKeyDetails.organizationId);
-  return await query("DELETE FROM `api-keys` WHERE apiKey = ? LIMIT 1", [
-    apiKey
-  ]);
+  return await query(
+    "DELETE FROM `api-keys` WHERE apiKey = ? AND organizationId = ? LIMIT 1",
+    [apiKey, organizationId]
+  );
 };

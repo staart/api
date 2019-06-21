@@ -1,4 +1,4 @@
-import { User, ApiKey } from "../interfaces/tables/user";
+import { User } from "../interfaces/tables/user";
 import { Organization } from "../interfaces/tables/organization";
 import {
   ErrorCode,

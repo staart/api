@@ -4,7 +4,7 @@ import {
   setValues,
   removeReadOnlyValues
 } from "../helpers/mysql";
-import { User, ApprovedLocation, ApiKey } from "../interfaces/tables/user";
+import { User, ApprovedLocation } from "../interfaces/tables/user";
 import {
   capitalizeFirstAndLastLetter,
   dateToDateTime,
@@ -21,7 +21,6 @@ import {
 import { getEmail, getVerifiedEmailObject } from "./email";
 import { cachedQuery, deleteItemFromCache } from "../helpers/cache";
 import md5 from "md5";
-import cryptoRandomString from "crypto-random-string";
 import randomInt from "random-int";
 import { BackupCode } from "../interfaces/tables/backup-codes";
 
@@ -107,7 +106,6 @@ export const updateUser = async (id: number, user: KeyValue) => {
     }
   }
   deleteItemFromCache(CacheCategories.USER, id);
-  deleteItemFromCache(CacheCategories.USER_EMAILS, id);
   return await query(`UPDATE users SET ${setValues(user)} WHERE id = ?`, [
     ...Object.values(user),
     id
@@ -136,8 +134,6 @@ export const addApprovedLocation = async (
     subnet,
     createdAt: new Date()
   };
-  deleteItemFromCache(CacheCategories.APPROVE_LOCATIONS, userId);
-  deleteItemFromCache(CacheCategories.APPROVE_LOCATION, subnet);
   return await query(
     `INSERT INTO \`approved-locations\` ${tableValues(subnetLocation)}`,
     Object.values(subnetLocation)
@@ -148,19 +144,15 @@ export const addApprovedLocation = async (
  * Get a list of all approved locations of a user
  */
 export const getUserApprovedLocations = async (userId: number) => {
-  return await cachedQuery(
-    CacheCategories.APPROVE_LOCATIONS,
-    userId,
-    "SELECT * FROM `approved-locations` WHERE userId = ?",
-    [userId]
-  );
+  return await query("SELECT * FROM `approved-locations` WHERE userId = ?", [
+    userId
+  ]);
 };
 
 /**
  * Delete all approved locations for a user
  */
 export const deleteAllUserApprovedLocations = async (userId: number) => {
-  deleteItemFromCache(CacheCategories.APPROVE_LOCATIONS, userId);
   return await query("DELETE FROM `approved-locations` WHERE userId = ?", [
     userId
   ]);
@@ -176,9 +168,7 @@ export const checkApprovedLocation = async (
 ) => {
   const subnet = anonymizeIpAddress(ipAddress);
   const approvedLocations = <ApprovedLocation[]>(
-    await cachedQuery(
-      CacheCategories.APPROVE_LOCATION,
-      subnet,
+    await query(
       "SELECT * FROM `approved-locations` WHERE userId = ? AND subnet = ? LIMIT 1",
       [userId, subnet]
     )
