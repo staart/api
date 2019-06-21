@@ -22,10 +22,9 @@ export const createOrganization = async (organization: Organization) => {
   organization.name = capitalizeFirstAndLastLetter(organization.name);
   organization.createdAt = new Date();
   organization.updatedAt = organization.createdAt;
-  organization.username = `${slugify(organization.name).replace(
-    "-s-",
-    "s-"
-  )}-${cryptoRandomString({ length: 5, type: "hex" })}`;
+  organization.username = `${slugify(organization.name, {
+    lower: true
+  }).replace(/'|"/g, "")}-${cryptoRandomString({ length: 5, type: "hex" })}`;
   // Create organization
   return await query(
     `INSERT INTO organizations ${tableValues(organization)}`,
