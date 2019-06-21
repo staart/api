@@ -3,7 +3,12 @@ import {
   createOrganization,
   updateOrganization,
   deleteOrganization,
-  getOrganization
+  getOrganization,
+  getOrganizationApiKeys,
+  getApiKey,
+  updateApiKey,
+  createApiKey,
+  deleteApiKey
 } from "../crud/organization";
 import { InsertResult } from "../interfaces/mysql";
 import {
@@ -427,5 +432,103 @@ export const getOrganizationMembershipsForUser = async (
 ) => {
   if (await can(userId, Authorizations.READ, "organization", organizationId))
     return await getOrganizationMemberDetails(organizationId, query);
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const getOrganizationApiKeysForUser = async (
+  userId: number,
+  organizationId: number
+) => {
+  if (
+    await can(
+      userId,
+      Authorizations.READ_SECURE,
+      "organization",
+      organizationId
+    )
+  )
+    return await getOrganizationApiKeys(organizationId);
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const getOrganizationApiKeyForUser = async (
+  userId: number,
+  organizationId: number,
+  apiKey: string
+) => {
+  if (
+    await can(
+      userId,
+      Authorizations.READ_SECURE,
+      "organization",
+      organizationId
+    )
+  )
+    return await getApiKey(organizationId, apiKey);
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const updateApiKeyForUser = async (
+  userId: number,
+  organizationId: number,
+  apiKey: string,
+  data: KeyValue,
+  locals: Locals
+) => {
+  const apiKeyDetails = await getApiKey(organizationId, apiKey);
+  if (await can(userId, Authorizations.UPDATE, "api-key", apiKeyDetails)) {
+    await updateApiKey(organizationId, apiKey, data);
+    await createEvent(
+      {
+        userId,
+        type: EventType.API_KEY_UPDATED,
+        data: { apiKey, data }
+      },
+      locals
+    );
+    return;
+  }
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const createApiKeyForUser = async (
+  userId: number,
+  organizationId: number,
+  locals: Locals
+) => {
+  if (await can(userId, Authorizations.CREATE_SECURE, "user", organizationId)) {
+    const apiKey = await createApiKey({ organizationId });
+    await createEvent(
+      {
+        userId,
+        type: EventType.API_KEY_CREATED,
+        data: { apiKey }
+      },
+      locals
+    );
+    return;
+  }
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const deleteApiKeyForUser = async (
+  userId: number,
+  organizationId: number,
+  apiKey: string,
+  locals: Locals
+) => {
+  const apiKeyDetails = await getApiKey(organizationId, apiKey);
+  if (await can(userId, Authorizations.DELETE, "api-key", apiKeyDetails)) {
+    await deleteApiKey(organizationId, apiKey);
+    await createEvent(
+      {
+        userId,
+        type: EventType.API_KEY_DELETED,
+        data: { apiKey }
+      },
+      locals
+    );
+    return;
+  }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };

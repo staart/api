@@ -39,8 +39,9 @@ export interface ApprovedLocation {
 export interface ApiKey {
   apiKey?: string;
   secretKey?: string;
-  userId: number;
-  organizationId?: number;
+  organizationId: number;
+  ipRestrictions?: string;
+  referrerRestrictions?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }

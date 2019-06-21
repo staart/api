@@ -20,7 +20,12 @@ import {
   createOrganizationSubscriptionForUser,
   getOrganizationSubscriptionForUser,
   updateOrganizationSubscriptionForUser,
-  getOrganizationInvoiceForUser
+  getOrganizationInvoiceForUser,
+  getOrganizationApiKeysForUser,
+  createApiKeyForUser,
+  getOrganizationApiKeyForUser,
+  updateApiKeyForUser,
+  deleteApiKeyForUser
 } from "../rest/organization";
 import {
   Get,
@@ -480,5 +485,81 @@ export class OrganizationController {
       res.locals
     );
     res.status(CREATED).json({ invited: true });
+  }
+
+  @Get(":id/api-keys")
+  async getUserApiKeys(req: Request, res: Response) {
+    let id = req.params.id;
+    joiValidate(
+      { id: [Joi.string().required(), Joi.number().required()] },
+      { id }
+    );
+    res.json(await getOrganizationApiKeysForUser(res.locals.token.id, id));
+  }
+
+  @Put(":id/api-keys")
+  async putUserApiKeys(req: Request, res: Response) {
+    let id = req.params.id;
+    joiValidate(
+      { id: [Joi.string().required(), Joi.number().required()] },
+      { id }
+    );
+    res
+      .status(CREATED)
+      .json(await createApiKeyForUser(res.locals.token.id, id, res.locals));
+  }
+
+  @Get(":id/api-keys/:apiKey")
+  async getUserApiKey(req: Request, res: Response) {
+    let id = req.params.id;
+    const apiKey = req.params.apiKey;
+    joiValidate(
+      {
+        id: [Joi.string().required(), Joi.number().required()],
+        apiKey: Joi.string().required()
+      },
+      { id, apiKey }
+    );
+    res.json(
+      await getOrganizationApiKeyForUser(res.locals.token.id, id, apiKey)
+    );
+  }
+
+  @Patch(":id/api-keys/:apiKey")
+  async patchUserApiKey(req: Request, res: Response) {
+    let id = req.params.id;
+    const apiKey = req.params.apiKey;
+    joiValidate(
+      {
+        id: [Joi.string().required(), Joi.number().required()],
+        apiKey: Joi.string().required()
+      },
+      { id, apiKey }
+    );
+    res.json(
+      await updateApiKeyForUser(
+        res.locals.token.id,
+        id,
+        apiKey,
+        req.body,
+        res.locals
+      )
+    );
+  }
+
+  @Delete(":id/api-keys/:apiKey")
+  async deleteUserApiKey(req: Request, res: Response) {
+    let id = req.params.id;
+    const apiKey = req.params.apiKey;
+    joiValidate(
+      {
+        id: [Joi.string().required(), Joi.number().required()],
+        apiKey: Joi.string().required()
+      },
+      { id, apiKey }
+    );
+    res.json(
+      await deleteApiKeyForUser(res.locals.token.id, id, apiKey, res.locals)
+    );
   }
 }

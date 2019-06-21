@@ -6,11 +6,6 @@ import {
   getRecentEventsForUser,
   deleteUserForUser,
   getMembershipsForUser,
-  getApiKeysForUser,
-  createApiKeyForUser,
-  getApiKeyForUser,
-  updateApiKeyForUser,
-  deleteApiKeyForUser,
   getNotificationsForUser,
   updateNotificationForUser,
   enable2FAForUser,
@@ -140,85 +135,6 @@ export class UserController {
       { id }
     );
     res.json(await getAllDataForUser(res.locals.token.id, id));
-  }
-
-  @Get(":id/api-keys")
-  async getUserApiKeys(req: Request, res: Response) {
-    let id = req.params.id;
-    if (id === "me") id = res.locals.token.id;
-    joiValidate(
-      { id: [Joi.string().required(), Joi.number().required()] },
-      { id }
-    );
-    res.json(await getApiKeysForUser(res.locals.token.id, id));
-  }
-
-  @Put(":id/api-keys")
-  async putUserApiKeys(req: Request, res: Response) {
-    let id = req.params.id;
-    if (id === "me") id = res.locals.token.id;
-    joiValidate(
-      { id: [Joi.string().required(), Joi.number().required()] },
-      { id }
-    );
-    res
-      .status(CREATED)
-      .json(await createApiKeyForUser(res.locals.token.id, id, res.locals));
-  }
-
-  @Get(":id/api-keys/:apiKey")
-  async getUserApiKey(req: Request, res: Response) {
-    let id = req.params.id;
-    if (id === "me") id = res.locals.token.id;
-    const apiKey = req.params.apiKey;
-    joiValidate(
-      {
-        id: [Joi.string().required(), Joi.number().required()],
-        apiKey: Joi.string().required()
-      },
-      { id, apiKey }
-    );
-    res.json(await getApiKeyForUser(res.locals.token.id, id, apiKey));
-  }
-
-  @Patch(":id/api-keys/:apiKey")
-  async patchUserApiKey(req: Request, res: Response) {
-    let id = req.params.id;
-    if (id === "me") id = res.locals.token.id;
-    const apiKey = req.params.apiKey;
-    joiValidate(
-      {
-        id: [Joi.string().required(), Joi.number().required()],
-        apiKey: Joi.string().required()
-      },
-      { id, apiKey }
-    );
-    res.json(
-      await updateApiKeyForUser(
-        res.locals.token.id,
-        id,
-        apiKey,
-        req.body,
-        res.locals
-      )
-    );
-  }
-
-  @Delete(":id/api-keys/:apiKey")
-  async deleteUserApiKey(req: Request, res: Response) {
-    let id = req.params.id;
-    if (id === "me") id = res.locals.token.id;
-    const apiKey = req.params.apiKey;
-    joiValidate(
-      {
-        id: [Joi.string().required(), Joi.number().required()],
-        apiKey: Joi.string().required()
-      },
-      { id, apiKey }
-    );
-    res.json(
-      await deleteApiKeyForUser(res.locals.token.id, id, apiKey, res.locals)
-    );
   }
 
   @Get(":id/emails")

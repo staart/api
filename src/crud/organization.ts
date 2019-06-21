@@ -9,6 +9,8 @@ import { capitalizeFirstAndLastLetter, dateToDateTime } from "../helpers/utils";
 import { KeyValue } from "../interfaces/general";
 import { cachedQuery, deleteItemFromCache } from "../helpers/cache";
 import { CacheCategories, ErrorCode } from "../interfaces/enum";
+import { ApiKey } from "../interfaces/tables/user";
+import cryptoRandomString = require("crypto-random-string");
 
 /*
  * Create a new organization for a user
@@ -86,4 +88,94 @@ export const deleteOrganization = async (id: number) => {
  */
 export const getAllOrganizations = async () => {
   return <Organization[]>await query("SELECT * FROM organizations");
+};
+
+/**
+ * Get a list of all approved locations of a user
+ */
+export const getOrganizationApiKeys = async (organizationId: number) => {
+  return <ApiKey[]>(
+    await cachedQuery(
+      CacheCategories.API_KEYS,
+      organizationId,
+      "SELECT * FROM `api-keys` WHERE organizationId = ?",
+      [organizationId]
+    )
+  );
+};
+
+/**
+ * Get an API key
+ */
+export const getApiKey = async (organizationId: number, apiKey: string) => {
+  deleteItemFromCache(CacheCategories.API_KEY, apiKey);
+  return (<ApiKey[]>(
+    await query(
+      "SELECT * FROM `api-keys` WHERE apiKey = ? AND organizationId = ? LIMIT 1",
+      [apiKey, organizationId]
+    )
+  ))[0];
+};
+
+/**
+ * Get an API key/secret
+ */
+export const getApiKeyFromKeySecret = async (
+  organizationId: number,
+  apiKey: string,
+  secretKey: string
+) => {
+  deleteItemFromCache(CacheCategories.API_KEY, apiKey);
+  return (<ApiKey[]>(
+    await query(
+      "SELECT * FROM `api-keys` WHERE apiKey = ? AND secretKey = ? AND organizationId = ? LIMIT 1",
+      [apiKey, secretKey, organizationId]
+    )
+  ))[0];
+};
+
+/**
+ * Create an API key
+ */
+export const createApiKey = async (apiKey: ApiKey) => {
+  apiKey.apiKey = cryptoRandomString({ length: 20, type: "hex" });
+  apiKey.secretKey = cryptoRandomString({ length: 20, type: "hex" });
+  apiKey.createdAt = new Date();
+  apiKey.updatedAt = apiKey.createdAt;
+  deleteItemFromCache(CacheCategories.API_KEYS, apiKey.organizationId);
+  return await query(
+    `INSERT INTO \`api-keys\` ${tableValues(apiKey)}`,
+    Object.values(apiKey)
+  );
+};
+
+/**
+ * Update a user's details
+ */
+export const updateApiKey = async (
+  organizationId: number,
+  apiKey: string,
+  data: KeyValue
+) => {
+  const apiKeyDetails = await getApiKey(organizationId, apiKey);
+  data.updatedAt = dateToDateTime(new Date());
+  data = removeReadOnlyValues(data);
+  deleteItemFromCache(CacheCategories.API_KEY, apiKey);
+  deleteItemFromCache(CacheCategories.API_KEYS, apiKeyDetails.organizationId);
+  return await query(
+    `UPDATE \`api-keys\` SET ${setValues(data)} WHERE apiKey = ?`,
+    [...Object.values(data), apiKey]
+  );
+};
+
+/**
+ * Delete an API key
+ */
+export const deleteApiKey = async (organizationId: number, apiKey: string) => {
+  const apiKeyDetails = await getApiKey(organizationId, apiKey);
+  deleteItemFromCache(CacheCategories.API_KEY, apiKey);
+  deleteItemFromCache(CacheCategories.API_KEYS, apiKeyDetails.organizationId);
+  return await query("DELETE FROM `api-keys` WHERE apiKey = ? LIMIT 1", [
+    apiKey
+  ]);
 };
