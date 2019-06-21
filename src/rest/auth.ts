@@ -89,7 +89,7 @@ export const login2FA = async (code: number, token: string, locals: Locals) => {
   if (authenticator.check(code.toString(), secret))
     return await postLoginTokens(user);
   const backupCode = await getUserBackupCode(data.userId, code);
-  if (!backupCode.used) {
+  if (backupCode && !backupCode.used) {
     await updateBackupCode(backupCode.code, { used: true });
     return await postLoginTokens(user);
   }
