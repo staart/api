@@ -64,14 +64,6 @@ export const inviteMemberToOrganization = async (
       } catch (error) {}
       if (isMemberAlready) throw new Error(ErrorCode.USER_IS_MEMBER_ALREADY);
       await createMembership({ userId: newUser.id, organizationId, role });
-      await createNotification({
-        userId: newUser.id,
-        category: NotificationCategories.JOINED_ORGANIZATION,
-        text: `You were invited to the organization **${
-          (await getOrganization(organizationId)).name
-        }**`,
-        link: "/settings/organizations"
-      });
       return;
     } else {
       await register(

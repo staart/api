@@ -58,6 +58,7 @@ import {
 } from "../config";
 import axios from "axios";
 import { GitHubEmail } from "../interfaces/oauth";
+import { createSlug } from "../helpers/utils";
 
 export const validateRefreshToken = async (token: string, locals: Locals) => {
   const data = <User>await verifyToken(token, Tokens.REFRESH);
@@ -104,6 +105,7 @@ export const register = async (
   role?: MembershipRole
 ) => {
   if (email) await checkIfNewEmail(email);
+  if (!user.username) user.username = createSlug(user.name);
   const result = <InsertResult>await createUser(user);
   const userId = result.insertId;
   // Set email

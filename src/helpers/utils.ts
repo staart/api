@@ -3,6 +3,8 @@ import { User } from "../interfaces/tables/user";
 import Joi from "@hapi/joi";
 import { getOrganizationIdFromUsername } from "../crud/organization";
 import { Request, Response } from "express";
+import slugify from "slugify";
+import cryptoRandomString = require("crypto-random-string");
 
 /**
  * Capitalize each first letter in a string
@@ -61,6 +63,11 @@ export const organizationUsernameToId = async (id: string) => {
     return parseInt(id);
   }
 };
+
+export const createSlug = (name: string) =>
+  `${slugify(name, {
+    lower: true
+  }).replace(/'|"/g, "")}-${cryptoRandomString({ length: 5, type: "hex" })}`;
 
 export const safeRedirect = (req: Request, res: Response, url: string) => {
   if (req.get("X-Requested-With") === "XMLHttpRequest")

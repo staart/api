@@ -5,14 +5,17 @@ import {
   removeReadOnlyValues
 } from "../helpers/mysql";
 import { Organization } from "../interfaces/tables/organization";
-import { capitalizeFirstAndLastLetter, dateToDateTime } from "../helpers/utils";
+import {
+  capitalizeFirstAndLastLetter,
+  dateToDateTime,
+  createSlug
+} from "../helpers/utils";
 import { KeyValue } from "../interfaces/general";
 import { cachedQuery, deleteItemFromCache } from "../helpers/cache";
 import { CacheCategories, ErrorCode } from "../interfaces/enum";
 import { ApiKey } from "../interfaces/tables/user";
 import cryptoRandomString from "crypto-random-string";
 import { getPaginatedData } from "./data";
-import slugify from "slugify";
 
 /*
  * Create a new organization for a user
@@ -22,9 +25,7 @@ export const createOrganization = async (organization: Organization) => {
   organization.name = capitalizeFirstAndLastLetter(organization.name);
   organization.createdAt = new Date();
   organization.updatedAt = organization.createdAt;
-  organization.username = `${slugify(organization.name, {
-    lower: true
-  }).replace(/'|"/g, "")}-${cryptoRandomString({ length: 5, type: "hex" })}`;
+  organization.username = createSlug(organization.name);
   // Create organization
   return await query(
     `INSERT INTO organizations ${tableValues(organization)}`,

@@ -9,6 +9,7 @@ import {
 export interface User {
   id?: number;
   name: string;
+  username?: string;
   nickname?: string;
   primaryEmail?: number;
   password?: string;
