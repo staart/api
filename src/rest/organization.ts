@@ -497,7 +497,14 @@ export const createApiKeyForUser = async (
   access: ApiKeyAccess,
   locals: Locals
 ) => {
-  if (await can(userId, Authorizations.CREATE_SECURE, "user", organizationId)) {
+  if (
+    await can(
+      userId,
+      Authorizations.CREATE_SECURE,
+      "organization",
+      organizationId
+    )
+  ) {
     const apiKey = await createApiKey({ organizationId, access });
     await createEvent(
       {

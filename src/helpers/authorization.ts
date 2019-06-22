@@ -84,7 +84,8 @@ const canUserOrganization = async (
     // An organization manager can do anything but delete
     if (
       membership.role == MembershipRole.MANAGER &&
-      action != Authorizations.DELETE
+      action != Authorizations.DELETE &&
+      action != Authorizations.DELETE_SECURE
     )
       allowed = true;
 
