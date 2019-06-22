@@ -61,6 +61,7 @@ export enum ErrorCode {
   MISSING_FIELD = "422/missing-field",
   INVALID_INPUT = "422/invalid-input",
   EMAIL_EXISTS = "422/email-exists",
+  USERNAME_EXISTS = "422/username-exists",
   USER_NOT_FOUND = "404/user-not-found",
   MEMBERSHIP_NOT_FOUND = "404/membership-not-found",
   ORGANIZATION_NOT_FOUND = "404/organization-not-found",

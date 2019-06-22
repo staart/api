@@ -80,6 +80,6 @@ recursive(path.join(SRC, "..", "static"))
   .then(() => {
     fs.writeFileSync(path.join(SRC, "app.ts"), server);
     console.log("✅  Generated app.ts file");
-    console.log("✅  Compiling TypeScript");
+    console.log("⌛  Compiling TypeScript");
     process.exit(0);
   });

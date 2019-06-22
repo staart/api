@@ -6,7 +6,8 @@ import {
   getUser,
   addApprovedLocation,
   getUserBackupCode,
-  updateBackupCode
+  updateBackupCode,
+  checkUsernameAvailability
 } from "../crud/user";
 import { InsertResult } from "../interfaces/mysql";
 import {
@@ -106,6 +107,8 @@ export const register = async (
 ) => {
   if (email) await checkIfNewEmail(email);
   if (!user.username) user.username = createSlug(user.name);
+  if (!(await checkUsernameAvailability(user.username)))
+    throw new Error(ErrorCode.USERNAME_EXISTS);
   const result = <InsertResult>await createUser(user);
   const userId = result.insertId;
   // Set email

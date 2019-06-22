@@ -74,6 +74,12 @@ export const updateOrganization = async (
 ) => {
   organization.updatedAt = dateToDateTime(new Date());
   organization = removeReadOnlyValues(organization);
+  if (organization.username) {
+    const currentOwner = await getOrganizationIdFromUsername(
+      organization.username
+    );
+    if (currentOwner != id) throw new Error(ErrorCode.USERNAME_EXISTS);
+  }
   deleteItemFromCache(CacheCategories.ORGANIZATION, id);
   return await query(
     `UPDATE organizations SET ${setValues(organization)} WHERE id = ?`,

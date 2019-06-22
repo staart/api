@@ -49,7 +49,7 @@ export const createUser = async (user: User) => {
   user.prefersColorSchemeDark = user.prefersColorSchemeDark || false;
   user.profilePicture =
     user.profilePicture ||
-    `https://ui-avatars.com/api/?bold=true&name=${user.name}`;
+    `https://api.adorable.io/avatars/285/${md5(user.name)}.png`;
   user.createdAt = new Date();
   user.updatedAt = user.createdAt;
   // Create user
@@ -94,16 +94,31 @@ export const updateUser = async (id: number, user: KeyValue) => {
   user.updatedAt = dateToDateTime(new Date());
   if (user.password) user.password = await hash(user.password, 8);
   user = removeReadOnlyValues(user);
+  // If you're updating your primary email, your Gravatar should reflect it
   if (user.primaryEmail) {
     const originalUser = await getUser(id);
-    if ((originalUser.profilePicture || "").includes("ui-avatars.com")) {
+    if ((originalUser.profilePicture || "").includes("api.adorable.io")) {
       const emailDetails = await getEmail(user.primaryEmail);
       user.profilePicture = `https://www.gravatar.com/avatar/${md5(
         emailDetails.email
       )}?d=${encodeURIComponent(
-        `https://ui-avatars.com/api/?bold=true&name=${originalUser.name}`
+        `https://api.adorable.io/avatars/285/${md5(originalUser.name)}.png`
       )}`;
     }
+  }
+  // If you're updating your username, make sure it's available
+  if (user.username) {
+    const originalUser = await getUser(id);
+    let usernameOwner: User | undefined = undefined;
+    try {
+      usernameOwner = await getUserByUsername(user.username);
+    } catch (error) {}
+    if (
+      usernameOwner &&
+      usernameOwner.id &&
+      usernameOwner.id != originalUser.id
+    )
+      throw new Error(ErrorCode.USERNAME_EXISTS);
   }
   deleteItemFromCache(CacheCategories.USER, id);
   return await query(`UPDATE users SET ${setValues(user)} WHERE id = ?`, [
@@ -147,6 +162,26 @@ export const getUserApprovedLocations = async (userId: number) => {
   return await query("SELECT * FROM `approved-locations` WHERE userId = ?", [
     userId
   ]);
+};
+
+/**
+ * Get a user by their username
+ */
+export const getUserByUsername = async (username: string) => {
+  return ((await query("SELECT * FROM users WHERE username = ? LIMIT 1", [
+    username
+  ])) as User[])[0];
+};
+
+/**
+ * Get a user by their username
+ */
+export const checkUsernameAvailability = async (username: string) => {
+  try {
+    const user = await getUserByUsername(username);
+    if (user && user.id) return false;
+  } catch (error) {}
+  return true;
 };
 
 /**
