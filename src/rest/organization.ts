@@ -90,7 +90,7 @@ export const newOrganizationForUser = async (
 };
 
 export const updateOrganizationForUser = async (
-  userId: number,
+  userId: number | ApiKey,
   organizationId: number,
   data: Organization,
   locals: Locals
@@ -99,22 +99,13 @@ export const updateOrganizationForUser = async (
     await can(userId, Authorizations.UPDATE, "organization", organizationId)
   ) {
     await updateOrganization(organizationId, data);
-    await createEvent(
-      {
-        userId,
-        organizationId,
-        type: EventType.ORGANIZATION_UPDATED,
-        data: { id: organizationId, data }
-      },
-      locals
-    );
     return;
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
 
 export const deleteOrganizationForUser = async (
-  userId: number,
+  userId: number | ApiKey,
   organizationId: number,
   locals: Locals
 ) => {
@@ -126,22 +117,13 @@ export const deleteOrganizationForUser = async (
       await deleteStripeCustomer(organizationDetails.stripeCustomerId);
     await deleteOrganization(organizationId);
     await deleteAllOrganizationMemberships(organizationId);
-    await createEvent(
-      {
-        userId,
-        organizationId,
-        type: EventType.ORGANIZATION_DELETED,
-        data: { id: organizationId }
-      },
-      locals
-    );
     return;
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
 
 export const getOrganizationBillingForUser = async (
-  userId: number,
+  userId: number | ApiKey,
   organizationId: number
 ) => {
   if (await can(userId, Authorizations.READ, "organization", organizationId)) {
@@ -154,7 +136,7 @@ export const getOrganizationBillingForUser = async (
 };
 
 export const updateOrganizationBillingForUser = async (
-  userId: number,
+  userId: number | ApiKey,
   organizationId: number,
   data: any,
   locals: Locals
@@ -167,22 +149,13 @@ export const updateOrganizationBillingForUser = async (
     } else {
       result = await createStripeCustomer(organizationId, data);
     }
-    await createEvent(
-      {
-        userId,
-        organizationId,
-        type: EventType.BILLING_UPDATED,
-        data
-      },
-      locals
-    );
     return result;
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
 
 export const getOrganizationInvoicesForUser = async (
-  userId: number,
+  userId: number | ApiKey,
   organizationId: number,
   params: KeyValue
 ) => {
@@ -196,7 +169,7 @@ export const getOrganizationInvoicesForUser = async (
 };
 
 export const getOrganizationInvoiceForUser = async (
-  userId: number,
+  userId: number | ApiKey,
   organizationId: number,
   invoiceId: string
 ) => {
@@ -210,7 +183,7 @@ export const getOrganizationInvoiceForUser = async (
 };
 
 export const getOrganizationSourcesForUser = async (
-  userId: number,
+  userId: number | ApiKey,
   organizationId: number,
   params: KeyValue
 ) => {
@@ -224,7 +197,7 @@ export const getOrganizationSourcesForUser = async (
 };
 
 export const getOrganizationSourceForUser = async (
-  userId: number,
+  userId: number | ApiKey,
   organizationId: number,
   sourceId: string
 ) => {
@@ -238,7 +211,7 @@ export const getOrganizationSourceForUser = async (
 };
 
 export const getOrganizationSubscriptionsForUser = async (
-  userId: number,
+  userId: number | ApiKey,
   organizationId: number,
   params: KeyValue
 ) => {
@@ -255,7 +228,7 @@ export const getOrganizationSubscriptionsForUser = async (
 };
 
 export const getOrganizationSubscriptionForUser = async (
-  userId: number,
+  userId: number | ApiKey,
   organizationId: number,
   subscriptionId: string
 ) => {
@@ -272,7 +245,7 @@ export const getOrganizationSubscriptionForUser = async (
 };
 
 export const updateOrganizationSubscriptionForUser = async (
-  userId: number,
+  userId: number | ApiKey,
   organizationId: number,
   subscriptionId: string,
   data: KeyValue
@@ -291,7 +264,7 @@ export const updateOrganizationSubscriptionForUser = async (
 };
 
 export const createOrganizationSubscriptionForUser = async (
-  userId: number,
+  userId: number | ApiKey,
   organizationId: number,
   params: { plan: string; [index: string]: any }
 ) => {
@@ -308,7 +281,7 @@ export const createOrganizationSubscriptionForUser = async (
 };
 
 export const getOrganizationPricingPlansForUser = async (
-  userId: number,
+  userId: number | ApiKey,
   organizationId: number,
   productId: string
 ) => {
@@ -318,7 +291,7 @@ export const getOrganizationPricingPlansForUser = async (
 };
 
 export const deleteOrganizationSourceForUser = async (
-  userId: number,
+  userId: number | ApiKey,
   organizationId: number,
   sourceId: string
 ) => {
@@ -332,7 +305,7 @@ export const deleteOrganizationSourceForUser = async (
 };
 
 export const updateOrganizationSourceForUser = async (
-  userId: number,
+  userId: number | ApiKey,
   organizationId: number,
   sourceId: string,
   data: any
@@ -353,7 +326,7 @@ export const updateOrganizationSourceForUser = async (
 };
 
 export const createOrganizationSourceForUser = async (
-  userId: number,
+  userId: number | ApiKey,
   organizationId: number,
   card: any
 ) => {
@@ -369,7 +342,7 @@ export const createOrganizationSourceForUser = async (
 };
 
 export const getAllOrganizationDataForUser = async (
-  userId: number,
+  userId: number | ApiKey,
   organizationId: number
 ) => {
   if (
@@ -410,7 +383,7 @@ export const getAllOrganizationDataForUser = async (
 };
 
 export const getOrganizationRecentEventsForUser = async (
-  userId: number,
+  userId: number | ApiKey,
   organizationId: number
 ) => {
   if (await can(userId, Authorizations.READ, "organization", organizationId))
@@ -419,7 +392,7 @@ export const getOrganizationRecentEventsForUser = async (
 };
 
 export const getOrganizationMembershipsForUser = async (
-  userId: number,
+  userId: number | ApiKey,
   organizationId: number,
   query?: KeyValue
 ) => {
@@ -429,7 +402,7 @@ export const getOrganizationMembershipsForUser = async (
 };
 
 export const getOrganizationApiKeysForUser = async (
-  userId: number,
+  userId: number | ApiKey,
   organizationId: number,
   query: KeyValue
 ) => {
@@ -446,7 +419,7 @@ export const getOrganizationApiKeysForUser = async (
 };
 
 export const getOrganizationApiKeyForUser = async (
-  userId: number,
+  userId: number | ApiKey,
   organizationId: number,
   apiKey: string
 ) => {
@@ -463,7 +436,7 @@ export const getOrganizationApiKeyForUser = async (
 };
 
 export const updateApiKeyForUser = async (
-  userId: number,
+  userId: number | ApiKey,
   organizationId: number,
   apiKey: string,
   data: KeyValue,
@@ -478,21 +451,13 @@ export const updateApiKeyForUser = async (
     )
   ) {
     await updateApiKey(organizationId, apiKey, data);
-    await createEvent(
-      {
-        userId,
-        type: EventType.API_KEY_UPDATED,
-        data: { apiKey, data }
-      },
-      locals
-    );
     return;
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
 
 export const createApiKeyForUser = async (
-  userId: number,
+  userId: number | ApiKey,
   organizationId: number,
   access: ApiKeyAccess,
   locals: Locals
@@ -506,21 +471,13 @@ export const createApiKeyForUser = async (
     )
   ) {
     const apiKey = await createApiKey({ organizationId, access });
-    await createEvent(
-      {
-        userId,
-        type: EventType.API_KEY_CREATED,
-        data: { apiKey }
-      },
-      locals
-    );
     return;
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
 
 export const deleteApiKeyForUser = async (
-  userId: number,
+  userId: number | ApiKey,
   organizationId: number,
   apiKey: string,
   locals: Locals
@@ -534,14 +491,6 @@ export const deleteApiKeyForUser = async (
     )
   ) {
     await deleteApiKey(organizationId, apiKey);
-    await createEvent(
-      {
-        userId,
-        type: EventType.API_KEY_DELETED,
-        data: { apiKey }
-      },
-      locals
-    );
     return;
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);

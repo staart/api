@@ -94,7 +94,7 @@ export class OrganizationController {
     const id = await organizationUsernameToId(req.params.id);
     joiValidate({ id: Joi.number().required() }, { id });
     await updateOrganizationForUser(
-      res.locals.token.id,
+      localsToTokenOrKey(res),
       id,
       req.body,
       res.locals
@@ -105,12 +105,15 @@ export class OrganizationController {
   @Delete(":id")
   async delete(req: Request, res: Response) {
     const organizationId = await organizationUsernameToId(req.params.id);
-    const userId = res.locals.token.id;
     joiValidate(
       { organizationId: Joi.number().required() },
       { organizationId }
     );
-    await deleteOrganizationForUser(userId, organizationId, res.locals);
+    await deleteOrganizationForUser(
+      res.locals.token.id,
+      organizationId,
+      res.locals
+    );
     res.json({ success: true, message: "organization-deleted" });
   }
 
@@ -122,7 +125,10 @@ export class OrganizationController {
       { organizationId }
     );
     res.json(
-      await getOrganizationBillingForUser(res.locals.token.id, organizationId)
+      await getOrganizationBillingForUser(
+        localsToTokenOrKey(res),
+        organizationId
+      )
     );
   }
 
@@ -134,7 +140,7 @@ export class OrganizationController {
       { organizationId }
     );
     await updateOrganizationBillingForUser(
-      res.locals.token.id,
+      localsToTokenOrKey(res),
       organizationId,
       req.body,
       res.locals
@@ -162,7 +168,7 @@ export class OrganizationController {
     );
     res.json(
       await getOrganizationInvoicesForUser(
-        res.locals.token.id,
+        localsToTokenOrKey(res),
         organizationId,
         subscriptionParams
       )
@@ -182,7 +188,7 @@ export class OrganizationController {
     );
     res.json(
       await getOrganizationInvoiceForUser(
-        res.locals.token.id,
+        localsToTokenOrKey(res),
         organizationId,
         invoiceId
       )
@@ -206,7 +212,7 @@ export class OrganizationController {
     );
     res.json(
       await getOrganizationSourcesForUser(
-        res.locals.token.id,
+        localsToTokenOrKey(res),
         organizationId,
         subscriptionParams
       )
@@ -226,7 +232,7 @@ export class OrganizationController {
     );
     res.json(
       await getOrganizationSourceForUser(
-        res.locals.token.id,
+        localsToTokenOrKey(res),
         organizationId,
         sourceId
       )
@@ -253,7 +259,7 @@ export class OrganizationController {
     );
     res.json(
       await getOrganizationSubscriptionsForUser(
-        res.locals.token.id,
+        localsToTokenOrKey(res),
         organizationId,
         subscriptionParams
       )
@@ -273,7 +279,7 @@ export class OrganizationController {
     );
     res.json(
       await getOrganizationSubscriptionForUser(
-        res.locals.token.id,
+        localsToTokenOrKey(res),
         organizationId,
         subscriptionId
       )
@@ -303,7 +309,7 @@ export class OrganizationController {
     );
     res.json(
       await updateOrganizationSubscriptionForUser(
-        res.locals.token.id,
+        localsToTokenOrKey(res),
         organizationId,
         subscriptionId,
         data
@@ -330,7 +336,7 @@ export class OrganizationController {
     );
     res.json(
       await createOrganizationSubscriptionForUser(
-        res.locals.token.id,
+        localsToTokenOrKey(res),
         organizationId,
         subscriptionParams
       )
@@ -350,7 +356,7 @@ export class OrganizationController {
     );
     res.json(
       await getOrganizationPricingPlansForUser(
-        res.locals.token.id,
+        localsToTokenOrKey(res),
         organizationId,
         product
       )
@@ -368,7 +374,7 @@ export class OrganizationController {
       .status(CREATED)
       .json(
         await createOrganizationSourceForUser(
-          res.locals.token.id,
+          localsToTokenOrKey(res),
           organizationId,
           req.body
         )
@@ -388,7 +394,7 @@ export class OrganizationController {
     );
     res.json(
       await deleteOrganizationSourceForUser(
-        res.locals.token.id,
+        localsToTokenOrKey(res),
         organizationId,
         sourceId
       )
@@ -408,7 +414,7 @@ export class OrganizationController {
     );
     res.json(
       await updateOrganizationSourceForUser(
-        res.locals.token.id,
+        localsToTokenOrKey(res),
         organizationId,
         sourceId,
         req.body
@@ -424,7 +430,10 @@ export class OrganizationController {
       { organizationId }
     );
     res.json(
-      await getAllOrganizationDataForUser(res.locals.token.id, organizationId)
+      await getAllOrganizationDataForUser(
+        localsToTokenOrKey(res),
+        organizationId
+      )
     );
   }
 
@@ -437,7 +446,7 @@ export class OrganizationController {
     );
     res.json(
       await getOrganizationRecentEventsForUser(
-        res.locals.token.id,
+        localsToTokenOrKey(res),
         organizationId
       )
     );
@@ -452,7 +461,7 @@ export class OrganizationController {
     );
     res.json(
       await getOrganizationMembershipsForUser(
-        res.locals.token.id,
+        localsToTokenOrKey(res),
         organizationId,
         req.query
       )
@@ -484,7 +493,7 @@ export class OrganizationController {
       }
     );
     await inviteMemberToOrganization(
-      res.locals.token.id,
+      localsToTokenOrKey(res),
       organizationId,
       newMemberName,
       newMemberEmail,
@@ -510,7 +519,11 @@ export class OrganizationController {
       apiKeyParams
     );
     res.json(
-      await getOrganizationApiKeysForUser(res.locals.token.id, id, apiKeyParams)
+      await getOrganizationApiKeysForUser(
+        localsToTokenOrKey(res),
+        id,
+        apiKeyParams
+      )
     );
   }
 
@@ -525,7 +538,12 @@ export class OrganizationController {
     res
       .status(CREATED)
       .json(
-        await createApiKeyForUser(res.locals.token.id, id, access, res.locals)
+        await createApiKeyForUser(
+          localsToTokenOrKey(res),
+          id,
+          access,
+          res.locals
+        )
       );
   }
 
@@ -541,7 +559,7 @@ export class OrganizationController {
       { id, apiKey }
     );
     res.json(
-      await getOrganizationApiKeyForUser(res.locals.token.id, id, apiKey)
+      await getOrganizationApiKeyForUser(localsToTokenOrKey(res), id, apiKey)
     );
   }
 
@@ -558,7 +576,7 @@ export class OrganizationController {
     );
     res.json(
       await updateApiKeyForUser(
-        res.locals.token.id,
+        localsToTokenOrKey(res),
         id,
         apiKey,
         req.body,
@@ -579,7 +597,7 @@ export class OrganizationController {
       { id, apiKey }
     );
     res.json(
-      await deleteApiKeyForUser(res.locals.token.id, id, apiKey, res.locals)
+      await deleteApiKeyForUser(localsToTokenOrKey(res), id, apiKey, res.locals)
     );
   }
 }
