@@ -74,9 +74,10 @@ export const updateOrganization = async (
 ) => {
   organization.updatedAt = dateToDateTime(new Date());
   organization = removeReadOnlyValues(organization);
-  if (organization.username) {
+  const originalOrganization = await getOrganization(id);
+  if (organization.username && originalOrganization.username) {
     const currentOwner = await getOrganizationIdFromUsername(
-      organization.username
+      originalOrganization.username
     );
     if (currentOwner != id) throw new Error(ErrorCode.USERNAME_EXISTS);
   }
