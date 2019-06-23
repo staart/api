@@ -41,7 +41,11 @@ import { MembershipRole, ApiKeyAccess } from "../interfaces/enum";
 import { CREATED } from "http-status-codes";
 import asyncHandler from "express-async-handler";
 import { inviteMemberToOrganization } from "../rest/membership";
-import { joiValidate, organizationUsernameToId } from "../helpers/utils";
+import {
+  joiValidate,
+  organizationUsernameToId,
+  localsToTokenOrKey
+} from "../helpers/utils";
 import Joi from "@hapi/joi";
 
 @Controller("organizations")
@@ -78,7 +82,10 @@ export class OrganizationController {
   async get(req: Request, res: Response) {
     const id = await organizationUsernameToId(req.params.id);
     joiValidate({ id: Joi.number().required() }, { id });
-    const organization = await getOrganizationForUser(res.locals.token.id, id);
+    const organization = await getOrganizationForUser(
+      localsToTokenOrKey(res),
+      id
+    );
     res.json(organization);
   }
 

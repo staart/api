@@ -1,5 +1,5 @@
 import anonymize from "ip-anonymize";
-import { User } from "../interfaces/tables/user";
+import { User, ApiKey } from "../interfaces/tables/user";
 import Joi from "@hapi/joi";
 import { getOrganizationIdFromUsername } from "../crud/organization";
 import { Request, Response } from "express";
@@ -62,6 +62,13 @@ export const organizationUsernameToId = async (id: string) => {
   } else {
     return parseInt(id);
   }
+};
+
+export const localsToTokenOrKey = (res: Response) => {
+  if (res.locals.token.type === "apiKey") {
+    return res.locals.token.apiKey as ApiKey;
+  }
+  return res.locals.token.id as number;
 };
 
 export const createSlug = (name: string) =>

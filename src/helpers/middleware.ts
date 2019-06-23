@@ -101,7 +101,7 @@ export const authHandler = async (
     localsToken = await verifyToken(token, Tokens.LOGIN);
   } catch (e) {}
   // However, with API/secret paid and user info, you can:
-  const secretKey = req.get("X-Api-Secret");
+  const secretKey = req.get("X-Api-Secret") || req.get("X-Secret-Key");
   if (secretKey) {
     let apiKey: ApiKey | undefined;
     try {
@@ -131,7 +131,7 @@ export const authHandler = async (
         });
         if (!matchesAny) return sendAuthError(ErrorCode.REFERRER_CHECK_FAIL);
       }
-      localsToken = { id: apiKey.organizationId, type: "organizationId" };
+      localsToken = { type: "apiKey", apiKey };
     } else {
       return sendAuthError(ErrorCode.INVALID_API_KEY_SECRET);
     }

@@ -50,10 +50,10 @@ import {
   createStripeSubscriptionSession
 } from "../crud/billing";
 import { getUser } from "../crud/user";
-import { createNotification } from "../crud/notification";
+import { ApiKey } from "../interfaces/tables/user";
 
 export const getOrganizationForUser = async (
-  userId: number,
+  userId: number | ApiKey,
   organizationId: number
 ) => {
   if (await can(userId, Authorizations.READ, "organization", organizationId))

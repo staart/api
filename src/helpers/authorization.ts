@@ -1,10 +1,11 @@
-import { User } from "../interfaces/tables/user";
+import { User, ApiKey } from "../interfaces/tables/user";
 import { Organization } from "../interfaces/tables/organization";
 import {
   ErrorCode,
   Authorizations,
   UserRole,
-  MembershipRole
+  MembershipRole,
+  ApiKeyAccess
 } from "../interfaces/enum";
 import { getUser } from "../crud/user";
 import { getUserMemberships, getMembership } from "../crud/membership";
@@ -150,22 +151,57 @@ const canUserGeneral = async (user: User, action: Authorizations) => {
 };
 
 /**
+ * Whether an API key can perform an action for an organization
+ */
+const canApiKeyOrganization = (
+  apiKey: ApiKey,
+  action: Authorizations,
+  target: Organization
+) => {
+  if (apiKey.organizationId != target.id) return false;
+
+  if (apiKey.access == ApiKeyAccess.FULL_ACCESS) return true;
+
+  if (action == Authorizations.READ || action == Authorizations.READ_SECURE)
+    return true;
+
+  return false;
+};
+
+/**
  * Whether a user has authorization to perform an action
- * @param ipAddress  IP address for the new location
  */
 export const can = async (
-  user: User | number,
+  user: User | number | ApiKey,
   action: Authorizations,
   targetType: "user" | "organization" | "membership" | "general",
   target?: User | Organization | Membership | number
 ) => {
-  let userObject: User;
-  if (typeof target === "object") {
-    userObject = target as User;
+  let userObject: User | ApiKey | undefined = undefined;
+  let isApiKey = false;
+
+  if (typeof user === "object") {
+    if ((user as ApiKey).apiKey) {
+      isApiKey = true;
+    } else {
+      userObject = user as User;
+    }
   } else {
     userObject = await getUser(user as number);
   }
-  if (!userObject.id) throw new Error(ErrorCode.USER_NOT_FOUND);
+
+  if (isApiKey) {
+    if (target && typeof target === "object") {
+      return await canApiKeyOrganization(user as ApiKey, action, target);
+    } else if (target) {
+      target = await getOrganization(target);
+      return await canApiKeyOrganization(user as ApiKey, action, target);
+    } else {
+      throw new Error(ErrorCode.ORGANIZATION_NOT_FOUND);
+    }
+  }
+
+  if (!userObject || !userObject.id) throw new Error(ErrorCode.USER_NOT_FOUND);
 
   let targetObject: User | Organization | Membership;
   if (targetType === "user") {

@@ -110,7 +110,9 @@ export enum CacheCategories {
   MEMBERSHIP = "membership",
   ORGANIZATION = "organization",
   ORGANIZATION_USERNAME = "organization-username",
-  IP_LOOKUP = "ip-lookup"
+  IP_LOOKUP = "ip-lookup",
+  API_KEY = "api-key",
+  API_KEY_ORG = "api-key-org"
 }
 
 export enum Authorizations {

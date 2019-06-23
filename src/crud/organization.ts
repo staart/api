@@ -124,7 +124,12 @@ export const getOrganizationApiKeys = async (
  */
 export const getApiKeyWithoutOrg = async (apiKey: string) => {
   return (<ApiKey[]>(
-    await query("SELECT * FROM `api-keys` WHERE apiKey = ? LIMIT 1", [apiKey])
+    await cachedQuery(
+      CacheCategories.API_KEY,
+      apiKey,
+      "SELECT * FROM `api-keys` WHERE apiKey = ? LIMIT 1",
+      [apiKey]
+    )
   ))[0];
 };
 
@@ -133,25 +138,11 @@ export const getApiKeyWithoutOrg = async (apiKey: string) => {
  */
 export const getApiKey = async (organizationId: number, apiKey: string) => {
   return (<ApiKey[]>(
-    await query(
+    await cachedQuery(
+      CacheCategories.API_KEY_ORG,
+      `${organizationId}_${apiKey}`,
       "SELECT * FROM `api-keys` WHERE apiKey = ? AND organizationId = ? LIMIT 1",
       [apiKey, organizationId]
-    )
-  ))[0];
-};
-
-/**
- * Get an API key/secret
- */
-export const getApiKeyFromKeySecret = async (
-  organizationId: number,
-  apiKey: string,
-  secretKey: string
-) => {
-  return (<ApiKey[]>(
-    await query(
-      "SELECT * FROM `api-keys` WHERE apiKey = ? AND secretKey = ? AND organizationId = ? LIMIT 1",
-      [apiKey, secretKey, organizationId]
     )
   ))[0];
 };
@@ -180,6 +171,11 @@ export const updateApiKey = async (
 ) => {
   data.updatedAt = dateToDateTime(new Date());
   data = removeReadOnlyValues(data);
+  deleteItemFromCache(CacheCategories.API_KEY, apiKey);
+  deleteItemFromCache(
+    CacheCategories.API_KEY_ORG,
+    `${organizationId}_${apiKey}`
+  );
   return await query(
     `UPDATE \`api-keys\` SET ${setValues(
       data
@@ -192,6 +188,11 @@ export const updateApiKey = async (
  * Delete an API key
  */
 export const deleteApiKey = async (organizationId: number, apiKey: string) => {
+  deleteItemFromCache(CacheCategories.API_KEY, apiKey);
+  deleteItemFromCache(
+    CacheCategories.API_KEY_ORG,
+    `${organizationId}_${apiKey}`
+  );
   return await query(
     "DELETE FROM `api-keys` WHERE apiKey = ? AND organizationId = ? LIMIT 1",
     [apiKey, organizationId]
