@@ -41,7 +41,7 @@ export interface ApprovedLocation {
 export interface ApiKey {
   apiKey?: string;
   secretKey?: string;
-  access: ApiKeyAccess;
+  apiRestrictions?: string;
   organizationId: number;
   ipRestrictions?: string;
   referrerRestrictions?: string;

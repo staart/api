@@ -530,10 +530,17 @@ export class OrganizationController {
   @Put(":id/api-keys")
   async putUserApiKeys(req: Request, res: Response) {
     const id = await organizationUsernameToId(req.params.id);
-    const access = req.body.access || ApiKeyAccess.READONLY;
     joiValidate(
       { id: [Joi.string().required(), Joi.number().required()] },
       { id }
+    );
+    joiValidate(
+      {
+        apiRestrictions: Joi.string().allow(null),
+        ipRestrictions: Joi.string().allow(null),
+        referrerRestrictions: Joi.string().allow(null)
+      },
+      req.body
     );
     res
       .status(CREATED)
@@ -541,7 +548,7 @@ export class OrganizationController {
         await createApiKeyForUser(
           localsToTokenOrKey(res),
           id,
-          access,
+          req.body,
           res.locals
         )
       );
@@ -573,6 +580,14 @@ export class OrganizationController {
         apiKey: Joi.string().required()
       },
       { id, apiKey }
+    );
+    joiValidate(
+      {
+        apiRestrictions: Joi.string().allow(null),
+        ipRestrictions: Joi.string().allow(null),
+        referrerRestrictions: Joi.string().allow(null)
+      },
+      req.body
     );
     res.json(
       await updateApiKeyForUser(

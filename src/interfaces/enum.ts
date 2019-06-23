@@ -138,3 +138,7 @@ export enum Genders {
 export enum NotificationCategories {
   JOINED_ORGANIZATION = "joined-organization"
 }
+
+export enum ApiAuthorizations {
+  EXAMPLE = "example"
+}

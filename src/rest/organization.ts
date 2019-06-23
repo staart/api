@@ -459,7 +459,7 @@ export const updateApiKeyForUser = async (
 export const createApiKeyForUser = async (
   userId: number | ApiKey,
   organizationId: number,
-  access: ApiKeyAccess,
+  apiKey: KeyValue,
   locals: Locals
 ) => {
   if (
@@ -470,7 +470,7 @@ export const createApiKeyForUser = async (
       organizationId
     )
   ) {
-    const apiKey = await createApiKey({ organizationId, access });
+    const key = await createApiKey({ organizationId, ...apiKey });
     return;
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);

@@ -153,6 +153,7 @@ export const getApiKey = async (organizationId: number, apiKey: string) => {
 export const createApiKey = async (apiKey: ApiKey) => {
   apiKey.apiKey = cryptoRandomString({ length: 20, type: "hex" });
   apiKey.secretKey = cryptoRandomString({ length: 20, type: "hex" });
+  apiKey.apiRestrictions = apiKey.apiRestrictions || "orgRead";
   apiKey.createdAt = new Date();
   apiKey.updatedAt = apiKey.createdAt;
   return await query(

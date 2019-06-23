@@ -5,7 +5,8 @@ import {
   Authorizations,
   UserRole,
   MembershipRole,
-  ApiKeyAccess
+  ApiKeyAccess,
+  ApiAuthorizations
 } from "../interfaces/enum";
 import { getUser } from "../crud/user";
 import { getUserMemberships, getMembership } from "../crud/membership";
@@ -17,7 +18,7 @@ import { Membership } from "../interfaces/tables/memberships";
  */
 const canUserUser = async (
   user: User,
-  action: Authorizations,
+  action: Authorizations | ApiAuthorizations,
   target: User
 ) => {
   // A super user can do anything
@@ -63,7 +64,7 @@ const canUserUser = async (
  */
 const canUserOrganization = async (
   user: User,
-  action: Authorizations,
+  action: Authorizations | ApiAuthorizations,
   target: Organization
 ) => {
   // A super user can do anything
@@ -106,7 +107,7 @@ const canUserOrganization = async (
  */
 const canUserMembership = async (
   user: User,
-  action: Authorizations,
+  action: Authorizations | ApiAuthorizations,
   target: Membership
 ) => {
   // A super user can do anything
@@ -143,7 +144,10 @@ const canUserMembership = async (
 /**
  * Whether a user can perform an action for the backend
  */
-const canUserGeneral = async (user: User, action: Authorizations) => {
+const canUserGeneral = async (
+  user: User,
+  action: Authorizations | ApiAuthorizations
+) => {
   // A super user can do anything
   if (user.role == UserRole.ADMIN) return true;
 
@@ -155,14 +159,28 @@ const canUserGeneral = async (user: User, action: Authorizations) => {
  */
 const canApiKeyOrganization = (
   apiKey: ApiKey,
-  action: Authorizations,
+  action: Authorizations | ApiAuthorizations,
   target: Organization
 ) => {
   if (apiKey.organizationId != target.id) return false;
 
-  if (apiKey.access == ApiKeyAccess.FULL_ACCESS) return true;
+  if (!apiKey.apiRestrictions) return true;
 
-  if (action == Authorizations.READ || action == Authorizations.READ_SECURE)
+  if (
+    apiKey.apiRestrictions.includes("orgRead") &&
+    (action == Authorizations.READ || action == Authorizations.READ_SECURE)
+  )
+    return true;
+
+  if (
+    apiKey.apiRestrictions.includes("orgUpdate") &&
+    (action == Authorizations.UPDATE ||
+      action == Authorizations.UPDATE_SECURE ||
+      action == Authorizations.CREATE ||
+      action == Authorizations.CREATE_SECURE ||
+      action == Authorizations.DELETE ||
+      action == Authorizations.DELETE_SECURE)
+  )
     return true;
 
   return false;
@@ -173,7 +191,7 @@ const canApiKeyOrganization = (
  */
 export const can = async (
   user: User | number | ApiKey,
-  action: Authorizations,
+  action: Authorizations | ApiAuthorizations,
   targetType: "user" | "organization" | "membership" | "general",
   target?: User | Organization | Membership | number
 ) => {
