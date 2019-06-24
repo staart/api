@@ -3448,10 +3448,10 @@ ip-anonymize@^0.1.0:
   resolved "https://registry.yarnpkg.com/ip-anonymize/-/ip-anonymize-0.1.0.tgz#5ead504d01871c5c28189a25382f852036b57f7e"
   integrity sha512-cZJu+N5JKKFGMK0eEQWNaQMn2EhCysciVM6eotCJwfqotj16BTfVchKsJCH6mQAT9N0GC7oWRcsZ6Lb8dDiwTA==
 
-ip-range-check@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/ip-range-check/-/ip-range-check-0.0.2.tgz#605c859687aa4f18463918d46190d8b3699a293c"
-  integrity sha1-YFyFloeqTxhGORjUYZDYs2maKTw=
+ip-range-check@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/ip-range-check/-/ip-range-check-0.2.0.tgz#e67f126c8fb36c8f11d4c07d7924b7e364365157"
+  integrity sha512-oaM3l/3gHbLlt/tCWLvt0mj1qUaI+STuRFnUvARGCujK9vvU61+2JsDpmkMzR4VsJhuFXWWgeKKVnwwoFfzCqw==
   dependencies:
     ipaddr.js "^1.0.1"
 
