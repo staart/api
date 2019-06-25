@@ -241,7 +241,7 @@ export const getStripeSources = async (
 ) => {
   return cleanStripeResponse(
     await stripe.customers.listSources(id, {
-      object: "source",
+      object: "card",
       starting_after: start !== "0" ? start : undefined,
       limit: itemsPerPage
     })
@@ -269,8 +269,8 @@ export const deleteStripeSource = async (id: string, sourceId: string) => {
  * Get the details of a customer
  * @param id - Stripe customer ID
  */
-export const createStripeSource = async (id: string, card: any) => {
-  await stripe.customers.createCard(id, { card });
+export const createStripeSource = async (id: string, source: any) => {
+  await stripe.customers.createSource(id, { source });
   return { success: true, message: "billing-source-created" };
 };
 
@@ -283,6 +283,6 @@ export const updateStripeSource = async (
   cardId: string,
   data: any
 ) => {
-  await stripe.customers.updateCard(id, cardId, data);
+  await stripe.customers.updateSource(id, cardId, data);
   return { success: true, message: "billing-source-updated" };
 };

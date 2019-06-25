@@ -47,7 +47,8 @@ import {
   getStripeSubscription,
   updateStripeSubscription,
   getStripeInvoice,
-  createStripeSubscriptionSession
+  createStripeSubscriptionSession,
+  createStripeSubscription
 } from "../crud/billing";
 import { getUser } from "../crud/user";
 import { ApiKey } from "../interfaces/tables/user";
@@ -276,7 +277,7 @@ export const createOrganizationSubscriptionForUser = async (
   if (await can(userId, Authorizations.READ, "organization", organizationId)) {
     const organization = await getOrganization(organizationId);
     if (organization.stripeCustomerId)
-      return await createStripeSubscriptionSession(
+      return await createStripeSubscription(
         organization.stripeCustomerId,
         params
       );

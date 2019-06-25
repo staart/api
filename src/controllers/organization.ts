@@ -388,7 +388,7 @@ export class OrganizationController {
     joiValidate(
       {
         organizationId: Joi.number().required(),
-        sourceId: Joi.number().required()
+        sourceId: Joi.string().required()
       },
       { organizationId, sourceId }
     );
@@ -408,7 +408,7 @@ export class OrganizationController {
     joiValidate(
       {
         organizationId: Joi.number().required(),
-        sourceId: Joi.number().required()
+        sourceId: Joi.string().required()
       },
       { organizationId, sourceId }
     );
