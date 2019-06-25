@@ -1,6 +1,6 @@
 {
   "name": "staart",
-  "version": "1.0.36",
+  "version": "1.0.37",
   "main": "index.js",
   "repository": "git@github.com:AnandChowdhary/staart.git",
   "author": "Anand Chowdhary <mail@anandchowdhary.com>",
@@ -109,6 +109,7 @@
     "node-ses": "^2.2.1",
     "otplib": "^11.0.1",
     "qrcode": "^1.3.3",
+    "query-string": "^6.8.1",
     "random-int": "^2.0.0",
     "response-time": "^2.3.2",
     "rotating-file-stream": "^1.4.1",

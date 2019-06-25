@@ -1,26 +1,22 @@
 import { google } from "googleapis";
-import {
-  GOOGLE_CLIENT_ID,
-  GOOGLE_CLIENT_SECRET,
-  GOOGLE_CLIENT_REDIRECT
-} from "../config";
+import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from "../config";
 import { ErrorCode } from "../interfaces/enum";
 import { GetTokenResponse } from "google-auth-library/build/src/auth/oauth2client";
 
-/**
- * Create a new OAuth connection with Google
- */
+// /**
+//  * Create a new OAuth connection with Google
+//  */
 export const googleCreateConnection = () => {
   return new google.auth.OAuth2(
     GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET,
-    GOOGLE_CLIENT_REDIRECT
+    "GOOGLE_CLIENT_REDIRECT"
   );
 };
 
-/**
- * Get the URL for "Login with Google"
- */
+// /**
+//  * Get the URL for "Login with Google"
+//  */
 export const googleGetConnectionUrl = () => {
   const auth = googleCreateConnection();
   return auth.generateAuthUrl({
@@ -28,13 +24,13 @@ export const googleGetConnectionUrl = () => {
     prompt: "consent",
     scope: ["https://www.googleapis.com/auth/userinfo.email"],
     client_id: GOOGLE_CLIENT_ID,
-    redirect_uri: GOOGLE_CLIENT_REDIRECT
+    redirect_uri: "GOOGLE_CLIENT_REDIRECT"
   });
 };
 
-/**
- * Get Google OAuth tokens from a returned code
- */
+// /**
+//  * Get Google OAuth tokens from a returned code
+//  */
 export const googleGetTokensFromCode = async (code: string) => {
   const auth = googleCreateConnection();
   try {
@@ -45,9 +41,9 @@ export const googleGetTokensFromCode = async (code: string) => {
   }
 };
 
-/**
- * Get a user's email from their Google OAuth token
- */
+// /**
+//  * Get a user's email from their Google OAuth token
+//  */
 export const googleGetEmailFromToken = async (data: GetTokenResponse) => {
   const auth = googleCreateConnection();
   auth.setCredentials(data.tokens);

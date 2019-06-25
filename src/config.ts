@@ -3,6 +3,7 @@ config();
 
 // Server
 export const PORT = process.env.PORT ? parseInt(process.env.PORT) : 7007;
+export const BASE_URL = process.env.BASE_URL || "";
 export const SENTRY_DSN = process.env.SENTRY_DSN || "";
 
 // Rate limiting
@@ -72,21 +73,16 @@ export const TOKEN_EXPIRY_APPROVE_LOCATION =
   process.env.TOKEN_EXPIRY_APPROVE_LOCATION || "10m";
 export const TOKEN_EXPIRY_REFRESH = process.env.TOKEN_EXPIRY_REFRESH || "30d";
 
+// OAuth2 credentials
 export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || "";
 export const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || "";
-export const GOOGLE_CLIENT_REDIRECT = process.env.GOOGLE_CLIENT_REDIRECT || "";
 export const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID || "";
 export const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET || "";
-export const GITHUB_CLIENT_REDIRECT = process.env.GITHUB_CLIENT_REDIRECT || "";
 export const FACEBOOK_CLIENT_ID = process.env.FACEBOOK_CLIENT_ID || "";
 export const FACEBOOK_CLIENT_SECRET = process.env.FACEBOOK_CLIENT_SECRET || "";
-export const FACEBOOK_CLIENT_REDIRECT =
-  process.env.FACEBOOK_CLIENT_REDIRECT || "";
 export const SALESFORCE_CLIENT_ID = process.env.SALESFORCE_CLIENT_ID || "";
 export const SALESFORCE_CLIENT_SECRET =
   process.env.SALESFORCE_CLIENT_SECRET || "";
-export const SALESFORCE_CLIENT_REDIRECT =
-  process.env.SALESFORCE_CLIENT_REDIRECT || "";
 
 export const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || "";
 export const CHARGEBEE_SECRET_KEY = process.env.CHARGEBEE_SECRET_KEY || "";

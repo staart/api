@@ -44,18 +44,15 @@ import { can } from "../helpers/authorization";
 import { authenticator } from "otplib";
 import ClientOAuth2 from "client-oauth2";
 import {
+  BASE_URL,
   GITHUB_CLIENT_ID,
   GITHUB_CLIENT_SECRET,
-  GITHUB_CLIENT_REDIRECT,
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
-  GOOGLE_CLIENT_REDIRECT,
   FACEBOOK_CLIENT_ID,
   FACEBOOK_CLIENT_SECRET,
-  FACEBOOK_CLIENT_REDIRECT,
   SALESFORCE_CLIENT_ID,
-  SALESFORCE_CLIENT_SECRET,
-  SALESFORCE_CLIENT_REDIRECT
+  SALESFORCE_CLIENT_SECRET
 } from "../config";
 import axios from "axios";
 import { GitHubEmail } from "../interfaces/oauth";
@@ -223,10 +220,13 @@ export const approveLocation = async (token: string, locals: Locals) => {
  OAuth clients
 */
 
+const redirectUri = (service: string) =>
+  `${BASE_URL}/auth/oauth/callback/${service}`;
+
 export const github = new ClientOAuth2({
   clientId: GITHUB_CLIENT_ID,
   clientSecret: GITHUB_CLIENT_SECRET,
-  redirectUri: GITHUB_CLIENT_REDIRECT,
+  redirectUri: redirectUri("github"),
   authorizationUri: "https://github.com/login/oauth/authorize",
   accessTokenUri: "https://github.com/login/oauth/access_token",
   scopes: ["user:email"]
@@ -255,7 +255,7 @@ export const githubCallback = async (url: string, locals: Locals) => {
 export const facebook = new ClientOAuth2({
   clientId: FACEBOOK_CLIENT_ID,
   clientSecret: FACEBOOK_CLIENT_SECRET,
-  redirectUri: FACEBOOK_CLIENT_REDIRECT,
+  redirectUri: redirectUri("facebook"),
   authorizationUri: "https://www.facebook.com/v3.3/dialog/oauth",
   accessTokenUri: "https://graph.facebook.com/v3.3/oauth/access_token",
   scopes: ["email"]
@@ -280,7 +280,7 @@ export const facebookCallback = async (url: string, locals: Locals) => {
 export const salesforce = new ClientOAuth2({
   clientId: SALESFORCE_CLIENT_ID,
   clientSecret: SALESFORCE_CLIENT_SECRET,
-  redirectUri: SALESFORCE_CLIENT_REDIRECT,
+  redirectUri: redirectUri("salesforce"),
   authorizationUri: "https://login.salesforce.com/services/oauth2/authorize",
   accessTokenUri: "https://login.salesforce.com/services/oauth2/token",
   scopes: ["email"]

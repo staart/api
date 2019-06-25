@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { ErrorCode, UserRole } from "../interfaces/enum";
+import { stringify } from "query-string";
 import {
   sendPasswordReset,
   login,
@@ -37,6 +38,8 @@ import {
   getCodeFromRequest
 } from "../helpers/utils";
 import Joi from "@hapi/joi";
+import { KeyValue } from "../interfaces/general";
+import { FRONTEND_URL } from "../config";
 
 @Controller("auth")
 @ClassMiddleware(bruteForceHandler)
@@ -230,33 +233,37 @@ export class AuthController {
     res.json({ success: true, message: "auth-verify-email-success" });
   }
 
+  // OAuth2
+
+  @Get("oauth/callback/:service")
+  async oauthCallback(req: Request, res: Response) {
+    const go = (token: KeyValue) =>
+      safeRedirect(
+        req,
+        res,
+        `${FRONTEND_URL}/auth/store?${stringify({ service, ...token })}`
+      );
+    const service = req.params.service;
+    const code = req.query.code;
+    if (service === "github")
+      return res.json(go(await githubCallback(code, res.locals)));
+    if (service === "facebook")
+      return res.json(go(await facebookCallback(code, res.locals)));
+    if (service === "salesforce")
+      return res.json(go(await salesforceCallback(code, res.locals)));
+    throw new Error(ErrorCode.NOT_FOUND);
+  }
+
   @Get("oauth/github")
   async oauthGitHub(req: Request, res: Response) {
     safeRedirect(req, res, github.code.getUri());
   }
-  @Post("oauth/github")
-  async oauthGitHubCallback(req: Request, res: Response) {
-    const code = getCodeFromRequest(req);
-    res.json(await githubCallback(code, res.locals));
-  }
-
   @Get("oauth/facebook")
   async oauthFacebook(req: Request, res: Response) {
     safeRedirect(req, res, facebook.code.getUri());
   }
-  @Post("oauth/facebook")
-  async oauthFacebookCallback(req: Request, res: Response) {
-    const code = getCodeFromRequest(req);
-    res.json(await facebookCallback(code, res.locals));
-  }
-
   @Get("oauth/salesforce")
   async oauthSalesforce(req: Request, res: Response) {
     safeRedirect(req, res, salesforce.code.getUri());
-  }
-  @Post("oauth/salesforce")
-  async oauthSalesforceCallback(req: Request, res: Response) {
-    const code = getCodeFromRequest(req);
-    res.json(await salesforceCallback(code, res.locals));
   }
 }
