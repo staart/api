@@ -245,13 +245,12 @@ export class AuthController {
       );
     const service = req.params.service;
     const code = `${BASE_URL}/auth${req.path}?${stringify(req.query)}`;
-    if (service === "github")
-      return res.json(go(await githubCallback(code, res.locals)));
+    if (service === "github") return go(await githubCallback(code, res.locals));
     if (service === "facebook")
-      return res.json(go(await facebookCallback(code, res.locals)));
+      return go(await facebookCallback(code, res.locals));
     if (service === "salesforce")
-      return res.json(go(await salesforceCallback(code, res.locals)));
-    throw new Error(ErrorCode.NOT_FOUND);
+      return go(await salesforceCallback(code, res.locals));
+    safeRedirect(req, res, `${FRONTEND_URL}/errors/oauth`);
   }
 
   @Get("oauth/github")
