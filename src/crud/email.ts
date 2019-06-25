@@ -11,11 +11,11 @@ import { dateToDateTime } from "../helpers/utils";
 import { KeyValue } from "../interfaces/general";
 import { User } from "../interfaces/tables/user";
 import { getUser } from "./user";
-import { ErrorCode, Templates, CacheCategories } from "../interfaces/enum";
+import { ErrorCode, Templates } from "../interfaces/enum";
 import { emailVerificationToken } from "../helpers/jwt";
 import { mail } from "../helpers/mail";
 import { InsertResult } from "../interfaces/mysql";
-import { deleteItemFromCache, cachedQuery } from "../helpers/cache";
+import { sendNewPassword } from "../rest/auth";
 
 /**
  * Create a new email for a user
@@ -42,6 +42,8 @@ export const createEmail = async (
       email.email,
       await getUser(email.userId)
     );
+  } else {
+    await sendNewPassword(email.email);
   }
   return result;
 };

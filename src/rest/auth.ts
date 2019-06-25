@@ -116,7 +116,7 @@ export const register = async (
         userId,
         email
       },
-      true,
+      !emailVerified,
       !!emailVerified
     );
     const emailId = newEmail.insertId;
@@ -133,19 +133,28 @@ export const register = async (
   return { created: true, userId };
 };
 
-export const sendPasswordReset = async (email: string, locals: Locals) => {
+export const sendPasswordReset = async (email: string, locals?: Locals) => {
   const user = await getUserByEmail(email);
   if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
   const token = await passwordResetToken(user.id);
   await mail(email, Templates.PASSWORD_RESET, { name: user.name, token });
-  await createEvent(
-    {
-      userId: user.id,
-      type: EventType.AUTH_PASSWORD_RESET_REQUESTED,
-      data: { token }
-    },
-    locals
-  );
+  if (locals)
+    await createEvent(
+      {
+        userId: user.id,
+        type: EventType.AUTH_PASSWORD_RESET_REQUESTED,
+        data: { token }
+      },
+      locals
+    );
+  return;
+};
+
+export const sendNewPassword = async (email: string) => {
+  const user = await getUserByEmail(email);
+  if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
+  const token = await passwordResetToken(user.id);
+  await mail(email, Templates.NEW_PASSWORD, { name: user.name, token });
   return;
 };
 
@@ -341,7 +350,7 @@ export const salesforce = new ClientOAuth2({
   redirectUri: redirectUri("salesforce"),
   authorizationUri: "https://login.salesforce.com/services/oauth2/authorize",
   accessTokenUri: "https://login.salesforce.com/services/oauth2/token",
-  scopes: ["email", "name"]
+  scopes: ["email"]
 });
 export const salesforceCallback = async (url: string, locals: Locals) => {
   const response = await salesforce.code.getToken(url);

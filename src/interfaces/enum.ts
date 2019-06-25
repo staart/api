@@ -91,6 +91,7 @@ export enum ErrorCode {
 export enum Templates {
   EMAIL_VERIFY = "email-verify",
   PASSWORD_RESET = "password-reset",
+  NEW_PASSWORD = "new-password",
   UNAPPROVED_LOCATION = "unapproved-location"
 }
 
