@@ -51,6 +51,7 @@ import {
 } from "../crud/billing";
 import { getUser } from "../crud/user";
 import { ApiKey } from "../interfaces/tables/user";
+import { getUserPrimaryEmail } from "../crud/email";
 
 export const getOrganizationForUser = async (
   userId: number | ApiKey,
@@ -76,6 +77,10 @@ export const newOrganizationForUser = async (
     organizationId,
     userId,
     role: MembershipRole.OWNER
+  });
+  await createStripeCustomer(organizationId, {
+    email: await getUserPrimaryEmail(userId),
+    name: (await getUser(userId)).name
   });
   await createEvent(
     {

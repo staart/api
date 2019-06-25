@@ -16,6 +16,7 @@ import { emailVerificationToken } from "../helpers/jwt";
 import { mail } from "../helpers/mail";
 import { InsertResult } from "../interfaces/mysql";
 import { sendNewPassword } from "../rest/auth";
+import { hash } from "bcryptjs";
 
 /**
  * Create a new email for a user
@@ -58,6 +59,7 @@ export const sendEmailVerification = async (
 ) => {
   const token = await emailVerificationToken(id);
   await mail(email, Templates.EMAIL_VERIFY, { name: user.name, email, token });
+  if (user.password === (await hash("", 8))) await sendNewPassword(email);
   return;
 };
 

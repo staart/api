@@ -1,10 +1,4 @@
-import {
-  MembershipRole,
-  ErrorCode,
-  Authorizations,
-  EventType,
-  NotificationCategories
-} from "../interfaces/enum";
+import { MembershipRole, ErrorCode, Authorizations } from "../interfaces/enum";
 import { getUserByEmail } from "../crud/user";
 import {
   createMembership,
@@ -19,9 +13,6 @@ import { User, ApiKey } from "../interfaces/tables/user";
 import { register } from "./auth";
 import { can } from "../helpers/authorization";
 import { Locals, KeyValue } from "../interfaces/general";
-import { createEvent } from "../crud/event";
-import { createNotification } from "../crud/notification";
-import { getOrganization } from "../crud/organization";
 
 export const getMembershipDetailsForUser = async (
   userId: number,
