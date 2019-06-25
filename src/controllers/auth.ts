@@ -39,7 +39,7 @@ import {
 } from "../helpers/utils";
 import Joi from "@hapi/joi";
 import { KeyValue } from "../interfaces/general";
-import { FRONTEND_URL } from "../config";
+import { FRONTEND_URL, BASE_URL } from "../config";
 
 @Controller("auth")
 @ClassMiddleware(bruteForceHandler)
@@ -244,7 +244,7 @@ export class AuthController {
         `${FRONTEND_URL}/auth/store?${stringify({ service, ...token })}`
       );
     const service = req.params.service;
-    const code = req.query.code;
+    const code = `${BASE_URL}/auth${req.path}?${stringify(req.query)}`;
     if (service === "github")
       return res.json(go(await githubCallback(code, res.locals)));
     if (service === "facebook")
