@@ -81,6 +81,7 @@ export enum ErrorCode {
   STRIPE_NO_CUSTOMER = "404/no-customer",
   NOT_ENABLED_2FA = "400/invalid-2fa-token",
   INVALID_2FA_TOKEN = "401/invalid-2fa-token",
+  OAUTH_NO_NAME = "422/oauth-no-name",
   OAUTH_NO_EMAIL = "404/oauth-no-email",
   INVALID_API_KEY_SECRET = "401/invalid-api-key-secret",
   IP_RANGE_CHECK_FAIL = "401/ip-range-check-fail",
