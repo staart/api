@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import Brute from "express-brute";
 import RateLimit from "express-rate-limit";
 import slowDown from "express-slow-down";
+import Joi from "@hapi/joi";
 import { safeError } from "./errors";
 import { verifyToken } from "./jwt";
 import { ErrorCode, Tokens } from "../interfaces/enum";
@@ -20,6 +21,7 @@ import { getApiKeyWithoutOrg } from "../crud/organization";
 import { isMatch } from "matcher";
 import ipRangeCheck from "ip-range-check";
 import { ApiKey } from "../interfaces/tables/user";
+import { joiValidate } from "./utils";
 const store = new Brute.MemoryStore();
 const bruteForce = new Brute(store, {
   freeRetries: BRUTE_FREE_RETRIES,
@@ -186,4 +188,26 @@ export const speedLimitHandler = async (
     }
   }
   return speedLimiter(req, res, next);
+};
+
+export const validator = (
+  schemaMap: Joi.SchemaMap,
+  type: "body" | "params" | "query"
+) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    let data: any;
+    switch (type) {
+      case "params":
+        data = req.params;
+        break;
+      case "query":
+        data = req.query;
+        break;
+      default:
+        data = req.body;
+        break;
+    }
+    joiValidate(schemaMap, data);
+    next();
+  };
 };

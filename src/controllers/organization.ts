@@ -34,9 +34,10 @@ import {
   Delete,
   Controller,
   ClassMiddleware,
-  ClassWrapper
+  ClassWrapper,
+  Middleware
 } from "@overnightjs/core";
-import { authHandler } from "../helpers/middleware";
+import { authHandler, validator } from "../helpers/middleware";
 import { MembershipRole, ApiKeyAccess } from "../interfaces/enum";
 import { CREATED } from "http-status-codes";
 import asyncHandler from "express-async-handler";
@@ -53,26 +54,17 @@ import Joi from "@hapi/joi";
 @ClassMiddleware(authHandler)
 export class OrganizationController {
   @Put()
-  async put(req: Request, res: Response) {
-    const name = req.body.name;
-    const invitationDomain = req.body.invitationDomain;
-    joiValidate(
+  @Middleware(
+    validator(
       {
-        name: Joi.string()
-          .min(3)
-          .required(),
+        name: Joi.string().required(),
         invitationDomain: Joi.string()
       },
-      {
-        name,
-        invitationDomain
-      }
-    );
-    await newOrganizationForUser(
-      res.locals.token.id,
-      { name, invitationDomain },
-      res.locals
-    );
+      "body"
+    )
+  )
+  async put(req: Request, res: Response) {
+    await newOrganizationForUser(res.locals.token.id, req.body, res.locals);
     res
       .status(CREATED)
       .json({ success: true, message: "organization-created" });
