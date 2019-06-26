@@ -9,7 +9,7 @@ export const SENTRY_DSN = process.env.SENTRY_DSN || "";
 // Rate limiting
 export const BRUTE_FREE_RETRIES = process.env.BRUTE_FREE_RETRIES
   ? parseInt(process.env.BRUTE_FREE_RETRIES)
-  : 10;
+  : 50;
 export const BRUTE_LIFETIME = process.env.BRUTE_LIFETIME
   ? parseInt(process.env.BRUTE_LIFETIME)
   : 300000;
@@ -18,7 +18,7 @@ export const RATE_LIMIT_TIME = process.env.RATE_LIMIT_TIME
   : 60000; // 1 minute
 export const RATE_LIMIT_MAX = process.env.RATE_LIMIT_MAX
   ? parseInt(process.env.RATE_LIMIT_MAX)
-  : 300; // Max 300 requests/minute from an IP
+  : 1000; // Max 1,000 requests/minute from an IP
 export const PUBLIC_RATE_LIMIT_TIME = process.env.PUBLIC_RATE_LIMIT_TIME
   ? parseInt(process.env.PUBLIC_RATE_LIMIT_TIME)
   : 60000; // 1 minute
