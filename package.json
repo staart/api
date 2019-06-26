@@ -59,7 +59,7 @@
     "@types/response-time": "^2.3.3",
     "@types/stripe": "^6.30.3",
     "@types/validator": "^10.11.1",
-    "concurrently": "^4.1.0",
+    "concurrently": "^4.1.1",
     "coveralls": "^3.0.4",
     "dotenv": "^8.0.0",
     "husky": "^2.5.0",
