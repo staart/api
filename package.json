@@ -114,6 +114,6 @@
     "response-time": "^2.3.2",
     "rotating-file-stream": "^1.4.2",
     "slugify": "^1.3.4",
-    "stripe": "^7.3.0"
+    "stripe": "^7.4.0"
   }
 }
