@@ -5800,10 +5800,10 @@ rimraf@^2.5.4, rimraf@^2.6.1, rimraf@^2.6.2:
   dependencies:
     glob "^7.1.3"
 
-rotating-file-stream@^1.4.1:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/rotating-file-stream/-/rotating-file-stream-1.4.1.tgz#e378ff23b91e7960792cdc5cdeb121fc59d36003"
-  integrity sha512-80lz0OFYQ5p2ncW5RFq1TgxZmoNGlIhhDWhUQE9XNGYkrOH3fENdA1kMLaN0C7L9igRmCgnFd3NWgRRXVnV5tA==
+rotating-file-stream@^1.4.2:
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/rotating-file-stream/-/rotating-file-stream-1.4.2.tgz#d201ba05bb2936985021383e2b1b25f3450bd91d"
+  integrity sha512-AWVI1aL1POQl1AWAOnY8LIuqBL0m4k+2EWsExjA3SdvYba5E4y6/wn0LgfxzCdWgyNVuG/bPelZ1F7/C2QzQ+w==
 
 rsvp@^4.8.4:
   version "4.8.4"
