@@ -1565,11 +1565,6 @@ argparse@^1.0.7:
   dependencies:
     sprintf-js "~1.0.2"
 
-arguably@*:
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/arguably/-/arguably-0.1.6.tgz#1eba4689f1f7de08a277b455f2a1f250e8f2d3ed"
-  integrity sha1-HrpGifH33giid7RV8qHyUOjy0+0=
-
 arr-diff@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/arr-diff/-/arr-diff-4.0.0.tgz#d6461074febfec71e7e15235761a329a5dc7c520"
@@ -6669,19 +6664,6 @@ verror@1.10.0:
     assert-plus "^1.0.0"
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
-
-versiony-cli@^1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/versiony-cli/-/versiony-cli-1.3.0.tgz#9e30d633d3ad6f434889b41113cf446a960caf75"
-  integrity sha1-njDWM9Otb0NIibQRE89EapYMr3U=
-  dependencies:
-    arguably "*"
-    versiony "*"
-
-versiony@*:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/versiony/-/versiony-2.0.1.tgz#ef425067169a91648426bb4447a5d94fdd7654e0"
-  integrity sha1-70JQZxaakWSEJrtER6XZT912VOA=
 
 w3c-hr-time@^1.0.1:
   version "1.0.1"

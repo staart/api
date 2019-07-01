@@ -1,6 +1,6 @@
 {
   "name": "staart-manager",
-  "version": "1.0.48",
+  "version": "1.0.49",
   "main": "index.js",
   "repository": "git@github.com:AnandChowdhary/staart.git",
   "author": "Anand Chowdhary <mail@anandchowdhary.com>",
@@ -16,7 +16,7 @@
     "watch-server": "cd dist && nodemon index.js",
     "generate-docs": "yarn generate-routes && typedoc --out docs ./src",
     "generate-routes": "node setup/controllers.js",
-    "increment-package": "versiony --patch",
+    "increment-package": "node setup/increment.js",
     "check-update": "node setup/update.js",
     "update": "git pull git@github.com:o15y/staart",
     "postinstall": "npm run check-update"
@@ -74,7 +74,6 @@
     "ts-jest": "^24.0.2",
     "typedoc": "^0.14.2",
     "typescript": "^3.5.2",
-    "versiony-cli": "^1.3.0",
     "yaml": "^1.6.0"
   },
   "dependencies": {
