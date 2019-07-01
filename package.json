@@ -97,7 +97,7 @@
     "ip-anonymize": "^0.1.0",
     "ip-range-check": "^0.0.2",
     "jsonwebtoken": "^8.5.1",
-    "marked": "^0.6.2",
+    "marked": "^0.6.3",
     "matcher": "^2.0.0",
     "maxmind": "^3.0.5",
     "md5": "^2.2.1",
