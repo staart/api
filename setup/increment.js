@@ -14,10 +14,11 @@ const incrementVersion = async () => {
     path.join(__dirname, "..", "package.json"),
     JSON.stringify(pkg, null, 2)
   );
-  await fs.writeFile(
-    path.join(__dirname, "..", "src", "internal", "staart-version"),
-    newVersion
-  );
+  if (pkg.name === "staart-manager")
+    await fs.writeFile(
+      path.join(__dirname, "..", "src", "internal", "staart-version"),
+      newVersion
+    );
 };
 
 incrementVersion()

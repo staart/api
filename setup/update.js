@@ -21,7 +21,10 @@ const checkUpdate = async () => {
   const i = JSON.parse(
     (await fs.readFile(path.join(__dirname, "..", "package.json"))).toString()
   );
-  if (i.name !== "staart-manager") {
+  if (
+    i.name !== "staart-manager" &&
+    !Object.keys(i.devDependencies).includes("staart-manager")
+  ) {
     if (process.env.USE_NPM) {
       shell.exec("npm install --save-dev staart-manager");
     } else {
