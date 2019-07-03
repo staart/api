@@ -19,7 +19,9 @@
     "increment-package": "node setup/increment.js",
     "check-update": "node setup/update.js",
     "update": "git pull git@github.com:o15y/staart",
-    "postinstall": "npm run check-update"
+    "postinstall": "npm run check-update",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "husky": {
     "hooks": {
@@ -116,9 +118,11 @@
     "response-time": "^2.3.2",
     "rotating-file-stream": "^1.4.2",
     "slugify": "^1.3.4",
-    "stripe": "^7.4.0"
+    "stripe": "^7.4.0",
+    "snyk": "^1.189.0"
   },
   "files": [
     "setup"
-  ]
+  ],
+  "snyk": true
 }
