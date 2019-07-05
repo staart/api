@@ -5136,16 +5136,7 @@ nconf@^0.10.0:
     secure-keys "^1.0.0"
     yargs "^3.19.0"
 
-needle@^2.2.1:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/needle/-/needle-2.3.0.tgz#ce3fea21197267bacb310705a7bbe24f2a3a3492"
-  integrity sha512-QBZu7aAFR0522EyaXZM0FZ9GLpq6lvQ3uq8gteiDUp7wKdy0lSd2hPlgFwVuW1CBkfEs9PfDQsQzZghLs/psdg==
-  dependencies:
-    debug "^4.1.0"
-    iconv-lite "^0.4.4"
-    sax "^1.2.4"
-
-needle@^2.2.4:
+needle@^2.2.1, needle@^2.2.4:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/needle/-/needle-2.4.0.tgz#6833e74975c444642590e15a750288c5f939b57c"
   integrity sha512-4Hnwzr3mi5L97hMYeNl8wRW/Onhy4nUKR/lVemJ8gJedxxUyBLm9kkrDColJvoSfwi0jCNhD+xCdOtiGDQiRZg==
@@ -6778,10 +6769,10 @@ snyk-try-require@1.3.1, snyk-try-require@^1.1.1, snyk-try-require@^1.3.1:
     lru-cache "^4.0.0"
     then-fs "^2.0.0"
 
-snyk@^1.189.0:
-  version "1.192.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.192.0.tgz#1e3ba11c4029610cf0e1f68d93ad0215b80eedc5"
-  integrity sha512-+js/wtkeFndQRnHayPZLtqL0BJcDIICV2BdmtJZlYkGE+Jthm76tazJlpYWCAXe6D3VzSXE15Mb9drMp1vH4Fg==
+snyk@^1.192.2:
+  version "1.192.2"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.192.2.tgz#7fd4cc630301cb7f288d9b1412b2dd346056df05"
+  integrity sha512-4qGp7FE+Kqy3CuvxywnaBOuFY4iADc/poc6oPT00adVz61hP9Q+VnQr5Ztq+V/LCQwTMJqKSk0EuODEGSJbVXA==
   dependencies:
     "@snyk/dep-graph" "1.8.1"
     "@snyk/gemfile" "1.2.0"
