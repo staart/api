@@ -82,6 +82,20 @@ export class OrganizationController {
   }
 
   @Patch(":id")
+  @Middleware(
+    validator(
+      {
+        name: Joi.string(),
+        username: Joi.string(),
+        forceTwoFactor: Joi.bool(),
+        ipRestrictions: Joi.string(),
+        invitationDomain: Joi.string().regex(
+          /([a-z])([a-z0-9]+\.)*[a-z0-9]+\.[a-z.]+/
+        )
+      },
+      "body"
+    )
+  )
   async patch(req: Request, res: Response) {
     const id = await organizationUsernameToId(req.params.id);
     joiValidate({ id: Joi.number().required() }, { id });

@@ -29,14 +29,14 @@ import {
   ClassWrapper,
   ClassMiddleware
 } from "@overnightjs/core";
-import { authHandler, bruteForceHandler } from "../helpers/middleware";
+import {
+  authHandler,
+  bruteForceHandler,
+  validator
+} from "../helpers/middleware";
 import { CREATED } from "http-status-codes";
 import asyncHandler from "express-async-handler";
-import {
-  joiValidate,
-  safeRedirect,
-  getCodeFromRequest
-} from "../helpers/utils";
+import { safeRedirect, joiValidate } from "../helpers/utils";
 import Joi from "@hapi/joi";
 import { KeyValue } from "../interfaces/general";
 import { FRONTEND_URL, BASE_URL } from "../config";
@@ -46,27 +46,16 @@ import { FRONTEND_URL, BASE_URL } from "../config";
 @ClassWrapper(asyncHandler)
 export class AuthController {
   @Post("register")
-  async register(req: Request, res: Response) {
-    const email = req.body.email;
-    joiValidate(
+  @Middleware(
+    validator(
       {
         email: Joi.string()
           .email()
-          .required()
-      },
-      { email }
-    );
-    const user = req.body;
-    delete user.organizationId;
-    delete user.email;
-    if (user.role == UserRole.ADMIN) delete user.role;
-    delete user.membershipRole;
-    joiValidate(
-      {
+          .required(),
         name: Joi.string()
           .min(3)
+          .regex(/^[a-zA-Z ]*$/)
           .required(),
-        nickname: Joi.string().min(3),
         countryCode: Joi.string().length(2),
         password: Joi.string().min(6),
         gender: Joi.string().length(1),
@@ -75,8 +64,16 @@ export class AuthController {
           .max(5),
         timezone: Joi.string()
       },
-      user
-    );
+      "body"
+    )
+  )
+  async register(req: Request, res: Response) {
+    const email = req.body.email;
+    const user = req.body;
+    delete user.organizationId;
+    delete user.email;
+    if (user.role == UserRole.ADMIN) delete user.role;
+    delete user.membershipRole;
     await register(
       user,
       res.locals,
@@ -90,10 +87,8 @@ export class AuthController {
   }
 
   @Post("login")
-  async login(req: Request, res: Response) {
-    const email = req.body.email;
-    const password = req.body.password;
-    joiValidate(
+  @Middleware(
+    validator(
       {
         email: Joi.string()
           .email()
@@ -102,39 +97,45 @@ export class AuthController {
           .min(6)
           .required()
       },
-      { email, password }
-    );
-    res.json(await login(email, password, res.locals));
+      "body"
+    )
+  )
+  async login(req: Request, res: Response) {
+    res.json(await login(req.body.email, req.body.password, res.locals));
   }
 
   @Post("2fa")
-  async twoFactor(req: Request, res: Response) {
-    const code = req.body.code;
-    const token = req.body.token;
-    joiValidate(
+  @Middleware(
+    validator(
       {
         token: Joi.string().required(),
         code: Joi.number()
           .min(5)
           .required()
       },
-      { code, token }
-    );
+      "body"
+    )
+  )
+  async twoFactor(req: Request, res: Response) {
+    const code = req.body.code;
+    const token = req.body.token;
     res.json(await login2FA(code, token, res.locals));
   }
 
   @Post("verify-token")
-  async postVerifyToken(req: Request, res: Response) {
-    const token =
-      req.body.token || (req.get("Authorization") || "").replace("Bearer ", "");
-    const subject = req.body.subject;
-    joiValidate(
+  @Middleware(
+    validator(
       {
         token: Joi.string().required(),
         subject: Joi.string().required()
       },
-      { token, subject }
-    );
+      "body"
+    )
+  )
+  async postVerifyToken(req: Request, res: Response) {
+    const token =
+      req.body.token || (req.get("Authorization") || "").replace("Bearer ", "");
+    const subject = req.body.subject;
     try {
       const data = await verifyToken(token, subject);
       res.json({ verified: true, data });
@@ -153,16 +154,18 @@ export class AuthController {
   }
 
   @Post("reset-password/request")
-  async postResetPasswordRequest(req: Request, res: Response) {
-    const email = req.body.email;
-    joiValidate(
+  @Middleware(
+    validator(
       {
         email: Joi.string()
           .email()
           .required()
       },
-      { email }
-    );
+      "body"
+    )
+  )
+  async postResetPasswordRequest(req: Request, res: Response) {
+    const email = req.body.email;
     await sendPasswordReset(email, res.locals);
     res.json({ queued: true });
   }
