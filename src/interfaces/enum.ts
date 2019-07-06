@@ -85,7 +85,8 @@ export enum ErrorCode {
   OAUTH_NO_EMAIL = "404/oauth-no-email",
   INVALID_API_KEY_SECRET = "401/invalid-api-key-secret",
   IP_RANGE_CHECK_FAIL = "401/ip-range-check-fail",
-  REFERRER_CHECK_FAIL = "401/referrer-check-fail"
+  REFERRER_CHECK_FAIL = "401/referrer-check-fail",
+  DISPOSABLE_EMAIL = "422/disposable-email"
 }
 
 export enum Templates {

@@ -1,6 +1,6 @@
 {
   "name": "staart-manager",
-  "version": "1.0.51",
+  "version": "1.0.52",
   "main": "index.js",
   "repository": "git@github.com:AnandChowdhary/staart.git",
   "author": "Anand Chowdhary <mail@anandchowdhary.com>",
@@ -88,6 +88,7 @@
     "cors": "^2.8.5",
     "cron": "^1.7.1",
     "crypto-random-string": "^3.0.1",
+    "disposable-email-domains": "^1.0.46",
     "express": "^4.17.0",
     "express-async-handler": "^1.1.4",
     "express-brute": "^1.0.1",
@@ -118,8 +119,8 @@
     "response-time": "^2.3.2",
     "rotating-file-stream": "^1.4.2",
     "slugify": "^1.3.4",
-    "stripe": "^7.4.0",
-    "snyk": "^1.192.3"
+    "snyk": "^1.192.3",
+    "stripe": "^7.4.0"
   },
   "files": [
     "setup"

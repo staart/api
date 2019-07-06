@@ -16,7 +16,7 @@ import {
   getEmail,
   checkIfNewEmail
 } from "../crud/email";
-import { mail } from "../helpers/mail";
+import { mail, checkIfDisposableEmail } from "../helpers/mail";
 import {
   verifyToken,
   passwordResetToken,
@@ -52,7 +52,8 @@ import {
   FACEBOOK_CLIENT_ID,
   FACEBOOK_CLIENT_SECRET,
   SALESFORCE_CLIENT_ID,
-  SALESFORCE_CLIENT_SECRET
+  SALESFORCE_CLIENT_SECRET,
+  ALLOW_DISPOSABLE_EMAILS
 } from "../config";
 import axios from "axios";
 import { GitHubEmail } from "../interfaces/oauth";
@@ -103,7 +104,10 @@ export const register = async (
   role?: MembershipRole,
   emailVerified?: boolean
 ) => {
-  if (email) await checkIfNewEmail(email);
+  if (email) {
+    await checkIfNewEmail(email);
+    if (!ALLOW_DISPOSABLE_EMAILS) checkIfDisposableEmail(email);
+  }
   if (!user.username) user.username = createSlug(user.name);
   if (!(await checkUsernameAvailability(user.username)))
     throw new Error(ErrorCode.USERNAME_EXISTS);

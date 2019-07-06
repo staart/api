@@ -10,6 +10,7 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
+    "resolveJsonModule": true,
     "emitDecoratorMetadata": true,
     "declarationDir": "./dist",
     "outDir": "./dist",

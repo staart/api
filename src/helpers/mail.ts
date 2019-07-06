@@ -12,7 +12,13 @@ import { readFile } from "fs-extra";
 import { join } from "path";
 import { render } from "mustache";
 import marked from "marked";
+import { isMatch } from "matcher";
+import disposableDomains from "disposable-email-domains/index.json";
+import wildcardDomains from "disposable-email-domains/wildcard.json";
 import i18n from "../i18n";
+import Joi from "@hapi/joi";
+import { joiValidate } from "./utils";
+import { ErrorCode } from "../interfaces/enum";
 
 const client = createClient({
   key: SES_ACCESS,
@@ -56,4 +62,25 @@ export const mail = async (
     message,
     altText
   });
+};
+
+export const checkIfDisposableEmail = (email: string) => {
+  let isDisposable = false;
+  joiValidate(
+    {
+      email: Joi.string()
+        .email()
+        .required()
+    },
+    { email }
+  );
+  const domain = email.split("@")[1];
+  if (disposableDomains.includes(domain))
+    throw new Error(ErrorCode.DISPOSABLE_EMAIL);
+  const potentialMatches = wildcardDomains.filter(w => domain.includes(w));
+  potentialMatches.forEach(
+    d => (isDisposable = isDisposable || isMatch(email, `*.${d}`))
+  );
+  if (isDisposable) throw new Error(ErrorCode.DISPOSABLE_EMAIL);
+  return;
 };

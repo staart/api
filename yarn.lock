@@ -2540,6 +2540,11 @@ dijkstrajs@^1.0.1:
   resolved "https://registry.yarnpkg.com/dijkstrajs/-/dijkstrajs-1.0.1.tgz#d3cd81221e3ea40742cfcde556d4e99e98ddc71b"
   integrity sha1-082BIh4+pAdCz83lVtTpnpjdxxs=
 
+disposable-email-domains@^1.0.46:
+  version "1.0.46"
+  resolved "https://registry.yarnpkg.com/disposable-email-domains/-/disposable-email-domains-1.0.46.tgz#6f8c777bf56c8926f480b53986547a40a5ff3416"
+  integrity sha512-Nk8tDHrAqysWS3J0scrxPfIXeMT50iy+1zfqWrLbKg/q1x8qgWYW31gggVOUbC/YndDLalOaZk5JpnTv7A2Q0A==
+
 dns-prefetch-control@0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/dns-prefetch-control/-/dns-prefetch-control-0.1.0.tgz#60ddb457774e178f1f9415f0cabb0e85b0b300b2"
@@ -6769,10 +6774,10 @@ snyk-try-require@1.3.1, snyk-try-require@^1.1.1, snyk-try-require@^1.3.1:
     lru-cache "^4.0.0"
     then-fs "^2.0.0"
 
-snyk@^1.192.2:
-  version "1.192.2"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.192.2.tgz#7fd4cc630301cb7f288d9b1412b2dd346056df05"
-  integrity sha512-4qGp7FE+Kqy3CuvxywnaBOuFY4iADc/poc6oPT00adVz61hP9Q+VnQr5Ztq+V/LCQwTMJqKSk0EuODEGSJbVXA==
+snyk@^1.192.3:
+  version "1.192.3"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.192.3.tgz#2aba981b3068aaaf8a3fafd6b8f8e29cb4629b3c"
+  integrity sha512-Rm/qr7qxuCT324GSiKGWq/VzssG7DqeF2hQp7Odu/UPVDZ6JdBKQmL0uXe8SVSrRfbx7Pmy0GFK4ya1Fgy5Aaw==
   dependencies:
     "@snyk/dep-graph" "1.8.1"
     "@snyk/gemfile" "1.2.0"
