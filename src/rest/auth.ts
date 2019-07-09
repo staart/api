@@ -121,7 +121,7 @@ export const register = async (
         email
       },
       !emailVerified,
-      !!emailVerified
+      !user.password
     );
     const emailId = newEmail.insertId;
     await updateUser(userId, { primaryEmail: emailId });

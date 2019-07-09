@@ -26,9 +26,8 @@ import { hash } from "bcryptjs";
 export const createEmail = async (
   email: Email,
   sendVerification = true,
-  isVerified = false
+  sendPasswordSet = false
 ) => {
-  email.isVerified = isVerified;
   email.createdAt = new Date();
   email.updatedAt = email.createdAt;
   const result = <InsertResult>(
@@ -43,7 +42,8 @@ export const createEmail = async (
       email.email,
       await getUser(email.userId)
     );
-  } else {
+  }
+  if (sendPasswordSet) {
     await sendNewPassword(email.email);
   }
   return result;
