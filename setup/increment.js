@@ -16,7 +16,7 @@ const incrementVersion = async () => {
   );
   if (pkg.name === "staart-manager")
     await fs.writeFile(
-      path.join(__dirname, "..", "src", "internal", "staart-version"),
+      path.join(__dirname, "..", "setup", "internal", "staart-version"),
       newVersion
     );
 };
