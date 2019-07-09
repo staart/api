@@ -23,9 +23,10 @@ import {
   Delete,
   Controller,
   ClassMiddleware,
-  ClassWrapper
+  ClassWrapper,
+  Middleware
 } from "@overnightjs/core";
-import { authHandler } from "../helpers/middleware";
+import { authHandler, validator } from "../helpers/middleware";
 import {
   getAllEmailsForUser,
   addEmailToUserForUser,
@@ -54,6 +55,30 @@ export class UserController {
   }
 
   @Patch(":id")
+  @Middleware(
+    validator(
+      {
+        name: Joi.string()
+          .min(3)
+          .regex(/^[a-zA-Z ]*$/),
+        username: Joi.string(),
+        nickname: Joi.string(),
+        primaryEmail: Joi.number(),
+        countryCode: Joi.string().length(2),
+        password: Joi.string().min(6),
+        gender: Joi.string().length(1),
+        preferredLanguage: Joi.string()
+          .min(2)
+          .max(5),
+        timezone: Joi.string(),
+        notificationEmails: Joi.number(),
+        prefersReducedMotion: Joi.boolean(),
+        prefersColorSchemeDark: Joi.boolean(),
+        profilePicture: Joi.string()
+      },
+      "body"
+    )
+  )
   async patch(req: Request, res: Response) {
     let id = req.params.id;
     if (id === "me") id = res.locals.token.id;
@@ -77,14 +102,9 @@ export class UserController {
   }
 
   @Put(":id/password")
-  async updatePassword(req: Request, res: Response) {
-    let id = req.params.id;
-    if (id === "me") id = res.locals.token.id;
-    const oldPassword = req.body.oldPassword;
-    const newPassword = req.body.newPassword;
-    joiValidate(
+  @Middleware(
+    validator(
       {
-        id: [Joi.string().required(), Joi.number().required()],
         oldPassword: Joi.string()
           .min(6)
           .required(),
@@ -92,7 +112,19 @@ export class UserController {
           .min(6)
           .required()
       },
-      { id, oldPassword, newPassword }
+      "body"
+    )
+  )
+  async updatePassword(req: Request, res: Response) {
+    let id = req.params.id;
+    if (id === "me") id = res.locals.token.id;
+    const oldPassword = req.body.oldPassword;
+    const newPassword = req.body.newPassword;
+    joiValidate(
+      {
+        id: [Joi.string().required(), Joi.number().required()]
+      },
+      { id }
     );
     await updatePasswordForUser(
       res.locals.token.id,
