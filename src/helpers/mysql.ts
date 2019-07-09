@@ -4,7 +4,8 @@ import {
   DB_USERNAME,
   DB_PORT,
   DB_PASSWORD,
-  DB_DATABASE
+  DB_DATABASE,
+  DB_TABLE_PREFIX
 } from "../config";
 import { User } from "../interfaces/tables/user";
 import { BackupCode } from "../interfaces/tables/backup-codes";
@@ -154,3 +155,5 @@ export const addIsPrimaryToEmail = async (email: Email) => {
   email.isPrimary = email.id === userPrimaryEmailObject.id;
   return email;
 };
+
+export const tableName = (name: string) => `${DB_TABLE_PREFIX}${name}`;

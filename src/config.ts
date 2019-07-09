@@ -43,6 +43,7 @@ export const DB_PORT = process.env.DB_PORT
 export const DB_USERNAME = process.env.DB_USERNAME || "root";
 export const DB_PASSWORD = process.env.DB_PASSWORD || "";
 export const DB_DATABASE = process.env.DB_DATABASE || "database";
+export const DB_TABLE_PREFIX = process.env.DB_TABLE_PREFIX || "";
 
 // Caching
 export const CACHE_TTL = process.env.CACHE_TTL

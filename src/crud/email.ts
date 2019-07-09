@@ -4,10 +4,10 @@ import {
   setValues,
   removeReadOnlyValues,
   addIsPrimaryToEmails,
-  addIsPrimaryToEmail
+  addIsPrimaryToEmail,
+  tableName
 } from "../helpers/mysql";
 import { Email } from "../interfaces/tables/emails";
-import { dateToDateTime } from "../helpers/utils";
 import { KeyValue } from "../interfaces/general";
 import { User } from "../interfaces/tables/user";
 import { getUser } from "./user";
@@ -32,7 +32,7 @@ export const createEmail = async (
   email.updatedAt = email.createdAt;
   const result = <InsertResult>(
     await query(
-      `INSERT INTO emails ${tableValues(email)}`,
+      `INSERT INTO ${tableName("emails")} ${tableValues(email)}`,
       Object.values(email)
     )
   );
@@ -81,19 +81,17 @@ export const resendEmailVerification = async (id: number) => {
 export const updateEmail = async (id: number, email: KeyValue) => {
   email.updatedAt = new Date();
   email = removeReadOnlyValues(email);
-  const emailDetails = await getEmail(id);
-  return await query(`UPDATE emails SET ${setValues(email)} WHERE id = ?`, [
-    ...Object.values(email),
-    id
-  ]);
+  return await query(
+    `UPDATE ${tableName("emails")} SET ${setValues(email)} WHERE id = ?`,
+    [...Object.values(email), id]
+  );
 };
 
 /**
  * Delete a user's email
  */
 export const deleteEmail = async (id: number) => {
-  const emailDetails = await getEmail(id);
-  return await query("DELETE FROM emails WHERE id = ?", [id]);
+  return await query(`DELETE FROM ${tableName("emails")} WHERE id = ?`, [id]);
 };
 
 /**
@@ -105,7 +103,9 @@ export const deleteAllUserEmails = async (userId: number) => {
     if (email.id && email.email) {
     }
   });
-  return await query("DELETE FROM emails WHERE userId = ?", [userId]);
+  return await query(`DELETE FROM ${tableName("emails")} WHERE userId = ?`, [
+    userId
+  ]);
 };
 
 /**
@@ -113,7 +113,9 @@ export const deleteAllUserEmails = async (userId: number) => {
  */
 export const getEmail = async (id: number) => {
   return (<Email[]>(
-    await query("SELECT * FROM emails WHERE id = ? LIMIT 1", [id])
+    await query(`SELECT * FROM ${tableName("emails")} WHERE id = ? LIMIT 1`, [
+      id
+    ])
   ))[0];
 };
 
@@ -146,7 +148,9 @@ export const getUserPrimaryEmail = async (user: User | number) => {
  */
 export const getUserEmails = async (userId: number) => {
   return await addIsPrimaryToEmails(<Email[]>(
-    await query("SELECT * FROM emails WHERE userId = ?", [userId])
+    await query(`SELECT * FROM ${tableName("emails")} WHERE userId = ?`, [
+      userId
+    ])
   ));
 };
 
@@ -159,7 +163,9 @@ export const getUserBestEmail = async (userId: number) => {
   } catch (error) {}
   return await (<Email[]>(
     await query(
-      "SELECT * FROM emails WHERE userId = ? ORDER BY isVerified DESC LIMIT 1",
+      `SELECT * FROM ${tableName(
+        "emails"
+      )} WHERE userId = ? ORDER BY isVerified DESC LIMIT 1`,
       [userId]
     )
   ))[0].email;
@@ -171,7 +177,10 @@ export const getUserBestEmail = async (userId: number) => {
 export const getEmailObject = async (email: string) => {
   return await addIsPrimaryToEmail(
     (<Email[]>(
-      await query("SELECT * FROM emails WHERE email = ? LIMIT 1", [email])
+      await query(
+        `SELECT * FROM ${tableName("emails")} WHERE email = ? LIMIT 1`,
+        [email]
+      )
     ))[0]
   );
 };
@@ -182,7 +191,9 @@ export const getEmailObject = async (email: string) => {
 export const getVerifiedEmailObject = async (email: string) => {
   return (<Email[]>(
     await query(
-      "SELECT * FROM emails WHERE email = ? AND isVerified = 1 LIMIT 1",
+      `SELECT * FROM ${tableName(
+        "emails"
+      )} WHERE email = ? AND isVerified = 1 LIMIT 1`,
       [email]
     )
   ))[0];
@@ -200,9 +211,12 @@ export const getUserVerifiedEmails = async (user: User | number) => {
   }
   if (!userId) throw new Error(ErrorCode.USER_NOT_FOUND);
   return await addIsPrimaryToEmails(<Email[]>(
-    await query("SELECT * FROM emails WHERE userId = ? AND isVerified = 1", [
-      userId
-    ])
+    await query(
+      `SELECT * FROM ${tableName(
+        "emails"
+      )} WHERE userId = ? AND isVerified = 1`,
+      [userId]
+    )
   ));
 };
 
