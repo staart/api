@@ -4,9 +4,22 @@ import { Event } from "../interfaces/tables/events";
 import { getItemFromCache, storeItemInCache } from "./cache";
 import { CacheCategories } from "../interfaces/enum";
 
-export const getGeolocationFromIp = async (ipAddress: string) => {
+export interface GeoLocation {
+  city?: string;
+  country?: string;
+  continent?: string;
+  latitude?: number;
+  longitude?: number;
+  time_zone?: string;
+  accuracy_radius?: number;
+  zip_code?: string;
+  region_name?: string;
+}
+export const getGeolocationFromIp = async (
+  ipAddress: string
+): Promise<GeoLocation | undefined> => {
   const cachedLookup = getItemFromCache(CacheCategories.IP_LOOKUP, ipAddress);
-  if (cachedLookup) return cachedLookup;
+  if (cachedLookup) return cachedLookup as GeoLocation;
   const lookup = await maxmind.open<CityResponse>(geoLite2.paths.city);
   const ipLookup = lookup.get(ipAddress);
   if (!ipLookup) return;

@@ -14,6 +14,7 @@ import {
 } from "./helpers/middleware";
 import { mkdirSync, existsSync } from "fs";
 import { join } from "path";
+import { Request, Response } from "express";
 
 const logDirectory = join(__dirname, "..", "logs");
 existsSync(logDirectory) || mkdirSync(logDirectory);
@@ -44,6 +45,12 @@ export class Staart extends Server {
   }
 
   private setupControllers() {
+    this.app.get("/", (req: Request, res: Response) =>
+      res.json({
+        repository: "https://github.com/o15y/staart",
+        demo: "https://staart-demo.o15y.com"
+      })
+    );
     // staart:setup/controllers
   }
 

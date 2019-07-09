@@ -82,13 +82,13 @@ export const login = async (
 
 export const login2FA = async (code: number, token: string, locals: Locals) => {
   const data = (await verifyToken(token, Tokens.TWO_FACTOR)) as any;
-  const user = await getUser(data.userId, true);
+  const user = await getUser(data.id, true);
   const secret = user.twoFactorSecret;
   if (!secret) throw new Error(ErrorCode.NOT_ENABLED_2FA);
   if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
   if (authenticator.check(code.toString(), secret))
     return await postLoginTokens(user);
-  const backupCode = await getUserBackupCode(data.userId, code);
+  const backupCode = await getUserBackupCode(data.id, code);
   if (backupCode && !backupCode.used) {
     await updateBackupCode(backupCode.code, { used: true });
     return await postLoginTokens(user);
@@ -221,15 +221,16 @@ export const impersonate = async (
 };
 
 export const approveLocation = async (token: string, locals: Locals) => {
-  const tokenUser = <User>await verifyToken(token, Tokens.APPROVE_LOCATION);
+  const tokenUser = await verifyToken(token, Tokens.APPROVE_LOCATION);
   if (!tokenUser.id) throw new Error(ErrorCode.USER_NOT_FOUND);
   const user = await getUser(tokenUser.id);
   if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
-  await addApprovedLocation(user.id, locals.ipAddress);
+  const ipAddress = tokenUser.ipAddress || locals.ipAddress;
+  await addApprovedLocation(user.id, ipAddress);
   return await getLoginResponse(
     user,
     EventType.AUTH_APPROVE_LOCATION,
-    locals.ipAddress,
+    ipAddress,
     locals
   );
 };

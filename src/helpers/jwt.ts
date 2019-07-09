@@ -20,6 +20,8 @@ import {
   getUserBestEmail
 } from "../crud/email";
 import { mail } from "./mail";
+import { getGeolocationFromIp } from "./location";
+import i18n from "../i18n";
 
 /**
  * Generate a new JWT
@@ -49,11 +51,18 @@ export const generateToken = (
 /**
  * Verify a JWT
  */
-export const verifyToken = (token: string, subject: string) =>
+export interface TokenResponse {
+  id: number;
+  ipAddress?: string;
+}
+export const verifyToken = (
+  token: string,
+  subject: string
+): Promise<TokenResponse> =>
   new Promise((resolve, reject) => {
     verify(token, JWT_SECRET, { subject }, (error, data) => {
       if (error) return reject(error);
-      resolve(data);
+      resolve(data as TokenResponse);
     });
   });
 
@@ -79,13 +88,17 @@ export const loginToken = (user: User) =>
  * Generate a new 2FA JWT
  */
 export const twoFactorToken = (user: User) =>
-  generateToken({ userId: user.id }, TOKEN_EXPIRY_LOGIN, Tokens.TWO_FACTOR);
+  generateToken({ id: user.id }, TOKEN_EXPIRY_LOGIN, Tokens.TWO_FACTOR);
 
 /**
  * Generate a new approve location JWT
  */
-export const approveLocationToken = (id: number) =>
-  generateToken({ id }, TOKEN_EXPIRY_APPROVE_LOCATION, Tokens.APPROVE_LOCATION);
+export const approveLocationToken = (id: number, ipAddress: string) =>
+  generateToken(
+    { id, ipAddress },
+    TOKEN_EXPIRY_APPROVE_LOCATION,
+    Tokens.APPROVE_LOCATION
+  );
 
 /**
  * Generate a new refresh JWT
@@ -120,12 +133,16 @@ export const getLoginResponse = async (
   if (!verifiedEmails.length) throw new Error(ErrorCode.UNVERIFIED_EMAIL);
   if (locals) {
     if (!(await checkApprovedLocation(user.id, locals.ipAddress))) {
+      const location = await getGeolocationFromIp(locals.ipAddress);
       await mail(
         await getUserPrimaryEmail(user),
         Templates.UNAPPROVED_LOCATION,
         {
           ...user,
-          token: await approveLocationToken(user.id)
+          location: location
+            ? location.city || location.region_name || location.country
+            : i18n.en.emails["unknown-location"],
+          token: await approveLocationToken(user.id, locals.ipAddress)
         }
       );
       throw new Error(ErrorCode.UNAPPROVED_LOCATION);

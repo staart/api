@@ -10,7 +10,8 @@ export default {
     emails: {
       "email-verify": "Verify your new email",
       "password-reset": "Reset your password",
-      "unapproved-location": "Login from a new location"
+      "unapproved-location": "Login from a new location",
+      "unknown-location": "Unknown location"
     }
   }
 } as I18N;
