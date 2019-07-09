@@ -1,7 +1,7 @@
 import { query, tableValues } from "../helpers/mysql";
 import { Event } from "../interfaces/tables/events";
 import { Locals } from "../interfaces/general";
-import { deleteItemFromCache, cachedQuery } from "../helpers/cache";
+import { cachedQuery } from "../helpers/cache";
 import { CacheCategories } from "../interfaces/enum";
 import { addLocationToEvents } from "../helpers/location";
 
@@ -44,12 +44,9 @@ export const getUserRecentEvents = async (userId: number) => {
  */
 export const getOrganizationEvents = async (organizationId: number) => {
   return <Event[]>(
-    await cachedQuery(
-      CacheCategories.ORGANIZATION_EVENT,
-      organizationId,
-      `SELECT * FROM events WHERE organizationId = ?`,
-      [organizationId]
-    )
+    await query(`SELECT * FROM events WHERE organizationId = ?`, [
+      organizationId
+    ])
   );
 };
 

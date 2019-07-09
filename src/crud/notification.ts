@@ -5,10 +5,8 @@ import {
   removeReadOnlyValues,
   setValues
 } from "../helpers/mysql";
-import { CacheCategories, ErrorCode } from "../interfaces/enum";
-import { deleteItemFromCache, cachedQuery } from "../helpers/cache";
+import { ErrorCode } from "../interfaces/enum";
 import { KeyValue } from "../interfaces/general";
-import { dateToDateTime } from "../helpers/utils";
 
 /**
  * Create a notification
@@ -41,7 +39,7 @@ export const updateNotification = async (
 ) => {
   const notificationDetails = await getNotification(notificationId);
   if (!notificationDetails.userId) throw new Error(ErrorCode.NOT_FOUND);
-  data.updatedAt = dateToDateTime(new Date());
+  data.updatedAt = new Date();
   data = removeReadOnlyValues(data);
   return await query(
     `UPDATE notifications SET ${setValues(data)} WHERE id = ?`,

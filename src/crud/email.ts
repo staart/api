@@ -79,7 +79,7 @@ export const resendEmailVerification = async (id: number) => {
  * Update a user's email details
  */
 export const updateEmail = async (id: number, email: KeyValue) => {
-  email.updatedAt = dateToDateTime(new Date());
+  email.updatedAt = new Date();
   email = removeReadOnlyValues(email);
   const emailDetails = await getEmail(id);
   return await query(`UPDATE emails SET ${setValues(email)} WHERE id = ?`, [

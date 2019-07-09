@@ -107,7 +107,6 @@ export enum Tokens {
 
 export enum CacheCategories {
   USER = "user",
-  ORGANIZATION_EVENT = "organization-event",
   ORGANIZATION_RECENT_EVENTS = "organization-recent-events",
   USER_MEMBERSHIPS = "user-memberships",
   MEMBERSHIP = "membership",

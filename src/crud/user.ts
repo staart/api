@@ -7,7 +7,6 @@ import {
 import { User, ApprovedLocation } from "../interfaces/tables/user";
 import {
   capitalizeFirstAndLastLetter,
-  dateToDateTime,
   deleteSensitiveInfoUser,
   anonymizeIpAddress
 } from "../helpers/utils";
@@ -91,7 +90,7 @@ export const getUserByEmail = async (email: string, secureOrigin = false) => {
  * Update a user's details
  */
 export const updateUser = async (id: number, user: KeyValue) => {
-  user.updatedAt = dateToDateTime(new Date());
+  user.updatedAt = new Date();
   if (user.password) user.password = await hash(user.password, 8);
   user = removeReadOnlyValues(user);
   // If you're updating your primary email, your Gravatar should reflect it

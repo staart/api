@@ -85,6 +85,5 @@ export const SALESFORCE_CLIENT_ID = process.env.SALESFORCE_CLIENT_ID || "";
 export const SALESFORCE_CLIENT_SECRET =
   process.env.SALESFORCE_CLIENT_SECRET || "";
 
+// Payments and billing
 export const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || "";
-export const CHARGEBEE_SECRET_KEY = process.env.CHARGEBEE_SECRET_KEY || "";
-export const CHARGEBEE_SITE = process.env.CHARGEBEE_SITE || "";

@@ -1,6 +1,5 @@
 import { query, setValues, removeReadOnlyValues } from "../helpers/mysql";
 import { KeyValue } from "../interfaces/general";
-import { dateToDateTime } from "../helpers/utils";
 
 /*
  * Get pagination data
@@ -57,7 +56,7 @@ export const updateData = async (
   conditions: KeyValue,
   data: KeyValue
 ) => {
-  data.updatedAt = dateToDateTime(new Date());
+  data.updatedAt = new Date();
   data = removeReadOnlyValues(data);
   return await query(
     `UPDATE \`${table}\` SET ${setValues(data)} WHERE ${Object.keys(conditions)

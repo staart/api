@@ -5,7 +5,6 @@ import {
   removeReadOnlyValues
 } from "../helpers/mysql";
 import { Membership } from "../interfaces/tables/memberships";
-import { dateToDateTime } from "../helpers/utils";
 import { KeyValue } from "../interfaces/general";
 import { User } from "../interfaces/tables/user";
 import { getOrganization } from "./organization";
@@ -32,7 +31,7 @@ export const createMembership = async (membership: Membership) => {
  * Update an organization membership for a user
  */
 export const updateMembership = async (id: number, membership: KeyValue) => {
-  membership.updatedAt = dateToDateTime(new Date());
+  membership.updatedAt = new Date();
   membership = removeReadOnlyValues(membership);
   const membershipDetails = await getMembership(id);
   if (membershipDetails.id)

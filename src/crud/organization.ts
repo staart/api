@@ -5,11 +5,7 @@ import {
   removeReadOnlyValues
 } from "../helpers/mysql";
 import { Organization } from "../interfaces/tables/organization";
-import {
-  capitalizeFirstAndLastLetter,
-  dateToDateTime,
-  createSlug
-} from "../helpers/utils";
+import { capitalizeFirstAndLastLetter, createSlug } from "../helpers/utils";
 import { KeyValue } from "../interfaces/general";
 import { cachedQuery, deleteItemFromCache } from "../helpers/cache";
 import { CacheCategories, ErrorCode } from "../interfaces/enum";
@@ -72,7 +68,7 @@ export const updateOrganization = async (
   id: number,
   organization: KeyValue
 ) => {
-  organization.updatedAt = dateToDateTime(new Date());
+  organization.updatedAt = new Date();
   organization = removeReadOnlyValues(organization);
   const originalOrganization = await getOrganization(id);
   if (organization.username && originalOrganization.username) {
@@ -171,7 +167,7 @@ export const updateApiKey = async (
   apiKey: string,
   data: KeyValue
 ) => {
-  data.updatedAt = dateToDateTime(new Date());
+  data.updatedAt = new Date();
   data = removeReadOnlyValues(data);
   deleteItemFromCache(CacheCategories.API_KEY, apiKey);
   deleteItemFromCache(
