@@ -36,7 +36,7 @@
     "@babel/core": "^7.5.0",
     "@babel/plugin-proposal-decorators": "^7.4.4",
     "@babel/polyfill": "^7.4.4",
-    "@babel/preset-env": "^7.5.2",
+    "@babel/preset-env": "^7.5.4",
     "@babel/preset-typescript": "^7.3.3",
     "@overnightjs/core": "^1.6.9",
     "@types/bcryptjs": "^2.4.2",
