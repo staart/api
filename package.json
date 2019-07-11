@@ -119,7 +119,7 @@
     "response-time": "^2.3.2",
     "rotating-file-stream": "^1.4.2",
     "slugify": "^1.3.4",
-    "snyk": "^1.192.6",
+    "snyk": "^1.193.0",
     "stripe": "^7.4.0"
   },
   "files": [
