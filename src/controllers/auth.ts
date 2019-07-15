@@ -39,13 +39,14 @@ import { stringify } from "querystring";
 const OAuthRedirector = (action: RequestHandler) => (
   ...args: [Request, Response, NextFunction]
 ) => {
-  return action(args[0], args[1], () => {
+  return action(args[0], args[1], (error: Error) => {
     safeRedirect(
       args[0],
       args[1],
       `${FRONTEND_URL}/errors/oauth?${stringify({
         ...args[0].params,
-        ...args[0].query
+        ...args[0].query,
+        error: error.toString().replace("Error: ", "")
       })}`
     );
   });
@@ -250,10 +251,12 @@ export class AuthController {
     safeRedirect(
       req,
       res,
-      await salesforce.callback(
-        `${BASE_URL}/auth${req.path}?${stringify(req.query)}`,
-        res.locals
-      )
+      `${FRONTEND_URL}/auth/token?${stringify(
+        await salesforce.callback(
+          `${BASE_URL}/auth${req.path}?${stringify(req.query)}`,
+          res.locals
+        )
+      )}`
     );
   }
 }
