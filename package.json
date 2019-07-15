@@ -9,7 +9,7 @@
     "test": "jest",
     "build": "touch .env && mkdir -p dist && cp .env dist/.env && npm run generate-routes && tsc",
     "build-babel": "touch .env && babel src -d dist --extensions '.ts' && cp .env dist/.env",
-    "start": "npm run build-babel && node dist/index.js",
+    "start": "npm run build && node dist/index.js",
     "dev": "concurrently 'yarn watch-build' 'nodemon dist/index.js'",
     "prettier-all": "prettier '{src,examples,setup}/**/*.{ts,js,json}' --write",
     "watch-build": "onchange '{src,examples}/**/*.ts' -- yarn build-babel",
