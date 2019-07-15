@@ -1,8 +1,9 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction, RequestHandler } from "express";
 import Brute from "express-brute";
 import RateLimit from "express-rate-limit";
 import slowDown from "express-slow-down";
 import Joi from "@hapi/joi";
+import { stringify } from "yaml";
 import { safeError } from "./errors";
 import { verifyToken } from "./jwt";
 import { ErrorCode, Tokens } from "../interfaces/enum";
@@ -210,4 +211,23 @@ export const validator = (
     joiValidate(schemaMap, data);
     next();
   };
+};
+
+export const responder = (action: RequestHandler) => (
+  ...args: [Request, Response, NextFunction]
+) => {
+  const req = args[0];
+  const res = args[1];
+  action(req, res, args[2])
+    .then((response: any) => {
+      if (req.query.format === "yaml") {
+        res.set("Content-Type", "application/x-yaml");
+        res.send(stringify(response));
+      } else {
+        res.json(response);
+      }
+    })
+    .catch((error: string) => {
+      throw new Error(error);
+    });
 };

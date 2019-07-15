@@ -6,8 +6,12 @@ import {
   BASE_URL,
   GITHUB_CLIENT_ID,
   GITHUB_CLIENT_SECRET,
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
   MICROSOFT_CLIENT_ID,
-  MICROSOFT_CLIENT_SECRET
+  MICROSOFT_CLIENT_SECRET,
+  FACEBOOK_CLIENT_ID,
+  FACEBOOK_CLIENT_SECRET
 } from "../config";
 import { Locals } from "../interfaces/general";
 import { ErrorCode, EventType } from "../interfaces/enum";
@@ -94,6 +98,44 @@ export const github = {
       }
     })).data;
     return loginWithOAuth2Service("github", data.name, data.email, locals);
+  }
+};
+export const facebook = {
+  client: new ClientOAuth2({
+    clientId: FACEBOOK_CLIENT_ID,
+    clientSecret: FACEBOOK_CLIENT_SECRET,
+    redirectUri: getRedirectUri("facebook"),
+    authorizationUri: "https://www.facebook.com/v3.3/dialog/oauth",
+    accessTokenUri: "https://graph.facebook.com/v3.3/oauth/access_token",
+    scopes: ["email"]
+  }),
+  callback: async (url: string, locals: Locals) => {
+    const token = (await facebook.client.code.getToken(url)).accessToken;
+    const data = (await axios.get(
+      `https://graph.facebook.com/v3.3/me?fields=name,email&access_token=${token}`
+    )).data;
+    return loginWithOAuth2Service("facebook", data.name, data.email, locals);
+  }
+};
+export const google = {
+  client: new ClientOAuth2({
+    clientId: GOOGLE_CLIENT_ID,
+    clientSecret: GOOGLE_CLIENT_SECRET,
+    redirectUri: getRedirectUri("google"),
+    authorizationUri: "https://accounts.google.com/o/oauth2/v2/auth",
+    accessTokenUri: "https://www.googleapis.com/oauth2/v4/token",
+    scopes: ["https://www.googleapis.com/auth/userinfo.email"]
+  }),
+  callback: async (url: string, locals: Locals) => {
+    // const token = (await google.client.code.getToken(url));
+    // console.log("Got response", JSON.stringify(token.accessToken));
+    return {};
+    // const data = (await axios.get("https://api.google.com/user", {
+    //   headers: {
+    //     Authorization: `token ${token}`
+    //   }
+    // })).data;
+    // return loginWithOAuth2Service("google", data.name, data.email, locals);
   }
 };
 export const microsoft = {

@@ -35,11 +35,6 @@ import {
 } from "../interfaces/enum";
 import { compare } from "bcryptjs";
 import { createMembership } from "../crud/membership";
-import {
-  googleGetConnectionUrl,
-  googleGetTokensFromCode,
-  googleGetEmailFromToken
-} from "../helpers/google";
 import { can } from "../helpers/authorization";
 import { authenticator } from "otplib";
 import ClientOAuth2 from "client-oauth2";
@@ -47,8 +42,6 @@ import {
   BASE_URL,
   GITHUB_CLIENT_ID,
   GITHUB_CLIENT_SECRET,
-  GOOGLE_CLIENT_ID,
-  GOOGLE_CLIENT_SECRET,
   FACEBOOK_CLIENT_ID,
   FACEBOOK_CLIENT_SECRET,
   SALESFORCE_CLIENT_ID,
@@ -192,17 +185,6 @@ export const updatePassword = async (
     locals
   );
   return;
-};
-
-export const loginWithGoogleLink = () => googleGetConnectionUrl();
-
-export const loginWithGoogleVerify = async (code: string, locals: Locals) => {
-  const data = await googleGetTokensFromCode(code);
-  const email = await googleGetEmailFromToken(data);
-  if (!email) throw new Error(ErrorCode.USER_NOT_FOUND);
-  const user = await getUserByEmail(email);
-  if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
-  return await getLoginResponse(user, EventType.AUTH_LOGIN, "google", locals);
 };
 
 export const impersonate = async (

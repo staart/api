@@ -5,8 +5,6 @@ import {
   login,
   updatePassword,
   validateRefreshToken,
-  loginWithGoogleLink,
-  loginWithGoogleVerify,
   impersonate,
   approveLocation,
   verifyEmail,
@@ -26,14 +24,15 @@ import {
 import {
   authHandler,
   bruteForceHandler,
-  validator
+  validator,
+  responder
 } from "../helpers/middleware";
 import { CREATED } from "http-status-codes";
 import asyncHandler from "express-async-handler";
 import { safeRedirect, joiValidate } from "../helpers/utils";
 import Joi from "@hapi/joi";
 import { FRONTEND_URL, BASE_URL } from "../config";
-import { salesforce, github, microsoft } from "../rest/oauth";
+import { salesforce, github, microsoft, google, facebook } from "../rest/oauth";
 import { stringify } from "querystring";
 
 const OAuthRedirector = (action: RequestHandler) => (
@@ -69,6 +68,7 @@ const OAuthRedirect = (
 @Controller("auth")
 @ClassMiddleware(bruteForceHandler)
 @ClassWrapper(asyncHandler)
+@ClassWrapper(responder)
 export class AuthController {
   @Post("register")
   @Middleware(
@@ -144,7 +144,7 @@ export class AuthController {
   async twoFactor(req: Request, res: Response) {
     const code = req.body.code;
     const token = req.body.token;
-    res.json(await login2FA(code, token, res.locals));
+    return await login2FA(code, token, res.locals);
   }
 
   @Post("verify-token")
@@ -175,7 +175,7 @@ export class AuthController {
     const token =
       req.body.token || (req.get("Authorization") || "").replace("Bearer ", "");
     joiValidate({ token: Joi.string().required() }, { token });
-    res.json(await validateRefreshToken(token, res.locals));
+    return await validateRefreshToken(token, res.locals);
   }
 
   @Post("reset-password/request")
@@ -192,7 +192,7 @@ export class AuthController {
   async postResetPasswordRequest(req: Request, res: Response) {
     const email = req.body.email;
     await sendPasswordReset(email, res.locals);
-    res.json({ queued: true });
+    return { queued: true };
   }
 
   @Post("reset-password/recover")
@@ -210,22 +210,7 @@ export class AuthController {
       { token, password }
     );
     await updatePassword(token, password, res.locals);
-    res.json({ success: true, message: "auth-recover-success" });
-  }
-
-  @Get("google/link")
-  async getLoginWithGoogleLink(req: Request, res: Response) {
-    res.json({
-      redirect: loginWithGoogleLink()
-    });
-  }
-
-  @Post("google/verify")
-  async postLoginWithGoogleVerify(req: Request, res: Response) {
-    const code =
-      req.body.code || (req.get("Authorization") || "").replace("Bearer ", "");
-    joiValidate({ code: Joi.string().required() }, { code });
-    res.json(await loginWithGoogleVerify(code, res.locals));
+    return { success: true, message: "auth-recover-success" };
   }
 
   @Post("impersonate/:id")
@@ -236,14 +221,14 @@ export class AuthController {
   async getImpersonate(req: Request, res: Response) {
     const tokenUserId = res.locals.token.id;
     const impersonateUserId = req.params.id;
-    res.json(await impersonate(tokenUserId, impersonateUserId));
+    return await impersonate(tokenUserId, impersonateUserId);
   }
 
   @Post("approve-location")
   async getApproveLocation(req: Request, res: Response) {
     const token = req.body.token || req.params.token;
     joiValidate({ token: Joi.string().required() }, { token });
-    res.json(await approveLocation(token, res.locals));
+    return await approveLocation(token, res.locals);
   }
 
   @Post("verify-email")
@@ -251,7 +236,7 @@ export class AuthController {
     const token = req.body.token || req.params.token;
     joiValidate({ token: Joi.string().required() }, { token });
     await verifyEmail(token, res.locals);
-    res.json({ success: true, message: "auth-verify-email-success" });
+    return { success: true, message: "auth-verify-email-success" };
   }
 
   @Get("oauth/salesforce")
@@ -302,6 +287,42 @@ export class AuthController {
       req,
       res,
       await microsoft.callback(
+        `${BASE_URL}/auth${req.path}?${stringify(req.query)}`,
+        res.locals
+      )
+    );
+  }
+
+  @Get("oauth/google")
+  @Wrapper(OAuthRedirector)
+  async getOAuthUrlGoogle(req: Request, res: Response) {
+    safeRedirect(req, res, google.client.code.getUri());
+  }
+  @Get("oauth/google/callback")
+  @Wrapper(OAuthRedirector)
+  async getOAuthCallbackGoogle(req: Request, res: Response) {
+    return OAuthRedirect(
+      req,
+      res,
+      await google.callback(
+        `${BASE_URL}/auth${req.path}?${stringify(req.query)}`,
+        res.locals
+      )
+    );
+  }
+
+  @Get("oauth/facebook")
+  @Wrapper(OAuthRedirector)
+  async getOAuthUrlFacebook(req: Request, res: Response) {
+    safeRedirect(req, res, facebook.client.code.getUri());
+  }
+  @Get("oauth/facebook/callback")
+  @Wrapper(OAuthRedirector)
+  async getOAuthCallbackFacebook(req: Request, res: Response) {
+    return OAuthRedirect(
+      req,
+      res,
+      await facebook.callback(
         `${BASE_URL}/auth${req.path}?${stringify(req.query)}`,
         res.locals
       )
