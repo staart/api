@@ -140,7 +140,7 @@ export const getLoginResponse = async (
         {
           ...user,
           location: location
-            ? location.city || location.region_name || location.country
+            ? location.city || location.region_name || location.country_code
             : i18n.en.emails["unknown-location"],
           token: await approveLocationToken(user.id, locals.ipAddress)
         }

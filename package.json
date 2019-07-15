@@ -1,11 +1,12 @@
 {
   "name": "staart-manager",
-  "version": "1.0.61",
+  "version": "1.0.64",
   "main": "index.js",
   "repository": "git@github.com:AnandChowdhary/staart.git",
   "author": "Anand Chowdhary <mail@anandchowdhary.com>",
   "license": "MIT",
   "scripts": {
+    "test": "jest",
     "build-babel": "touch .env && babel src -d dist --extensions '.ts' && cp .env dist/.env",
     "build": "touch .env && mkdir -p dist && cp .env dist/.env && npm run generate-routes && tsc",
     "start": "npm run build && node dist/index.js",
@@ -30,6 +31,14 @@
   },
   "engines": {
     "node": "10.16.0"
+  },
+  "jest": {
+    "roots": [
+      "<rootDir>/src"
+    ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    }
   },
   "devDependencies": {
     "@babel/cli": "^7.5.0",
