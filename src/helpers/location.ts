@@ -6,7 +6,7 @@ import { CacheCategories } from "../interfaces/enum";
 
 export interface GeoLocation {
   city?: string;
-  country?: string;
+  country_code?: string;
   continent?: string;
   latitude?: number;
   longitude?: number;
