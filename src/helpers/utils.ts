@@ -4,7 +4,7 @@ import Joi from "@hapi/joi";
 import { getOrganizationIdFromUsername } from "../crud/organization";
 import { Request, Response } from "express";
 import slugify from "slugify";
-import cryptoRandomString = require("crypto-random-string");
+import cryptoRandomString from "crypto-random-string";
 
 /**
  * Capitalize each first letter in a string

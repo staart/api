@@ -1,4 +1,12 @@
 {
   "presets": ["@babel/typescript", "@babel/preset-env"],
-  "plugins": [["@babel/plugin-proposal-decorators", { "legacy": true }]]
+  "plugins": [
+    [
+      "@babel/plugin-transform-runtime",
+      {
+        "regenerator": true
+      }
+    ],
+    ["@babel/plugin-proposal-decorators", { "legacy": true }]
+  ]
 }
