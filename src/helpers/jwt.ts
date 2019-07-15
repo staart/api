@@ -30,7 +30,7 @@ export const generateToken = (
   payload: string | object | Buffer,
   expiresIn: string | number,
   subject: string
-) =>
+): Promise<string> =>
   new Promise((resolve, reject) => {
     sign(
       // Payload is expected to be a plain object
@@ -119,6 +119,12 @@ export const postLoginTokens = async (user: User) => {
   };
 };
 
+export interface LoginResponse {
+  twoFactorToken?: string;
+  token?: string;
+  refresh?: string;
+  [index: string]: string | undefined;
+}
 /**
  * Get the token response after logging in a user
  */
@@ -127,7 +133,7 @@ export const getLoginResponse = async (
   type?: EventType,
   strategy?: string,
   locals?: Locals
-) => {
+): Promise<LoginResponse> => {
   if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
   const verifiedEmails = await getUserVerifiedEmails(user);
   if (!verifiedEmails.length) throw new Error(ErrorCode.UNVERIFIED_EMAIL);

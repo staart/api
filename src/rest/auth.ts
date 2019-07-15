@@ -98,7 +98,7 @@ export const login2FA = async (code: number, token: string, locals: Locals) => {
 
 export const register = async (
   user: User,
-  locals: Locals,
+  locals?: Locals,
   email?: string,
   organizationId?: number,
   role?: MembershipRole,
@@ -118,7 +118,8 @@ export const register = async (
     const newEmail = <InsertResult>await createEmail(
       {
         userId,
-        email
+        email,
+        isVerified: emailVerified
       },
       !emailVerified,
       !user.password
@@ -133,7 +134,7 @@ export const register = async (
       role
     });
   }
-  await addApprovedLocation(userId, locals.ipAddress);
+  if (locals) await addApprovedLocation(userId, locals.ipAddress);
   return { created: true, userId };
 };
 

@@ -1,6 +1,5 @@
-import { Request, Response } from "express";
-import { ErrorCode, UserRole } from "../interfaces/enum";
-import { stringify } from "query-string";
+import { Request, Response, NextFunction, RequestHandler } from "express";
+import { ErrorCode, UserRole, Tokens } from "../interfaces/enum";
 import {
   sendPasswordReset,
   login,
@@ -12,22 +11,17 @@ import {
   approveLocation,
   verifyEmail,
   register,
-  login2FA,
-  github,
-  githubCallback,
-  facebook,
-  facebookCallback,
-  salesforceCallback,
-  salesforce
+  login2FA
 } from "../rest/auth";
-import { verifyToken } from "../helpers/jwt";
+import { verifyToken, LoginResponse } from "../helpers/jwt";
 import {
   Get,
   Post,
   Controller,
   Middleware,
   ClassWrapper,
-  ClassMiddleware
+  ClassMiddleware,
+  Wrapper
 } from "@overnightjs/core";
 import {
   authHandler,
@@ -38,8 +32,39 @@ import { CREATED } from "http-status-codes";
 import asyncHandler from "express-async-handler";
 import { safeRedirect, joiValidate } from "../helpers/utils";
 import Joi from "@hapi/joi";
-import { KeyValue } from "../interfaces/general";
 import { FRONTEND_URL, BASE_URL } from "../config";
+import { salesforce, github, microsoft } from "../rest/oauth";
+import { stringify } from "querystring";
+
+const OAuthRedirector = (action: RequestHandler) => (
+  ...args: [Request, Response, NextFunction]
+) => {
+  return action(args[0], args[1], (error: Error) => {
+    safeRedirect(
+      args[0],
+      args[1],
+      `${FRONTEND_URL}/errors/oauth?${stringify({
+        ...args[0].params,
+        ...args[0].query,
+        error: error.toString().replace("Error: ", "")
+      })}`
+    );
+  });
+};
+const OAuthRedirect = (
+  req: Request,
+  res: Response,
+  response: LoginResponse
+) => {
+  return safeRedirect(
+    req,
+    res,
+    `${FRONTEND_URL}/auth/token?${stringify({
+      ...response,
+      subject: Tokens.LOGIN
+    })}`
+  );
+};
 
 @Controller("auth")
 @ClassMiddleware(bruteForceHandler)
@@ -229,36 +254,57 @@ export class AuthController {
     res.json({ success: true, message: "auth-verify-email-success" });
   }
 
-  // OAuth2
-
-  @Get("oauth/callback/:service")
-  async oauthCallback(req: Request, res: Response) {
-    const go = (token: KeyValue) =>
-      safeRedirect(
-        req,
-        res,
-        `${FRONTEND_URL}/auth/store?${stringify({ service, ...token })}`
-      );
-    const service = req.params.service;
-    const code = `${BASE_URL}/auth${req.path}?${stringify(req.query)}`;
-    if (service === "github") return go(await githubCallback(code, res.locals));
-    if (service === "facebook")
-      return go(await facebookCallback(code, res.locals));
-    if (service === "salesforce")
-      return go(await salesforceCallback(code, res.locals));
-    safeRedirect(req, res, `${FRONTEND_URL}/errors/oauth`);
+  @Get("oauth/salesforce")
+  @Wrapper(OAuthRedirector)
+  async getOAuthUrlSalesforce(req: Request, res: Response) {
+    safeRedirect(req, res, salesforce.client.code.getUri());
+  }
+  @Get("oauth/salesforce/callback")
+  @Wrapper(OAuthRedirector)
+  async getOAuthCallbackSalesforce(req: Request, res: Response) {
+    return OAuthRedirect(
+      req,
+      res,
+      await salesforce.callback(
+        `${BASE_URL}/auth${req.path}?${stringify(req.query)}`,
+        res.locals
+      )
+    );
   }
 
   @Get("oauth/github")
-  async oauthGitHub(req: Request, res: Response) {
-    safeRedirect(req, res, github.code.getUri());
+  @Wrapper(OAuthRedirector)
+  async getOAuthUrlGitHub(req: Request, res: Response) {
+    safeRedirect(req, res, github.client.code.getUri());
   }
-  @Get("oauth/facebook")
-  async oauthFacebook(req: Request, res: Response) {
-    safeRedirect(req, res, facebook.code.getUri());
+  @Get("oauth/github/callback")
+  @Wrapper(OAuthRedirector)
+  async getOAuthCallbackGitHub(req: Request, res: Response) {
+    return OAuthRedirect(
+      req,
+      res,
+      await github.callback(
+        `${BASE_URL}/auth${req.path}?${stringify(req.query)}`,
+        res.locals
+      )
+    );
   }
-  @Get("oauth/salesforce")
-  async oauthSalesforce(req: Request, res: Response) {
-    safeRedirect(req, res, salesforce.code.getUri());
+
+  @Get("oauth/microsoft")
+  @Wrapper(OAuthRedirector)
+  async getOAuthUrlMicrosoft(req: Request, res: Response) {
+    safeRedirect(req, res, microsoft.client.code.getUri());
+  }
+  @Get("oauth/microsoft/callback")
+  @Wrapper(OAuthRedirector)
+  async getOAuthCallbackMicrosoft(req: Request, res: Response) {
+    return OAuthRedirect(
+      req,
+      res,
+      await microsoft.callback(
+        `${BASE_URL}/auth${req.path}?${stringify(req.query)}`,
+        res.locals
+      )
+    );
   }
 }
