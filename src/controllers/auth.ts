@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
-import { ErrorCode, UserRole } from "../interfaces/enum";
+import { ErrorCode, UserRole, Tokens } from "../interfaces/enum";
 import {
   sendPasswordReset,
   login,
@@ -13,7 +13,7 @@ import {
   register,
   login2FA
 } from "../rest/auth";
-import { verifyToken } from "../helpers/jwt";
+import { verifyToken, LoginResponse } from "../helpers/jwt";
 import {
   Get,
   Post,
@@ -33,7 +33,7 @@ import asyncHandler from "express-async-handler";
 import { safeRedirect, joiValidate } from "../helpers/utils";
 import Joi from "@hapi/joi";
 import { FRONTEND_URL, BASE_URL } from "../config";
-import { salesforce } from "../rest/oauth";
+import { salesforce, github, microsoft } from "../rest/oauth";
 import { stringify } from "querystring";
 
 const OAuthRedirector = (action: RequestHandler) => (
@@ -50,6 +50,20 @@ const OAuthRedirector = (action: RequestHandler) => (
       })}`
     );
   });
+};
+const OAuthRedirect = (
+  req: Request,
+  res: Response,
+  response: LoginResponse
+) => {
+  return safeRedirect(
+    req,
+    res,
+    `${FRONTEND_URL}/auth/token?${stringify({
+      ...response,
+      subject: Tokens.LOGIN
+    })}`
+  );
 };
 
 @Controller("auth")
@@ -248,15 +262,49 @@ export class AuthController {
   @Get("oauth/salesforce/callback")
   @Wrapper(OAuthRedirector)
   async getOAuthCallbackSalesforce(req: Request, res: Response) {
-    safeRedirect(
+    return OAuthRedirect(
       req,
       res,
-      `${FRONTEND_URL}/auth/token?${stringify(
-        await salesforce.callback(
-          `${BASE_URL}/auth${req.path}?${stringify(req.query)}`,
-          res.locals
-        )
-      )}`
+      await salesforce.callback(
+        `${BASE_URL}/auth${req.path}?${stringify(req.query)}`,
+        res.locals
+      )
+    );
+  }
+
+  @Get("oauth/github")
+  @Wrapper(OAuthRedirector)
+  async getOAuthUrlGitHub(req: Request, res: Response) {
+    safeRedirect(req, res, github.client.code.getUri());
+  }
+  @Get("oauth/github/callback")
+  @Wrapper(OAuthRedirector)
+  async getOAuthCallbackGitHub(req: Request, res: Response) {
+    return OAuthRedirect(
+      req,
+      res,
+      await github.callback(
+        `${BASE_URL}/auth${req.path}?${stringify(req.query)}`,
+        res.locals
+      )
+    );
+  }
+
+  @Get("oauth/microsoft")
+  @Wrapper(OAuthRedirector)
+  async getOAuthUrlMicrosoft(req: Request, res: Response) {
+    safeRedirect(req, res, microsoft.client.code.getUri());
+  }
+  @Get("oauth/microsoft/callback")
+  @Wrapper(OAuthRedirector)
+  async getOAuthCallbackMicrosoft(req: Request, res: Response) {
+    return OAuthRedirect(
+      req,
+      res,
+      await microsoft.callback(
+        `${BASE_URL}/auth${req.path}?${stringify(req.query)}`,
+        res.locals
+      )
     );
   }
 }
