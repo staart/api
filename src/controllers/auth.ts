@@ -126,7 +126,7 @@ export class AuthController {
     )
   )
   async login(req: Request, res: Response) {
-    res.json(await login(req.body.email, req.body.password, res.locals));
+    return await login(req.body.email, req.body.password, res.locals);
   }
 
   @Post("2fa")
@@ -163,7 +163,7 @@ export class AuthController {
     const subject = req.body.subject;
     try {
       const data = await verifyToken(token, subject);
-      res.json({ verified: true, data });
+      return { verified: true, data };
     } catch (error) {
       throw new Error(ErrorCode.INVALID_TOKEN);
     }
