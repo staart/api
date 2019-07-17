@@ -156,4 +156,4 @@ export const addIsPrimaryToEmail = async (email: Email) => {
   return email;
 };
 
-export const tableName = (name: string) => `${DB_TABLE_PREFIX}${name}`;
+export const tableName = (name: string) => `\`${DB_TABLE_PREFIX}${name}\``;
