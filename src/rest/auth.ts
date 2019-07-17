@@ -112,7 +112,7 @@ export const register = async (
       {
         userId,
         email,
-        isVerified: emailVerified
+        isVerified: !!emailVerified
       },
       !emailVerified,
       !user.password
