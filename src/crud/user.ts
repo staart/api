@@ -2,7 +2,8 @@ import {
   query,
   tableValues,
   setValues,
-  removeReadOnlyValues
+  removeReadOnlyValues,
+  tableName
 } from "../helpers/mysql";
 import { User, ApprovedLocation } from "../interfaces/tables/user";
 import {
@@ -24,10 +25,10 @@ import randomInt from "random-int";
 import { BackupCode } from "../interfaces/tables/backup-codes";
 
 /**
- * Get a list of all users
+ * Get a list of all ${tableName("users")}
  */
 export const getAllUsers = async () => {
-  return <User[]>await query("SELECT * from users");
+  return <User[]>await query(`SELECT * from ${tableName("users")}`);
 };
 
 /**
@@ -53,7 +54,7 @@ export const createUser = async (user: User) => {
   user.updatedAt = user.createdAt;
   // Create user
   return await query(
-    `INSERT INTO users ${tableValues(user)}`,
+    `INSERT INTO ${tableName("users")} ${tableValues(user)}`,
     Object.values(user)
   );
 };
@@ -67,7 +68,7 @@ export const getUser = async (id: number, secureOrigin = false) => {
     await cachedQuery(
       CacheCategories.USER,
       id,
-      `SELECT * FROM users WHERE id = ? LIMIT 1`,
+      `SELECT * FROM ${tableName("users")} WHERE id = ? LIMIT 1`,
       [id]
     )
   ))[0];
@@ -120,10 +121,10 @@ export const updateUser = async (id: number, user: KeyValue) => {
       throw new Error(ErrorCode.USERNAME_EXISTS);
   }
   deleteItemFromCache(CacheCategories.USER, id);
-  return await query(`UPDATE users SET ${setValues(user)} WHERE id = ?`, [
-    ...Object.values(user),
-    id
-  ]);
+  return await query(
+    `UPDATE ${tableName("users")} SET ${setValues(user)} WHERE id = ?`,
+    [...Object.values(user), id]
+  );
 };
 
 /**
@@ -131,7 +132,7 @@ export const updateUser = async (id: number, user: KeyValue) => {
  */
 export const deleteUser = async (id: number) => {
   deleteItemFromCache(CacheCategories.USER, id);
-  return await query("DELETE FROM users WHERE id = ?", [id]);
+  return await query(`DELETE FROM ${tableName("users")} WHERE id = ?`, [id]);
 };
 
 /**
@@ -149,7 +150,9 @@ export const addApprovedLocation = async (
     createdAt: new Date()
   };
   return await query(
-    `INSERT INTO \`approved-locations\` ${tableValues(subnetLocation)}`,
+    `INSERT INTO ${tableName("approved-locations")} ${tableValues(
+      subnetLocation
+    )}`,
     Object.values(subnetLocation)
   );
 };
@@ -158,18 +161,20 @@ export const addApprovedLocation = async (
  * Get a list of all approved locations of a user
  */
 export const getUserApprovedLocations = async (userId: number) => {
-  return await query("SELECT * FROM `approved-locations` WHERE userId = ?", [
-    userId
-  ]);
+  return await query(
+    `SELECT * FROM ${tableName("approved-locations")} WHERE userId = ?`,
+    [userId]
+  );
 };
 
 /**
  * Get a user by their username
  */
 export const getUserByUsername = async (username: string) => {
-  return ((await query("SELECT * FROM users WHERE username = ? LIMIT 1", [
-    username
-  ])) as User[])[0];
+  return ((await query(
+    `SELECT * FROM ${tableName("users")} WHERE username = ? LIMIT 1`,
+    [username]
+  )) as User[])[0];
 };
 
 /**
@@ -187,9 +192,10 @@ export const checkUsernameAvailability = async (username: string) => {
  * Delete all approved locations for a user
  */
 export const deleteAllUserApprovedLocations = async (userId: number) => {
-  return await query("DELETE FROM `approved-locations` WHERE userId = ?", [
-    userId
-  ]);
+  return await query(
+    `DELETE FROM ${tableName("approved-locations")} WHERE userId = ?`,
+    [userId]
+  );
 };
 
 /**
@@ -203,7 +209,9 @@ export const checkApprovedLocation = async (
   const subnet = anonymizeIpAddress(ipAddress);
   const approvedLocations = <ApprovedLocation[]>(
     await query(
-      "SELECT * FROM `approved-locations` WHERE userId = ? AND subnet = ? LIMIT 1",
+      `SELECT * FROM ${tableName(
+        "approved-locations"
+      )} WHERE userId = ? AND subnet = ? LIMIT 1`,
       [userId, subnet]
     )
   );

@@ -2,7 +2,8 @@ import {
   query,
   tableValues,
   setValues,
-  removeReadOnlyValues
+  removeReadOnlyValues,
+  tableName
 } from "../helpers/mysql";
 import { Organization } from "../interfaces/tables/organization";
 import { capitalizeFirstAndLastLetter, createSlug } from "../helpers/utils";
@@ -24,7 +25,7 @@ export const createOrganization = async (organization: Organization) => {
   organization.username = createSlug(organization.name);
   // Create organization
   return await query(
-    `INSERT INTO organizations ${tableValues(organization)}`,
+    `INSERT INTO ${tableName("organizations")} ${tableValues(organization)}`,
     Object.values(organization)
   );
 };
@@ -37,7 +38,7 @@ export const getOrganization = async (id: number) => {
     await cachedQuery(
       CacheCategories.ORGANIZATION,
       id,
-      `SELECT * FROM organizations WHERE id = ? LIMIT 1`,
+      `SELECT * FROM ${tableName("organizations")} WHERE id = ? LIMIT 1`,
       [id]
     )
   ))[0];
@@ -53,7 +54,7 @@ export const getOrganizationIdFromUsername = async (username: string) => {
     await cachedQuery(
       CacheCategories.ORGANIZATION_USERNAME,
       username,
-      `SELECT id FROM organizations WHERE username = ? LIMIT 1`,
+      `SELECT id FROM ${tableName("organizations")} WHERE username = ? LIMIT 1`,
       [username]
     )
   ))[0];
@@ -79,7 +80,9 @@ export const updateOrganization = async (
   }
   deleteItemFromCache(CacheCategories.ORGANIZATION, id);
   return await query(
-    `UPDATE organizations SET ${setValues(organization)} WHERE id = ?`,
+    `UPDATE ${tableName("organizations")} SET ${setValues(
+      organization
+    )} WHERE id = ?`,
     [...Object.values(organization), id]
   );
 };
@@ -89,14 +92,18 @@ export const updateOrganization = async (
  */
 export const deleteOrganization = async (id: number) => {
   deleteItemFromCache(CacheCategories.ORGANIZATION, id);
-  return await query("DELETE FROM organizations WHERE id = ?", [id]);
+  return await query(`DELETE FROM ${tableName("organizations")} WHERE id = ?`, [
+    id
+  ]);
 };
 
 /*
- * Get all organizations
+ * Get all ${tableName("organizations")}
  */
 export const getAllOrganizations = async () => {
-  return <Organization[]>await query("SELECT * FROM organizations");
+  return <Organization[]>(
+    await query(`SELECT * FROM ${tableName("organizations")}`)
+  );
 };
 
 /**
@@ -124,7 +131,7 @@ export const getApiKeyWithoutOrg = async (apiKey: string) => {
     await cachedQuery(
       CacheCategories.API_KEY,
       apiKey,
-      "SELECT * FROM `api-keys` WHERE apiKey = ? LIMIT 1",
+      `SELECT * FROM ${tableName("api-keys")} WHERE apiKey = ? LIMIT 1`,
       [apiKey]
     )
   ))[0];
@@ -138,7 +145,9 @@ export const getApiKey = async (organizationId: number, apiKey: string) => {
     await cachedQuery(
       CacheCategories.API_KEY_ORG,
       `${organizationId}_${apiKey}`,
-      "SELECT * FROM `api-keys` WHERE apiKey = ? AND organizationId = ? LIMIT 1",
+      `SELECT * FROM ${tableName(
+        "api-keys"
+      )} WHERE apiKey = ? AND organizationId = ? LIMIT 1`,
       [apiKey, organizationId]
     )
   ))[0];
@@ -154,7 +163,7 @@ export const createApiKey = async (apiKey: ApiKey) => {
   apiKey.createdAt = new Date();
   apiKey.updatedAt = apiKey.createdAt;
   return await query(
-    `INSERT INTO \`api-keys\` ${tableValues(apiKey)}`,
+    `INSERT INTO ${tableName("api-keys")} ${tableValues(apiKey)}`,
     Object.values(apiKey)
   );
 };
@@ -175,7 +184,7 @@ export const updateApiKey = async (
     `${organizationId}_${apiKey}`
   );
   return await query(
-    `UPDATE \`api-keys\` SET ${setValues(
+    `UPDATE ${tableName("api-keys")} SET ${setValues(
       data
     )} WHERE apiKey = ? AND organizationId = ?`,
     [...Object.values(data), apiKey, organizationId]
@@ -192,7 +201,9 @@ export const deleteApiKey = async (organizationId: number, apiKey: string) => {
     `${organizationId}_${apiKey}`
   );
   return await query(
-    "DELETE FROM `api-keys` WHERE apiKey = ? AND organizationId = ? LIMIT 1",
+    `DELETE FROM ${tableName(
+      "api-keys"
+    )} WHERE apiKey = ? AND organizationId = ? LIMIT 1`,
     [apiKey, organizationId]
   );
 };

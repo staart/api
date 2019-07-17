@@ -3,7 +3,8 @@ import {
   query,
   tableValues,
   removeReadOnlyValues,
-  setValues
+  setValues,
+  tableName
 } from "../helpers/mysql";
 import { ErrorCode } from "../interfaces/enum";
 import { KeyValue } from "../interfaces/general";
@@ -16,7 +17,7 @@ export const createNotification = async (notification: Notification) => {
   notification.updatedAt = notification.createdAt;
   notification.read = !!notification.read;
   return await query(
-    `INSERT INTO notifications ${tableValues(notification)}`,
+    `INSERT INTO ${tableName("notifications")} ${tableValues(notification)}`,
     Object.values(notification)
   );
 };
@@ -26,7 +27,9 @@ export const createNotification = async (notification: Notification) => {
  */
 export const getNotification = async (notificationId: number) => {
   return (<Notification[]>(
-    await query("SELECT * FROM notifications WHERE id = ?", [notificationId])
+    await query(`SELECT * FROM ${tableName("notifications")} WHERE id = ?`, [
+      notificationId
+    ])
   ))[0];
 };
 
@@ -42,7 +45,7 @@ export const updateNotification = async (
   data.updatedAt = new Date();
   data = removeReadOnlyValues(data);
   return await query(
-    `UPDATE notifications SET ${setValues(data)} WHERE id = ?`,
+    `UPDATE ${tableName("notifications")} SET ${setValues(data)} WHERE id = ?`,
     [...Object.values(data), notificationId]
   );
 };
@@ -52,16 +55,20 @@ export const updateNotification = async (
  */
 export const deleteNotification = async (notificationId: number) => {
   const notificationDetails = await getNotification(notificationId);
-  return await query("DELETE FROM `notifications` WHERE id = ? LIMIT 1", [
-    notificationId
-  ]);
+  return await query(
+    `DELETE FROM ${tableName("notifications")} WHERE id = ? LIMIT 1`,
+    [notificationId]
+  );
 };
 
 /**
- * Get notifications for a user
+ * Get ${tableName("notifications")} for a user
  */
 export const getUserNotifications = async (userId: number) => {
   return <Notification[]>(
-    await query("SELECT * FROM notifications WHERE userId = ?", [userId])
+    await query(
+      `SELECT * FROM ${tableName("notifications")} WHERE userId = ?`,
+      [userId]
+    )
   );
 };
