@@ -24,8 +24,7 @@ import {
 import {
   authHandler,
   bruteForceHandler,
-  validator,
-  responder
+  validator
 } from "../helpers/middleware";
 import { CREATED } from "http-status-codes";
 import asyncHandler from "express-async-handler";
@@ -68,7 +67,6 @@ const OAuthRedirect = (
 @Controller("auth")
 @ClassMiddleware(bruteForceHandler)
 @ClassWrapper(asyncHandler)
-@ClassWrapper(responder)
 export class AuthController {
   @Post("register")
   @Middleware(
@@ -126,7 +124,7 @@ export class AuthController {
     )
   )
   async login(req: Request, res: Response) {
-    return await login(req.body.email, req.body.password, res.locals);
+    res.json(await login(req.body.email, req.body.password, res.locals));
   }
 
   @Post("2fa")
@@ -144,7 +142,7 @@ export class AuthController {
   async twoFactor(req: Request, res: Response) {
     const code = req.body.code;
     const token = req.body.token;
-    return await login2FA(code, token, res.locals);
+    res.json(await login2FA(code, token, res.locals));
   }
 
   @Post("verify-token")
@@ -163,7 +161,7 @@ export class AuthController {
     const subject = req.body.subject;
     try {
       const data = await verifyToken(token, subject);
-      return { verified: true, data };
+      res.json({ verified: true, data });
     } catch (error) {
       throw new Error(ErrorCode.INVALID_TOKEN);
     }
@@ -175,7 +173,7 @@ export class AuthController {
     const token =
       req.body.token || (req.get("Authorization") || "").replace("Bearer ", "");
     joiValidate({ token: Joi.string().required() }, { token });
-    return await validateRefreshToken(token, res.locals);
+    res.json(await validateRefreshToken(token, res.locals));
   }
 
   @Post("reset-password/request")
@@ -192,7 +190,7 @@ export class AuthController {
   async postResetPasswordRequest(req: Request, res: Response) {
     const email = req.body.email;
     await sendPasswordReset(email, res.locals);
-    return { queued: true };
+    res.json({ queued: true });
   }
 
   @Post("reset-password/recover")
@@ -210,7 +208,7 @@ export class AuthController {
       { token, password }
     );
     await updatePassword(token, password, res.locals);
-    return { success: true, message: "auth-recover-success" };
+    res.json({ success: true, message: "auth-recover-success" });
   }
 
   @Post("impersonate/:id")
@@ -221,14 +219,14 @@ export class AuthController {
   async getImpersonate(req: Request, res: Response) {
     const tokenUserId = res.locals.token.id;
     const impersonateUserId = req.params.id;
-    return await impersonate(tokenUserId, impersonateUserId);
+    res.json(await impersonate(tokenUserId, impersonateUserId));
   }
 
   @Post("approve-location")
   async getApproveLocation(req: Request, res: Response) {
     const token = req.body.token || req.params.token;
     joiValidate({ token: Joi.string().required() }, { token });
-    return await approveLocation(token, res.locals);
+    res.json(await approveLocation(token, res.locals));
   }
 
   @Post("verify-email")
@@ -236,7 +234,7 @@ export class AuthController {
     const token = req.body.token || req.params.token;
     joiValidate({ token: Joi.string().required() }, { token });
     await verifyEmail(token, res.locals);
-    return { success: true, message: "auth-verify-email-success" };
+    res.json({ success: true, message: "auth-verify-email-success" });
   }
 
   @Get("oauth/salesforce")

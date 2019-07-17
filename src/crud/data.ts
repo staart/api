@@ -29,7 +29,7 @@ export const getPaginatedData = async ({
   sort?: string;
 }) => {
   const data = (await query(
-    `SELECT * FROM \`${tableName(table)}\` WHERE ${primaryKey} ${
+    `SELECT * FROM ${tableName(table)} WHERE ${primaryKey} ${
       sort === "asc" ? ">" : "<"
     } ? ${
       conditions
@@ -64,7 +64,7 @@ export const updateData = async (
   data.updatedAt = new Date();
   data = removeReadOnlyValues(data);
   return await query(
-    `UPDATE \`${tableName(table)}\` SET ${setValues(data)} WHERE ${Object.keys(
+    `UPDATE ${tableName(table)} SET ${setValues(data)} WHERE ${Object.keys(
       conditions
     )
       .map(condition => `${condition} = ?`)
@@ -78,7 +78,7 @@ export const updateData = async (
  */
 export const deleteData = async (table: string, conditions: KeyValue) => {
   return await query(
-    `DELETE FROM \`${tableName(table)}\` WHERE ${Object.keys(conditions)
+    `DELETE FROM ${tableName(table)} WHERE ${Object.keys(conditions)
       .map(condition => `${condition} = ?`)
       .join(" AND ")}`,
     [...Object.values(conditions)]

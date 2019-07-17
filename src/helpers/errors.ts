@@ -13,7 +13,10 @@ export const safeError = (error: string) => {
     ) as Joi.ValidationError;
     return sendError(`422/${joiError.details[0].message}`);
   }
-  if (errorString.startsWith("JsonWebTokenError"))
+  if (
+    errorString.startsWith("JsonWebTokenError") ||
+    errorString.startsWith("JsonWebTokenjwt")
+  )
     return sendError(ErrorCode.INVALID_TOKEN);
   return sendError(error);
 };

@@ -212,22 +212,3 @@ export const validator = (
     next();
   };
 };
-
-export const responder = (action: RequestHandler) => (
-  ...args: [Request, Response, NextFunction]
-) => {
-  const req = args[0];
-  const res = args[1];
-  action(req, res, args[2])
-    .then((response: any) => {
-      if (req.query.format === "yaml") {
-        res.set("Content-Type", "application/x-yaml");
-        res.send(stringify(response));
-      } else {
-        res.json(response);
-      }
-    })
-    .catch((error: string) => {
-      throw new Error(error);
-    });
-};
