@@ -11,8 +11,9 @@ import { KeyValue } from "../interfaces/general";
 import { cachedQuery, deleteItemFromCache } from "../helpers/cache";
 import { CacheCategories, ErrorCode } from "../interfaces/enum";
 import { ApiKey } from "../interfaces/tables/organization";
-import cryptoRandomString from "crypto-random-string";
 import { getPaginatedData } from "./data";
+import { apiKeyToken } from "../helpers/jwt";
+import { TOKEN_EXPIRY_API_KEY_MAX } from "../config";
 
 /*
  * Create a new organization for a user
@@ -115,7 +116,6 @@ export const getOrganizationApiKeys = async (
 ) => {
   return await getPaginatedData({
     table: "api-keys",
-    primaryKey: "apiKey",
     conditions: {
       organizationId
     },
@@ -124,31 +124,17 @@ export const getOrganizationApiKeys = async (
 };
 
 /**
- * Get an API key without organization ID
- */
-export const getApiKeyWithoutOrg = async (apiKey: string) => {
-  return (<ApiKey[]>(
-    await cachedQuery(
-      CacheCategories.API_KEY,
-      apiKey,
-      `SELECT * FROM ${tableName("api-keys")} WHERE apiKey = ? LIMIT 1`,
-      [apiKey]
-    )
-  ))[0];
-};
-
-/**
  * Get an API key
  */
-export const getApiKey = async (organizationId: number, apiKey: string) => {
+export const getApiKey = async (organizationId: number, apiKeyId: number) => {
   return (<ApiKey[]>(
     await cachedQuery(
       CacheCategories.API_KEY_ORG,
-      `${organizationId}_${apiKey}`,
+      `${organizationId}_${apiKeyId}`,
       `SELECT * FROM ${tableName(
         "api-keys"
-      )} WHERE apiKey = ? AND organizationId = ? LIMIT 1`,
-      [apiKey, organizationId]
+      )} WHERE id = ? AND organizationId = ? LIMIT 1`,
+      [apiKeyId, organizationId]
     )
   ))[0];
 };
@@ -157,11 +143,10 @@ export const getApiKey = async (organizationId: number, apiKey: string) => {
  * Create an API key
  */
 export const createApiKey = async (apiKey: ApiKey) => {
-  apiKey.apiKey = cryptoRandomString({ length: 20, type: "hex" });
-  apiKey.secretKey = cryptoRandomString({ length: 20, type: "hex" });
-  apiKey.apiRestrictions = apiKey.apiRestrictions || "orgRead";
+  apiKey.expiresAt = apiKey.expiresAt || new Date(TOKEN_EXPIRY_API_KEY_MAX);
   apiKey.createdAt = new Date();
   apiKey.updatedAt = apiKey.createdAt;
+  apiKey.jwtApiKey = await apiKeyToken(apiKey);
   return await query(
     `INSERT INTO ${tableName("api-keys")} ${tableValues(apiKey)}`,
     Object.values(apiKey)
@@ -173,37 +158,40 @@ export const createApiKey = async (apiKey: ApiKey) => {
  */
 export const updateApiKey = async (
   organizationId: number,
-  apiKey: string,
+  apiKeyId: number,
   data: KeyValue
 ) => {
   data.updatedAt = new Date();
   data = removeReadOnlyValues(data);
-  deleteItemFromCache(CacheCategories.API_KEY, apiKey);
+  deleteItemFromCache(CacheCategories.API_KEY, apiKeyId);
   deleteItemFromCache(
     CacheCategories.API_KEY_ORG,
-    `${organizationId}_${apiKey}`
+    `${organizationId}_${apiKeyId}`
   );
   return await query(
     `UPDATE ${tableName("api-keys")} SET ${setValues(
       data
-    )} WHERE apiKey = ? AND organizationId = ?`,
-    [...Object.values(data), apiKey, organizationId]
+    )} WHERE id = ? AND organizationId = ?`,
+    [...Object.values(data), apiKeyId, organizationId]
   );
 };
 
 /**
  * Delete an API key
  */
-export const deleteApiKey = async (organizationId: number, apiKey: string) => {
-  deleteItemFromCache(CacheCategories.API_KEY, apiKey);
+export const deleteApiKey = async (
+  organizationId: number,
+  apiKeyId: number
+) => {
+  deleteItemFromCache(CacheCategories.API_KEY, apiKeyId);
   deleteItemFromCache(
     CacheCategories.API_KEY_ORG,
-    `${organizationId}_${apiKey}`
+    `${organizationId}_${apiKeyId}`
   );
   return await query(
     `DELETE FROM ${tableName(
       "api-keys"
-    )} WHERE apiKey = ? AND organizationId = ? LIMIT 1`,
-    [apiKey, organizationId]
+    )} WHERE id = ? AND organizationId = ? LIMIT 1`,
+    [apiKeyId, organizationId]
   );
 };

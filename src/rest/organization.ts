@@ -426,7 +426,7 @@ export const getOrganizationApiKeysForUser = async (
 export const getOrganizationApiKeyForUser = async (
   userId: number | ApiKey,
   organizationId: number,
-  apiKey: string
+  apiKeyId: number
 ) => {
   if (
     await can(
@@ -436,14 +436,14 @@ export const getOrganizationApiKeyForUser = async (
       organizationId
     )
   )
-    return await getApiKey(organizationId, apiKey);
+    return await getApiKey(organizationId, apiKeyId);
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
 
 export const updateApiKeyForUser = async (
   userId: number | ApiKey,
   organizationId: number,
-  apiKey: string,
+  apiKeyId: number,
   data: KeyValue,
   locals: Locals
 ) => {
@@ -455,7 +455,7 @@ export const updateApiKeyForUser = async (
       organizationId
     )
   ) {
-    await updateApiKey(organizationId, apiKey, data);
+    await updateApiKey(organizationId, apiKeyId, data);
     return;
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
@@ -484,7 +484,7 @@ export const createApiKeyForUser = async (
 export const deleteApiKeyForUser = async (
   userId: number | ApiKey,
   organizationId: number,
-  apiKey: string,
+  apiKeyId: number,
   locals: Locals
 ) => {
   if (
@@ -495,7 +495,7 @@ export const deleteApiKeyForUser = async (
       organizationId
     )
   ) {
-    await deleteApiKey(organizationId, apiKey);
+    await deleteApiKey(organizationId, apiKeyId);
     return;
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);

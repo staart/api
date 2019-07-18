@@ -13,7 +13,7 @@ export interface Organization {
 export interface ApiKey {
   id?: number;
   jwtApiKey?: string;
-  apiRestrictions?: string;
+  scopes?: string;
   organizationId: number;
   ipRestrictions?: string;
   referrerRestrictions?: string;

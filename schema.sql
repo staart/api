@@ -27,7 +27,7 @@ CREATE TABLE `staart-api-keys` (
   `organizationId` int(12) NOT NULL,
   `ipRestrictions` text COLLATE utf8mb4_bin DEFAULT NULL,
   `referrerRestrictions` text COLLATE utf8mb4_bin DEFAULT NULL,
-  `apiRestrictions` text COLLATE utf8mb4_bin DEFAULT NULL,
+  `scopes` text COLLATE utf8mb4_bin DEFAULT NULL,
   `expiresAt` datetime NOT NULL,
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE current_timestamp(),

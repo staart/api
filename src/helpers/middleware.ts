@@ -18,7 +18,6 @@ import {
   PUBLIC_RATE_LIMIT_TIME,
   PUBLIC_RATE_LIMIT_MAX
 } from "../config";
-import { getApiKeyWithoutOrg } from "../crud/organization";
 import { isMatch } from "matcher";
 import ipRangeCheck from "ip-range-check";
 import { ApiKey } from "../interfaces/tables/organization";
@@ -168,13 +167,13 @@ export const rateLimitHandler = async (
   next: NextFunction
 ) => {
   const apiKey = req.get("X-Api-Key");
-  if (apiKey) {
-    const apiKeyDetails = await getApiKeyWithoutOrg(apiKey);
-    if (apiKeyDetails.organizationId) {
-      res.setHeader("X-RateLimit-Limit-Type", "api-key");
-      return rateLimiter(req, res, next);
-    }
-  }
+  // if (apiKey) {
+  //   const apiKeyDetails = await getApiKeyWithoutOrg(apiKey);
+  //   if (apiKeyDetails.organizationId) {
+  //     res.setHeader("X-RateLimit-Limit-Type", "api-key");
+  //     return rateLimiter(req, res, next);
+  //   }
+  // }
   res.setHeader("X-RateLimit-Limit-Type", "public");
   return publicRateLimiter(req, res, next);
 };
@@ -188,13 +187,13 @@ export const speedLimitHandler = async (
   next: NextFunction
 ) => {
   const apiKey = req.get("X-Api-Key");
-  if (apiKey) {
-    const apiKeyDetails = await getApiKeyWithoutOrg(apiKey);
-    if (apiKeyDetails.organizationId) {
-      // Don't slow down requests if an API key is used
-      return next();
-    }
-  }
+  // if (apiKey) {
+  //   const apiKeyDetails = await getApiKeyWithoutOrg(apiKey);
+  //   if (apiKeyDetails.organizationId) {
+  //     // Don't slow down requests if an API key is used
+  //     return next();
+  //   }
+  // }
   return speedLimiter(req, res, next);
 };
 

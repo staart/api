@@ -6,7 +6,8 @@ import {
   TOKEN_EXPIRY_PASSWORD_RESET,
   TOKEN_EXPIRY_LOGIN,
   TOKEN_EXPIRY_REFRESH,
-  TOKEN_EXPIRY_APPROVE_LOCATION
+  TOKEN_EXPIRY_APPROVE_LOCATION,
+  TOKEN_EXPIRY_API_KEY_MAX
 } from "../config";
 import { User } from "../interfaces/tables/user";
 import { Tokens, ErrorCode, EventType, Templates } from "../interfaces/enum";
@@ -22,6 +23,7 @@ import {
 import { mail } from "./mail";
 import { getGeolocationFromIp } from "./location";
 import i18n from "../i18n";
+import { ApiKey } from "../interfaces/tables/organization";
 
 /**
  * Generate a new JWT
@@ -89,6 +91,22 @@ export const loginToken = (user: User) =>
  */
 export const twoFactorToken = (user: User) =>
   generateToken({ id: user.id }, TOKEN_EXPIRY_LOGIN, Tokens.TWO_FACTOR);
+
+/**
+ * Generate an API key JWT
+ */
+export const apiKeyToken = (apiKey: ApiKey) => {
+  const createApiKey = { ...apiKey };
+  delete createApiKey.createdAt;
+  delete createApiKey.updatedAt;
+  delete createApiKey.expiresAt;
+  return generateToken(
+    createApiKey,
+    (apiKey.expiresAt ? apiKey.expiresAt.getTime() : TOKEN_EXPIRY_API_KEY_MAX) -
+      new Date().getTime(),
+    Tokens.API_KEY
+  );
+};
 
 /**
  * Generate a new approve location JWT

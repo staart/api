@@ -164,16 +164,16 @@ const canApiKeyOrganization = (
 ) => {
   if (apiKey.organizationId != target.id) return false;
 
-  if (!apiKey.apiRestrictions) return true;
+  if (!apiKey.scopes) return true;
 
   if (
-    apiKey.apiRestrictions.includes("orgRead") &&
+    apiKey.scopes.includes("orgRead") &&
     (action == Authorizations.READ || action == Authorizations.READ_SECURE)
   )
     return true;
 
   if (
-    apiKey.apiRestrictions.includes("orgUpdate") &&
+    apiKey.scopes.includes("orgUpdate") &&
     (action == Authorizations.UPDATE ||
       action == Authorizations.UPDATE_SECURE ||
       action == Authorizations.CREATE ||
@@ -199,11 +199,11 @@ export const can = async (
   let isApiKey = false;
 
   if (typeof user === "object") {
-    if ((user as ApiKey).apiKey) {
-      isApiKey = true;
-    } else {
-      userObject = user as User;
-    }
+    // if ((user as ApiKey).apiKey) {
+    // isApiKey = true;
+    // } else {
+    userObject = user as User;
+    // }
   } else {
     userObject = await getUser(user as number);
   }
