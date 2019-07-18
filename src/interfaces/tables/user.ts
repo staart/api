@@ -2,8 +2,7 @@ import {
   UserRole,
   NotificationEmails,
   Genders,
-  NotificationCategories,
-  ApiKeyAccess
+  NotificationCategories
 } from "../enum";
 
 export interface User {
@@ -36,17 +35,6 @@ export interface ApprovedLocation {
   userId?: number;
   subnet?: string;
   createdAt?: Date;
-}
-
-export interface ApiKey {
-  apiKey?: string;
-  secretKey?: string;
-  apiRestrictions?: string;
-  organizationId: number;
-  ipRestrictions?: string;
-  referrerRestrictions?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
 }
 
 export interface Notification {

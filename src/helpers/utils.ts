@@ -1,5 +1,6 @@
 import anonymize from "ip-anonymize";
-import { User, ApiKey } from "../interfaces/tables/user";
+import { User } from "../interfaces/tables/user";
+import { ApiKey } from "../interfaces/tables/organization";
 import Joi from "@hapi/joi";
 import { getOrganizationIdFromUsername } from "../crud/organization";
 import { Request, Response } from "express";
@@ -116,8 +117,7 @@ export const jsonValues = ["data"];
 export const readOnlyValues = [
   "createdAt",
   "id",
-  "apiKey",
-  "secretKey",
+  "jwtApiKey",
   "userId",
   "organizationId"
 ];

@@ -12,11 +12,6 @@ export enum UserRole {
   ADMIN = 3
 }
 
-export enum ApiKeyAccess {
-  READONLY = 0,
-  FULL_ACCESS = 1
-}
-
 export enum NotificationEmails {
   SECURITY = 0,
   ACCOUNT = 1,

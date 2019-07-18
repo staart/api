@@ -21,8 +21,7 @@ import {
   ErrorCode,
   EventType,
   Authorizations,
-  NotificationCategories,
-  ApiKeyAccess
+  NotificationCategories
 } from "../interfaces/enum";
 import {
   createEvent,
@@ -51,7 +50,7 @@ import {
   createStripeSubscription
 } from "../crud/billing";
 import { getUser } from "../crud/user";
-import { ApiKey } from "../interfaces/tables/user";
+import { ApiKey } from "../interfaces/tables/organization";
 import { getUserPrimaryEmail } from "../crud/email";
 
 export const getOrganizationForUser = async (

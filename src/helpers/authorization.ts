@@ -1,11 +1,11 @@
-import { User, ApiKey } from "../interfaces/tables/user";
+import { User } from "../interfaces/tables/user";
+import { ApiKey } from "../interfaces/tables/organization";
 import { Organization } from "../interfaces/tables/organization";
 import {
   ErrorCode,
   Authorizations,
   UserRole,
   MembershipRole,
-  ApiKeyAccess,
   ApiAuthorizations
 } from "../interfaces/enum";
 import { getUser } from "../crud/user";

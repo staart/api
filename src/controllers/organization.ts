@@ -38,7 +38,7 @@ import {
   Middleware
 } from "@overnightjs/core";
 import { authHandler, validator } from "../helpers/middleware";
-import { MembershipRole, ApiKeyAccess } from "../interfaces/enum";
+import { MembershipRole } from "../interfaces/enum";
 import { CREATED } from "http-status-codes";
 import asyncHandler from "express-async-handler";
 import { inviteMemberToOrganization } from "../rest/membership";

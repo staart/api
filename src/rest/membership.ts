@@ -9,7 +9,8 @@ import {
   getMembershipDetailed,
   updateMembership
 } from "../crud/membership";
-import { User, ApiKey } from "../interfaces/tables/user";
+import { User } from "../interfaces/tables/user";
+import { ApiKey } from "../interfaces/tables/organization";
 import { register } from "./auth";
 import { can } from "../helpers/authorization";
 import { Locals, KeyValue } from "../interfaces/general";

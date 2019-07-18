@@ -10,7 +10,7 @@ import { capitalizeFirstAndLastLetter, createSlug } from "../helpers/utils";
 import { KeyValue } from "../interfaces/general";
 import { cachedQuery, deleteItemFromCache } from "../helpers/cache";
 import { CacheCategories, ErrorCode } from "../interfaces/enum";
-import { ApiKey } from "../interfaces/tables/user";
+import { ApiKey } from "../interfaces/tables/organization";
 import cryptoRandomString from "crypto-random-string";
 import { getPaginatedData } from "./data";
 
