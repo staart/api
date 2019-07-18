@@ -6,7 +6,9 @@ import Joi from "@hapi/joi";
  * Parse default errors and send a safe string
  */
 export const safeError = (error: string) => {
-  const errorString = error.toString();
+  let errorString = error.toString();
+  if (errorString.startsWith("Error: "))
+    errorString = errorString.replace("Error: ", "");
   if (errorString.startsWith("joi:")) {
     const joiError = JSON.parse(
       errorString.split("joi:")[1]
@@ -18,7 +20,7 @@ export const safeError = (error: string) => {
     errorString.startsWith("JsonWebTokenjwt")
   )
     return sendError(ErrorCode.INVALID_TOKEN);
-  return sendError(error);
+  return sendError(errorString);
 };
 
 /**
@@ -26,10 +28,8 @@ export const safeError = (error: string) => {
  */
 export const sendError = (error: string) => {
   if (error.includes("/")) {
-    let status = 500;
-    try {
-      status = parseInt(error.split("/")[0]);
-    } catch (error) {}
+    let status = parseInt(error.split("/")[0]);
+    if (isNaN(status)) status = 500;
     const code = error.split("/")[1];
     return { status, code } as HTTPError;
   }

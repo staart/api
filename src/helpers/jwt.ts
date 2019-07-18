@@ -12,7 +12,11 @@ import {
 } from "../config";
 import { User } from "../interfaces/tables/user";
 import { Tokens, ErrorCode, EventType, Templates } from "../interfaces/enum";
-import { deleteSensitiveInfoUser, removeFalsyValues } from "./utils";
+import {
+  deleteSensitiveInfoUser,
+  removeFalsyValues,
+  includesInCommaList
+} from "./utils";
 import { checkApprovedLocation } from "../crud/user";
 import { Locals } from "../interfaces/general";
 import { createEvent } from "../crud/event";
@@ -27,6 +31,7 @@ import i18n from "../i18n";
 import { ApiKey } from "../interfaces/tables/organization";
 import cryptoRandomString from "crypto-random-string";
 import { createHandyClient } from "handy-redis";
+import ipRangeCheck from "ip-range-check";
 
 /**
  * Generate a new JWT
@@ -239,4 +244,24 @@ export const invalidateToken = async (token: string) => {
         Math.floor((details.exp - new Date().getTime()) / 1000)
       ]
     );
+};
+
+export const checkIpRestrictions = (apiKey: ApiKeyResponse, locals: Locals) => {
+  if (!apiKey.ipRestrictions) return;
+  if (
+    !ipRangeCheck(
+      locals.ipAddress,
+      apiKey.ipRestrictions.split(",").map(range => range.trim())
+    )
+  )
+    throw new Error(ErrorCode.IP_RANGE_CHECK_FAIL);
+};
+
+export const checkReferrerRestrictions = (
+  apiKey: ApiKeyResponse,
+  domain: string
+) => {
+  if (!apiKey.referrerRestrictions || !domain) return;
+  if (!includesInCommaList(apiKey.referrerRestrictions, domain))
+    throw new Error(ErrorCode.REFERRER_CHECK_FAIL);
 };

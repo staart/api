@@ -9,7 +9,9 @@ import {
   verifyToken,
   TokenResponse,
   checkInvalidatedToken,
-  ApiKeyResponse
+  ApiKeyResponse,
+  checkIpRestrictions,
+  checkReferrerRestrictions
 } from "./jwt";
 import { ErrorCode, Tokens } from "../interfaces/enum";
 import {
@@ -26,7 +28,7 @@ import {
 import { isMatch } from "matcher";
 import ipRangeCheck from "ip-range-check";
 import { ApiKey } from "../interfaces/tables/organization";
-import { joiValidate } from "./utils";
+import { joiValidate, includesInCommaList } from "./utils";
 const store = new Brute.MemoryStore();
 const bruteForce = new Brute(store, {
   freeRetries: BRUTE_FREE_RETRIES,
@@ -79,6 +81,7 @@ export const trackingHandler = (
     req.socket.remoteAddress;
   if (ip === "::1") ip = "2001:67c:2564:a309:f0e0:1ee6:137b:29e8";
   res.locals.ipAddress = ip;
+  res.locals.referrer = req.headers.referer as string;
   next();
 };
 
@@ -100,20 +103,38 @@ export const authHandler = async (
     if (userJwt) {
       if (userJwt.startsWith("Bearer "))
         userJwt = userJwt.replace("Bearer ", "");
-      const userToken = await verifyToken(userJwt, Tokens.LOGIN);
+      const userToken = (await verifyToken(
+        userJwt,
+        Tokens.LOGIN
+      )) as TokenResponse;
       await checkInvalidatedToken(userJwt);
       if (userToken) res.locals.token = userToken;
-      return next();
     }
 
     let apiKeyJwt = req.get("X-Api-Key") as string;
     if (apiKeyJwt) {
       if (apiKeyJwt.startsWith("Bearer "))
         apiKeyJwt = apiKeyJwt.replace("Bearer ", "");
-      const apiKeyToken = await verifyToken(apiKeyJwt, Tokens.API_KEY);
+      const apiKeyToken = (await verifyToken(
+        apiKeyJwt,
+        Tokens.API_KEY
+      )) as ApiKeyResponse;
       await checkInvalidatedToken(apiKeyJwt);
-      if (apiKeyToken) res.locals.token = apiKeyToken;
-      return next();
+      checkIpRestrictions(apiKeyToken, res.locals);
+      checkReferrerRestrictions(apiKeyToken, req.hostname);
+      if (apiKeyToken.referrerRestrictions) {
+        if (
+          includesInCommaList(apiKeyToken.referrerRestrictions, req.hostname)
+        ) {
+          res.setHeader(
+            "Access-Control-Allow-Origin",
+            `${req.protocol}://${req.hostname}`
+          );
+        }
+      } else {
+        res.setHeader("Access-Control-Allow-Origin", "*");
+      }
+      if (apiKeyToken && !res.locals.token) res.locals.token = apiKeyToken;
     }
   } catch (error) {
     const jwtError = safeError(error);
@@ -121,6 +142,7 @@ export const authHandler = async (
     return res.json(jwtError);
   }
 
+  if (res.locals.token) return next();
   const error = safeError(ErrorCode.MISSING_TOKEN);
   res.status(error.status);
   return res.json(error);

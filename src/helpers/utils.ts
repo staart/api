@@ -139,3 +139,8 @@ export const removeFalsyValues = (value: any) => {
   }
   return value;
 };
+
+export const includesInCommaList = (commaList: string, value: string) => {
+  const list = commaList.split(",").map(item => item.trim());
+  return list.includes(value);
+};

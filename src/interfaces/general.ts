@@ -11,4 +11,5 @@ export interface HTTPError {
 export interface Locals {
   userAgent: string;
   ipAddress: string;
+  referrer?: string;
 }
