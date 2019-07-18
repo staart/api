@@ -3,7 +3,6 @@ import Brute from "express-brute";
 import RateLimit from "express-rate-limit";
 import slowDown from "express-slow-down";
 import Joi from "@hapi/joi";
-import { stringify } from "yaml";
 import { safeError } from "./errors";
 import {
   verifyToken,
@@ -25,10 +24,8 @@ import {
   PUBLIC_RATE_LIMIT_TIME,
   PUBLIC_RATE_LIMIT_MAX
 } from "../config";
-import { isMatch } from "matcher";
-import ipRangeCheck from "ip-range-check";
 import { ApiKey } from "../interfaces/tables/organization";
-import { joiValidate, includesInCommaList } from "./utils";
+import { joiValidate, includesDomainInCommaList } from "./utils";
 const store = new Brute.MemoryStore();
 const bruteForce = new Brute(store, {
   freeRetries: BRUTE_FREE_RETRIES,
@@ -119,17 +116,20 @@ export const authHandler = async (
         apiKeyJwt,
         Tokens.API_KEY
       )) as ApiKeyResponse;
+      const referrerDomain = new URL(req.get("Origin") as string).hostname;
       await checkInvalidatedToken(apiKeyJwt);
       checkIpRestrictions(apiKeyToken, res.locals);
-      checkReferrerRestrictions(apiKeyToken, req.hostname);
+      checkReferrerRestrictions(apiKeyToken, referrerDomain);
       if (apiKeyToken.referrerRestrictions) {
         if (
-          includesInCommaList(apiKeyToken.referrerRestrictions, req.hostname)
+          includesDomainInCommaList(
+            apiKeyToken.referrerRestrictions,
+            referrerDomain
+          )
         ) {
-          res.setHeader(
-            "Access-Control-Allow-Origin",
-            `${req.protocol}://${req.hostname}`
-          );
+          res.setHeader("Access-Control-Allow-Origin", req.get(
+            "Origin"
+          ) as string);
         }
       } else {
         res.setHeader("Access-Control-Allow-Origin", "*");

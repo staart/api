@@ -15,7 +15,7 @@ import { Tokens, ErrorCode, EventType, Templates } from "../interfaces/enum";
 import {
   deleteSensitiveInfoUser,
   removeFalsyValues,
-  includesInCommaList
+  includesDomainInCommaList
 } from "./utils";
 import { checkApprovedLocation } from "../crud/user";
 import { Locals } from "../interfaces/general";
@@ -262,6 +262,6 @@ export const checkReferrerRestrictions = (
   domain: string
 ) => {
   if (!apiKey.referrerRestrictions || !domain) return;
-  if (!includesInCommaList(apiKey.referrerRestrictions, domain))
+  if (!includesDomainInCommaList(apiKey.referrerRestrictions, domain))
     throw new Error(ErrorCode.REFERRER_CHECK_FAIL);
 };

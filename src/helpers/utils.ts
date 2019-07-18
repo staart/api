@@ -8,6 +8,7 @@ import slugify from "slugify";
 import cryptoRandomString from "crypto-random-string";
 import { Tokens } from "../interfaces/enum";
 import { ApiKeyResponse } from "./jwt";
+import { isMatch } from "matcher";
 
 /**
  * Capitalize each first letter in a string
@@ -140,7 +141,11 @@ export const removeFalsyValues = (value: any) => {
   return value;
 };
 
-export const includesInCommaList = (commaList: string, value: string) => {
+export const includesDomainInCommaList = (commaList: string, value: string) => {
   const list = commaList.split(",").map(item => item.trim());
-  return list.includes(value);
+  let includes = false;
+  list.forEach(item => {
+    if (item === value || isMatch(value, `*.${item}`)) includes = true;
+  });
+  return includes;
 };
