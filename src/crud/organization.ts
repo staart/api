@@ -163,6 +163,8 @@ export const updateApiKey = async (
 ) => {
   data.updatedAt = new Date();
   data = removeReadOnlyValues(data);
+  const apiKey = await getApiKey(organizationId, apiKeyId);
+  data.jwtApiKey = await apiKeyToken({ ...apiKey, ...data });
   deleteItemFromCache(CacheCategories.API_KEY, apiKeyId);
   deleteItemFromCache(
     CacheCategories.API_KEY_ORG,

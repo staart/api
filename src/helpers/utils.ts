@@ -6,6 +6,8 @@ import { getOrganizationIdFromUsername } from "../crud/organization";
 import { Request, Response } from "express";
 import slugify from "slugify";
 import cryptoRandomString from "crypto-random-string";
+import { Tokens } from "../interfaces/enum";
+import { ApiKeyResponse } from "./jwt";
 
 /**
  * Capitalize each first letter in a string
@@ -66,8 +68,8 @@ export const organizationUsernameToId = async (id: string) => {
 };
 
 export const localsToTokenOrKey = (res: Response) => {
-  if (res.locals.token.type === "apiKey") {
-    return res.locals.token.apiKey as ApiKey;
+  if (res.locals.token.sub == Tokens.API_KEY) {
+    return res.locals.token as ApiKeyResponse;
   }
   return res.locals.token.id as number;
 };
@@ -127,4 +129,13 @@ export const joiValidate = (schemaMap: Joi.SchemaMap, data: any) => {
   const result = Joi.validate(data, schema);
   if (result.error) throw new Error(`joi:${JSON.stringify(result.error)}`);
   return true;
+};
+
+export const removeFalsyValues = (value: any) => {
+  if (value && typeof value === "object") {
+    Object.keys(value).map(key => {
+      if (!value[key]) delete value[key];
+    });
+  }
+  return value;
 };

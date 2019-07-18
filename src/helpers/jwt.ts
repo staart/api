@@ -12,7 +12,7 @@ import {
 } from "../config";
 import { User } from "../interfaces/tables/user";
 import { Tokens, ErrorCode, EventType, Templates } from "../interfaces/enum";
-import { deleteSensitiveInfoUser } from "./utils";
+import { deleteSensitiveInfoUser, removeFalsyValues } from "./utils";
 import { checkApprovedLocation } from "../crud/user";
 import { Locals } from "../interfaces/general";
 import { createEvent } from "../crud/event";
@@ -34,7 +34,7 @@ import { createHandyClient } from "handy-redis";
 export const generateToken = (
   payload: string | object | Buffer,
   expiresIn: string | number,
-  subject: string
+  subject: Tokens
 ): Promise<string> =>
   new Promise((resolve, reject) => {
     sign(
@@ -61,14 +61,24 @@ export interface TokenResponse {
   id: number;
   ipAddress?: string;
 }
+export interface ApiKeyResponse {
+  id: number;
+  organizationId: number;
+  scopes: string;
+  jti: string;
+  sub: Tokens;
+  exp: number;
+  ipRestrictions?: string;
+  referrerRestrictions?: string;
+}
 export const verifyToken = (
   token: string,
-  subject: string
-): Promise<TokenResponse> =>
+  subject: Tokens
+): Promise<TokenResponse | ApiKeyResponse> =>
   new Promise((resolve, reject) => {
     verify(token, JWT_SECRET, { subject }, (error, data) => {
       if (error) return reject(error);
-      resolve(data as TokenResponse);
+      resolve(data as TokenResponse | ApiKeyResponse);
     });
   });
 
@@ -100,8 +110,9 @@ export const twoFactorToken = (user: User) =>
  * Generate an API key JWT
  */
 export const apiKeyToken = (apiKey: ApiKey) => {
-  const createApiKey = { ...apiKey };
+  const createApiKey = { ...removeFalsyValues(apiKey) };
   delete createApiKey.createdAt;
+  delete createApiKey.jwtApiKey;
   delete createApiKey.updatedAt;
   delete createApiKey.name;
   delete createApiKey.description;

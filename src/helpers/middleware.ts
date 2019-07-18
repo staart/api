@@ -5,7 +5,12 @@ import slowDown from "express-slow-down";
 import Joi from "@hapi/joi";
 import { stringify } from "yaml";
 import { safeError } from "./errors";
-import { verifyToken, TokenResponse, checkInvalidatedToken } from "./jwt";
+import {
+  verifyToken,
+  TokenResponse,
+  checkInvalidatedToken,
+  ApiKeyResponse
+} from "./jwt";
 import { ErrorCode, Tokens } from "../interfaces/enum";
 import {
   BRUTE_LIFETIME,
@@ -90,21 +95,35 @@ export const authHandler = async (
   res: Response,
   next: NextFunction
 ) => {
-  function sendAuthError(code: ErrorCode) {
-    const error = safeError(code);
-    res.status(error.status);
-    return res.json(error);
+  try {
+    let userJwt = req.get("Authorization") as string;
+    if (userJwt) {
+      if (userJwt.startsWith("Bearer "))
+        userJwt = userJwt.replace("Bearer ", "");
+      const userToken = await verifyToken(userJwt, Tokens.LOGIN);
+      await checkInvalidatedToken(userJwt);
+      if (userToken) res.locals.token = userToken;
+      return next();
+    }
+
+    let apiKeyJwt = req.get("X-Api-Key") as string;
+    if (apiKeyJwt) {
+      if (apiKeyJwt.startsWith("Bearer "))
+        apiKeyJwt = apiKeyJwt.replace("Bearer ", "");
+      const apiKeyToken = await verifyToken(apiKeyJwt, Tokens.API_KEY);
+      await checkInvalidatedToken(apiKeyJwt);
+      if (apiKeyToken) res.locals.token = apiKeyToken;
+      return next();
+    }
+  } catch (error) {
+    const jwtError = safeError(error);
+    res.status(jwtError.status);
+    return res.json(jwtError);
   }
-  let userJwt = req.get("Authorization") as string;
-  if (userJwt.startsWith("Bearer ")) userJwt = userJwt.replace("Bearer ", "");
-  const userToken = await verifyToken(userJwt, Tokens.LOGIN);
-  await checkInvalidatedToken(userJwt);
-  if (userToken) {
-    res.locals.token = userToken;
-    next();
-  } else {
-    return sendAuthError(ErrorCode.INVALID_TOKEN);
-  }
+
+  const error = safeError(ErrorCode.MISSING_TOKEN);
+  res.status(error.status);
+  return res.json(error);
 };
 
 /**
@@ -121,13 +140,18 @@ export const rateLimitHandler = async (
   next: NextFunction
 ) => {
   const apiKey = req.get("X-Api-Key");
-  // if (apiKey) {
-  //   const apiKeyDetails = await getApiKeyWithoutOrg(apiKey);
-  //   if (apiKeyDetails.organizationId) {
-  //     res.setHeader("X-RateLimit-Limit-Type", "api-key");
-  //     return rateLimiter(req, res, next);
-  //   }
-  // }
+  if (apiKey) {
+    try {
+      const details = (await verifyToken(
+        apiKey,
+        Tokens.API_KEY
+      )) as ApiKeyResponse;
+      if (details.organizationId) {
+        res.setHeader("X-Rate-Limit-Type", "api-key");
+        return rateLimiter(req, res, next);
+      }
+    } catch (error) {}
+  }
   res.setHeader("X-RateLimit-Limit-Type", "public");
   return publicRateLimiter(req, res, next);
 };
@@ -141,13 +165,18 @@ export const speedLimitHandler = async (
   next: NextFunction
 ) => {
   const apiKey = req.get("X-Api-Key");
-  // if (apiKey) {
-  //   const apiKeyDetails = await getApiKeyWithoutOrg(apiKey);
-  //   if (apiKeyDetails.organizationId) {
-  //     // Don't slow down requests if an API key is used
-  //     return next();
-  //   }
-  // }
+  if (apiKey) {
+    try {
+      const details = (await verifyToken(
+        apiKey,
+        Tokens.API_KEY
+      )) as ApiKeyResponse;
+      if (details.organizationId) {
+        res.setHeader("X-Rate-Limit-Type", "api-key");
+        return next();
+      }
+    } catch (error) {}
+  }
   return speedLimiter(req, res, next);
 };
 

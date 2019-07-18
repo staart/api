@@ -1,17 +1,18 @@
 import { User } from "../interfaces/tables/user";
-import { ApiKey } from "../interfaces/tables/organization";
 import { Organization } from "../interfaces/tables/organization";
 import {
   ErrorCode,
   Authorizations,
   UserRole,
   MembershipRole,
-  ApiAuthorizations
+  ApiAuthorizations,
+  Tokens
 } from "../interfaces/enum";
 import { getUser } from "../crud/user";
 import { getUserMemberships, getMembership } from "../crud/membership";
 import { getOrganization } from "../crud/organization";
 import { Membership } from "../interfaces/tables/memberships";
+import { ApiKeyResponse } from "./jwt";
 
 /**
  * Whether a user can perform an action on another user
@@ -158,13 +159,13 @@ const canUserGeneral = async (
  * Whether an API key can perform an action for an organization
  */
 const canApiKeyOrganization = (
-  apiKey: ApiKey,
+  apiKey: ApiKeyResponse,
   action: Authorizations | ApiAuthorizations,
   target: Organization
 ) => {
   if (apiKey.organizationId != target.id) return false;
 
-  if (!apiKey.scopes) return true;
+  if (!apiKey.scopes) return false;
 
   if (
     apiKey.scopes.includes("orgRead") &&
@@ -190,30 +191,38 @@ const canApiKeyOrganization = (
  * Whether a user has authorization to perform an action
  */
 export const can = async (
-  user: User | number | ApiKey,
+  user: User | number | ApiKeyResponse,
   action: Authorizations | ApiAuthorizations,
   targetType: "user" | "organization" | "membership" | "general",
   target?: User | Organization | Membership | number
 ) => {
-  let userObject: User | ApiKey | undefined = undefined;
+  let userObject: User | ApiKeyResponse | undefined = undefined;
   let isApiKey = false;
 
   if (typeof user === "object") {
-    // if ((user as ApiKey).apiKey) {
-    // isApiKey = true;
-    // } else {
-    userObject = user as User;
-    // }
+    if ((user as ApiKeyResponse).sub == Tokens.API_KEY) {
+      isApiKey = true;
+    } else {
+      userObject = user as User;
+    }
   } else {
     userObject = await getUser(user as number);
   }
 
   if (isApiKey) {
     if (target && typeof target === "object") {
-      return await canApiKeyOrganization(user as ApiKey, action, target);
+      return await canApiKeyOrganization(
+        user as ApiKeyResponse,
+        action,
+        target
+      );
     } else if (target) {
       target = await getOrganization(target);
-      return await canApiKeyOrganization(user as ApiKey, action, target);
+      return await canApiKeyOrganization(
+        user as ApiKeyResponse,
+        action,
+        target
+      );
     } else {
       throw new Error(ErrorCode.ORGANIZATION_NOT_FOUND);
     }

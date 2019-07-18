@@ -65,7 +65,7 @@ export enum ErrorCode {
   INVOICE_NOT_FOUND = "404/invoice-not-found",
   INVALID_LOGIN = "401/invalid-login",
   INCORRECT_PASSWORD = "401/incorrect-password",
-  INSUFFICIENT_PERMISSION = "401/insufficient-permission",
+  INSUFFICIENT_PERMISSION = "403/insufficient-permission",
   DEFAULT = "500/server-error",
   EMAIL_CANNOT_DELETE = "400/email.cannotDelete",
   UNVERIFIED_EMAIL = "401/unverified-email",
