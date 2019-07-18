@@ -12,7 +12,7 @@ import { cachedQuery, deleteItemFromCache } from "../helpers/cache";
 import { CacheCategories, ErrorCode } from "../interfaces/enum";
 import { ApiKey } from "../interfaces/tables/organization";
 import { getPaginatedData } from "./data";
-import { apiKeyToken } from "../helpers/jwt";
+import { apiKeyToken, invalidateToken } from "../helpers/jwt";
 import { TOKEN_EXPIRY_API_KEY_MAX } from "../config";
 
 /*
@@ -164,6 +164,7 @@ export const updateApiKey = async (
   data.updatedAt = new Date();
   data = removeReadOnlyValues(data);
   const apiKey = await getApiKey(organizationId, apiKeyId);
+  if (apiKey.jwtApiKey) await invalidateToken(apiKey.jwtApiKey);
   data.jwtApiKey = await apiKeyToken({ ...apiKey, ...data });
   deleteItemFromCache(CacheCategories.API_KEY, apiKeyId);
   deleteItemFromCache(
@@ -190,6 +191,8 @@ export const deleteApiKey = async (
     CacheCategories.API_KEY_ORG,
     `${organizationId}_${apiKeyId}`
   );
+  const currentApiKey = await getApiKey(organizationId, apiKeyId);
+  if (currentApiKey.jwtApiKey) await invalidateToken(currentApiKey.jwtApiKey);
   return await query(
     `DELETE FROM ${tableName(
       "api-keys"

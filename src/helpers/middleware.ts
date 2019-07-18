@@ -96,7 +96,7 @@ export const authHandler = async (
   next: NextFunction
 ) => {
   try {
-    let userJwt = req.get("Authorization") as string;
+    let userJwt = req.get("Authorization");
     if (userJwt) {
       if (userJwt.startsWith("Bearer "))
         userJwt = userJwt.replace("Bearer ", "");
@@ -108,7 +108,7 @@ export const authHandler = async (
       if (userToken) res.locals.token = userToken;
     }
 
-    let apiKeyJwt = req.get("X-Api-Key") as string;
+    let apiKeyJwt = req.get("X-Api-Key");
     if (apiKeyJwt) {
       if (apiKeyJwt.startsWith("Bearer "))
         apiKeyJwt = apiKeyJwt.replace("Bearer ", "");
@@ -116,23 +116,24 @@ export const authHandler = async (
         apiKeyJwt,
         Tokens.API_KEY
       )) as ApiKeyResponse;
-      const referrerDomain = new URL(req.get("Origin") as string).hostname;
       await checkInvalidatedToken(apiKeyJwt);
       checkIpRestrictions(apiKeyToken, res.locals);
-      checkReferrerRestrictions(apiKeyToken, referrerDomain);
-      if (apiKeyToken.referrerRestrictions) {
-        if (
-          includesDomainInCommaList(
-            apiKeyToken.referrerRestrictions,
-            referrerDomain
-          )
-        ) {
-          res.setHeader("Access-Control-Allow-Origin", req.get(
-            "Origin"
-          ) as string);
+      const origin = req.get("Origin");
+      if (origin) {
+        const referrerDomain = new URL(origin).hostname;
+        checkReferrerRestrictions(apiKeyToken, referrerDomain);
+        if (apiKeyToken.referrerRestrictions) {
+          if (
+            includesDomainInCommaList(
+              apiKeyToken.referrerRestrictions,
+              referrerDomain
+            )
+          ) {
+            res.setHeader("Access-Control-Allow-Origin", origin);
+          }
+        } else {
+          res.setHeader("Access-Control-Allow-Origin", "*");
         }
-      } else {
-        res.setHeader("Access-Control-Allow-Origin", "*");
       }
       if (apiKeyToken && !res.locals.token) res.locals.token = apiKeyToken;
     }

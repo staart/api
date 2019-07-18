@@ -50,11 +50,11 @@ import {
   createStripeSubscription
 } from "../crud/billing";
 import { getUser } from "../crud/user";
-import { ApiKey } from "../interfaces/tables/organization";
 import { getUserPrimaryEmail } from "../crud/email";
+import { ApiKeyResponse } from "../helpers/jwt";
 
 export const getOrganizationForUser = async (
-  userId: number | ApiKey,
+  userId: number | ApiKeyResponse,
   organizationId: number
 ) => {
   if (await can(userId, Authorizations.READ, "organization", organizationId))
@@ -95,7 +95,7 @@ export const newOrganizationForUser = async (
 };
 
 export const updateOrganizationForUser = async (
-  userId: number | ApiKey,
+  userId: number | ApiKeyResponse,
   organizationId: number,
   data: Organization,
   locals: Locals
@@ -110,7 +110,7 @@ export const updateOrganizationForUser = async (
 };
 
 export const deleteOrganizationForUser = async (
-  userId: number | ApiKey,
+  userId: number | ApiKeyResponse,
   organizationId: number,
   locals: Locals
 ) => {
@@ -128,7 +128,7 @@ export const deleteOrganizationForUser = async (
 };
 
 export const getOrganizationBillingForUser = async (
-  userId: number | ApiKey,
+  userId: number | ApiKeyResponse,
   organizationId: number
 ) => {
   if (await can(userId, Authorizations.READ, "organization", organizationId)) {
@@ -141,7 +141,7 @@ export const getOrganizationBillingForUser = async (
 };
 
 export const updateOrganizationBillingForUser = async (
-  userId: number | ApiKey,
+  userId: number | ApiKeyResponse,
   organizationId: number,
   data: any,
   locals: Locals
@@ -160,7 +160,7 @@ export const updateOrganizationBillingForUser = async (
 };
 
 export const getOrganizationInvoicesForUser = async (
-  userId: number | ApiKey,
+  userId: number | ApiKeyResponse,
   organizationId: number,
   params: KeyValue
 ) => {
@@ -174,7 +174,7 @@ export const getOrganizationInvoicesForUser = async (
 };
 
 export const getOrganizationInvoiceForUser = async (
-  userId: number | ApiKey,
+  userId: number | ApiKeyResponse,
   organizationId: number,
   invoiceId: string
 ) => {
@@ -188,7 +188,7 @@ export const getOrganizationInvoiceForUser = async (
 };
 
 export const getOrganizationSourcesForUser = async (
-  userId: number | ApiKey,
+  userId: number | ApiKeyResponse,
   organizationId: number,
   params: KeyValue
 ) => {
@@ -202,7 +202,7 @@ export const getOrganizationSourcesForUser = async (
 };
 
 export const getOrganizationSourceForUser = async (
-  userId: number | ApiKey,
+  userId: number | ApiKeyResponse,
   organizationId: number,
   sourceId: string
 ) => {
@@ -216,7 +216,7 @@ export const getOrganizationSourceForUser = async (
 };
 
 export const getOrganizationSubscriptionsForUser = async (
-  userId: number | ApiKey,
+  userId: number | ApiKeyResponse,
   organizationId: number,
   params: KeyValue
 ) => {
@@ -233,7 +233,7 @@ export const getOrganizationSubscriptionsForUser = async (
 };
 
 export const getOrganizationSubscriptionForUser = async (
-  userId: number | ApiKey,
+  userId: number | ApiKeyResponse,
   organizationId: number,
   subscriptionId: string
 ) => {
@@ -250,7 +250,7 @@ export const getOrganizationSubscriptionForUser = async (
 };
 
 export const updateOrganizationSubscriptionForUser = async (
-  userId: number | ApiKey,
+  userId: number | ApiKeyResponse,
   organizationId: number,
   subscriptionId: string,
   data: KeyValue
@@ -269,7 +269,7 @@ export const updateOrganizationSubscriptionForUser = async (
 };
 
 export const createOrganizationSubscriptionForUser = async (
-  userId: number | ApiKey,
+  userId: number | ApiKeyResponse,
   organizationId: number,
   params: { plan: string; [index: string]: any }
 ) => {
@@ -286,7 +286,7 @@ export const createOrganizationSubscriptionForUser = async (
 };
 
 export const getOrganizationPricingPlansForUser = async (
-  userId: number | ApiKey,
+  userId: number | ApiKeyResponse,
   organizationId: number,
   productId: string
 ) => {
@@ -296,7 +296,7 @@ export const getOrganizationPricingPlansForUser = async (
 };
 
 export const deleteOrganizationSourceForUser = async (
-  userId: number | ApiKey,
+  userId: number | ApiKeyResponse,
   organizationId: number,
   sourceId: string
 ) => {
@@ -310,7 +310,7 @@ export const deleteOrganizationSourceForUser = async (
 };
 
 export const updateOrganizationSourceForUser = async (
-  userId: number | ApiKey,
+  userId: number | ApiKeyResponse,
   organizationId: number,
   sourceId: string,
   data: any
@@ -331,7 +331,7 @@ export const updateOrganizationSourceForUser = async (
 };
 
 export const createOrganizationSourceForUser = async (
-  userId: number | ApiKey,
+  userId: number | ApiKeyResponse,
   organizationId: number,
   card: any
 ) => {
@@ -347,7 +347,7 @@ export const createOrganizationSourceForUser = async (
 };
 
 export const getAllOrganizationDataForUser = async (
-  userId: number | ApiKey,
+  userId: number | ApiKeyResponse,
   organizationId: number
 ) => {
   if (
@@ -388,7 +388,7 @@ export const getAllOrganizationDataForUser = async (
 };
 
 export const getOrganizationRecentEventsForUser = async (
-  userId: number | ApiKey,
+  userId: number | ApiKeyResponse,
   organizationId: number
 ) => {
   if (await can(userId, Authorizations.READ, "organization", organizationId))
@@ -397,7 +397,7 @@ export const getOrganizationRecentEventsForUser = async (
 };
 
 export const getOrganizationMembershipsForUser = async (
-  userId: number | ApiKey,
+  userId: number | ApiKeyResponse,
   organizationId: number,
   query?: KeyValue
 ) => {
@@ -407,7 +407,7 @@ export const getOrganizationMembershipsForUser = async (
 };
 
 export const getOrganizationApiKeysForUser = async (
-  userId: number | ApiKey,
+  userId: number | ApiKeyResponse,
   organizationId: number,
   query: KeyValue
 ) => {
@@ -424,7 +424,7 @@ export const getOrganizationApiKeysForUser = async (
 };
 
 export const getOrganizationApiKeyForUser = async (
-  userId: number | ApiKey,
+  userId: number | ApiKeyResponse,
   organizationId: number,
   apiKeyId: number
 ) => {
@@ -441,7 +441,7 @@ export const getOrganizationApiKeyForUser = async (
 };
 
 export const updateApiKeyForUser = async (
-  userId: number | ApiKey,
+  userId: number | ApiKeyResponse,
   organizationId: number,
   apiKeyId: number,
   data: KeyValue,
@@ -462,7 +462,7 @@ export const updateApiKeyForUser = async (
 };
 
 export const createApiKeyForUser = async (
-  userId: number | ApiKey,
+  userId: number | ApiKeyResponse,
   organizationId: number,
   apiKey: KeyValue,
   locals: Locals
@@ -482,7 +482,7 @@ export const createApiKeyForUser = async (
 };
 
 export const deleteApiKeyForUser = async (
-  userId: number | ApiKey,
+  userId: number | ApiKeyResponse,
   organizationId: number,
   apiKeyId: number,
   locals: Locals

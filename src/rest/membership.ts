@@ -10,10 +10,10 @@ import {
   updateMembership
 } from "../crud/membership";
 import { User } from "../interfaces/tables/user";
-import { ApiKey } from "../interfaces/tables/organization";
 import { register } from "./auth";
 import { can } from "../helpers/authorization";
 import { Locals, KeyValue } from "../interfaces/general";
+import { ApiKeyResponse } from "../helpers/jwt";
 
 export const getMembershipDetailsForUser = async (
   userId: number,
@@ -25,7 +25,7 @@ export const getMembershipDetailsForUser = async (
 };
 
 export const inviteMemberToOrganization = async (
-  userId: number | ApiKey,
+  userId: number | ApiKeyResponse,
   organizationId: number,
   newMemberName: string,
   newMemberEmail: string,
@@ -72,7 +72,7 @@ export const inviteMemberToOrganization = async (
 };
 
 export const deleteMembershipForUser = async (
-  tokenUserId: number | ApiKey,
+  tokenUserId: number | ApiKeyResponse,
   membershipId: number,
   locals: Locals
 ) => {
@@ -97,7 +97,7 @@ export const deleteMembershipForUser = async (
 };
 
 export const updateMembershipForUser = async (
-  userId: number | ApiKey,
+  userId: number | ApiKeyResponse,
   membershipId: number,
   data: KeyValue,
   locals: Locals
