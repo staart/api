@@ -11,7 +11,7 @@
  Target Server Version : 100221
  File Encoding         : 65001
 
- Date: 18/07/2019 10:08:21
+ Date: 18/07/2019 11:18:22
 */
 
 SET NAMES utf8mb4;
@@ -22,7 +22,9 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------
 DROP TABLE IF EXISTS `staart-api-keys`;
 CREATE TABLE `staart-api-keys` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
+  `description` text COLLATE utf8mb4_bin DEFAULT NULL,
   `jwtApiKey` text COLLATE utf8mb4_bin NOT NULL,
   `organizationId` int(12) NOT NULL,
   `ipRestrictions` text COLLATE utf8mb4_bin DEFAULT NULL,

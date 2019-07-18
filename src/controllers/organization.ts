@@ -534,19 +534,23 @@ export class OrganizationController {
   }
 
   @Put(":id/api-keys")
+  @Middleware(
+    validator(
+      {
+        scopes: Joi.string(),
+        ipRestrictions: Joi.string(),
+        referrerRestrictions: Joi.string(),
+        name: Joi.string(),
+        description: Joi.string()
+      },
+      "body"
+    )
+  )
   async putUserApiKeys(req: Request, res: Response) {
     const id = await organizationUsernameToId(req.params.id);
     joiValidate(
       { id: [Joi.string().required(), Joi.number().required()] },
       { id }
-    );
-    joiValidate(
-      {
-        scopes: Joi.string().allow(null),
-        ipRestrictions: Joi.string().allow(null),
-        referrerRestrictions: Joi.string().allow(null)
-      },
-      req.body
     );
     res
       .status(CREATED)
@@ -577,6 +581,18 @@ export class OrganizationController {
   }
 
   @Patch(":id/api-keys/:apiKeyId")
+  @Middleware(
+    validator(
+      {
+        scopes: Joi.string().allow(""),
+        ipRestrictions: Joi.string().allow(""),
+        referrerRestrictions: Joi.string().allow(""),
+        name: Joi.string().allow(""),
+        description: Joi.string().allow("")
+      },
+      "body"
+    )
+  )
   async patchUserApiKey(req: Request, res: Response) {
     const id = await organizationUsernameToId(req.params.id);
     const apiKeyId = req.params.apiKeyId;
@@ -586,14 +602,6 @@ export class OrganizationController {
         apiKeyId: Joi.number().required()
       },
       { id, apiKeyId }
-    );
-    joiValidate(
-      {
-        scopes: Joi.string().allow(null),
-        ipRestrictions: Joi.string().allow(null),
-        referrerRestrictions: Joi.string().allow(null)
-      },
-      req.body
     );
     res.json(
       await updateApiKeyForUser(

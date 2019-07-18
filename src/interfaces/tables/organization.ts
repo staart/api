@@ -12,6 +12,8 @@ export interface Organization {
 
 export interface ApiKey {
   id?: number;
+  name?: string;
+  description?: string;
   jwtApiKey?: string;
   scopes?: string;
   organizationId: number;

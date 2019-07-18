@@ -99,6 +99,8 @@ export const apiKeyToken = (apiKey: ApiKey) => {
   const createApiKey = { ...apiKey };
   delete createApiKey.createdAt;
   delete createApiKey.updatedAt;
+  delete createApiKey.name;
+  delete createApiKey.description;
   delete createApiKey.expiresAt;
   return generateToken(
     createApiKey,
