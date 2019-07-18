@@ -1,4 +1,4 @@
-import { sign, verify } from "jsonwebtoken";
+import { sign, verify, decode } from "jsonwebtoken";
 import {
   JWT_ISSUER,
   JWT_SECRET,
@@ -7,7 +7,8 @@ import {
   TOKEN_EXPIRY_LOGIN,
   TOKEN_EXPIRY_REFRESH,
   TOKEN_EXPIRY_APPROVE_LOCATION,
-  TOKEN_EXPIRY_API_KEY_MAX
+  TOKEN_EXPIRY_API_KEY_MAX,
+  REDIS_URL
 } from "../config";
 import { User } from "../interfaces/tables/user";
 import { Tokens, ErrorCode, EventType, Templates } from "../interfaces/enum";
@@ -24,6 +25,8 @@ import { mail } from "./mail";
 import { getGeolocationFromIp } from "./location";
 import i18n from "../i18n";
 import { ApiKey } from "../interfaces/tables/organization";
+import cryptoRandomString from "crypto-random-string";
+import { createHandyClient } from "handy-redis";
 
 /**
  * Generate a new JWT
@@ -41,7 +44,8 @@ export const generateToken = (
       {
         expiresIn,
         subject,
-        issuer: JWT_ISSUER
+        issuer: JWT_ISSUER,
+        jwtid: cryptoRandomString({ length: 12 })
       },
       (error, token) => {
         if (error) return reject(error);
@@ -188,4 +192,40 @@ export const getLoginResponse = async (
       twoFactorToken: await twoFactorToken(user)
     };
   return await postLoginTokens(user);
+};
+
+const client = createHandyClient({
+  url: REDIS_URL
+});
+
+/**
+ * Check if a token is invalidated in Redis
+ * @param token - JWT
+ */
+export const checkInvalidatedToken = async (token: string) => {
+  const details = decode(token);
+  if (
+    details &&
+    typeof details === "object" &&
+    details.jti &&
+    (await client.get(`${JWT_ISSUER}-revoke-${details.sub}-${details.jti}`))
+  )
+    throw new Error(ErrorCode.REVOKED_TOKEN);
+};
+
+/**
+ * Invalidate a JWT using Redis
+ * @param token - JWT
+ */
+export const invalidateToken = async (token: string) => {
+  const details = decode(token);
+  if (details && typeof details === "object" && details.jti)
+    client.set(
+      `${JWT_ISSUER}-revoke-${details.sub}-${details.jti}`,
+      "1",
+      details.exp && [
+        "EX",
+        Math.floor((details.exp - new Date().getTime()) / 1000)
+      ]
+    );
 };

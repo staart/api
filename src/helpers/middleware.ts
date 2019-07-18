@@ -5,7 +5,7 @@ import slowDown from "express-slow-down";
 import Joi from "@hapi/joi";
 import { stringify } from "yaml";
 import { safeError } from "./errors";
-import { verifyToken, TokenResponse } from "./jwt";
+import { verifyToken, TokenResponse, checkInvalidatedToken } from "./jwt";
 import { ErrorCode, Tokens } from "../interfaces/enum";
 import {
   BRUTE_LIFETIME,
@@ -95,58 +95,12 @@ export const authHandler = async (
     res.status(error.status);
     return res.json(error);
   }
-  let token = req.get("Authorization") || req.get("X-Api-Key");
-  if (!token) {
-    const error = safeError(ErrorCode.MISSING_TOKEN);
-    res.status(error.status);
-    return res.json(error);
-  }
-  if (token.startsWith("Bearer ")) token = token.replace("Bearer ", "");
-  let localsToken: TokenResponse | ApiKeyToken | undefined;
-  try {
-    // This will throw an error if it's an API key, not a JWT
-    localsToken = await verifyToken(token, Tokens.LOGIN);
-  } catch (e) {}
-  // However, with API/secret paid and user info, you can:
-  //
-  //
-  // const secretKey = req.get("X-Api-Secret") || req.get("X-Secret-Key");
-  // if (secretKey) {
-  //   let apiKey: ApiKey | undefined;
-  //   try {
-  //     apiKey = await getApiKeyWithoutOrg(token);
-  //   } catch (error) {}
-  //   if (apiKey && apiKey.organizationId && apiKey.secretKey === secretKey) {
-  //     if (apiKey.ipRestrictions && apiKey.ipRestrictions.trim()) {
-  //       if (
-  //         !ipRangeCheck(
-  //           res.locals.ipAddress,
-  //           apiKey.ipRestrictions.split(",").map(range => range.trim())
-  //         )
-  //       ) {
-  //         return sendAuthError(ErrorCode.IP_RANGE_CHECK_FAIL);
-  //       }
-  //     }
-  //     if (
-  //       apiKey.referrerRestrictions &&
-  //       apiKey.referrerRestrictions.trim() &&
-  //       req.headers.referer
-  //     ) {
-  //       let matchesAny = false;
-  //       apiKey.referrerRestrictions.split(",").forEach(referrer => {
-  //         referrer = referrer.trim();
-  //         if (isMatch(req.headers.referer as string, referrer))
-  //           matchesAny = true;
-  //       });
-  //       if (!matchesAny) return sendAuthError(ErrorCode.REFERRER_CHECK_FAIL);
-  //     }
-  //     localsToken = { type: "apiKey", apiKey };
-  //   } else {
-  //     return sendAuthError(ErrorCode.INVALID_API_KEY_SECRET);
-  //   }
-  // }
-  if (localsToken) {
-    res.locals.token = localsToken;
+  let userJwt = req.get("Authorization") as string;
+  if (userJwt.startsWith("Bearer ")) userJwt = userJwt.replace("Bearer ", "");
+  const userToken = await verifyToken(userJwt, Tokens.LOGIN);
+  await checkInvalidatedToken(userJwt);
+  if (userToken) {
+    res.locals.token = userToken;
     next();
   } else {
     return sendAuthError(ErrorCode.INVALID_TOKEN);

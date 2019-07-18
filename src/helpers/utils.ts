@@ -75,7 +75,7 @@ export const localsToTokenOrKey = (res: Response) => {
 export const createSlug = (name: string) =>
   `${slugify(name, {
     lower: true
-  }).replace(/'|"/g, "")}-${cryptoRandomString({ length: 5, type: "hex" })}`;
+  }).replace(/'|"/g, "")}-${cryptoRandomString({ length: 5 })}`;
 
 export const safeRedirect = (req: Request, res: Response, url: string) => {
   if (req.get("X-Requested-With") === "XMLHttpRequest")
