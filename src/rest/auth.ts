@@ -21,7 +21,8 @@ import {
   verifyToken,
   passwordResetToken,
   getLoginResponse,
-  postLoginTokens
+  postLoginTokens,
+  TokenResponse
 } from "../helpers/jwt";
 import { KeyValue, Locals } from "../interfaces/general";
 import { createEvent } from "../crud/event";
@@ -204,7 +205,10 @@ export const impersonate = async (
 };
 
 export const approveLocation = async (token: string, locals: Locals) => {
-  const tokenUser = await verifyToken(token, Tokens.APPROVE_LOCATION);
+  const tokenUser = (await verifyToken(
+    token,
+    Tokens.APPROVE_LOCATION
+  )) as TokenResponse;
   if (!tokenUser.id) throw new Error(ErrorCode.USER_NOT_FOUND);
   const user = await getUser(tokenUser.id);
   if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
