@@ -76,7 +76,7 @@
     "concurrently": "^4.1.1",
     "coveralls": "^3.0.5",
     "dotenv": "^8.0.0",
-    "husky": "^3.0.0",
+    "husky": "^3.0.1",
     "jest": "^24.8.0",
     "onchange": "^6.0.0",
     "prettier": "^1.18.2",
