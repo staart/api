@@ -9,3 +9,17 @@ export interface Organization {
   createdAt?: Date;
   updatedAt?: Date;
 }
+
+export interface ApiKey {
+  id?: number;
+  name?: string;
+  description?: string;
+  jwtApiKey?: string;
+  scopes?: string;
+  organizationId: number;
+  ipRestrictions?: string;
+  referrerRestrictions?: string;
+  expiresAt?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
+}

@@ -4,10 +4,12 @@ os:
 language: node_js
 node_js:
   - "10.16.0"
+services:
+  - redis-server
 install:
   - "yarn"
 script:
   - "yarn build"
-  - "yarn test"
+  # - "yarn test"
 env:
   - YARN_GPG=no

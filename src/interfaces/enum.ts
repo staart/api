@@ -12,11 +12,6 @@ export enum UserRole {
   ADMIN = 3
 }
 
-export enum ApiKeyAccess {
-  READONLY = 0,
-  FULL_ACCESS = 1
-}
-
 export enum NotificationEmails {
   SECURITY = 0,
   ACCOUNT = 1,
@@ -55,6 +50,7 @@ export enum EventType {
 export enum ErrorCode {
   NOT_FOUND = "404/not-found",
   MISSING_TOKEN = "422/missing-token",
+  REVOKED_TOKEN = "401/revoked-token",
   INVALID_TOKEN = "401/invalid-token",
   MISSING_PRIMARY_EMAIL = "422/missing-primary-email",
   MISSING_PASSWORD = "422/missing-password",
@@ -69,7 +65,7 @@ export enum ErrorCode {
   INVOICE_NOT_FOUND = "404/invoice-not-found",
   INVALID_LOGIN = "401/invalid-login",
   INCORRECT_PASSWORD = "401/incorrect-password",
-  INSUFFICIENT_PERMISSION = "401/insufficient-permission",
+  INSUFFICIENT_PERMISSION = "403/insufficient-permission",
   DEFAULT = "500/server-error",
   EMAIL_CANNOT_DELETE = "400/email.cannotDelete",
   UNVERIFIED_EMAIL = "401/unverified-email",
@@ -98,6 +94,7 @@ export enum Templates {
 
 export enum Tokens {
   LOGIN = "auth",
+  API_KEY = "api-key",
   TWO_FACTOR = "2fa",
   REFRESH = "refresh",
   PASSWORD_RESET = "password-reset",

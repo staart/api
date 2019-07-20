@@ -38,7 +38,7 @@ import {
   Middleware
 } from "@overnightjs/core";
 import { authHandler, validator } from "../helpers/middleware";
-import { MembershipRole, ApiKeyAccess } from "../interfaces/enum";
+import { MembershipRole } from "../interfaces/enum";
 import { CREATED } from "http-status-codes";
 import asyncHandler from "express-async-handler";
 import { inviteMemberToOrganization } from "../rest/membership";
@@ -534,19 +534,23 @@ export class OrganizationController {
   }
 
   @Put(":id/api-keys")
+  @Middleware(
+    validator(
+      {
+        scopes: Joi.string(),
+        ipRestrictions: Joi.string(),
+        referrerRestrictions: Joi.string(),
+        name: Joi.string(),
+        description: Joi.string()
+      },
+      "body"
+    )
+  )
   async putUserApiKeys(req: Request, res: Response) {
     const id = await organizationUsernameToId(req.params.id);
     joiValidate(
       { id: [Joi.string().required(), Joi.number().required()] },
       { id }
-    );
-    joiValidate(
-      {
-        apiRestrictions: Joi.string().allow(null),
-        ipRestrictions: Joi.string().allow(null),
-        referrerRestrictions: Joi.string().allow(null)
-      },
-      req.body
     );
     res
       .status(CREATED)
@@ -560,65 +564,74 @@ export class OrganizationController {
       );
   }
 
-  @Get(":id/api-keys/:apiKey")
+  @Get(":id/api-keys/:apiKeyId")
   async getUserApiKey(req: Request, res: Response) {
     const id = await organizationUsernameToId(req.params.id);
-    const apiKey = req.params.apiKey;
+    const apiKeyId = req.params.apiKeyId;
     joiValidate(
       {
         id: [Joi.string().required(), Joi.number().required()],
-        apiKey: Joi.string().required()
+        apiKeyId: Joi.number().required()
       },
-      { id, apiKey }
+      { id, apiKeyId }
     );
     res.json(
-      await getOrganizationApiKeyForUser(localsToTokenOrKey(res), id, apiKey)
+      await getOrganizationApiKeyForUser(localsToTokenOrKey(res), id, apiKeyId)
     );
   }
 
-  @Patch(":id/api-keys/:apiKey")
+  @Patch(":id/api-keys/:apiKeyId")
+  @Middleware(
+    validator(
+      {
+        scopes: Joi.string().allow(""),
+        ipRestrictions: Joi.string().allow(""),
+        referrerRestrictions: Joi.string().allow(""),
+        name: Joi.string().allow(""),
+        description: Joi.string().allow("")
+      },
+      "body"
+    )
+  )
   async patchUserApiKey(req: Request, res: Response) {
     const id = await organizationUsernameToId(req.params.id);
-    const apiKey = req.params.apiKey;
+    const apiKeyId = req.params.apiKeyId;
     joiValidate(
       {
         id: [Joi.string().required(), Joi.number().required()],
-        apiKey: Joi.string().required()
+        apiKeyId: Joi.number().required()
       },
-      { id, apiKey }
-    );
-    joiValidate(
-      {
-        apiRestrictions: Joi.string().allow(null),
-        ipRestrictions: Joi.string().allow(null),
-        referrerRestrictions: Joi.string().allow(null)
-      },
-      req.body
+      { id, apiKeyId }
     );
     res.json(
       await updateApiKeyForUser(
         localsToTokenOrKey(res),
         id,
-        apiKey,
+        apiKeyId,
         req.body,
         res.locals
       )
     );
   }
 
-  @Delete(":id/api-keys/:apiKey")
+  @Delete(":id/api-keys/:apiKeyId")
   async deleteUserApiKey(req: Request, res: Response) {
     const id = await organizationUsernameToId(req.params.id);
-    const apiKey = req.params.apiKey;
+    const apiKeyId = req.params.apiKeyId;
     joiValidate(
       {
         id: [Joi.string().required(), Joi.number().required()],
-        apiKey: Joi.string().required()
+        apiKeyId: Joi.number().required()
       },
-      { id, apiKey }
+      { id, apiKeyId }
     );
     res.json(
-      await deleteApiKeyForUser(localsToTokenOrKey(res), id, apiKey, res.locals)
+      await deleteApiKeyForUser(
+        localsToTokenOrKey(res),
+        id,
+        apiKeyId,
+        res.locals
+      )
     );
   }
 }
