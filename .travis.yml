@@ -10,6 +10,6 @@ install:
   - "yarn"
 script:
   - "yarn build"
-  - "yarn test"
+  # - "yarn test"
 env:
   - YARN_GPG=no
