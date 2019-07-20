@@ -5877,10 +5877,10 @@ punycode@^2.1.0, punycode@^2.1.1:
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.1.1.tgz#b58b010ac40c22c5657616c8d2c2c02c7bf479ec"
   integrity sha512-XRsRjdf+j5ml+y/6GKHPZbrF/8p2Yga0JPtdqTIY2Xe5ohJPD9saDJJLPvp9+NSBprVvevdXZybnj2cv8OEd0A==
 
-qrcode@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/qrcode/-/qrcode-1.4.0.tgz#b4b41b4bbfd5eeac8d5163efacef34ee5b8ad455"
-  integrity sha512-18u+bdSosXO0+wx6F1UUFzJz01VRfMBcb/wbBw/tKYRD0A2Vho5WQ4xz30pHwhh4IE/qhObqIs5yNO0mGdHKkA==
+qrcode@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/qrcode/-/qrcode-1.4.1.tgz#2126814985d0dbbd9aee050fc523d319c6a7dc3b"
+  integrity sha512-3JhHQJkKqJL4PfoM6t+B40f0GWv9eNJAJmuNx2X/sHEOLvMyvEPN8GfbdN1qmr19O8N2nLraOzeWjXocHz1S4w==
   dependencies:
     dijkstrajs "^1.0.1"
     isarray "^2.0.1"
