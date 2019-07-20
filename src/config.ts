@@ -79,6 +79,7 @@ export const TOKEN_EXPIRY_REFRESH = process.env.TOKEN_EXPIRY_REFRESH || "30d";
 export const TOKEN_EXPIRY_API_KEY_MAX = process.env.TOKEN_EXPIRY_API_KEY_MAX
   ? parseInt(process.env.TOKEN_EXPIRY_API_KEY_MAX)
   : 10413685800000; // 2299-12-31 is the default maximum expiry (also what Microsoft uses)
+export const DISALLOW_OPEN_CORS = !!process.env.DISALLOW_OPEN_CORS;
 
 // OAuth2 credentials
 export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || "";

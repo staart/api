@@ -1,5 +1,6 @@
 import "@babel/polyfill";
 import helmet from "helmet";
+import cors from "cors";
 import morgan from "morgan";
 import rfs from "rotating-file-stream";
 import responseTime from "response-time";
@@ -14,6 +15,7 @@ import {
 import { mkdirSync, existsSync } from "fs";
 import { join } from "path";
 import { Request, Response } from "express";
+import { DISALLOW_OPEN_CORS } from "./config";
 
 const logDirectory = join(__dirname, "..", "logs");
 existsSync(logDirectory) || mkdirSync(logDirectory);
@@ -29,6 +31,7 @@ export class Staart extends Server {
     this.setupHandlers();
     this.setupControllers();
     this.app.use(errorHandler);
+    if (!DISALLOW_OPEN_CORS) this.app.use(cors());
   }
 
   private setupHandlers() {
