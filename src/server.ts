@@ -30,11 +30,11 @@ export class Staart extends Server {
     super();
     this.setupHandlers();
     this.setupControllers();
-    this.app.use(errorHandler);
-    if (!DISALLOW_OPEN_CORS) this.app.use(cors());
+    if (!DISALLOW_OPEN_CORS) this.app.use(errorHandler);
   }
 
   private setupHandlers() {
+    this.app.use(cors());
     this.app.use(helmet({ hsts: { maxAge: 31536000, preload: true } }));
     this.app.use(morgan("combined", { stream: accessLogStream }));
     this.app.use(json({ limit: "50mb" }));
