@@ -63,8 +63,10 @@ export const inviteMemberToOrganization = async (
       if (!newUser.id) throw new Error(ErrorCode.USER_NOT_FOUND);
       let isMemberAlready = false;
       try {
-        await getUserOrganizationMembership(newUser.id, organizationId);
-        isMemberAlready = true;
+        isMemberAlready = !!(await getUserOrganizationMembership(
+          newUser.id,
+          organizationId
+        ));
       } catch (error) {}
       if (isMemberAlready) throw new Error(ErrorCode.USER_IS_MEMBER_ALREADY);
       await createMembership({ userId: newUser.id, organizationId, role });
