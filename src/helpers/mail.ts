@@ -29,7 +29,7 @@ const client = createClient({
 /**
  * Send a new email using AWS SES
  */
-const sendMail = (mail: Mail) =>
+const sendMail = (mail: Mail): Promise<Response> =>
   new Promise((resolve, reject) => {
     client.sendEmail(
       mail,

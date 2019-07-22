@@ -140,20 +140,28 @@ export const removeReadOnlyValues = (object: KeyValue) => {
 };
 
 export const addIsPrimaryToEmails = async (emails: Email[]) => {
-  const userPrimaryEmailObject = await getUserPrimaryEmailObject(
-    emails[0].userId
-  );
-  emails.map(email => {
-    email.isPrimary = email.id === userPrimaryEmailObject.id;
-    return email;
-  });
+  try {
+    const userPrimaryEmailObject = await getUserPrimaryEmailObject(
+      emails[0].userId
+    );
+    emails.map(email => {
+      email.isPrimary = email.id === userPrimaryEmailObject.id;
+      return email;
+    });
+  } catch (error) {}
   return emails;
 };
 
 export const addIsPrimaryToEmail = async (email: Email) => {
-  const userPrimaryEmailObject = await getUserPrimaryEmailObject(email.userId);
-  email.isPrimary = email.id === userPrimaryEmailObject.id;
-  return email;
+  try {
+    const userPrimaryEmailObject = await getUserPrimaryEmailObject(
+      email.userId
+    );
+    email.isPrimary = email.id === userPrimaryEmailObject.id;
+    return email;
+  } catch (error) {
+    return email;
+  }
 };
 
 export const tableName = (name: string) => `\`${DB_TABLE_PREFIX}${name}\``;

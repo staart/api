@@ -41,7 +41,7 @@ export const createUser = async (user: User) => {
   user.nickname = user.nickname || user.name.split(" ")[0];
   user.twoFactorEnabled = user.twoFactorEnabled || false;
   user.timezone = user.timezone || "Europe/Amsterdam";
-  user.password = await hash(user.password || "", 8);
+  user.password = user.password ? await hash(user.password, 8) : undefined;
   user.notificationEmails =
     user.notificationEmails || NotificationEmails.GENERAL;
   user.preferredLanguage = user.preferredLanguage || "en-us";

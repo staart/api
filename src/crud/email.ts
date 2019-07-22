@@ -44,7 +44,7 @@ export const createEmail = async (
     );
   }
   if (sendPasswordSet) {
-    await sendNewPassword(email.email);
+    await sendNewPassword(email.userId, email.email);
   }
   return result;
 };
@@ -59,7 +59,6 @@ export const sendEmailVerification = async (
 ) => {
   const token = await emailVerificationToken(id);
   await mail(email, Templates.EMAIL_VERIFY, { name: user.name, email, token });
-  if (user.password === (await hash("", 8))) await sendNewPassword(email);
   return;
 };
 

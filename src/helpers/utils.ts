@@ -101,7 +101,8 @@ export const boolValues = [
   "prefersReducedMotion",
   "prefersColorSchemeDark",
   "used",
-  "isVerified"
+  "isVerified",
+  "forceTwoFactor"
 ];
 
 /**

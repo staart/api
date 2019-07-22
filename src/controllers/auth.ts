@@ -168,7 +168,6 @@ export class AuthController {
   }
 
   @Post("refresh")
-  @Middleware(authHandler)
   async postRefreshToken(req: Request, res: Response) {
     const token =
       req.body.token || (req.get("Authorization") || "").replace("Bearer ", "");

@@ -87,7 +87,7 @@ export class OrganizationController {
       {
         name: Joi.string(),
         username: Joi.string(),
-        forceTwoFactor: Joi.bool(),
+        forceTwoFactor: Joi.boolean(),
         ipRestrictions: Joi.string(),
         invitationDomain: Joi.string().regex(
           /([a-z])([a-z0-9]+\.)*[a-z0-9]+\.[a-z.]+/

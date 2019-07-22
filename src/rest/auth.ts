@@ -14,7 +14,8 @@ import {
   createEmail,
   updateEmail,
   getEmail,
-  checkIfNewEmail
+  checkIfNewEmail,
+  getUserEmails
 } from "../crud/email";
 import { mail, checkIfDisposableEmail } from "../helpers/mail";
 import {
@@ -149,8 +150,11 @@ export const sendPasswordReset = async (email: string, locals?: Locals) => {
   return;
 };
 
-export const sendNewPassword = async (email: string) => {
-  const user = await getUserByEmail(email);
+export const sendNewPassword = async (userId: number, email: string) => {
+  const user = await getUser(userId);
+  const userEmails = await getUserEmails(userId);
+  if (!userEmails.filter(userEmail => userEmail.email === email).length)
+    throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
   if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
   const token = await passwordResetToken(user.id);
   await mail(email, Templates.NEW_PASSWORD, { name: user.name, token });

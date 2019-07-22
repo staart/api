@@ -15,6 +15,8 @@ export const safeError = (error: string) => {
     ) as Joi.ValidationError;
     return sendError(`422/${joiError.details[0].message}`);
   }
+  if (errorString === "TokenExpiredError: jwt expired")
+    return sendError(ErrorCode.EXPIRED_TOKEN);
   if (
     errorString.startsWith("JsonWebTokenError") ||
     errorString.startsWith("JsonWebTokenjwt")
