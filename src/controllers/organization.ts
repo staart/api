@@ -25,7 +25,12 @@ import {
   createApiKeyForUser,
   getOrganizationApiKeyForUser,
   updateApiKeyForUser,
-  deleteApiKeyForUser
+  deleteApiKeyForUser,
+  getOrganizationDomainsForUser,
+  createDomainForUser,
+  getOrganizationDomainForUser,
+  updateDomainForUser,
+  deleteDomainForUser
 } from "../rest/organization";
 import {
   Get,
@@ -57,8 +62,7 @@ export class OrganizationController {
   @Middleware(
     validator(
       {
-        name: Joi.string().required(),
-        invitationDomain: Joi.string()
+        name: Joi.string().required()
       },
       "body"
     )
@@ -88,10 +92,7 @@ export class OrganizationController {
         name: Joi.string(),
         username: Joi.string(),
         forceTwoFactor: Joi.boolean(),
-        ipRestrictions: Joi.string(),
-        invitationDomain: Joi.string().regex(
-          /([a-z])([a-z0-9]+\.)*[a-z0-9]+\.[a-z.]+/
-        )
+        ipRestrictions: Joi.string()
       },
       "body"
     )
@@ -630,6 +631,124 @@ export class OrganizationController {
         localsToTokenOrKey(res),
         id,
         apiKeyId,
+        res.locals
+      )
+    );
+  }
+
+  @Get(":id/domains")
+  async getUserDomains(req: Request, res: Response) {
+    const id = await organizationUsernameToId(req.params.id);
+    joiValidate(
+      { id: [Joi.string().required(), Joi.number().required()] },
+      { id }
+    );
+    const domainParams = { ...req.query };
+    joiValidate(
+      {
+        start: Joi.string(),
+        itemsPerPage: Joi.number()
+      },
+      domainParams
+    );
+    res.json(
+      await getOrganizationDomainsForUser(
+        localsToTokenOrKey(res),
+        id,
+        domainParams
+      )
+    );
+  }
+
+  @Put(":id/domains")
+  @Middleware(
+    validator(
+      {
+        domain: Joi.string()
+      },
+      "body"
+    )
+  )
+  async putUserDomains(req: Request, res: Response) {
+    const id = await organizationUsernameToId(req.params.id);
+    joiValidate(
+      { id: [Joi.string().required(), Joi.number().required()] },
+      { id }
+    );
+    res
+      .status(CREATED)
+      .json(
+        await createDomainForUser(
+          localsToTokenOrKey(res),
+          id,
+          req.body,
+          res.locals
+        )
+      );
+  }
+
+  @Get(":id/domains/:domainId")
+  async getUserDomain(req: Request, res: Response) {
+    const id = await organizationUsernameToId(req.params.id);
+    const domainId = req.params.domainId;
+    joiValidate(
+      {
+        id: [Joi.string().required(), Joi.number().required()],
+        domainId: Joi.number().required()
+      },
+      { id, domainId }
+    );
+    res.json(
+      await getOrganizationDomainForUser(localsToTokenOrKey(res), id, domainId)
+    );
+  }
+
+  @Patch(":id/domains/:domainId")
+  @Middleware(
+    validator(
+      {
+        domain: Joi.string()
+      },
+      "body"
+    )
+  )
+  async patchUserDomain(req: Request, res: Response) {
+    const id = await organizationUsernameToId(req.params.id);
+    const domainId = req.params.domainId;
+    joiValidate(
+      {
+        id: [Joi.string().required(), Joi.number().required()],
+        domainId: Joi.number().required()
+      },
+      { id, domainId }
+    );
+    res.json(
+      await updateDomainForUser(
+        localsToTokenOrKey(res),
+        id,
+        domainId,
+        req.body,
+        res.locals
+      )
+    );
+  }
+
+  @Delete(":id/domains/:domainId")
+  async deleteUserDomain(req: Request, res: Response) {
+    const id = await organizationUsernameToId(req.params.id);
+    const domainId = req.params.domainId;
+    joiValidate(
+      {
+        id: [Joi.string().required(), Joi.number().required()],
+        domainId: Joi.number().required()
+      },
+      { id, domainId }
+    );
+    res.json(
+      await deleteDomainForUser(
+        localsToTokenOrKey(res),
+        id,
+        domainId,
         res.locals
       )
     );

@@ -5,7 +5,7 @@ import {
   removeReadOnlyValues,
   tableName
 } from "../helpers/mysql";
-import { Organization } from "../interfaces/tables/organization";
+import { Organization, Domain } from "../interfaces/tables/organization";
 import { capitalizeFirstAndLastLetter, createSlug } from "../helpers/utils";
 import { KeyValue } from "../interfaces/general";
 import { cachedQuery, deleteItemFromCache } from "../helpers/cache";
@@ -14,6 +14,7 @@ import { ApiKey } from "../interfaces/tables/organization";
 import { getPaginatedData } from "./data";
 import { apiKeyToken, invalidateToken } from "../helpers/jwt";
 import { TOKEN_EXPIRY_API_KEY_MAX } from "../config";
+import { InsertResult } from "../interfaces/mysql";
 
 /*
  * Create a new organization for a user
@@ -198,5 +199,82 @@ export const deleteApiKey = async (
       "api-keys"
     )} WHERE id = ? AND organizationId = ? LIMIT 1`,
     [apiKeyId, organizationId]
+  );
+};
+
+/**
+ * Get a list of domains for an organization
+ */
+export const getOrganizationDomains = async (
+  organizationId: number,
+  query: KeyValue
+) => {
+  return await getPaginatedData({
+    table: "domains",
+    conditions: {
+      organizationId
+    },
+    ...query
+  });
+};
+
+/**
+ * Get a domain
+ */
+export const getDomain = async (organizationId: number, domainId: number) => {
+  return (<Domain[]>(
+    await query(
+      `SELECT * FROM ${tableName(
+        "domains"
+      )} WHERE id = ? AND organizationId = ? LIMIT 1`,
+      [domainId, organizationId]
+    )
+  ))[0];
+};
+
+/**
+ * Create a domain
+ */
+export const createDomain = async (domain: Domain): Promise<InsertResult> => {
+  domain.createdAt = new Date();
+  domain.updatedAt = domain.createdAt;
+  return await query(
+    `INSERT INTO ${tableName("domains")} ${tableValues(domain)}`,
+    Object.values(domain)
+  );
+};
+
+/**
+ * Update a domain
+ */
+export const updateDomain = async (
+  organizationId: number,
+  domainId: number,
+  data: KeyValue
+) => {
+  data.updatedAt = new Date();
+  data = removeReadOnlyValues(data);
+  const domain = await getDomain(organizationId, domainId);
+  return await query(
+    `UPDATE ${tableName("domains")} SET ${setValues(
+      data
+    )} WHERE id = ? AND organizationId = ?`,
+    [...Object.values(data), domainId, organizationId]
+  );
+};
+
+/**
+ * Delete a domain
+ */
+export const deleteDomain = async (
+  organizationId: number,
+  domainId: number
+) => {
+  const currentDomain = await getDomain(organizationId, domainId);
+  return await query(
+    `DELETE FROM ${tableName(
+      "domains"
+    )} WHERE id = ? AND organizationId = ? LIMIT 1`,
+    [domainId, organizationId]
   );
 };

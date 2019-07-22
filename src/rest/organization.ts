@@ -8,7 +8,12 @@ import {
   getApiKey,
   updateApiKey,
   createApiKey,
-  deleteApiKey
+  deleteApiKey,
+  getOrganizationDomains,
+  getDomain,
+  updateDomain,
+  createDomain,
+  deleteDomain
 } from "../crud/organization";
 import { InsertResult } from "../interfaces/mysql";
 import {
@@ -496,6 +501,77 @@ export const deleteApiKeyForUser = async (
     )
   ) {
     await deleteApiKey(organizationId, apiKeyId);
+    return;
+  }
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const getOrganizationDomainsForUser = async (
+  userId: number | ApiKeyResponse,
+  organizationId: number,
+  query: KeyValue
+) => {
+  if (await can(userId, Authorizations.READ, "organization", organizationId))
+    return await getOrganizationDomains(organizationId, query);
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const getOrganizationDomainForUser = async (
+  userId: number | ApiKeyResponse,
+  organizationId: number,
+  domainId: number
+) => {
+  if (await can(userId, Authorizations.READ, "organization", organizationId))
+    return await getDomain(organizationId, domainId);
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const updateDomainForUser = async (
+  userId: number | ApiKeyResponse,
+  organizationId: number,
+  domainId: number,
+  data: KeyValue,
+  locals: Locals
+) => {
+  if (
+    await can(userId, Authorizations.UPDATE, "organization", organizationId)
+  ) {
+    await updateDomain(organizationId, domainId, data);
+    return;
+  }
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const createDomainForUser = async (
+  userId: number | ApiKeyResponse,
+  organizationId: number,
+  domain: KeyValue,
+  locals: Locals
+) => {
+  if (
+    await can(userId, Authorizations.CREATE, "organization", organizationId)
+  ) {
+    const key = await createDomain({
+      domain: "",
+      organizationId,
+      ...domain,
+      isVerified: false
+    });
+    return;
+  }
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const deleteDomainForUser = async (
+  userId: number | ApiKeyResponse,
+  organizationId: number,
+  domainId: number,
+  locals: Locals
+) => {
+  if (
+    await can(userId, Authorizations.DELETE, "organization", organizationId)
+  ) {
+    await deleteDomain(organizationId, domainId);
     return;
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);

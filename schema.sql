@@ -11,7 +11,7 @@
  Target Server Version : 100221
  File Encoding         : 65001
 
- Date: 18/07/2019 11:18:22
+ Date: 22/07/2019 12:00:53
 */
 
 SET NAMES utf8mb4;
@@ -63,6 +63,18 @@ CREATE TABLE `staart-backup-codes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- ----------------------------
+-- Table structure for staart-domains
+-- ----------------------------
+DROP TABLE IF EXISTS `staart-domains`;
+CREATE TABLE `staart-domains` (
+  `id` int(11) NOT NULL,
+  `organizationId` int(11) NOT NULL,
+  `domain` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `isVerified` int(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
+-- ----------------------------
 -- Table structure for staart-emails
 -- ----------------------------
 DROP TABLE IF EXISTS `staart-emails`;
@@ -91,7 +103,7 @@ CREATE TABLE `staart-events` (
   `userAgent` text COLLATE utf8mb4_bin DEFAULT NULL,
   `createdAt` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- ----------------------------
 -- Table structure for staart-memberships
@@ -133,7 +145,6 @@ CREATE TABLE `staart-organizations` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
   `username` varchar(255) COLLATE utf8mb4_bin NOT NULL,
-  `invitationDomain` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
   `stripeCustomerId` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
   `ipRestrictions` text COLLATE utf8mb4_bin DEFAULT NULL,
   `forceTwoFactor` int(1) NOT NULL DEFAULT 0,

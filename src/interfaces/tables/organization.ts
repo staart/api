@@ -1,17 +1,14 @@
-export interface Organization {
-  id?: number;
+import { IdRow } from "../general";
+
+export interface Organization extends IdRow {
   name?: string;
   username?: string;
   forceTwoFactor?: boolean;
   ipRestrictions?: string;
-  invitationDomain?: string;
   stripeCustomerId?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
 }
 
-export interface ApiKey {
-  id?: number;
+export interface ApiKey extends IdRow {
   name?: string;
   description?: string;
   jwtApiKey?: string;
@@ -20,6 +17,10 @@ export interface ApiKey {
   ipRestrictions?: string;
   referrerRestrictions?: string;
   expiresAt?: Date;
-  createdAt?: Date;
-  updatedAt?: Date;
+}
+
+export interface Domain extends IdRow {
+  organizationId: number;
+  domain: string;
+  isVerified: boolean;
 }

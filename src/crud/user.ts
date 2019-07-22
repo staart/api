@@ -5,7 +5,7 @@ import {
   removeReadOnlyValues,
   tableName
 } from "../helpers/mysql";
-import { User, ApprovedLocation } from "../interfaces/tables/user";
+import { User, ApprovedLocation, BackupCode } from "../interfaces/tables/user";
 import {
   capitalizeFirstAndLastLetter,
   deleteSensitiveInfoUser,
@@ -22,7 +22,6 @@ import { getEmail, getVerifiedEmailObject } from "./email";
 import { cachedQuery, deleteItemFromCache } from "../helpers/cache";
 import md5 from "md5";
 import randomInt from "random-int";
-import { BackupCode } from "../interfaces/tables/backup-codes";
 
 /**
  * Get a list of all ${tableName("users")}

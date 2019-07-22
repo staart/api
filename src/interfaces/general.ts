@@ -13,3 +13,12 @@ export interface Locals {
   ipAddress: string;
   referrer?: string;
 }
+
+export interface Row {
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface IdRow extends Row {
+  id?: number;
+}
