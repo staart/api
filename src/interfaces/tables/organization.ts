@@ -4,6 +4,8 @@ export interface Organization extends IdRow {
   name?: string;
   username?: string;
   forceTwoFactor?: boolean;
+  autoJoinDomain?: boolean;
+  onlyAllowDomain?: boolean;
   ipRestrictions?: string;
   stripeCustomerId?: string;
 }

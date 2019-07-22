@@ -102,7 +102,9 @@ export const boolValues = [
   "prefersColorSchemeDark",
   "used",
   "isVerified",
-  "forceTwoFactor"
+  "forceTwoFactor",
+  "autoJoinDomain",
+  "onlyAllowDomain"
 ];
 
 /**

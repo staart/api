@@ -234,6 +234,20 @@ export const getDomain = async (organizationId: number, domainId: number) => {
 };
 
 /**
+ * Get a domain
+ */
+export const getDomainByDomainName = async (domain: string) => {
+  return (<Domain[]>(
+    await query(
+      `SELECT * FROM ${tableName(
+        "domains"
+      )} WHERE domain = ? AND isVerified = ? LIMIT 1`,
+      [domain, true]
+    )
+  ))[0];
+};
+
+/**
  * Create a domain
  */
 export const createDomain = async (domain: Domain): Promise<InsertResult> => {
@@ -281,4 +295,15 @@ export const deleteDomain = async (
     )} WHERE id = ? AND organizationId = ? LIMIT 1`,
     [domainId, organizationId]
   );
+};
+
+/**
+ * Get a user by their username
+ */
+export const checkDomainAvailability = async (username: string) => {
+  try {
+    const domain = await getDomainByDomainName(username);
+    if (domain && domain.id) return false;
+  } catch (error) {}
+  return true;
 };

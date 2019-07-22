@@ -13,7 +13,8 @@ import {
   getDomain,
   updateDomain,
   createDomain,
-  deleteDomain
+  deleteDomain,
+  checkDomainAvailability
 } from "../crud/organization";
 import { InsertResult } from "../interfaces/mysql";
 import {
@@ -554,6 +555,7 @@ export const createDomainForUser = async (
   if (
     await can(userId, Authorizations.CREATE, "organization", organizationId)
   ) {
+    await checkDomainAvailability(domain.domain);
     const key = await createDomain({
       domain: "",
       organizationId,
@@ -591,6 +593,7 @@ export const verifyDomainForUser = async (
     await can(userId, Authorizations.UPDATE, "organization", organizationId)
   ) {
     const domain = await getDomain(organizationId, domainId);
+    if (domain.isVerified) throw new Error(ErrorCode.DOMAIN_ALREADY_VERIFIED);
     if (!domain.verificationCode)
       throw new Error(ErrorCode.DOMAIN_UNABLE_TO_VERIFY);
     if (method === "file") {

@@ -86,7 +86,9 @@ export enum ErrorCode {
   DISPOSABLE_EMAIL = "422/disposable-email",
   DOMAIN_UNABLE_TO_VERIFY = "400/domain-unable-to-verify",
   DOMAIN_MISSING_FILE = "400/domain-missing-file",
-  DOMAIN_MISSING_DNS = "400/domain-missing-dns"
+  DOMAIN_MISSING_DNS = "400/domain-missing-dns",
+  DOMAIN_ALREADY_VERIFIED = "400/domain-already-verified",
+  CANNOT_INVITE_DOMAIN = "400/cannot-invite-domain"
 }
 
 export enum Templates {
