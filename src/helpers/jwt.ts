@@ -10,7 +10,7 @@ import {
   TOKEN_EXPIRY_API_KEY_MAX,
   REDIS_URL
 } from "../config";
-import { User } from "../interfaces/tables/user";
+import { User, AccessToken } from "../interfaces/tables/user";
 import { Tokens, ErrorCode, EventType, Templates } from "../interfaces/enum";
 import {
   deleteSensitiveInfoUser,
@@ -126,6 +126,25 @@ export const apiKeyToken = (apiKey: ApiKey) => {
     createApiKey,
     (apiKey.expiresAt ? apiKey.expiresAt.getTime() : TOKEN_EXPIRY_API_KEY_MAX) -
       new Date().getTime(),
+    Tokens.API_KEY
+  );
+};
+/**
+ * Generate an access token
+ */
+export const accessToken = (accessToken: AccessToken) => {
+  const createAccessToken = { ...removeFalsyValues(accessToken) };
+  delete createAccessToken.createdAt;
+  delete createAccessToken.jwtAccessToken;
+  delete createAccessToken.updatedAt;
+  delete createAccessToken.name;
+  delete createAccessToken.description;
+  delete createAccessToken.expiresAt;
+  return generateToken(
+    createAccessToken,
+    (accessToken.expiresAt
+      ? accessToken.expiresAt.getTime()
+      : TOKEN_EXPIRY_API_KEY_MAX) - new Date().getTime(),
     Tokens.API_KEY
   );
 };

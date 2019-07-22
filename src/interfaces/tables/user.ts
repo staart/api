@@ -4,9 +4,9 @@ import {
   Genders,
   NotificationCategories
 } from "../enum";
+import { IdRow, Row } from "../general";
 
-export interface User {
-  id?: number;
+export interface User extends IdRow {
   name: string;
   username?: string;
   nickname?: string;
@@ -23,8 +23,6 @@ export interface User {
   gender?: Genders;
   role?: UserRole;
   profilePicture?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
 
   // email is only used for JWT
   email?: string;
@@ -37,21 +35,25 @@ export interface ApprovedLocation {
   createdAt?: Date;
 }
 
-export interface Notification {
-  id?: number;
+export interface Notification extends IdRow {
   userId: number;
   category: NotificationCategories;
   text: string;
   link: string;
   read?: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
 }
 
-export interface BackupCode {
+export interface BackupCode extends Row {
   code: number;
   userId: number;
   used?: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
+}
+
+export interface AccessToken extends IdRow {
+  name?: string;
+  description?: string;
+  jwtAccessToken?: string;
+  scopes?: string;
+  userId: number;
+  expiresAt?: Date;
 }

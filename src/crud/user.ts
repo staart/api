@@ -5,7 +5,12 @@ import {
   removeReadOnlyValues,
   tableName
 } from "../helpers/mysql";
-import { User, ApprovedLocation, BackupCode } from "../interfaces/tables/user";
+import {
+  User,
+  ApprovedLocation,
+  BackupCode,
+  AccessToken
+} from "../interfaces/tables/user";
 import {
   capitalizeFirstAndLastLetter,
   deleteSensitiveInfoUser,
@@ -22,6 +27,9 @@ import { getEmail, getVerifiedEmailObject } from "./email";
 import { cachedQuery, deleteItemFromCache } from "../helpers/cache";
 import md5 from "md5";
 import randomInt from "random-int";
+import { getPaginatedData } from "./data";
+import { accessToken, invalidateToken } from "../helpers/jwt";
+import { TOKEN_EXPIRY_API_KEY_MAX } from "../config";
 
 /**
  * Get a list of all ${tableName("users")}
@@ -86,6 +94,22 @@ export const getUserByEmail = async (email: string, secureOrigin = false) => {
   return await getUser(emailObject.userId, secureOrigin);
 };
 
+/*
+ * Get user ID from a username
+ */
+export const getUserIdFromUsername = async (username: string) => {
+  const user = (<User[]>(
+    await cachedQuery(
+      CacheCategories.USER_USERNAME,
+      username,
+      `SELECT id FROM ${tableName("users")} WHERE username = ? LIMIT 1`,
+      [username]
+    )
+  ))[0];
+  if (user && user.id) return user.id;
+  throw new Error(ErrorCode.USER_NOT_FOUND);
+};
+
 /**
  * Update a user's details
  */
@@ -118,6 +142,8 @@ export const updateUser = async (id: number, user: KeyValue) => {
       usernameOwner.id != originalUser.id
     )
       throw new Error(ErrorCode.USERNAME_EXISTS);
+    if (originalUser.username && user.username !== originalUser.username)
+      deleteItemFromCache(CacheCategories.USER_USERNAME, originalUser.username);
   }
   deleteItemFromCache(CacheCategories.USER, id);
   return await query(
@@ -277,4 +303,85 @@ export const getUserBackupCode = async (userId: number, backupCode: number) => {
       [userId, backupCode]
     )
   ))[0];
+};
+/**
+ * Get a list of all approved locations of a user
+ */
+export const getUserAccessTokens = async (userId: number, query: KeyValue) => {
+  return await getPaginatedData({
+    table: "access-tokens",
+    conditions: {
+      userId
+    },
+    ...query
+  });
+};
+
+/**
+ * Get an API key
+ */
+export const getAccessToken = async (userId: number, accessTokenId: number) => {
+  return (<AccessToken[]>(
+    await query(
+      `SELECT * FROM ${tableName(
+        "access-tokens"
+      )} WHERE id = ? AND userId = ? LIMIT 1`,
+      [accessTokenId, userId]
+    )
+  ))[0];
+};
+
+/**
+ * Create an API key
+ */
+export const createAccessToken = async (newAccessToken: AccessToken) => {
+  newAccessToken.expiresAt =
+    newAccessToken.expiresAt || new Date(TOKEN_EXPIRY_API_KEY_MAX);
+  newAccessToken.createdAt = new Date();
+  newAccessToken.updatedAt = newAccessToken.createdAt;
+  newAccessToken.jwtAccessToken = await accessToken(newAccessToken);
+  return await query(
+    `INSERT INTO ${tableName("access-tokens")} ${tableValues(newAccessToken)}`,
+    Object.values(newAccessToken)
+  );
+};
+
+/**
+ * Update a user's details
+ */
+export const updateAccessToken = async (
+  userId: number,
+  accessTokenId: number,
+  data: KeyValue
+) => {
+  data.updatedAt = new Date();
+  data = removeReadOnlyValues(data);
+  const newAccessToken = await getAccessToken(userId, accessTokenId);
+  if (newAccessToken.jwtAccessToken)
+    await invalidateToken(newAccessToken.jwtAccessToken);
+  data.jwtAccessToken = await accessToken({ ...newAccessToken, ...data });
+  return await query(
+    `UPDATE ${tableName("access-tokens")} SET ${setValues(
+      data
+    )} WHERE id = ? AND userId = ?`,
+    [...Object.values(data), accessTokenId, userId]
+  );
+};
+
+/**
+ * Delete an API key
+ */
+export const deleteAccessToken = async (
+  userId: number,
+  accessTokenId: number
+) => {
+  const currentAccessToken = await getAccessToken(userId, accessTokenId);
+  if (currentAccessToken.jwtAccessToken)
+    await invalidateToken(currentAccessToken.jwtAccessToken);
+  return await query(
+    `DELETE FROM ${tableName(
+      "access-tokens"
+    )} WHERE id = ? AND userId = ? LIMIT 1`,
+    [accessTokenId, userId]
+  );
 };

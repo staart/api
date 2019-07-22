@@ -13,7 +13,12 @@ import {
   verify2FAForUser,
   getBackupCodesForUser,
   regenerateBackupCodesForUser,
-  updatePasswordForUser
+  updatePasswordForUser,
+  deleteAccessTokenForUser,
+  updateAccessTokenForUser,
+  getUserAccessTokenForUser,
+  createAccessTokenForUser,
+  getUserAccessTokensForUser
 } from "../rest/user";
 import {
   Get,
@@ -36,7 +41,7 @@ import {
 } from "../rest/email";
 import { CREATED } from "http-status-codes";
 import asyncHandler from "express-async-handler";
-import { joiValidate } from "../helpers/utils";
+import { joiValidate, userUsernameToId } from "../helpers/utils";
 import Joi from "@hapi/joi";
 
 @Controller("users")
@@ -45,8 +50,7 @@ import Joi from "@hapi/joi";
 export class UserController {
   @Get(":id")
   async get(req: Request, res: Response) {
-    let id = req.body.id || req.params.id;
-    if (id === "me") id = res.locals.token.id;
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate(
       { id: [Joi.string().required(), Joi.number().required()] },
       { id }
@@ -80,8 +84,7 @@ export class UserController {
     )
   )
   async patch(req: Request, res: Response) {
-    let id = req.params.id;
-    if (id === "me") id = res.locals.token.id;
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate(
       { id: [Joi.string().required(), Joi.number().required()] },
       { id }
@@ -92,8 +95,7 @@ export class UserController {
 
   @Delete(":id")
   async delete(req: Request, res: Response) {
-    let id = req.params.id;
-    if (id === "me") id = res.locals.token.id;
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate(
       { id: [Joi.string().required(), Joi.number().required()] },
       { id }
@@ -116,8 +118,7 @@ export class UserController {
     )
   )
   async updatePassword(req: Request, res: Response) {
-    let id = req.params.id;
-    if (id === "me") id = res.locals.token.id;
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
     const oldPassword = req.body.oldPassword;
     const newPassword = req.body.newPassword;
     joiValidate(
@@ -138,8 +139,7 @@ export class UserController {
 
   @Get(":id/events")
   async getRecentEvents(req: Request, res: Response) {
-    let id = req.params.id;
-    if (id === "me") id = res.locals.token.id;
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate(
       { id: [Joi.string().required(), Joi.number().required()] },
       { id }
@@ -149,8 +149,7 @@ export class UserController {
 
   @Get(":id/memberships")
   async getMemberships(req: Request, res: Response) {
-    let id = req.params.id;
-    if (id === "me") id = res.locals.token.id;
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate(
       { id: [Joi.string().required(), Joi.number().required()] },
       { id }
@@ -160,8 +159,7 @@ export class UserController {
 
   @Get(":id/data")
   async getUserData(req: Request, res: Response) {
-    let id = req.params.id;
-    if (id === "me") id = res.locals.token.id;
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate(
       { id: [Joi.string().required(), Joi.number().required()] },
       { id }
@@ -171,8 +169,7 @@ export class UserController {
 
   @Get(":id/emails")
   async getEmails(req: Request, res: Response) {
-    let id = req.params.id;
-    if (id === "me") id = res.locals.token.id;
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate(
       { id: [Joi.string().required(), Joi.number().required()] },
       { id }
@@ -182,8 +179,7 @@ export class UserController {
 
   @Put(":id/emails")
   async putEmails(req: Request, res: Response) {
-    let id = req.params.id;
-    if (id === "me") id = res.locals.token.id;
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
     const email = req.body.email;
     joiValidate(
       {
@@ -200,8 +196,7 @@ export class UserController {
 
   @Get(":id/emails/:emailId")
   async getEmail(req: Request, res: Response) {
-    let id = req.params.id;
-    if (id === "me") id = res.locals.token.id;
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
     const emailId = req.params.emailId;
     joiValidate(
       {
@@ -215,8 +210,7 @@ export class UserController {
 
   @Post(":id/emails/:emailId/resend")
   async postResend(req: Request, res: Response) {
-    let id = req.params.id;
-    if (id === "me") id = res.locals.token.id;
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
     const emailId = req.params.emailId;
     joiValidate(
       {
@@ -231,8 +225,7 @@ export class UserController {
 
   @Delete(":id/emails/:emailId")
   async deleteEmail(req: Request, res: Response) {
-    let id = req.params.id;
-    if (id === "me") id = res.locals.token.id;
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
     const emailId = req.params.emailId;
     joiValidate(
       {
@@ -252,8 +245,7 @@ export class UserController {
 
   @Get(":id/notifications")
   async getUserNotifications(req: Request, res: Response) {
-    let id = req.params.id;
-    if (id === "me") id = res.locals.token.id;
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate(
       { id: [Joi.string().required(), Joi.number().required()] },
       { id }
@@ -263,8 +255,7 @@ export class UserController {
 
   @Patch(":id/notifications/:notificationId")
   async updateUserNotification(req: Request, res: Response) {
-    let id = req.params.id;
-    if (id === "me") id = res.locals.token.id;
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
     const notificationId = req.params.notificationId;
     joiValidate(
       {
@@ -285,8 +276,7 @@ export class UserController {
 
   @Get(":id/2fa/enable")
   async getEnable2FA(req: Request, res: Response) {
-    let id = req.params.id;
-    if (id === "me") id = res.locals.token.id;
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate(
       { id: [Joi.string().required(), Joi.number().required()] },
       { id }
@@ -296,8 +286,7 @@ export class UserController {
 
   @Post(":id/2fa/verify")
   async postVerify2FA(req: Request, res: Response) {
-    let id = req.params.id;
-    if (id === "me") id = res.locals.token.id;
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
     const code = req.body.code;
     joiValidate(
       {
@@ -313,8 +302,7 @@ export class UserController {
 
   @Delete(":id/2fa")
   async delete2FA(req: Request, res: Response) {
-    let id = req.params.id;
-    if (id === "me") id = res.locals.token.id;
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate(
       { id: [Joi.string().required(), Joi.number().required()] },
       { id }
@@ -324,8 +312,7 @@ export class UserController {
 
   @Get(":id/backup-codes")
   async getBackupCodes(req: Request, res: Response) {
-    let id = req.params.id;
-    if (id === "me") id = res.locals.token.id;
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate(
       { id: [Joi.string().required(), Joi.number().required()] },
       { id }
@@ -335,12 +322,133 @@ export class UserController {
 
   @Get(":id/backup-codes/regenerate")
   async getRegenerateBackupCodes(req: Request, res: Response) {
-    let id = req.params.id;
-    if (id === "me") id = res.locals.token.id;
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate(
       { id: [Joi.string().required(), Joi.number().required()] },
       { id }
     );
     res.json(await regenerateBackupCodesForUser(res.locals.token.id, id));
+  }
+
+  @Get(":id/access-tokens")
+  async getUserAccessTokens(req: Request, res: Response) {
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    joiValidate(
+      { id: [Joi.string().required(), Joi.number().required()] },
+      { id }
+    );
+    const accessTokenParams = { ...req.query };
+    joiValidate(
+      {
+        start: Joi.string(),
+        itemsPerPage: Joi.number()
+      },
+      accessTokenParams
+    );
+    res.json(
+      await getUserAccessTokensForUser(
+        res.locals.token.id,
+        id,
+        accessTokenParams
+      )
+    );
+  }
+
+  @Put(":id/access-tokens")
+  @Middleware(
+    validator(
+      {
+        scopes: Joi.string(),
+        name: Joi.string(),
+        description: Joi.string()
+      },
+      "body"
+    )
+  )
+  async putUserAccessTokens(req: Request, res: Response) {
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    joiValidate(
+      { id: [Joi.string().required(), Joi.number().required()] },
+      { id }
+    );
+    res
+      .status(CREATED)
+      .json(
+        await createAccessTokenForUser(
+          res.locals.token.id,
+          id,
+          req.body,
+          res.locals
+        )
+      );
+  }
+
+  @Get(":id/access-tokens/:accessTokenId")
+  async getUserAccessToken(req: Request, res: Response) {
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const accessTokenId = req.params.accessTokenId;
+    joiValidate(
+      {
+        id: [Joi.string().required(), Joi.number().required()],
+        accessTokenId: Joi.number().required()
+      },
+      { id, accessTokenId }
+    );
+    res.json(
+      await getUserAccessTokenForUser(res.locals.token.id, id, accessTokenId)
+    );
+  }
+
+  @Patch(":id/access-tokens/:accessTokenId")
+  @Middleware(
+    validator(
+      {
+        scopes: Joi.string().allow(""),
+        name: Joi.string().allow(""),
+        description: Joi.string().allow("")
+      },
+      "body"
+    )
+  )
+  async patchUserAccessToken(req: Request, res: Response) {
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const accessTokenId = req.params.accessTokenId;
+    joiValidate(
+      {
+        id: [Joi.string().required(), Joi.number().required()],
+        accessTokenId: Joi.number().required()
+      },
+      { id, accessTokenId }
+    );
+    res.json(
+      await updateAccessTokenForUser(
+        res.locals.token.id,
+        id,
+        accessTokenId,
+        req.body,
+        res.locals
+      )
+    );
+  }
+
+  @Delete(":id/access-tokens/:accessTokenId")
+  async deleteUserAccessToken(req: Request, res: Response) {
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const accessTokenId = req.params.accessTokenId;
+    joiValidate(
+      {
+        id: [Joi.string().required(), Joi.number().required()],
+        accessTokenId: Joi.number().required()
+      },
+      { id, accessTokenId }
+    );
+    res.json(
+      await deleteAccessTokenForUser(
+        res.locals.token.id,
+        id,
+        accessTokenId,
+        res.locals
+      )
+    );
   }
 }

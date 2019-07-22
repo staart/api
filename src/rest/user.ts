@@ -7,7 +7,12 @@ import {
   deleteAllUserApprovedLocations,
   createBackupCodes,
   deleteUserBackupCodes,
-  getUserBackupCodes
+  getUserBackupCodes,
+  getUserAccessTokens,
+  getAccessToken,
+  updateAccessToken,
+  createAccessToken,
+  deleteAccessToken
 } from "../crud/user";
 import {
   deleteAllUserMemberships,
@@ -228,4 +233,63 @@ export const regenerateBackupCodesForUser = async (
   await deleteUserBackupCodes(userId);
   await createBackupCodes(userId, 10);
   return await getUserBackupCodes(userId);
+};
+export const getUserAccessTokensForUser = async (
+  tokenUserId: number,
+  userId: number,
+  query: KeyValue
+) => {
+  if (await can(tokenUserId, Authorizations.READ_SECURE, "user", userId))
+    return await getUserAccessTokens(userId, query);
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const getUserAccessTokenForUser = async (
+  tokenUserId: number,
+  userId: number,
+  accessTokenId: number
+) => {
+  if (await can(tokenUserId, Authorizations.READ_SECURE, "user", userId))
+    return await getAccessToken(userId, accessTokenId);
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const updateAccessTokenForUser = async (
+  tokenUserId: number,
+  userId: number,
+  accessTokenId: number,
+  data: KeyValue,
+  locals: Locals
+) => {
+  if (await can(tokenUserId, Authorizations.UPDATE_SECURE, "user", userId)) {
+    await updateAccessToken(userId, accessTokenId, data);
+    return;
+  }
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const createAccessTokenForUser = async (
+  tokenUserId: number,
+  userId: number,
+  accessToken: KeyValue,
+  locals: Locals
+) => {
+  if (await can(tokenUserId, Authorizations.CREATE_SECURE, "user", userId)) {
+    const key = await createAccessToken({ userId, ...accessToken });
+    return;
+  }
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const deleteAccessTokenForUser = async (
+  tokenUserId: number,
+  userId: number,
+  accessTokenId: number,
+  locals: Locals
+) => {
+  if (await can(tokenUserId, Authorizations.DELETE_SECURE, "user", userId)) {
+    await deleteAccessToken(userId, accessTokenId);
+    return;
+  }
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };

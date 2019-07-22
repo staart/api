@@ -9,6 +9,7 @@ import cryptoRandomString from "crypto-random-string";
 import { Tokens } from "../interfaces/enum";
 import { ApiKeyResponse } from "./jwt";
 import { isMatch } from "matcher";
+import { getUserIdFromUsername } from "../crud/user";
 
 /**
  * Capitalize each first letter in a string
@@ -63,6 +64,16 @@ export const anonymizeIpAddress = (ipAddress: string) =>
 export const organizationUsernameToId = async (id: string) => {
   if (isNaN(Number(id))) {
     return await getOrganizationIdFromUsername(id);
+  } else {
+    return parseInt(id);
+  }
+};
+
+export const userUsernameToId = async (id: string, tokenUserId: number) => {
+  if (id === "me") {
+    return tokenUserId;
+  } else if (isNaN(Number(id))) {
+    return await getUserIdFromUsername(id);
   } else {
     return parseInt(id);
   }

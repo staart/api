@@ -75,11 +75,19 @@ export const updateOrganization = async (
   organization.updatedAt = new Date();
   organization = removeReadOnlyValues(organization);
   const originalOrganization = await getOrganization(id);
-  if (organization.username && originalOrganization.username) {
+  if (
+    organization.username &&
+    originalOrganization.username &&
+    organization.username !== originalOrganization.username
+  ) {
     const currentOwner = await getOrganizationIdFromUsername(
       originalOrganization.username
     );
     if (currentOwner != id) throw new Error(ErrorCode.USERNAME_EXISTS);
+    deleteItemFromCache(
+      CacheCategories.ORGANIZATION_USERNAME,
+      originalOrganization.username
+    );
   }
   deleteItemFromCache(CacheCategories.ORGANIZATION, id);
   return await query(
@@ -130,9 +138,7 @@ export const getOrganizationApiKeys = async (
  */
 export const getApiKey = async (organizationId: number, apiKeyId: number) => {
   return (<ApiKey[]>(
-    await cachedQuery(
-      CacheCategories.API_KEY_ORG,
-      `${organizationId}_${apiKeyId}`,
+    await query(
       `SELECT * FROM ${tableName(
         "api-keys"
       )} WHERE id = ? AND organizationId = ? LIMIT 1`,
@@ -168,11 +174,6 @@ export const updateApiKey = async (
   const apiKey = await getApiKey(organizationId, apiKeyId);
   if (apiKey.jwtApiKey) await invalidateToken(apiKey.jwtApiKey);
   data.jwtApiKey = await apiKeyToken({ ...apiKey, ...data });
-  deleteItemFromCache(CacheCategories.API_KEY, apiKeyId);
-  deleteItemFromCache(
-    CacheCategories.API_KEY_ORG,
-    `${organizationId}_${apiKeyId}`
-  );
   return await query(
     `UPDATE ${tableName("api-keys")} SET ${setValues(
       data
@@ -188,11 +189,6 @@ export const deleteApiKey = async (
   organizationId: number,
   apiKeyId: number
 ) => {
-  deleteItemFromCache(CacheCategories.API_KEY, apiKeyId);
-  deleteItemFromCache(
-    CacheCategories.API_KEY_ORG,
-    `${organizationId}_${apiKeyId}`
-  );
   const currentApiKey = await getApiKey(organizationId, apiKeyId);
   if (currentApiKey.jwtApiKey) await invalidateToken(currentApiKey.jwtApiKey);
   return await query(
