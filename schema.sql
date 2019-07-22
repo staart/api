@@ -11,7 +11,7 @@
  Target Server Version : 100221
  File Encoding         : 65001
 
- Date: 22/07/2019 12:00:53
+ Date: 22/07/2019 14:49:08
 */
 
 SET NAMES utf8mb4;
@@ -67,10 +67,13 @@ CREATE TABLE `staart-backup-codes` (
 -- ----------------------------
 DROP TABLE IF EXISTS `staart-domains`;
 CREATE TABLE `staart-domains` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `organizationId` int(11) NOT NULL,
   `domain` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `verificationCode` varchar(255) COLLATE utf8mb4_bin NOT NULL,
   `isVerified` int(1) NOT NULL DEFAULT 0,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
@@ -148,6 +151,8 @@ CREATE TABLE `staart-organizations` (
   `stripeCustomerId` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
   `ipRestrictions` text COLLATE utf8mb4_bin DEFAULT NULL,
   `forceTwoFactor` int(1) NOT NULL DEFAULT 0,
+  `autoJoinDomain` int(1) NOT NULL DEFAULT 0,
+  `onlyAllowDomain` int(1) NOT NULL DEFAULT 0,
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`)
