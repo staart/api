@@ -145,7 +145,7 @@ export const accessToken = (accessToken: AccessToken) => {
     (accessToken.expiresAt
       ? accessToken.expiresAt.getTime()
       : TOKEN_EXPIRY_API_KEY_MAX) - new Date().getTime(),
-    Tokens.API_KEY
+    Tokens.ACCESS_TOKEN
   );
 };
 

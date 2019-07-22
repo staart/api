@@ -1,4 +1,4 @@
-import { User } from "../interfaces/tables/user";
+import { User, AccessTokenResponse } from "../interfaces/tables/user";
 import { Organization } from "../interfaces/tables/organization";
 import {
   ErrorCode,
@@ -6,7 +6,8 @@ import {
   UserRole,
   MembershipRole,
   ApiAuthorizations,
-  Tokens
+  Tokens,
+  UserScopes
 } from "../interfaces/enum";
 import { getUser } from "../crud/user";
 import { getUserMemberships, getMembership } from "../crud/membership";
@@ -19,7 +20,7 @@ import { ApiKeyResponse } from "./jwt";
  */
 const canUserUser = async (
   user: User,
-  action: Authorizations | ApiAuthorizations,
+  action: Authorizations | ApiAuthorizations | UserScopes,
   target: User
 ) => {
   // A super user can do anything
@@ -58,6 +59,23 @@ const canUserUser = async (
   });
 
   return allowed;
+};
+
+/**
+ * Whether an API key can perform an action for an organization
+ */
+const canAccessTokenUser = (
+  accessToken: AccessTokenResponse,
+  action: Authorizations | UserScopes,
+  target: Organization
+) => {
+  if (accessToken.userId != target.id) return false;
+
+  if (!accessToken.scopes) return false;
+
+  if (accessToken.scopes.includes(action)) return true;
+
+  return false;
 };
 
 /**
@@ -191,17 +209,20 @@ const canApiKeyOrganization = (
  * Whether a user has authorization to perform an action
  */
 export const can = async (
-  user: User | number | ApiKeyResponse,
-  action: Authorizations | ApiAuthorizations,
+  user: User | number | ApiKeyResponse | AccessTokenResponse,
+  action: Authorizations | ApiAuthorizations | UserScopes,
   targetType: "user" | "organization" | "membership" | "general",
   target?: User | Organization | Membership | number
 ) => {
   let userObject: User | ApiKeyResponse | undefined = undefined;
   let isApiKey = false;
+  let isAccessToken = false;
 
   if (typeof user === "object") {
     if ((user as ApiKeyResponse).sub == Tokens.API_KEY) {
       isApiKey = true;
+    } else if ((user as AccessTokenResponse).sub == Tokens.ACCESS_TOKEN) {
+      isAccessToken = true;
     } else {
       userObject = user as User;
     }
@@ -213,18 +234,35 @@ export const can = async (
     if (target && typeof target === "object") {
       return await canApiKeyOrganization(
         user as ApiKeyResponse,
-        action,
+        action as Authorizations | ApiAuthorizations,
         target
       );
     } else if (target) {
       target = await getOrganization(target);
       return await canApiKeyOrganization(
         user as ApiKeyResponse,
-        action,
+        action as Authorizations | ApiAuthorizations,
         target
       );
     } else {
       throw new Error(ErrorCode.ORGANIZATION_NOT_FOUND);
+    }
+  } else if (isAccessToken) {
+    if (target && typeof target === "object") {
+      return await canAccessTokenUser(
+        user as AccessTokenResponse,
+        action as Authorizations | UserScopes,
+        target
+      );
+    } else if (target) {
+      target = await getUser(target);
+      return await canAccessTokenUser(
+        user as AccessTokenResponse,
+        action as Authorizations | UserScopes,
+        target
+      );
+    } else {
+      throw new Error(ErrorCode.USER_NOT_FOUND);
     }
   }
 
@@ -242,7 +280,7 @@ export const can = async (
     else targetObject = target as Organization;
     return await canUserOrganization(
       userObject,
-      action,
+      action as Authorizations | ApiAuthorizations,
       targetObject as Organization
     );
   } else if (targetType === "membership") {
@@ -251,10 +289,12 @@ export const can = async (
     else targetObject = target as Membership;
     return await canUserMembership(
       userObject,
-      action,
+      action as Authorizations | ApiAuthorizations,
       targetObject as Membership
     );
   }
 
-  return await canUserGeneral(userObject, action);
+  return await canUserGeneral(userObject, action as
+    | Authorizations
+    | ApiAuthorizations);
 };

@@ -9,7 +9,7 @@ import {
   resendEmailVerification
 } from "../crud/email";
 import { createEvent } from "../crud/event";
-import { ErrorCode, EventType, Authorizations } from "../interfaces/enum";
+import { ErrorCode, EventType, UserScopes } from "../interfaces/enum";
 import { updateUser } from "../crud/user";
 import { can } from "../helpers/authorization";
 import { getPaginatedData } from "../crud/data";
@@ -20,7 +20,7 @@ export const getAllEmailsForUser = async (
   userId: number,
   query: KeyValue
 ) => {
-  if (await can(tokenUserId, Authorizations.READ, "user", userId)) {
+  if (await can(tokenUserId, UserScopes.READ_USER_EMAILS, "user", userId)) {
     const emails = await getPaginatedData({
       table: "emails",
       conditions: { userId },
@@ -37,7 +37,7 @@ export const getEmailForUser = async (
   userId: number,
   emailId: number
 ) => {
-  if (await can(tokenUserId, Authorizations.READ, "user", userId))
+  if (await can(tokenUserId, UserScopes.READ_USER_EMAILS, "user", userId))
     return await getEmail(emailId);
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
@@ -47,7 +47,14 @@ export const resendEmailVerificationForUser = async (
   userId: number,
   emailId: number
 ) => {
-  if (await can(tokenUserId, Authorizations.UPDATE, "user", userId))
+  if (
+    await can(
+      tokenUserId,
+      UserScopes.RESEND_USER_EMAIL_VERIFICATION,
+      "user",
+      userId
+    )
+  )
     return await resendEmailVerification(emailId);
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
@@ -58,7 +65,7 @@ export const addEmailToUserForUser = async (
   email: string,
   locals: Locals
 ) => {
-  if (!(await can(tokenUserId, Authorizations.UPDATE, "user", userId)))
+  if (!(await can(tokenUserId, UserScopes.CREATE_USER_EMAILS, "user", userId)))
     throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
   await checkIfNewEmail(email);
   await createEmail({ email, userId });
@@ -75,7 +82,7 @@ export const deleteEmailFromUserForUser = async (
   emailId: number,
   locals: Locals
 ) => {
-  if (!(await can(tokenUserId, Authorizations.UPDATE, "user", userId)))
+  if (!(await can(tokenUserId, UserScopes.DELETE_USER_EMAILS, "user", userId)))
     throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
   const email = await getEmail(emailId);
   if (email.userId != userId)

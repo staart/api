@@ -2,7 +2,8 @@ import {
   UserRole,
   NotificationEmails,
   Genders,
-  NotificationCategories
+  NotificationCategories,
+  Tokens
 } from "../enum";
 import { IdRow, Row } from "../general";
 
@@ -56,4 +57,12 @@ export interface AccessToken extends IdRow {
   scopes?: string;
   userId: number;
   expiresAt?: Date;
+}
+export interface AccessTokenResponse {
+  id: number;
+  userId: number;
+  scopes: string;
+  jti: string;
+  sub: Tokens;
+  exp: number;
 }

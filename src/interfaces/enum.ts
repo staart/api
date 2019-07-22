@@ -101,6 +101,7 @@ export enum Templates {
 export enum Tokens {
   LOGIN = "auth",
   API_KEY = "api-key",
+  ACCESS_TOKEN = "access-token",
   TWO_FACTOR = "2fa",
   REFRESH = "refresh",
   PASSWORD_RESET = "password-reset",
@@ -145,4 +146,24 @@ export enum NotificationCategories {
 
 export enum ApiAuthorizations {
   EXAMPLE = "example"
+}
+
+export enum UserScopes {
+  READ_USER = "user:read",
+  UPDATE_USER = "user:update",
+  CHANGE_PASSWORD = "user:change-password",
+  DELETE_USER = "user:delete",
+  READ_USER_MEMBERSHIPS = "user:memberships:read",
+  ENABLE_USER_2FA = "user:2fa:enable",
+  DISABLE_USER_2FA = "user:2fa:disable",
+  READ_USER_BACKUP_CODES = "user:backup-codes:read",
+  REGENERATE_USER_BACKUP_CODES = "user:backup-codes:regenerate",
+  CREATE_USER_ACCESS_TOKENS = "user:access-tokens:create",
+  READ_USER_ACCESS_TOKENS = "user:access-tokens:read",
+  UPDATE_USER_ACCESS_TOKENS = "user:access-tokens:update",
+  DELETE_USER_ACCESS_TOKENS = "user:access-tokens:delete",
+  CREATE_USER_EMAILS = "user:emails:create",
+  READ_USER_EMAILS = "user:emails:read",
+  DELETE_USER_EMAILS = "user:emails:delete",
+  RESEND_USER_EMAIL_VERIFICATION = "user:emails:resend-verification"
 }
