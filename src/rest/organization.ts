@@ -57,6 +57,9 @@ import {
 import { getUser } from "../crud/user";
 import { getUserPrimaryEmail } from "../crud/email";
 import { ApiKeyResponse } from "../helpers/jwt";
+import axios from "axios";
+import { dnsResolve } from "../helpers/utils";
+import { JWT_ISSUER } from "../config";
 
 export const getOrganizationForUser = async (
   userId: number | ApiKeyResponse,
@@ -573,6 +576,45 @@ export const deleteDomainForUser = async (
   ) {
     await deleteDomain(organizationId, domainId);
     return;
+  }
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const verifyDomainForUser = async (
+  userId: number | ApiKeyResponse,
+  organizationId: number,
+  domainId: number,
+  method: "dns" | "file",
+  locals: Locals
+) => {
+  if (
+    await can(userId, Authorizations.UPDATE, "organization", organizationId)
+  ) {
+    const domain = await getDomain(organizationId, domainId);
+    if (!domain.verificationCode)
+      throw new Error(ErrorCode.DOMAIN_UNABLE_TO_VERIFY);
+    if (method === "file") {
+      try {
+        const file: string = (await axios.get(
+          `http://${domain.domain}/.well-known/${JWT_ISSUER}-verify.txt`
+        )).data;
+        if (file.trim() === domain.verificationCode) {
+          await updateDomain(organizationId, domainId, { isVerified: true });
+          return;
+        }
+      } catch (error) {
+        throw new Error(ErrorCode.DOMAIN_MISSING_FILE);
+      }
+    } else {
+      const dns = await dnsResolve(domain.domain, "TXT");
+      if (JSON.stringify(dns).includes(domain.verificationCode)) {
+        await updateDomain(organizationId, domainId, { isVerified: true });
+        return;
+      } else {
+        throw new Error(ErrorCode.DOMAIN_MISSING_DNS);
+      }
+    }
+    throw new Error(ErrorCode.DOMAIN_UNABLE_TO_VERIFY);
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };

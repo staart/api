@@ -1,6 +1,6 @@
 import anonymize from "ip-anonymize";
 import { User } from "../interfaces/tables/user";
-import { ApiKey } from "../interfaces/tables/organization";
+import dns from "dns";
 import Joi from "@hapi/joi";
 import { getOrganizationIdFromUsername } from "../crud/organization";
 import { Request, Response } from "express";
@@ -150,3 +150,33 @@ export const includesDomainInCommaList = (commaList: string, value: string) => {
   });
   return includes;
 };
+
+export const dnsResolve = (
+  hostname: string,
+  recordType:
+    | "A"
+    | "AAAA"
+    | "ANY"
+    | "CNAME"
+    | "MX"
+    | "NAPTR"
+    | "NS"
+    | "PTR"
+    | "SOA"
+    | "SRV"
+    | "TXT"
+): Promise<
+  | string[]
+  | dns.MxRecord[]
+  | dns.NaptrRecord[]
+  | dns.SoaRecord
+  | dns.SrvRecord[]
+  | string[][]
+  | dns.AnyRecord[]
+> =>
+  new Promise((resolve, reject) => {
+    dns.resolve(hostname, recordType, (error, records) => {
+      if (error) return reject(error);
+      resolve(records);
+    });
+  });

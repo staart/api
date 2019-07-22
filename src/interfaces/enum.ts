@@ -83,7 +83,10 @@ export enum ErrorCode {
   INVALID_API_KEY_SECRET = "401/invalid-api-key-secret",
   IP_RANGE_CHECK_FAIL = "401/ip-range-check-fail",
   REFERRER_CHECK_FAIL = "401/referrer-check-fail",
-  DISPOSABLE_EMAIL = "422/disposable-email"
+  DISPOSABLE_EMAIL = "422/disposable-email",
+  DOMAIN_UNABLE_TO_VERIFY = "400/domain-unable-to-verify",
+  DOMAIN_MISSING_FILE = "400/domain-missing-file",
+  DOMAIN_MISSING_DNS = "400/domain-missing-dns"
 }
 
 export enum Templates {

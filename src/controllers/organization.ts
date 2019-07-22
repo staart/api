@@ -30,7 +30,8 @@ import {
   createDomainForUser,
   getOrganizationDomainForUser,
   updateDomainForUser,
-  deleteDomainForUser
+  deleteDomainForUser,
+  verifyDomainForUser
 } from "../rest/organization";
 import {
   Get,
@@ -40,7 +41,8 @@ import {
   Controller,
   ClassMiddleware,
   ClassWrapper,
-  Middleware
+  Middleware,
+  Post
 } from "@overnightjs/core";
 import { authHandler, validator } from "../helpers/middleware";
 import { MembershipRole } from "../interfaces/enum";
@@ -749,6 +751,30 @@ export class OrganizationController {
         localsToTokenOrKey(res),
         id,
         domainId,
+        res.locals
+      )
+    );
+  }
+
+  @Post(":id/domains/:domainId/verify")
+  async verifyOrganizationDomain(req: Request, res: Response) {
+    const id = await organizationUsernameToId(req.params.id);
+    const domainId = req.params.domainId;
+    const method = req.body.method || req.query.method;
+    joiValidate(
+      {
+        id: [Joi.string().required(), Joi.number().required()],
+        domainId: Joi.number().required(),
+        method: Joi.string().only(["file", "dns"])
+      },
+      { id, domainId, method }
+    );
+    res.json(
+      await verifyDomainForUser(
+        localsToTokenOrKey(res),
+        id,
+        domainId,
+        method,
         res.locals
       )
     );

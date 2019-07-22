@@ -12,8 +12,9 @@ import { cachedQuery, deleteItemFromCache } from "../helpers/cache";
 import { CacheCategories, ErrorCode } from "../interfaces/enum";
 import { ApiKey } from "../interfaces/tables/organization";
 import { getPaginatedData } from "./data";
+import cryptoRandomString from "crypto-random-string";
 import { apiKeyToken, invalidateToken } from "../helpers/jwt";
-import { TOKEN_EXPIRY_API_KEY_MAX } from "../config";
+import { TOKEN_EXPIRY_API_KEY_MAX, JWT_ISSUER } from "../config";
 import { InsertResult } from "../interfaces/mysql";
 
 /*
@@ -238,6 +239,9 @@ export const getDomain = async (organizationId: number, domainId: number) => {
 export const createDomain = async (domain: Domain): Promise<InsertResult> => {
   domain.createdAt = new Date();
   domain.updatedAt = domain.createdAt;
+  domain.verificationCode = `${JWT_ISSUER}=${cryptoRandomString({
+    length: 32
+  })}`;
   return await query(
     `INSERT INTO ${tableName("domains")} ${tableValues(domain)}`,
     Object.values(domain)

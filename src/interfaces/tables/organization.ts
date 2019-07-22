@@ -22,5 +22,6 @@ export interface ApiKey extends IdRow {
 export interface Domain extends IdRow {
   organizationId: number;
   domain: string;
+  verificationCode?: string;
   isVerified: boolean;
 }
