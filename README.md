@@ -31,7 +31,8 @@ Works with [Staart UI](https://github.com/o15y/staart-ui), the frontend starter 
 - [x] Rich HTML transactional emails with SES
 - [x] GDPR-proof data export and delete
 - [ ] Affiliates and commission management
-- [x] API key management with rate limiting
+- [x] API gateway with API keys and rate limits
+- [x] Auto-join members with domain verification
 
 ### 👩‍💻 Developer utilities
 
