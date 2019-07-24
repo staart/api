@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
-import { ErrorCode, UserRole, Tokens } from "../interfaces/enum";
+import { ErrorCode, UserRole, Tokens } from "../../interfaces/enum";
 import {
   sendPasswordReset,
   login,
@@ -10,8 +10,8 @@ import {
   verifyEmail,
   register,
   login2FA
-} from "../rest/auth";
-import { verifyToken, LoginResponse } from "../helpers/jwt";
+} from "../../rest/auth";
+import { verifyToken, LoginResponse } from "../../helpers/jwt";
 import {
   Get,
   Post,
@@ -25,13 +25,19 @@ import {
   authHandler,
   bruteForceHandler,
   validator
-} from "../helpers/middleware";
+} from "../../helpers/middleware";
 import { CREATED } from "http-status-codes";
 import asyncHandler from "express-async-handler";
-import { safeRedirect, joiValidate } from "../helpers/utils";
+import { safeRedirect, joiValidate } from "../../helpers/utils";
 import Joi from "@hapi/joi";
-import { FRONTEND_URL, BASE_URL } from "../config";
-import { salesforce, github, microsoft, google, facebook } from "../rest/oauth";
+import { FRONTEND_URL, BASE_URL } from "../../config";
+import {
+  salesforce,
+  github,
+  microsoft,
+  google,
+  facebook
+} from "../../rest/oauth";
 import { stringify } from "querystring";
 
 const OAuthRedirector = (action: RequestHandler) => (

@@ -1,13 +1,16 @@
 import { Request, Response } from "express";
-import { ErrorCode } from "../interfaces/enum";
-import { getAllOrganizationForUser, getAllUsersForUser } from "../rest/admin";
+import { ErrorCode } from "../../interfaces/enum";
+import {
+  getAllOrganizationForUser,
+  getAllUsersForUser
+} from "../../rest/admin";
 import {
   Get,
   Controller,
   ClassMiddleware,
   ClassWrapper
 } from "@overnightjs/core";
-import { authHandler } from "../helpers/middleware";
+import { authHandler } from "../../helpers/middleware";
 import asyncHandler from "express-async-handler";
 
 @Controller("admin")

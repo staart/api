@@ -19,7 +19,7 @@ import {
   getUserAccessTokenForUser,
   createAccessTokenForUser,
   getUserAccessTokensForUser
-} from "../rest/user";
+} from "../../rest/user";
 import {
   Get,
   Patch,
@@ -31,17 +31,17 @@ import {
   ClassWrapper,
   Middleware
 } from "@overnightjs/core";
-import { authHandler, validator } from "../helpers/middleware";
+import { authHandler, validator } from "../../helpers/middleware";
 import {
   getAllEmailsForUser,
   addEmailToUserForUser,
   deleteEmailFromUserForUser,
   getEmailForUser,
   resendEmailVerificationForUser
-} from "../rest/email";
+} from "../../rest/email";
 import { CREATED } from "http-status-codes";
 import asyncHandler from "express-async-handler";
-import { joiValidate, userUsernameToId } from "../helpers/utils";
+import { joiValidate, userUsernameToId } from "../../helpers/utils";
 import Joi from "@hapi/joi";
 
 @Controller("users")

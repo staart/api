@@ -37,7 +37,7 @@ import {
   getOrganizationWebhookForUser,
   updateWebhookForUser,
   deleteWebhookForUser
-} from "../rest/organization";
+} from "../../rest/organization";
 import {
   Get,
   Put,
@@ -49,16 +49,16 @@ import {
   Middleware,
   Post
 } from "@overnightjs/core";
-import { authHandler, validator } from "../helpers/middleware";
-import { MembershipRole } from "../interfaces/enum";
+import { authHandler, validator } from "../../helpers/middleware";
+import { MembershipRole } from "../../interfaces/enum";
 import { CREATED } from "http-status-codes";
 import asyncHandler from "express-async-handler";
-import { inviteMemberToOrganization } from "../rest/membership";
+import { inviteMemberToOrganization } from "../../rest/membership";
 import {
   joiValidate,
   organizationUsernameToId,
   localsToTokenOrKey
-} from "../helpers/utils";
+} from "../../helpers/utils";
 import Joi from "@hapi/joi";
 
 @Controller("organizations")
