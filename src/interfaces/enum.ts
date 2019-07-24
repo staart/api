@@ -169,5 +169,23 @@ export enum UserScopes {
 }
 
 export enum Webhooks {
-  EXAMPLE = 1
+  ALL_EVENTS = "*",
+  UPDATE_ORGANIZATION = "update-organization",
+  DELETE_ORGANIZATION = "delete-organization",
+  UPDATE_ORGANIZATION_BILLING = "update-organization-billing",
+  UPDATE_ORGANIZATION_SUBSCRIPTION = "update-organization-subscription",
+  CREATE_ORGANIZATION_SUBSCRIPTION = "create-organization-subscription",
+  DELETE_ORGANIZATION_SOURCE = "delete-organization-source",
+  UPDATE_ORGANIZATION_SOURCE = "update-organization-source",
+  CREATE_ORGANIZATION_SOURCE = "create-organization-source",
+  UPDATE_API_KEY = "update-api-key",
+  CREATE_API_KEY = "create-api-key",
+  DELETE_API_KEY = "delete-api-key",
+  UPDATE_DOMAIN = "update-domain",
+  CREATE_DOMAIN = "create-domain",
+  DELETE_DOMAIN = "delete-domain",
+  VERIFY_DOMAIN = "verify-domain",
+  UPDATE_WEBHOOK = "update-webhook",
+  CREATE_WEBHOOK = "create-webhook",
+  DELETE_WEBHOOK = "delete-webhook"
 }

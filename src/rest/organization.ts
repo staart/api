@@ -32,7 +32,8 @@ import {
   ErrorCode,
   EventType,
   Authorizations,
-  NotificationCategories
+  NotificationCategories,
+  Webhooks
 } from "../interfaces/enum";
 import {
   createEvent,
@@ -66,6 +67,7 @@ import { ApiKeyResponse } from "../helpers/jwt";
 import axios from "axios";
 import { dnsResolve } from "../helpers/utils";
 import { JWT_ISSUER } from "../config";
+import { queueWebhook } from "../helpers/webhooks";
 
 export const getOrganizationForUser = async (
   userId: number | ApiKeyResponse,
@@ -118,6 +120,7 @@ export const updateOrganizationForUser = async (
     await can(userId, Authorizations.UPDATE, "organization", organizationId)
   ) {
     await updateOrganization(organizationId, data);
+    queueWebhook(organizationId, Webhooks.UPDATE_ORGANIZATION);
     return;
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
@@ -136,6 +139,7 @@ export const deleteOrganizationForUser = async (
       await deleteStripeCustomer(organizationDetails.stripeCustomerId);
     await deleteOrganization(organizationId);
     await deleteAllOrganizationMemberships(organizationId);
+    queueWebhook(organizationId, Webhooks.DELETE_ORGANIZATION);
     return;
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
@@ -168,6 +172,7 @@ export const updateOrganizationBillingForUser = async (
     } else {
       result = await createStripeCustomer(organizationId, data);
     }
+    queueWebhook(organizationId, Webhooks.UPDATE_ORGANIZATION_BILLING);
     return result;
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
@@ -271,12 +276,15 @@ export const updateOrganizationSubscriptionForUser = async (
 ) => {
   if (await can(userId, Authorizations.READ, "organization", organizationId)) {
     const organization = await getOrganization(organizationId);
-    if (organization.stripeCustomerId)
-      return await updateStripeSubscription(
+    if (organization.stripeCustomerId) {
+      const result = await updateStripeSubscription(
         organization.stripeCustomerId,
         subscriptionId,
         data
       );
+      queueWebhook(organizationId, Webhooks.UPDATE_ORGANIZATION_SUBSCRIPTION);
+      return result;
+    }
     throw new Error(ErrorCode.STRIPE_NO_CUSTOMER);
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
@@ -289,11 +297,14 @@ export const createOrganizationSubscriptionForUser = async (
 ) => {
   if (await can(userId, Authorizations.READ, "organization", organizationId)) {
     const organization = await getOrganization(organizationId);
-    if (organization.stripeCustomerId)
-      return await createStripeSubscription(
+    if (organization.stripeCustomerId) {
+      const result = await createStripeSubscription(
         organization.stripeCustomerId,
         params
       );
+      queueWebhook(organizationId, Webhooks.CREATE_ORGANIZATION_SUBSCRIPTION);
+      return result;
+    }
     throw new Error(ErrorCode.STRIPE_NO_CUSTOMER);
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
@@ -316,8 +327,14 @@ export const deleteOrganizationSourceForUser = async (
 ) => {
   if (await can(userId, Authorizations.READ, "organization", organizationId)) {
     const organization = await getOrganization(organizationId);
-    if (organization.stripeCustomerId)
-      return await deleteStripeSource(organization.stripeCustomerId, sourceId);
+    if (organization.stripeCustomerId) {
+      const result = await deleteStripeSource(
+        organization.stripeCustomerId,
+        sourceId
+      );
+      queueWebhook(organizationId, Webhooks.DELETE_ORGANIZATION_SOURCE);
+      return result;
+    }
     throw new Error(ErrorCode.STRIPE_NO_CUSTOMER);
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
@@ -333,12 +350,15 @@ export const updateOrganizationSourceForUser = async (
     await can(userId, Authorizations.UPDATE, "organization", organizationId)
   ) {
     const organization = await getOrganization(organizationId);
-    if (organization.stripeCustomerId)
-      return await updateStripeSource(
+    if (organization.stripeCustomerId) {
+      const result = await updateStripeSource(
         organization.stripeCustomerId,
         sourceId,
         data
       );
+      queueWebhook(organizationId, Webhooks.UPDATE_ORGANIZATION_SOURCE);
+      return result;
+    }
     throw new Error(ErrorCode.STRIPE_NO_CUSTOMER);
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
@@ -353,8 +373,14 @@ export const createOrganizationSourceForUser = async (
     await can(userId, Authorizations.CREATE, "organization", organizationId)
   ) {
     const organization = await getOrganization(organizationId);
-    if (organization.stripeCustomerId)
-      return await createStripeSource(organization.stripeCustomerId, card);
+    if (organization.stripeCustomerId) {
+      const result = await createStripeSource(
+        organization.stripeCustomerId,
+        card
+      );
+      queueWebhook(organizationId, Webhooks.CREATE_ORGANIZATION_SOURCE);
+      return result;
+    }
     throw new Error(ErrorCode.STRIPE_NO_CUSTOMER);
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
@@ -469,8 +495,9 @@ export const updateApiKeyForUser = async (
       organizationId
     )
   ) {
-    await updateApiKey(organizationId, apiKeyId, data);
-    return;
+    const result = await updateApiKey(organizationId, apiKeyId, data);
+    queueWebhook(organizationId, Webhooks.UPDATE_API_KEY);
+    return result;
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
@@ -489,8 +516,9 @@ export const createApiKeyForUser = async (
       organizationId
     )
   ) {
-    const key = await createApiKey({ organizationId, ...apiKey });
-    return;
+    const result = await createApiKey({ organizationId, ...apiKey });
+    queueWebhook(organizationId, Webhooks.CREATE_API_KEY);
+    return result;
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
@@ -509,8 +537,9 @@ export const deleteApiKeyForUser = async (
       organizationId
     )
   ) {
-    await deleteApiKey(organizationId, apiKeyId);
-    return;
+    const result = await deleteApiKey(organizationId, apiKeyId);
+    queueWebhook(organizationId, Webhooks.DELETE_API_KEY);
+    return result;
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
@@ -545,8 +574,9 @@ export const updateDomainForUser = async (
   if (
     await can(userId, Authorizations.UPDATE, "organization", organizationId)
   ) {
-    await updateDomain(organizationId, domainId, data);
-    return;
+    const result = await updateDomain(organizationId, domainId, data);
+    queueWebhook(organizationId, Webhooks.UPDATE_DOMAIN);
+    return result;
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
@@ -561,13 +591,14 @@ export const createDomainForUser = async (
     await can(userId, Authorizations.CREATE, "organization", organizationId)
   ) {
     await checkDomainAvailability(domain.domain);
-    const key = await createDomain({
+    const result = await createDomain({
       domain: "",
       organizationId,
       ...domain,
       isVerified: false
     });
-    return;
+    queueWebhook(organizationId, Webhooks.CREATE_DOMAIN);
+    return result;
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
@@ -581,8 +612,9 @@ export const deleteDomainForUser = async (
   if (
     await can(userId, Authorizations.DELETE, "organization", organizationId)
   ) {
-    await deleteDomain(organizationId, domainId);
-    return;
+    const result = await deleteDomain(organizationId, domainId);
+    queueWebhook(organizationId, Webhooks.DELETE_DOMAIN);
+    return result;
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
@@ -607,8 +639,11 @@ export const verifyDomainForUser = async (
           `http://${domain.domain}/.well-known/${JWT_ISSUER}-verify.txt`
         )).data;
         if (file.trim() === domain.verificationCode) {
-          await updateDomain(organizationId, domainId, { isVerified: true });
-          return;
+          const result = await updateDomain(organizationId, domainId, {
+            isVerified: true
+          });
+          queueWebhook(organizationId, Webhooks.VERIFY_DOMAIN);
+          return result;
         }
       } catch (error) {
         throw new Error(ErrorCode.DOMAIN_MISSING_FILE);
@@ -616,8 +651,11 @@ export const verifyDomainForUser = async (
     } else {
       const dns = await dnsResolve(domain.domain, "TXT");
       if (JSON.stringify(dns).includes(domain.verificationCode)) {
-        await updateDomain(organizationId, domainId, { isVerified: true });
-        return;
+        const result = await updateDomain(organizationId, domainId, {
+          isVerified: true
+        });
+        queueWebhook(organizationId, Webhooks.VERIFY_DOMAIN);
+        return result;
       } else {
         throw new Error(ErrorCode.DOMAIN_MISSING_DNS);
       }
@@ -657,8 +695,9 @@ export const updateWebhookForUser = async (
   if (
     await can(userId, Authorizations.UPDATE, "organization", organizationId)
   ) {
-    await updateWebhook(organizationId, webhookId, data);
-    return;
+    const result = await updateWebhook(organizationId, webhookId, data);
+    queueWebhook(organizationId, Webhooks.UPDATE_WEBHOOK);
+    return result;
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
@@ -672,11 +711,12 @@ export const createWebhookForUser = async (
   if (
     await can(userId, Authorizations.CREATE, "organization", organizationId)
   ) {
-    const key = await createWebhook({
+    const result = await createWebhook({
       organizationId,
       ...webhook
     } as Webhook);
-    return;
+    queueWebhook(organizationId, Webhooks.CREATE_WEBHOOK);
+    return result;
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
@@ -690,8 +730,9 @@ export const deleteWebhookForUser = async (
   if (
     await can(userId, Authorizations.DELETE, "organization", organizationId)
   ) {
-    await deleteWebhook(organizationId, webhookId);
-    return;
+    const result = await deleteWebhook(organizationId, webhookId);
+    queueWebhook(organizationId, Webhooks.DELETE_WEBHOOK);
+    return result;
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };

@@ -1095,6 +1095,13 @@
   dependencies:
     "@types/express" "*"
 
+"@types/create-hmac@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@types/create-hmac/-/create-hmac-1.1.0.tgz#d5bc34b65aeaf8f7bbd4a064172ab48318763b63"
+  integrity sha512-BNYNdzdhOZZQWCOpwvIll3FSvgo3e55Y2M6s/jOY6TuOCwqt3cLmQsK4tSmJ5fayDot8EG4k3+hcZagfww9JlQ==
+  dependencies:
+    "@types/node" "*"
+
 "@types/cron@^1.7.1":
   version "1.7.1"
   resolved "https://registry.yarnpkg.com/@types/cron/-/cron-1.7.1.tgz#752e47ebbe26e83d9e40f2dd6a3f679f2eec54b8"

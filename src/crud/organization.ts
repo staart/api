@@ -13,7 +13,7 @@ import {
 import { capitalizeFirstAndLastLetter, createSlug } from "../helpers/utils";
 import { KeyValue } from "../interfaces/general";
 import { cachedQuery, deleteItemFromCache } from "../helpers/cache";
-import { CacheCategories, ErrorCode } from "../interfaces/enum";
+import { CacheCategories, ErrorCode, Webhooks } from "../interfaces/enum";
 import { ApiKey } from "../interfaces/tables/organization";
 import { getPaginatedData } from "./data";
 import cryptoRandomString from "crypto-random-string";
@@ -322,6 +322,23 @@ export const getOrganizationWebhooks = async (
     },
     ...query
   });
+};
+
+/**
+ * Get a webhook
+ */
+export const getOrganizationEventWebhooks = async (
+  organizationId: number,
+  event: Webhooks
+) => {
+  return <Webhook[]>(
+    await query(
+      `SELECT * FROM ${tableName(
+        "webhooks"
+      )} WHERE organizationId = ? AND (event = ? OR event = "*")`,
+      [organizationId, event]
+    )
+  );
 };
 
 /**
