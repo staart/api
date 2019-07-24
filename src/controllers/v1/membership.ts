@@ -22,7 +22,7 @@ import Joi from "@hapi/joi";
 import { joiValidate } from "../../helpers/utils";
 import i18n from "../../i18n";
 
-@Controller("memberships")
+@Controller("v1/memberships")
 @ClassWrapper(asyncHandler)
 @ClassMiddleware(authHandler)
 export class MembershipController {

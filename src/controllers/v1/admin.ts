@@ -13,7 +13,7 @@ import {
 import { authHandler } from "../../helpers/middleware";
 import asyncHandler from "express-async-handler";
 
-@Controller("admin")
+@Controller("v1/admin")
 @ClassMiddleware(authHandler)
 @ClassWrapper(asyncHandler)
 export class AdminController {

@@ -70,7 +70,7 @@ const OAuthRedirect = (
   );
 };
 
-@Controller("auth")
+@Controller("v1/auth")
 @ClassMiddleware(bruteForceHandler)
 @ClassWrapper(asyncHandler)
 export class AuthController {

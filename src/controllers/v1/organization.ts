@@ -61,7 +61,7 @@ import {
 } from "../../helpers/utils";
 import Joi from "@hapi/joi";
 
-@Controller("organizations")
+@Controller("v1/organizations")
 @ClassWrapper(asyncHandler)
 @ClassMiddleware(authHandler)
 export class OrganizationController {

@@ -44,7 +44,7 @@ import asyncHandler from "express-async-handler";
 import { joiValidate, userUsernameToId } from "../../helpers/utils";
 import Joi from "@hapi/joi";
 
-@Controller("users")
+@Controller("v1/users")
 @ClassMiddleware(authHandler)
 @ClassWrapper(asyncHandler)
 export class UserController {
