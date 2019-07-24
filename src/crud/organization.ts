@@ -5,7 +5,11 @@ import {
   removeReadOnlyValues,
   tableName
 } from "../helpers/mysql";
-import { Organization, Domain } from "../interfaces/tables/organization";
+import {
+  Organization,
+  Domain,
+  Webhook
+} from "../interfaces/tables/organization";
 import { capitalizeFirstAndLastLetter, createSlug } from "../helpers/utils";
 import { KeyValue } from "../interfaces/general";
 import { cachedQuery, deleteItemFromCache } from "../helpers/cache";
@@ -302,4 +306,85 @@ export const checkDomainAvailability = async (username: string) => {
     if (domain && domain.id) return false;
   } catch (error) {}
   return true;
+};
+
+/**
+ * Get a list of webhooks for an organization
+ */
+export const getOrganizationWebhooks = async (
+  organizationId: number,
+  query: KeyValue
+) => {
+  return await getPaginatedData({
+    table: "webhooks",
+    conditions: {
+      organizationId
+    },
+    ...query
+  });
+};
+
+/**
+ * Get a webhook
+ */
+export const getWebhook = async (organizationId: number, webhookId: number) => {
+  return (<Webhook[]>(
+    await query(
+      `SELECT * FROM ${tableName(
+        "webhooks"
+      )} WHERE id = ? AND organizationId = ? LIMIT 1`,
+      [webhookId, organizationId]
+    )
+  ))[0];
+};
+
+/**
+ * Create a webhook
+ */
+export const createWebhook = async (
+  webhook: Webhook
+): Promise<InsertResult> => {
+  webhook.contentType = webhook.contentType || "application/json";
+  webhook.isActive = webhook.isActive !== false;
+  webhook.createdAt = new Date();
+  webhook.updatedAt = webhook.createdAt;
+  return await query(
+    `INSERT INTO ${tableName("webhooks")} ${tableValues(webhook)}`,
+    Object.values(webhook)
+  );
+};
+
+/**
+ * Update a webhook
+ */
+export const updateWebhook = async (
+  organizationId: number,
+  webhookId: number,
+  data: KeyValue
+) => {
+  data.updatedAt = new Date();
+  data = removeReadOnlyValues(data);
+  const webhook = await getWebhook(organizationId, webhookId);
+  return await query(
+    `UPDATE ${tableName("webhooks")} SET ${setValues(
+      data
+    )} WHERE id = ? AND organizationId = ?`,
+    [...Object.values(data), webhookId, organizationId]
+  );
+};
+
+/**
+ * Delete a webhook
+ */
+export const deleteWebhook = async (
+  organizationId: number,
+  webhookId: number
+) => {
+  const currentWebhook = await getWebhook(organizationId, webhookId);
+  return await query(
+    `DELETE FROM ${tableName(
+      "webhooks"
+    )} WHERE id = ? AND organizationId = ? LIMIT 1`,
+    [webhookId, organizationId]
+  );
 };

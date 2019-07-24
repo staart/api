@@ -1,4 +1,5 @@
 import { IdRow } from "../general";
+import { Webhooks } from "../enum";
 
 export interface Organization extends IdRow {
   name?: string;
@@ -26,4 +27,13 @@ export interface Domain extends IdRow {
   domain: string;
   verificationCode?: string;
   isVerified: boolean;
+}
+
+export interface Webhook extends IdRow {
+  organizationId: number;
+  url: string;
+  event: Webhooks;
+  contentType: "application/json" | "application/x-www-form-urlencoded";
+  secret?: string;
+  isActive: boolean;
 }

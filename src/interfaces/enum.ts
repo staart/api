@@ -167,3 +167,7 @@ export enum UserScopes {
   DELETE_USER_EMAILS = "user:emails:delete",
   RESEND_USER_EMAIL_VERIFICATION = "user:emails:resend-verification"
 }
+
+export enum Webhooks {
+  EXAMPLE = 1
+}

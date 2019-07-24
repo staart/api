@@ -115,7 +115,8 @@ export const boolValues = [
   "isVerified",
   "forceTwoFactor",
   "autoJoinDomain",
-  "onlyAllowDomain"
+  "onlyAllowDomain",
+  "isActive"
 ];
 
 /**

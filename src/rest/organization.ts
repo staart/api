@@ -1,4 +1,4 @@
-import { Organization } from "../interfaces/tables/organization";
+import { Organization, Webhook } from "../interfaces/tables/organization";
 import {
   createOrganization,
   updateOrganization,
@@ -14,7 +14,12 @@ import {
   updateDomain,
   createDomain,
   deleteDomain,
-  checkDomainAvailability
+  checkDomainAvailability,
+  getOrganizationWebhooks,
+  getWebhook,
+  updateWebhook,
+  createWebhook,
+  deleteWebhook
 } from "../crud/organization";
 import { InsertResult } from "../interfaces/mysql";
 import {
@@ -618,6 +623,75 @@ export const verifyDomainForUser = async (
       }
     }
     throw new Error(ErrorCode.DOMAIN_UNABLE_TO_VERIFY);
+  }
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const getOrganizationWebhooksForUser = async (
+  userId: number | ApiKeyResponse,
+  organizationId: number,
+  query: KeyValue
+) => {
+  if (await can(userId, Authorizations.READ, "organization", organizationId))
+    return await getOrganizationWebhooks(organizationId, query);
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const getOrganizationWebhookForUser = async (
+  userId: number | ApiKeyResponse,
+  organizationId: number,
+  webhookId: number
+) => {
+  if (await can(userId, Authorizations.READ, "organization", organizationId))
+    return await getWebhook(organizationId, webhookId);
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const updateWebhookForUser = async (
+  userId: number | ApiKeyResponse,
+  organizationId: number,
+  webhookId: number,
+  data: KeyValue,
+  locals: Locals
+) => {
+  if (
+    await can(userId, Authorizations.UPDATE, "organization", organizationId)
+  ) {
+    await updateWebhook(organizationId, webhookId, data);
+    return;
+  }
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const createWebhookForUser = async (
+  userId: number | ApiKeyResponse,
+  organizationId: number,
+  webhook: KeyValue,
+  locals: Locals
+) => {
+  if (
+    await can(userId, Authorizations.CREATE, "organization", organizationId)
+  ) {
+    const key = await createWebhook({
+      organizationId,
+      ...webhook
+    } as Webhook);
+    return;
+  }
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const deleteWebhookForUser = async (
+  userId: number | ApiKeyResponse,
+  organizationId: number,
+  webhookId: number,
+  locals: Locals
+) => {
+  if (
+    await can(userId, Authorizations.DELETE, "organization", organizationId)
+  ) {
+    await deleteWebhook(organizationId, webhookId);
+    return;
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
