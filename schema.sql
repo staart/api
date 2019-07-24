@@ -11,11 +11,28 @@
  Target Server Version : 100221
  File Encoding         : 65001
 
- Date: 22/07/2019 14:49:08
+ Date: 24/07/2019 17:17:40
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for staart-access-tokens
+-- ----------------------------
+DROP TABLE IF EXISTS `staart-access-tokens`;
+CREATE TABLE `staart-access-tokens` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `userId` int(11) NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
+  `description` text COLLATE utf8mb4_bin DEFAULT NULL,
+  `jwtAccessToken` text COLLATE utf8mb4_bin NOT NULL,
+  `scopes` text COLLATE utf8mb4_bin DEFAULT NULL,
+  `expiresAt` datetime NOT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- ----------------------------
 -- Table structure for staart-api-keys
@@ -183,6 +200,24 @@ CREATE TABLE `staart-users` (
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
+-- ----------------------------
+-- Table structure for staart-webhooks
+-- ----------------------------
+DROP TABLE IF EXISTS `staart-webhooks`;
+CREATE TABLE `staart-webhooks` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `organizationId` int(11) NOT NULL,
+  `event` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `url` text COLLATE utf8mb4_bin NOT NULL,
+  `contentType` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `secret` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
+  `isActive` int(1) NOT NULL DEFAULT 0,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE current_timestamp(),
+  `lastFiredAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 SET FOREIGN_KEY_CHECKS = 1;

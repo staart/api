@@ -122,7 +122,12 @@ export const boolValues = [
 /**
  * MySQL columns which are datetime values
  */
-export const dateValues = ["createdAt", "updatedAt"];
+export const dateValues = [
+  "createdAt",
+  "updatedAt",
+  "lastFiredAt",
+  "expiresAt"
+];
 
 /**
  * MySQL columns which are JSON values
