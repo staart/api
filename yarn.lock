@@ -1095,13 +1095,6 @@
   dependencies:
     "@types/express" "*"
 
-"@types/create-hmac@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@types/create-hmac/-/create-hmac-1.1.0.tgz#d5bc34b65aeaf8f7bbd4a064172ab48318763b63"
-  integrity sha512-BNYNdzdhOZZQWCOpwvIll3FSvgo3e55Y2M6s/jOY6TuOCwqt3cLmQsK4tSmJ5fayDot8EG4k3+hcZagfww9JlQ==
-  dependencies:
-    "@types/node" "*"
-
 "@types/cron@^1.7.1":
   version "1.7.1"
   resolved "https://registry.yarnpkg.com/@types/cron/-/cron-1.7.1.tgz#752e47ebbe26e83d9e40f2dd6a3f679f2eec54b8"
@@ -4708,7 +4701,7 @@ lodash.toarray@^4.4.0:
   resolved "https://registry.yarnpkg.com/lodash.toarray/-/lodash.toarray-4.4.0.tgz#24c4bfcd6b2fba38bfd0594db1179d8e9b656561"
   integrity sha1-JMS/zWsvuji/0FlNsRedjptlZWE=
 
-lodash@4.x, lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.12, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.5, lodash@^4.7.14:
+lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.12, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.5, lodash@^4.7.14:
   version "4.17.15"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
   integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
@@ -5105,13 +5098,13 @@ nocache@2.1.0:
   resolved "https://registry.yarnpkg.com/nocache/-/nocache-2.1.0.tgz#120c9ffec43b5729b1d5de88cd71aa75a0ba491f"
   integrity sha512-0L9FvHG3nfnnmaEQPjT9xhfN4ISk0A8/2j4M37Np4mcDesJjHgEUfgPhdCyZuFI954tjokaIj/A3NdpFNdEh4Q==
 
-node-cache@^4.2.0:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/node-cache/-/node-cache-4.2.0.tgz#48ac796a874e762582692004a376d26dfa875811"
-  integrity sha512-obRu6/f7S024ysheAjoYFEEBqqDWv4LOMNJEuO8vMeEw2AT4z+NCzO4hlc2lhI4vATzbCQv6kke9FVdx0RbCOw==
+node-cache@^4.2.1:
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/node-cache/-/node-cache-4.2.1.tgz#efd8474dee4edec4138cdded580f5516500f7334"
+  integrity sha512-BOb67bWg2dTyax5kdef5WfU3X8xu4wPg+zHzkvls0Q/QpYycIFRLEEIdAx9Wma43DxG6Qzn4illdZoYseKWa4A==
   dependencies:
     clone "2.x"
-    lodash "4.x"
+    lodash "^4.17.15"
 
 node-emoji@^1.10.0:
   version "1.10.0"
