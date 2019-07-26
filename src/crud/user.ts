@@ -401,7 +401,8 @@ export const getUserSessions = async (userId: number, query: KeyValue) => {
     conditions: {
       userId
     },
-    ...query
+    ...query,
+    sort: "desc"
   });
   data.data.forEach((item, index) => {
     delete data.data[index].jwtToken;
