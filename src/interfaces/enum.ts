@@ -68,7 +68,7 @@ export enum ErrorCode {
   INCORRECT_PASSWORD = "401/incorrect-password",
   INSUFFICIENT_PERMISSION = "403/insufficient-permission",
   DEFAULT = "500/server-error",
-  EMAIL_CANNOT_DELETE = "400/email.cannotDelete",
+  EMAIL_CANNOT_DELETE = "400/cannot-delete-email",
   UNVERIFIED_EMAIL = "401/unverified-email",
   GOOGLE_AUTH_ERROR = "401/google-auth-error",
   UNAPPROVED_LOCATION = "401/unapproved-location",
