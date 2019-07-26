@@ -17,9 +17,12 @@ import {
   removeFalsyValues,
   includesDomainInCommaList
 } from "./utils";
-import { checkApprovedLocation } from "../crud/user";
+import {
+  checkApprovedLocation,
+  createSession,
+  updateSessionByJwt
+} from "../crud/user";
 import { Locals } from "../interfaces/general";
-import { createEvent } from "../crud/event";
 import {
   getUserVerifiedEmails,
   getUserPrimaryEmail,
@@ -165,8 +168,23 @@ export const approveLocationToken = (id: number, ipAddress: string) =>
 export const refreshToken = (id: number) =>
   generateToken({ id }, TOKEN_EXPIRY_REFRESH, Tokens.REFRESH);
 
-export const postLoginTokens = async (user: User) => {
+export const postLoginTokens = async (
+  user: User,
+  locals: Locals,
+  refreshTokenString?: string
+) => {
   if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
+  const refresh = await refreshToken(user.id);
+  if (!refreshTokenString) {
+    await createSession({
+      userId: user.id,
+      jwtToken: refresh,
+      ipAddress: locals.ipAddress || "unknown-ip-address",
+      userAgent: locals.userAgent || "unknown-user-agent"
+    });
+  } else {
+    await updateSessionByJwt(user.id, refreshTokenString, {});
+  }
   return {
     token: await loginToken(
       deleteSensitiveInfoUser({
@@ -174,7 +192,7 @@ export const postLoginTokens = async (user: User) => {
         email: await getUserBestEmail(user.id)
       })
     ),
-    refresh: await refreshToken(user.id)
+    refresh: !refreshTokenString ? refresh : undefined
   };
 };
 
@@ -189,9 +207,9 @@ export interface LoginResponse {
  */
 export const getLoginResponse = async (
   user: User,
-  type?: EventType,
-  strategy?: string,
-  locals?: Locals
+  type: EventType,
+  strategy: string,
+  locals: Locals
 ): Promise<LoginResponse> => {
   if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
   const verifiedEmails = await getUserVerifiedEmails(user);
@@ -213,20 +231,11 @@ export const getLoginResponse = async (
       throw new Error(ErrorCode.UNAPPROVED_LOCATION);
     }
   }
-  if (type && strategy && locals)
-    await createEvent(
-      {
-        userId: user.id,
-        type,
-        data: { strategy }
-      },
-      locals
-    );
   if (user.twoFactorEnabled)
     return {
       twoFactorToken: await twoFactorToken(user)
     };
-  return await postLoginTokens(user);
+  return await postLoginTokens(user, locals);
 };
 
 const client = createHandyClient({

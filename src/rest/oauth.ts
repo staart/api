@@ -25,9 +25,9 @@ const getRedirectUri = (service: string) =>
 
 export const loginWithOAuth2Service = async (
   service: string,
-  name?: string,
-  email?: string,
-  locals?: Locals
+  name: string,
+  email: string,
+  locals: Locals
 ) => {
   if (!name) throw new Error(ErrorCode.OAUTH_NO_NAME);
   if (!email) throw new Error(ErrorCode.OAUTH_NO_EMAIL);

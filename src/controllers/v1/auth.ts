@@ -224,7 +224,7 @@ export class AuthController {
   async getImpersonate(req: Request, res: Response) {
     const tokenUserId = res.locals.token.id;
     const impersonateUserId = req.params.id;
-    res.json(await impersonate(tokenUserId, impersonateUserId));
+    res.json(await impersonate(tokenUserId, impersonateUserId, res.locals));
   }
 
   @Post("approve-location")

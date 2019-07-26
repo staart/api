@@ -18,7 +18,10 @@ import {
   updateAccessTokenForUser,
   getUserAccessTokenForUser,
   createAccessTokenForUser,
-  getUserAccessTokensForUser
+  getUserAccessTokensForUser,
+  deleteSessionForUser,
+  getUserSessionForUser,
+  getUserSessionsForUser
 } from "../../rest/user";
 import {
   Get,
@@ -449,6 +452,56 @@ export class UserController {
         accessTokenId,
         res.locals
       )
+    );
+  }
+
+  @Get(":id/sessions")
+  async getUserSessions(req: Request, res: Response) {
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    joiValidate(
+      { id: [Joi.string().required(), Joi.number().required()] },
+      { id }
+    );
+    const sessionParams = { ...req.query };
+    joiValidate(
+      {
+        start: Joi.string(),
+        itemsPerPage: Joi.number()
+      },
+      sessionParams
+    );
+    res.json(
+      await getUserSessionsForUser(res.locals.token.id, id, sessionParams)
+    );
+  }
+
+  @Get(":id/sessions/:sessionId")
+  async getUserSession(req: Request, res: Response) {
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const sessionId = req.params.sessionId;
+    joiValidate(
+      {
+        id: [Joi.string().required(), Joi.number().required()],
+        sessionId: Joi.number().required()
+      },
+      { id, sessionId }
+    );
+    res.json(await getUserSessionForUser(res.locals.token.id, id, sessionId));
+  }
+
+  @Delete(":id/sessions/:sessionId")
+  async deleteUserSession(req: Request, res: Response) {
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const sessionId = req.params.sessionId;
+    joiValidate(
+      {
+        id: [Joi.string().required(), Joi.number().required()],
+        sessionId: Joi.number().required()
+      },
+      { id, sessionId }
+    );
+    res.json(
+      await deleteSessionForUser(res.locals.token.id, id, sessionId, res.locals)
     );
   }
 }

@@ -165,7 +165,10 @@ export enum UserScopes {
   CREATE_USER_EMAILS = "user:emails:create",
   READ_USER_EMAILS = "user:emails:read",
   DELETE_USER_EMAILS = "user:emails:delete",
-  RESEND_USER_EMAIL_VERIFICATION = "user:emails:resend-verification"
+  RESEND_USER_EMAIL_VERIFICATION = "user:emails:resend-verification",
+  CREATE_USER_SESSION = "user:sessions:create",
+  READ_USER_SESSION = "user:sessions:read",
+  DELETE_USER_SESSION = "user:sessions:delete"
 }
 
 export enum Webhooks {

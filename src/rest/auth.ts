@@ -23,7 +23,8 @@ import {
   passwordResetToken,
   getLoginResponse,
   postLoginTokens,
-  TokenResponse
+  TokenResponse,
+  checkInvalidatedToken
 } from "../helpers/jwt";
 import { KeyValue, Locals } from "../interfaces/general";
 import { createEvent } from "../crud/event";
@@ -55,10 +56,11 @@ import { GitHubEmail } from "../interfaces/oauth";
 import { createSlug } from "../helpers/utils";
 
 export const validateRefreshToken = async (token: string, locals: Locals) => {
+  await checkInvalidatedToken(token);
   const data = <User>await verifyToken(token, Tokens.REFRESH);
   if (!data.id) throw new Error(ErrorCode.USER_NOT_FOUND);
   const user = await getUser(data.id);
-  return await postLoginTokens(user);
+  return await postLoginTokens(user, locals, token);
 };
 
 export const login = async (
@@ -82,11 +84,11 @@ export const login2FA = async (code: number, token: string, locals: Locals) => {
   if (!secret) throw new Error(ErrorCode.NOT_ENABLED_2FA);
   if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
   if (authenticator.check(code.toString(), secret))
-    return await postLoginTokens(user);
+    return await postLoginTokens(user, locals);
   const backupCode = await getUserBackupCode(data.id, code);
   if (backupCode && !backupCode.used) {
     await updateBackupCode(backupCode.code, { used: true });
-    return await postLoginTokens(user);
+    return await postLoginTokens(user, locals);
   }
   throw new Error(ErrorCode.INVALID_2FA_TOKEN);
 };
@@ -194,7 +196,8 @@ export const updatePassword = async (
 
 export const impersonate = async (
   tokenUserId: number,
-  impersonateUserId: number
+  impersonateUserId: number,
+  locals: Locals
 ) => {
   if (
     await can(
@@ -204,7 +207,12 @@ export const impersonate = async (
       impersonateUserId
     )
   )
-    return await getLoginResponse(await getUser(impersonateUserId));
+    return await getLoginResponse(
+      await getUser(impersonateUserId),
+      EventType.AUTH_LOGIN,
+      "impersonate",
+      locals
+    );
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
 

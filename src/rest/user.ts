@@ -12,7 +12,11 @@ import {
   getAccessToken,
   updateAccessToken,
   createAccessToken,
-  deleteAccessToken
+  deleteAccessToken,
+  getUserSessions,
+  getSession,
+  createSession,
+  deleteSession
 } from "../crud/user";
 import {
   deleteAllUserMemberships,
@@ -246,6 +250,7 @@ export const regenerateBackupCodesForUser = async (
   await createBackupCodes(userId, 10);
   return await getUserBackupCodes(userId);
 };
+
 export const getUserAccessTokensForUser = async (
   tokenUserId: number,
   userId: number,
@@ -311,6 +316,39 @@ export const deleteAccessTokenForUser = async (
     await can(tokenUserId, UserScopes.DELETE_USER_ACCESS_TOKENS, "user", userId)
   ) {
     await deleteAccessToken(userId, accessTokenId);
+    return;
+  }
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const getUserSessionsForUser = async (
+  tokenUserId: number,
+  userId: number,
+  query: KeyValue
+) => {
+  if (await can(tokenUserId, UserScopes.READ_USER_SESSION, "user", userId))
+    return await getUserSessions(userId, query);
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const getUserSessionForUser = async (
+  tokenUserId: number,
+  userId: number,
+  sessionId: number
+) => {
+  if (await can(tokenUserId, UserScopes.READ_USER_SESSION, "user", userId))
+    return await getSession(userId, sessionId);
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const deleteSessionForUser = async (
+  tokenUserId: number,
+  userId: number,
+  sessionId: number,
+  locals: Locals
+) => {
+  if (await can(tokenUserId, UserScopes.DELETE_USER_SESSION, "user", userId)) {
+    await deleteSession(userId, sessionId);
     return;
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);

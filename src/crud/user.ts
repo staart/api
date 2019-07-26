@@ -9,7 +9,8 @@ import {
   User,
   ApprovedLocation,
   BackupCode,
-  AccessToken
+  AccessToken,
+  Session
 } from "../interfaces/tables/user";
 import {
   capitalizeFirstAndLastLetter,
@@ -30,6 +31,10 @@ import randomInt from "random-int";
 import { getPaginatedData } from "./data";
 import { accessToken, invalidateToken } from "../helpers/jwt";
 import { TOKEN_EXPIRY_API_KEY_MAX } from "../config";
+import {
+  addLocationToSession,
+  addLocationToSessions
+} from "../helpers/location";
 
 /**
  * Get a list of all ${tableName("users")}
@@ -304,6 +309,7 @@ export const getUserBackupCode = async (userId: number, backupCode: number) => {
     )
   ))[0];
 };
+
 /**
  * Get a list of all approved locations of a user
  */
@@ -383,5 +389,101 @@ export const deleteAccessToken = async (
       "access-tokens"
     )} WHERE id = ? AND userId = ? LIMIT 1`,
     [accessTokenId, userId]
+  );
+};
+
+/**
+ * Get a list of all valid sessions of a user
+ */
+export const getUserSessions = async (userId: number, query: KeyValue) => {
+  const data = await getPaginatedData({
+    table: "sessions",
+    conditions: {
+      userId
+    },
+    ...query
+  });
+  data.data.forEach((item, index) => {
+    delete data.data[index].jwtToken;
+  });
+  data.data = await addLocationToSessions(data.data);
+  return data;
+};
+
+/**
+ * Get a session
+ */
+export const getSession = async (userId: number, sessionId: number) => {
+  const data = await addLocationToSession(
+    (<Session[]>(
+      await query(
+        `SELECT * FROM ${tableName(
+          "sessions"
+        )} WHERE id = ? AND userId = ? LIMIT 1`,
+        [sessionId, userId]
+      )
+    ))[0]
+  );
+  if (data) delete data.jwtToken;
+  return data;
+};
+
+/**
+ * Create a session
+ */
+export const createSession = async (newSession: Session) => {
+  newSession.createdAt = new Date();
+  newSession.updatedAt = newSession.createdAt;
+  return await query(
+    `INSERT INTO ${tableName("sessions")} ${tableValues(newSession)}`,
+    Object.values(newSession)
+  );
+};
+
+/**
+ * Update a user's details
+ */
+export const updateSession = async (
+  userId: number,
+  sessionId: number,
+  data: KeyValue
+) => {
+  data.updatedAt = new Date();
+  data = removeReadOnlyValues(data);
+  return await query(
+    `UPDATE ${tableName("sessions")} SET ${setValues(
+      data
+    )} WHERE id = ? AND userId = ?`,
+    [...Object.values(data), sessionId, userId]
+  );
+};
+
+/**
+ * Update a user's details
+ */
+export const updateSessionByJwt = async (
+  userId: number,
+  sessionJwt: string,
+  data: KeyValue
+) => {
+  data.updatedAt = new Date();
+  data = removeReadOnlyValues(data);
+  return await query(
+    `UPDATE ${tableName("sessions")} SET ${setValues(
+      data
+    )} WHERE jwtToken = ? AND userId = ?`,
+    [...Object.values(data), sessionJwt, userId]
+  );
+};
+
+/**
+ * Invalidate a session
+ */
+export const deleteSession = async (userId: number, sessionId: number) => {
+  const currentSession = await getSession(userId, sessionId);
+  if (currentSession.jwtToken) await invalidateToken(currentSession.jwtToken);
+  return await query(
+    `DELETE FROM ${tableName("sessions")} WHERE id = ? AND userId = ? LIMIT 1`,
+    [sessionId, userId]
   );
 };
