@@ -6270,10 +6270,10 @@ rimraf@^2.5.4, rimraf@^2.6.1, rimraf@^2.6.3:
   dependencies:
     glob "^7.1.3"
 
-rotating-file-stream@^1.4.2:
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/rotating-file-stream/-/rotating-file-stream-1.4.2.tgz#d201ba05bb2936985021383e2b1b25f3450bd91d"
-  integrity sha512-AWVI1aL1POQl1AWAOnY8LIuqBL0m4k+2EWsExjA3SdvYba5E4y6/wn0LgfxzCdWgyNVuG/bPelZ1F7/C2QzQ+w==
+rotating-file-stream@^1.4.3:
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/rotating-file-stream/-/rotating-file-stream-1.4.3.tgz#d023cc663bfb5f3f1c2e09f6af62185a79aa6291"
+  integrity sha512-EQkns7SE+ECcadd6GH5I6U2fItPVstnxLQWcYcz5BW/xzMvdcLfFK6Wl2SvlBe7lQVvbYGv66TfdLUiizo8Upg==
 
 rsvp@^4.8.4:
   version "4.8.5"
