@@ -71,7 +71,7 @@
     "@types/request": "^2.48.2",
     "@types/response-time": "^2.3.3",
     "@types/stripe": "^6.31.8",
-    "@types/validator": "^10.11.1",
+    "@types/validator": "^10.11.2",
     "@types/yaml": "^1.0.2",
     "concurrently": "^4.1.1",
     "coveralls": "^3.0.5",
