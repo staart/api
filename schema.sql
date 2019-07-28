@@ -11,7 +11,7 @@
  Target Server Version : 100221
  File Encoding         : 65001
 
- Date: 24/07/2019 17:17:40
+ Date: 28/07/2019 18:12:07
 */
 
 SET NAMES utf8mb4;
@@ -172,6 +172,21 @@ CREATE TABLE `staart-organizations` (
   `onlyAllowDomain` int(1) NOT NULL DEFAULT 0,
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
+-- ----------------------------
+-- Table structure for staart-sessions
+-- ----------------------------
+DROP TABLE IF EXISTS `staart-sessions`;
+CREATE TABLE `staart-sessions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `userId` int(11) NOT NULL,
+  `jwtToken` text COLLATE utf8mb4_bin NOT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE current_timestamp(),
+  `ipAddress` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `userAgent` text COLLATE utf8mb4_bin NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
