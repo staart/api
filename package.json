@@ -123,7 +123,7 @@
     "node-ses": "^2.2.1",
     "otplib": "^11.0.1",
     "qrcode": "^1.4.1",
-    "query-string": "^6.8.1",
+    "query-string": "^6.8.2",
     "random-int": "^2.0.0",
     "response-time": "^2.3.2",
     "rotating-file-stream": "^1.4.3",
