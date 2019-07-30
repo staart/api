@@ -77,6 +77,8 @@ export const trackingHandler = (
     req.connection.remoteAddress ||
     req.socket.remoteAddress;
   if (ip === "::1") ip = "2001:67c:2564:a309:f0e0:1ee6:137b:29e8";
+  if (typeof ip === "string") ip = ip.split(",")[0];
+  if (Array.isArray(ip) && ip.length) ip = ip[0];
   res.locals.ipAddress = ip;
   res.locals.referrer = req.headers.referer as string;
   next();
