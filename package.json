@@ -59,7 +59,7 @@
     "@types/geolite2": "^1.2.0",
     "@types/hapi__joi": "^15.0.3",
     "@types/helmet": "^0.0.43",
-    "@types/jest": "^24.0.15",
+    "@types/jest": "^24.0.16",
     "@types/jsonwebtoken": "^8.3.2",
     "@types/marked": "^0.6.5",
     "@types/md5": "^2.1.33",
