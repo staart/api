@@ -127,8 +127,9 @@ export const apiKeyToken = (apiKey: ApiKey) => {
   delete createApiKey.expiresAt;
   return generateToken(
     createApiKey,
-    (apiKey.expiresAt ? apiKey.expiresAt.getTime() : TOKEN_EXPIRY_API_KEY_MAX) -
-      new Date().getTime(),
+    (apiKey.expiresAt
+      ? new Date(apiKey.expiresAt).getTime()
+      : TOKEN_EXPIRY_API_KEY_MAX) - new Date().getTime(),
     Tokens.API_KEY
   );
 };
@@ -146,7 +147,7 @@ export const accessToken = (accessToken: AccessToken) => {
   return generateToken(
     createAccessToken,
     (accessToken.expiresAt
-      ? accessToken.expiresAt.getTime()
+      ? new Date(accessToken.expiresAt).getTime()
       : TOKEN_EXPIRY_API_KEY_MAX) - new Date().getTime(),
     Tokens.ACCESS_TOKEN
   );
