@@ -102,16 +102,26 @@ const canUserOrganization = async (
     // An organization admin can do anything too
     if (membership.role == MembershipRole.ADMIN) allowed = true;
 
-    // An organization manager can do anything but delete
+    // An organization manager can do some things
     if (
       membership.role == MembershipRole.MANAGER &&
       action != Authorizations.DELETE &&
       action != Authorizations.DELETE_SECURE &&
       action != OrgScopes.DELETE_ORG &&
-      action != OrgScopes.DELETE_ORG_API_KEYS &&
-      action != OrgScopes.DELETE_ORG_DOMAINS &&
+      action != OrgScopes.READ_ORG_BILLING &&
+      action != OrgScopes.UPDATE_ORG_BILLING &&
+      action != OrgScopes.READ_ORG_SUBSCRIPTIONS &&
+      action != OrgScopes.UPDATE_ORG_SUBSCRIPTIONS &&
+      action != OrgScopes.CREATE_ORG_SUBSCRIPTIONS &&
+      action != OrgScopes.READ_ORG_INVOICES &&
+      action != OrgScopes.READ_ORG_PLANS &&
+      action != OrgScopes.READ_ORG_SOURCES &&
+      action != OrgScopes.UPDATE_ORG_SOURCES &&
       action != OrgScopes.DELETE_ORG_SOURCES &&
-      action != OrgScopes.DELETE_ORG_WEBHOOKS
+      action != OrgScopes.CREATE_ORG_SOURCES &&
+      action != OrgScopes.CREATE_ORG_WEBHOOKS &&
+      action != OrgScopes.DELETE_ORG_WEBHOOKS &&
+      action != OrgScopes.UPDATE_ORG_WEBHOOKS
     )
       allowed = true;
 
