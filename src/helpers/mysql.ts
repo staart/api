@@ -16,6 +16,7 @@ import { KeyValue } from "../interfaces/general";
 import { boolValues, jsonValues, dateValues, readOnlyValues } from "./utils";
 import { getUserPrimaryEmailObject } from "../crud/email";
 import { InsertResult } from "../interfaces/mysql";
+import { emojify, unemojify } from "node-emoji";
 
 export const pool = createPool({
   host: DB_HOST,
@@ -85,6 +86,7 @@ export const uncleanValues = (
             )
           ).toISOString();
         }
+        item[key] = emojify(item[key]);
       });
       return item;
     });
@@ -100,7 +102,9 @@ export const cleanValues = (
 ) => {
   values = values.map(value => {
     // Clean up strings
-    if (typeof value === "string") value = value.trim();
+    if (typeof value === "string") {
+      value = unemojify(value.trim());
+    }
     // Convert true to 1, false to 0
     if (typeof value === "boolean") value = value ? 1 : 0;
     // Convert Date to mysql datetime
