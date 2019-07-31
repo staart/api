@@ -3,6 +3,7 @@ import Brute from "express-brute";
 import RateLimit from "express-rate-limit";
 import slowDown from "express-slow-down";
 import Joi from "@hapi/joi";
+import ms from "ms";
 import { safeError } from "./errors";
 import {
   verifyToken,
@@ -203,6 +204,20 @@ export const speedLimitHandler = async (
     } catch (error) {}
   }
   return speedLimiter(req, res, next);
+};
+
+/**
+ * Response caching middleware
+ * @param time - Amount of time to cache contenr for
+ */
+export const cachedResponse = (time: string) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    res.set(
+      "Cache-Control",
+      `max-age=${Math.floor(ms(time) / 1000)}, must-revalidate`
+    );
+    return next();
+  };
 };
 
 export const validator = (

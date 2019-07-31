@@ -1,6 +1,6 @@
 {
   "name": "staart-manager",
-  "version": "1.0.116",
+  "version": "1.0.117",
   "main": "index.js",
   "repository": "git@github.com:AnandChowdhary/staart.git",
   "author": "Anand Chowdhary <mail@anandchowdhary.com>",
@@ -64,6 +64,7 @@
     "@types/marked": "^0.6.5",
     "@types/md5": "^2.1.33",
     "@types/morgan": "^1.7.36",
+    "@types/ms": "^0.7.30",
     "@types/mustache": "^0.8.32",
     "@types/mysql": "^2.15.6",
     "@types/node": "^12.6.8",
@@ -117,6 +118,7 @@
     "maxmind": "^3.1.2",
     "md5": "^2.2.1",
     "morgan": "^1.9.1",
+    "ms": "^2.1.2",
     "mustache": "^3.0.1",
     "mysql": "^2.17.1",
     "node-cache": "^4.2.1",
@@ -136,5 +138,5 @@
     "setup"
   ],
   "snyk": true,
-  "staart-version": "1.0.116"
+  "staart-version": "1.0.117"
 }
