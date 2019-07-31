@@ -66,24 +66,6 @@ export const deleteMembership = async (id: number) => {
 };
 
 /*
- * Delete all memberships in an organization
- */
-export const deleteAllOrganizationMemberships = async (
-  organizationId: number
-) => {
-  const allMemberships = await getOrganizationMembers(organizationId);
-  for await (const membership of allMemberships) {
-    if (membership.id) {
-      deleteItemFromCache(CacheCategories.USER_MEMBERSHIPS, membership.userId);
-    }
-  }
-  return await query(
-    `DELETE FROM ${tableName("memberships")} WHERE organizationId = ?`,
-    [organizationId]
-  );
-};
-
-/*
  * Delete all memberships for a user
  */
 export const deleteAllUserMemberships = async (userId: number) => {
@@ -135,24 +117,6 @@ export const getOrganizationMembers = async (organizationId: number) => {
       [organizationId]
     )
   );
-};
-
-/*
- * Get a detailed list of all members in an organization
- */
-export const getOrganizationMemberDetails = async (
-  organizationId: number,
-  query?: KeyValue
-) => {
-  const members: any = await getPaginatedData({
-    table: "memberships",
-    conditions: { organizationId },
-    ...query
-  });
-  for await (const member of members.data) {
-    member.user = await getUser(member.userId);
-  }
-  return members;
 };
 
 export const getUserMemberships = async (user: User | number) => {

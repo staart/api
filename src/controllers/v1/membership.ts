@@ -1,8 +1,6 @@
 import { Request, Response } from "express";
-import { ErrorCode } from "../../interfaces/enum";
 import {
   getMembershipDetailsForUser,
-  inviteMemberToOrganization,
   deleteMembershipForUser,
   updateMembershipForUser
 } from "../../rest/membership";
@@ -19,8 +17,6 @@ import {
 import { authHandler, validator } from "../../helpers/middleware";
 import asyncHandler from "express-async-handler";
 import Joi from "@hapi/joi";
-import { joiValidate } from "../../helpers/utils";
-import i18n from "../../i18n";
 
 @Controller("v1/memberships")
 @ClassWrapper(asyncHandler)

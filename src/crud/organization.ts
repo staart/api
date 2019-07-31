@@ -20,6 +20,8 @@ import cryptoRandomString from "crypto-random-string";
 import { apiKeyToken, invalidateToken } from "../helpers/jwt";
 import { TOKEN_EXPIRY_API_KEY_MAX, JWT_ISSUER } from "../config";
 import { InsertResult } from "../interfaces/mysql";
+import { Membership } from "../interfaces/tables/memberships";
+import { getUser } from "./user";
 
 /*
  * Create a new organization for a user
@@ -403,5 +405,125 @@ export const deleteWebhook = async (
       "webhooks"
     )} WHERE id = ? AND organizationId = ? LIMIT 1`,
     [webhookId, organizationId]
+  );
+};
+
+/*
+ * Get a detailed list of all members in an organization
+ */
+export const getOrganizationMemberships = async (
+  organizationId: number,
+  query?: KeyValue
+) => {
+  const members: any = await getPaginatedData({
+    table: "memberships",
+    conditions: { organizationId },
+    ...query
+  });
+  for await (const member of members.data) {
+    member.user = await getUser(member.userId);
+  }
+  return members;
+};
+
+/*
+ * Get details about a specific organization membership
+ */
+export const getOrganizationMembership = async (
+  organizationId: number,
+  id: number
+) => {
+  return (<Membership[]>(
+    await cachedQuery(
+      CacheCategories.MEMBERSHIP,
+      id,
+      `SELECT * FROM ${tableName(
+        "memberships"
+      )} WHERE id = ? AND organizationId = ? LIMIT 1`,
+      [id, organizationId]
+    )
+  ))[0];
+};
+
+/*
+ * Get a detailed version of a membership
+ */
+export const getOrganizationMembershipDetailed = async (
+  organizationId: number,
+  id: number
+) => {
+  const membership = (await getOrganizationMembership(
+    organizationId,
+    id
+  )) as any;
+  if (!membership || !membership.id)
+    throw new Error(ErrorCode.MEMBERSHIP_NOT_FOUND);
+  membership.organization = await getOrganization(membership.organizationId);
+  membership.user = await getUser(membership.userId);
+  return membership;
+};
+
+/*
+ * Update an organization membership for a user
+ */
+export const updateOrganizationMembership = async (
+  organizationId: number,
+  id: number,
+  membership: KeyValue
+) => {
+  membership.updatedAt = new Date();
+  membership = removeReadOnlyValues(membership);
+  const membershipDetails = await getOrganizationMembership(organizationId, id);
+  if (membershipDetails.id)
+    deleteItemFromCache(
+      CacheCategories.USER_MEMBERSHIPS,
+      membershipDetails.userId
+    );
+  deleteItemFromCache(CacheCategories.MEMBERSHIP, id);
+  return await query(
+    `UPDATE ${tableName("memberships")} SET ${setValues(
+      membership
+    )} WHERE id = ? AND organizationId = ?`,
+    [...Object.values(membership), id, organizationId]
+  );
+};
+
+/*
+ * Delete an organization membership
+ */
+export const deleteOrganizationMembership = async (
+  organizationId: number,
+  id: number
+) => {
+  const membershipDetails = await getOrganizationMembership(organizationId, id);
+  if (membershipDetails.id)
+    deleteItemFromCache(
+      CacheCategories.USER_MEMBERSHIPS,
+      membershipDetails.userId
+    );
+  deleteItemFromCache(CacheCategories.MEMBERSHIP, id);
+  return await query(
+    `DELETE FROM ${tableName(
+      "memberships"
+    )} WHERE id = ? AND organizationId = ?`,
+    [id, organizationId]
+  );
+};
+
+/*
+ * Delete all memberships in an organization
+ */
+export const deleteAllOrganizationMemberships = async (
+  organizationId: number
+) => {
+  const allMemberships = await getOrganizationMemberships(organizationId);
+  for await (const membership of allMemberships.data) {
+    if (membership.id) {
+      deleteItemFromCache(CacheCategories.USER_MEMBERSHIPS, membership.userId);
+    }
+  }
+  return await query(
+    `DELETE FROM ${tableName("memberships")} WHERE organizationId = ?`,
+    [organizationId]
   );
 };

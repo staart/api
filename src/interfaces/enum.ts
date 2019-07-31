@@ -159,7 +159,6 @@ export enum OrgScopes {
   UPDATE_ORG_SUBSCRIPTIONS = "org:subscriptions:update",
   CREATE_ORG_SUBSCRIPTIONS = "org:subscriptions:create",
   READ_ORG_PLANS = "org:plans:read",
-  READ_ORG_MEMBERSHIPS = "org:memberships:read",
   READ_ORG_API_KEYS = "org:api-key:read",
   UPDATE_ORG_API_KEYS = "org:api-key:update",
   DELETE_ORG_API_KEYS = "org:api-key:delete",
@@ -172,7 +171,11 @@ export enum OrgScopes {
   READ_ORG_WEBHOOKS = "org:webhook:read",
   UPDATE_ORG_WEBHOOKS = "org:webhook:update",
   DELETE_ORG_WEBHOOKS = "org:webhook:delete",
-  CREATE_ORG_WEBHOOKS = "org:webhook:create"
+  CREATE_ORG_WEBHOOKS = "org:webhook:create",
+  READ_ORG_MEMBERSHIPS = "org:membership:read",
+  UPDATE_ORG_MEMBERSHIPS = "org:membership:update",
+  DELETE_ORG_MEMBERSHIPS = "org:membership:delete",
+  CREATE_ORG_MEMBERSHIPS = "org:membership:create"
 }
 
 export enum UserScopes {

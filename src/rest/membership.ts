@@ -25,66 +25,6 @@ export const getMembershipDetailsForUser = async (
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
 
-export const inviteMemberToOrganization = async (
-  userId: number | ApiKeyResponse,
-  organizationId: number,
-  newMemberName: string,
-  newMemberEmail: string,
-  role: MembershipRole,
-  locals: Locals
-) => {
-  if (
-    await can(
-      userId,
-      Authorizations.INVITE_MEMBER,
-      "organization",
-      organizationId
-    )
-  ) {
-    const organization = await getOrganization(organizationId);
-    if (organization.onlyAllowDomain) {
-      const emailDomain = newMemberEmail.split("@")[1];
-      try {
-        const domainDetails = await getDomainByDomainName(emailDomain);
-        if (!domainDetails || domainDetails.organizationId != organizationId)
-          throw new Error();
-      } catch (error) {
-        throw new Error(ErrorCode.CANNOT_INVITE_DOMAIN);
-      }
-    }
-    let newUser: User;
-    let userExists = false;
-    try {
-      newUser = await getUserByEmail(newMemberEmail);
-      userExists = true;
-    } catch (error) {}
-    if (userExists) {
-      newUser = await getUserByEmail(newMemberEmail);
-      if (!newUser.id) throw new Error(ErrorCode.USER_NOT_FOUND);
-      let isMemberAlready = false;
-      try {
-        isMemberAlready = !!(await getUserOrganizationMembership(
-          newUser.id,
-          organizationId
-        ));
-      } catch (error) {}
-      if (isMemberAlready) throw new Error(ErrorCode.USER_IS_MEMBER_ALREADY);
-      await createMembership({ userId: newUser.id, organizationId, role });
-      return;
-    } else {
-      await register(
-        { name: newMemberName },
-        locals,
-        newMemberEmail,
-        organizationId,
-        role
-      );
-      return;
-    }
-  }
-  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
-};
-
 export const deleteMembershipForUser = async (
   tokenUserId: number | ApiKeyResponse,
   membershipId: number,

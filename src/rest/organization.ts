@@ -19,13 +19,18 @@ import {
   getWebhook,
   updateWebhook,
   createWebhook,
-  deleteWebhook
+  deleteWebhook,
+  getOrganizationMemberships,
+  deleteAllOrganizationMemberships,
+  updateOrganizationMembership,
+  deleteOrganizationMembership,
+  getDomainByDomainName,
+  getOrganizationMembershipDetailed
 } from "../crud/organization";
 import { InsertResult } from "../interfaces/mysql";
 import {
   createMembership,
-  deleteAllOrganizationMemberships,
-  getOrganizationMemberDetails
+  getUserOrganizationMembership
 } from "../crud/membership";
 import {
   MembershipRole,
@@ -60,13 +65,15 @@ import {
   getStripeInvoice,
   createStripeSubscription
 } from "../crud/billing";
-import { getUser } from "../crud/user";
+import { getUser, getUserByEmail } from "../crud/user";
 import { getUserPrimaryEmail } from "../crud/email";
 import { ApiKeyResponse } from "../helpers/jwt";
 import axios from "axios";
 import { dnsResolve } from "../helpers/utils";
 import { JWT_ISSUER } from "../config";
 import { queueWebhook } from "../helpers/webhooks";
+import { User } from "../interfaces/tables/user";
+import { register } from "./auth";
 
 export const getOrganizationForUser = async (
   userId: number | ApiKeyResponse,
@@ -483,7 +490,7 @@ export const getAllOrganizationDataForUser = async (
     )
   ) {
     const organization = await getOrganization(organizationId);
-    const memberships = await getOrganizationMemberDetails(organizationId);
+    const memberships = await getOrganizationMemberships(organizationId);
     const events = await getOrganizationEvents(organizationId);
     let billing = {} as any;
     let subscriptions = {} as any;
@@ -540,7 +547,126 @@ export const getOrganizationMembershipsForUser = async (
       organizationId
     )
   )
-    return await getOrganizationMemberDetails(organizationId, query);
+    return await getOrganizationMemberships(organizationId, query);
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const getOrganizationMembershipForUser = async (
+  userId: number | ApiKeyResponse,
+  organizationId: number,
+  membershipId: number
+) => {
+  if (
+    await can(
+      userId,
+      OrgScopes.READ_ORG_MEMBERSHIPS,
+      "organization",
+      organizationId
+    )
+  )
+    return await getOrganizationMembershipDetailed(
+      organizationId,
+      membershipId
+    );
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const updateOrganizationMembershipForUser = async (
+  userId: number | ApiKeyResponse,
+  organizationId: number,
+  membershipId: number,
+  data: KeyValue
+) => {
+  if (
+    await can(
+      userId,
+      OrgScopes.UPDATE_ORG_MEMBERSHIPS,
+      "organization",
+      organizationId
+    )
+  )
+    return await updateOrganizationMembership(
+      organizationId,
+      membershipId,
+      data
+    );
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const deleteOrganizationMembershipForUser = async (
+  userId: number | ApiKeyResponse,
+  organizationId: number,
+  membershipId: number
+) => {
+  if (
+    await can(
+      userId,
+      OrgScopes.DELETE_ORG_MEMBERSHIPS,
+      "organization",
+      organizationId
+    )
+  )
+    return await deleteOrganizationMembership(organizationId, membershipId);
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const inviteMemberToOrganization = async (
+  userId: number | ApiKeyResponse,
+  organizationId: number,
+  newMemberName: string,
+  newMemberEmail: string,
+  role: MembershipRole,
+  locals: Locals
+) => {
+  if (
+    await can(
+      userId,
+      OrgScopes.CREATE_ORG_MEMBERSHIPS,
+      "organization",
+      organizationId
+    )
+  ) {
+    const organization = await getOrganization(organizationId);
+    if (organization.onlyAllowDomain) {
+      const emailDomain = newMemberEmail.split("@")[1];
+      try {
+        const domainDetails = await getDomainByDomainName(emailDomain);
+        if (!domainDetails || domainDetails.organizationId != organizationId)
+          throw new Error();
+      } catch (error) {
+        throw new Error(ErrorCode.CANNOT_INVITE_DOMAIN);
+      }
+    }
+    let newUser: User;
+    let userExists = false;
+    try {
+      newUser = await getUserByEmail(newMemberEmail);
+      userExists = true;
+    } catch (error) {}
+    if (userExists) {
+      newUser = await getUserByEmail(newMemberEmail);
+      if (!newUser.id) throw new Error(ErrorCode.USER_NOT_FOUND);
+      let isMemberAlready = false;
+      try {
+        isMemberAlready = !!(await getUserOrganizationMembership(
+          newUser.id,
+          organizationId
+        ));
+      } catch (error) {}
+      if (isMemberAlready) throw new Error(ErrorCode.USER_IS_MEMBER_ALREADY);
+      await createMembership({ userId: newUser.id, organizationId, role });
+      return;
+    } else {
+      await register(
+        { name: newMemberName },
+        locals,
+        newMemberEmail,
+        organizationId,
+        role
+      );
+      return;
+    }
+  }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
 
