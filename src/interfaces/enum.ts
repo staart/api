@@ -3,7 +3,7 @@ export enum MembershipRole {
   ADMIN = 2,
   MANAGER = 3,
   MEMBER = 4,
-  BASIC = 5
+  RESELLER = 5
 }
 
 export enum UserRole {
