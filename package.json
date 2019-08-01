@@ -131,7 +131,7 @@
     "response-time": "^2.3.2",
     "rotating-file-stream": "^1.4.3",
     "slugify": "^1.3.4",
-    "snyk": "^1.207.2",
+    "snyk": "^1.208.0",
     "stripe": "^7.5.0"
   },
   "files": [
