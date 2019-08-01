@@ -6958,14 +6958,13 @@ strip-json-comments@~2.0.1:
   resolved "https://registry.yarnpkg.com/strip-json-comments/-/strip-json-comments-2.0.1.tgz#3c531942e908c2697c0ec344858c286c7ca0a60a"
   integrity sha1-PFMZQukIwml8DsNEhYwobHygpgo=
 
-stripe@^7.5.0:
-  version "7.5.0"
-  resolved "https://registry.yarnpkg.com/stripe/-/stripe-7.5.0.tgz#b507b5a3b62dcab9ce50114e7b90db8d56c2322e"
-  integrity sha512-KiyHNqYrCVPHiDyJ+5IAUbxe7dlIw/vchvT1baOhouErGga9OdXRvbozN3gK7xlR87jvBBZ34wh3RX5D7yUOpw==
+stripe@^7.5.3:
+  version "7.5.3"
+  resolved "https://registry.yarnpkg.com/stripe/-/stripe-7.5.3.tgz#c37ac11e8b0a5bca28e0c07b6494f51bc3e32b2d"
+  integrity sha512-msdUeodNlx8ikr2oXKwaZ/wPZlwS/BiDbQCXcADK464de/YY4TseWied16Jwsyfb+WmdVZ92O9ToBHOqEPREdA==
   dependencies:
     lodash.isplainobject "^4.0.6"
     qs "^6.6.0"
-    safe-buffer "^5.1.1"
     uuid "^3.3.2"
 
 supports-color@^4.5.0:
