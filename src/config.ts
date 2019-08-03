@@ -98,3 +98,8 @@ export const SALESFORCE_CLIENT_SECRET =
 // Payments and billing
 export const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || "";
 export const STRIPE_PRODUCT_ID = process.env.STRIPE_PRODUCT_ID || "";
+
+// Tracking
+export const AWS_ELASTIC_ACCESS_KEY = process.env.AWS_ELASTIC_ACCESS_KEY || "";
+export const AWS_ELASTIC_SECRET_KEY = process.env.AWS_ELASTIC_SECRET_KEY || "";
+export const AWS_ELASTIC_HOST = process.env.AWS_ELASTIC_HOST || "";

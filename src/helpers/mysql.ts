@@ -86,7 +86,7 @@ export const uncleanValues = (
             )
           ).toISOString();
         }
-        item[key] = emojify(item[key]);
+        if (typeof item[key] === "string") item[key] = emojify(item[key]);
       });
       return item;
     });

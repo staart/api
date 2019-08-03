@@ -27,6 +27,7 @@ import {
 } from "../config";
 import { ApiKey } from "../interfaces/tables/organization";
 import { joiValidate, includesDomainInCommaList } from "./utils";
+import { trackUrl } from "./tracking";
 const store = new Brute.MemoryStore();
 const bruteForce = new Brute(store, {
   freeRetries: BRUTE_FREE_RETRIES,
@@ -82,6 +83,7 @@ export const trackingHandler = (
   if (Array.isArray(ip) && ip.length) ip = ip[0];
   res.locals.ipAddress = ip;
   res.locals.referrer = req.headers.referer as string;
+  trackUrl(req, res);
   next();
 };
 
@@ -111,7 +113,7 @@ export const authHandler = async (
       if (userToken) res.locals.token = userToken;
     }
 
-    let apiKeyJwt = req.get("X-Api-Key");
+    let apiKeyJwt = req.get("X-Api-Key") || req.query.key;
     if (apiKeyJwt) {
       if (apiKeyJwt.startsWith("Bearer "))
         apiKeyJwt = apiKeyJwt.replace("Bearer ", "");
@@ -165,7 +167,7 @@ export const rateLimitHandler = async (
   res: Response,
   next: NextFunction
 ) => {
-  const apiKey = req.get("X-Api-Key");
+  const apiKey = req.get("X-Api-Key") || req.query.key;
   if (apiKey) {
     try {
       const details = (await verifyToken(
@@ -190,7 +192,7 @@ export const speedLimitHandler = async (
   res: Response,
   next: NextFunction
 ) => {
-  const apiKey = req.get("X-Api-Key");
+  const apiKey = req.get("X-Api-Key") || req.query.key;
   if (apiKey) {
     try {
       const details = (await verifyToken(
