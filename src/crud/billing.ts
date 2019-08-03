@@ -1,5 +1,5 @@
 import Stripe, { subscriptions, IList } from "stripe";
-import { STRIPE_SECRET_KEY } from "../config";
+import { STRIPE_SECRET_KEY, STRIPE_PRODUCT_ID } from "../config";
 import { updateOrganization } from "./organization";
 import { ErrorCode } from "../interfaces/enum";
 const stripe = new Stripe(STRIPE_SECRET_KEY);
@@ -216,8 +216,8 @@ export const createStripeSubscriptionSession = async (
  * Get the details of a customer
  * @param id - Stripe customer ID
  */
-export const getStripeProductPricing = async (product: string) => {
-  const plans = await stripe.plans.list({ product });
+export const getStripeProductPricing = async () => {
+  const plans = await stripe.plans.list({ product: STRIPE_PRODUCT_ID });
   // If you have a custom plan for a client, don't show that
   plans.data = plans.data.filter(
     plan => !(plan.nickname || "").toLowerCase().startsWith("custom plan")

@@ -384,13 +384,12 @@ export const createOrganizationSubscriptionForUser = async (
 
 export const getOrganizationPricingPlansForUser = async (
   userId: number | ApiKeyResponse,
-  organizationId: number,
-  productId: string
+  organizationId: number
 ) => {
   if (
     await can(userId, OrgScopes.READ_ORG_PLANS, "organization", organizationId)
   )
-    return await getStripeProductPricing(productId);
+    return await getStripeProductPricing();
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
 

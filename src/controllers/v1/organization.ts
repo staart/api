@@ -362,22 +362,19 @@ export class OrganizationController {
     );
   }
 
-  @Get(":id/pricing/:product")
+  @Get(":id/pricing")
   async getPlans(req: Request, res: Response) {
-    const product = req.params.product;
     const organizationId = await organizationUsernameToId(req.params.id);
     joiValidate(
       {
-        organizationId: Joi.number().required(),
-        product: Joi.string().required()
+        organizationId: Joi.number().required()
       },
-      { organizationId, product }
+      { organizationId }
     );
     res.json(
       await getOrganizationPricingPlansForUser(
         localsToTokenOrKey(res),
-        organizationId,
-        product
+        organizationId
       )
     );
   }
