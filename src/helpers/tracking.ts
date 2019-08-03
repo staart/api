@@ -1,4 +1,6 @@
 import { Request, Response } from "express";
+import { verifyToken } from "./jwt";
+import { Tokens } from "../interfaces/enum";
 
 let trackingData: any[] = [];
 
@@ -7,7 +9,7 @@ export const clearTrackingData = () => {
   trackingData = [];
 };
 
-export const trackUrl = (req: Request, res: Response) => {
+export const trackUrl = async (req: Request, res: Response) => {
   if (req.method === "OPTIONS") return;
   const trackingObject = {
     date: new Date(),
@@ -22,6 +24,19 @@ export const trackUrl = (req: Request, res: Response) => {
     url: req.url,
     ...res.locals
   };
+  if (trackingObject.apiKey) {
+    try {
+      const token = (await verifyToken(
+        trackingObject.apiKey,
+        Tokens.API_KEY
+      )) as any;
+      trackingObject.apiKeyId = token.id;
+      trackingObject.apiKeyOrganizationId = token.organizationId;
+      trackingObject.apiKeyJti = token.jti;
+    } catch (error) {
+      return;
+    }
+  }
   Object.keys(trackingObject).forEach(key => {
     if (
       typeof trackingObject[key] === "object" &&

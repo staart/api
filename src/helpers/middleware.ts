@@ -83,8 +83,10 @@ export const trackingHandler = (
   if (Array.isArray(ip) && ip.length) ip = ip[0];
   res.locals.ipAddress = ip;
   res.locals.referrer = req.headers.referer as string;
-  trackUrl(req, res);
-  next();
+  trackUrl(req, res)
+    .then(() => {})
+    .then(() => {})
+    .finally(() => next());
 };
 
 export interface ApiKeyToken {
