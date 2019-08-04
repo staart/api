@@ -123,7 +123,8 @@ const canUserOrganization = async (
       action != OrgScopes.UPDATE_ORG_WEBHOOKS &&
       action != OrgScopes.CREATE_ORG_API_KEYS &&
       action != OrgScopes.DELETE_ORG_API_KEYS &&
-      action != OrgScopes.UPDATE_ORG_API_KEYS
+      action != OrgScopes.UPDATE_ORG_API_KEYS &&
+      action != OrgScopes.READ_ORG_API_KEY_LOGS
     )
       allowed = true;
 

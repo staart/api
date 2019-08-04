@@ -40,7 +40,8 @@ import {
   inviteMemberToOrganization,
   getOrganizationMembershipForUser,
   deleteOrganizationMembershipForUser,
-  updateOrganizationMembershipForUser
+  updateOrganizationMembershipForUser,
+  getOrganizationApiKeyLogsForUser
 } from "../../rest/organization";
 import {
   Get,
@@ -717,6 +718,27 @@ export class OrganizationController {
         id,
         apiKeyId,
         res.locals
+      )
+    );
+  }
+
+  @Get(":id/api-keys/:apiKeyId/logs")
+  async getUserApiKeyLogs(req: Request, res: Response) {
+    const id = await organizationUsernameToId(req.params.id);
+    const apiKeyId = req.params.apiKeyId;
+    joiValidate(
+      {
+        id: [Joi.string().required(), Joi.number().required()],
+        apiKeyId: Joi.number().required()
+      },
+      { id, apiKeyId }
+    );
+    res.json(
+      await getOrganizationApiKeyLogsForUser(
+        localsToTokenOrKey(res),
+        id,
+        apiKeyId,
+        req.params
       )
     );
   }

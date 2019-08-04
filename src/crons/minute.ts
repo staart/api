@@ -5,26 +5,7 @@ import {
   getSecurityEvents,
   clearSecurityEventsData
 } from "../helpers/tracking";
-import connectionClass from "http-aws-es";
-import AWS from "aws-sdk";
-import { Client } from "elasticsearch";
-import {
-  AWS_ELASTIC_ACCESS_KEY,
-  AWS_ELASTIC_SECRET_KEY,
-  AWS_ELASTIC_HOST
-} from "../config";
-
-AWS.config.update({
-  credentials: new AWS.Credentials(
-    AWS_ELASTIC_ACCESS_KEY,
-    AWS_ELASTIC_SECRET_KEY
-  ),
-  region: "eu-west-3"
-});
-const client = new Client({
-  host: AWS_ELASTIC_HOST,
-  connectionClass
-});
+import { elasticSearch } from "../helpers/elasticsearch";
 
 export default () => {
   new CronJob(
@@ -49,7 +30,7 @@ const storeSecurityEvents = async () => {
   day = parseInt(day) < 10 ? `0${day}` : day;
   for await (const body of data) {
     try {
-      await client.index({
+      await elasticSearch.index({
         index: `staart-events-${year}-${month}-${day}`,
         body,
         type: "log"
@@ -72,7 +53,7 @@ const storeTrackingLogs = async () => {
   day = parseInt(day) < 10 ? `0${day}` : day;
   for await (const body of data) {
     try {
-      await client.index({
+      await elasticSearch.index({
         index: `staart-logs-${year}-${month}-${day}`,
         body,
         type: "log"

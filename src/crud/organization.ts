@@ -22,6 +22,7 @@ import { TOKEN_EXPIRY_API_KEY_MAX, JWT_ISSUER } from "../config";
 import { InsertResult } from "../interfaces/mysql";
 import { Membership } from "../interfaces/tables/memberships";
 import { getUser } from "./user";
+import { elasticSearch } from "../helpers/elasticsearch";
 
 /*
  * Create a new organization for a user
@@ -151,6 +152,40 @@ export const getApiKey = async (organizationId: number, apiKeyId: number) => {
       [apiKeyId, organizationId]
     )
   ))[0];
+};
+
+/**
+ * Get an API key
+ */
+export const getApiKeyLogs = async (
+  organizationId: number,
+  apiKeyId: number,
+  query: KeyValue
+) => {
+  query.range = query.range || "7 days";
+  const result = await elasticSearch.search({
+    index: `staart-logs-*`,
+    body: {
+      query: {
+        bool: {
+          must: [
+            {
+              match: {
+                apiKeyId
+              }
+            }
+          ]
+        }
+      },
+      sort: [
+        {
+          date: { order: "desc" }
+        }
+      ],
+      size: 10
+    }
+  });
+  return result;
 };
 
 /**

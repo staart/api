@@ -160,6 +160,7 @@ export enum OrgScopes {
   CREATE_ORG_SUBSCRIPTIONS = "org:subscriptions:create",
   READ_ORG_PLANS = "org:plans:read",
   READ_ORG_API_KEYS = "org:api-key:read",
+  READ_ORG_API_KEY_LOGS = "org:api-key-logs:read",
   UPDATE_ORG_API_KEYS = "org:api-key:update",
   DELETE_ORG_API_KEYS = "org:api-key:delete",
   CREATE_ORG_API_KEYS = "org:api-key:create",

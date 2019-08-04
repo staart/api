@@ -25,7 +25,8 @@ import {
   updateOrganizationMembership,
   deleteOrganizationMembership,
   getDomainByDomainName,
-  getOrganizationMembershipDetailed
+  getOrganizationMembershipDetailed,
+  getApiKeyLogs
 } from "../crud/organization";
 import { InsertResult } from "../interfaces/mysql";
 import {
@@ -722,6 +723,24 @@ export const getOrganizationApiKeyForUser = async (
     )
   )
     return await getApiKey(organizationId, apiKeyId);
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const getOrganizationApiKeyLogsForUser = async (
+  userId: number | ApiKeyResponse,
+  organizationId: number,
+  apiKeyId: number,
+  query: KeyValue
+) => {
+  if (
+    await can(
+      userId,
+      OrgScopes.READ_ORG_API_KEY_LOGS,
+      "organization",
+      organizationId
+    )
+  )
+    return await getApiKeyLogs(organizationId, apiKeyId, query);
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
 
