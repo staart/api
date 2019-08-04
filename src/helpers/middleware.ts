@@ -3,6 +3,7 @@ import Brute from "express-brute";
 import RateLimit from "express-rate-limit";
 import slowDown from "express-slow-down";
 import Joi from "@hapi/joi";
+import pkg from "../../package.json";
 import ms from "ms";
 import { safeError } from "./errors";
 import {
@@ -74,6 +75,7 @@ export const trackingHandler = (
   next: NextFunction
 ) => {
   res.locals.userAgent = req.get("User-Agent");
+  res.setHeader("X-Api-Version", pkg.version);
   let ip =
     req.headers["x-forwarded-for"] ||
     req.connection.remoteAddress ||

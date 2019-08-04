@@ -8,12 +8,12 @@ import {
   checkIfNewEmail,
   resendEmailVerification
 } from "../crud/email";
-import { createEvent } from "../crud/event";
 import { ErrorCode, EventType, UserScopes } from "../interfaces/enum";
 import { updateUser } from "../crud/user";
 import { can } from "../helpers/authorization";
 import { getPaginatedData } from "../crud/data";
 import { addIsPrimaryToEmails } from "../helpers/mysql";
+import { trackEvent } from "../helpers/tracking";
 
 export const getAllEmailsForUser = async (
   tokenUserId: number,
@@ -69,7 +69,7 @@ export const addEmailToUserForUser = async (
     throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
   await checkIfNewEmail(email);
   await createEmail({ email, userId });
-  await createEvent(
+  trackEvent(
     { userId, type: EventType.EMAIL_CREATED, data: { email } },
     locals
   );
@@ -98,7 +98,7 @@ export const deleteEmailFromUserForUser = async (
     await updateUser(userId, { primaryEmail: nextVerifiedEmail });
   }
   await deleteEmail(emailId);
-  await createEvent(
+  trackEvent(
     { userId, type: EventType.EMAIL_DELETED, data: { email: email.email } },
     locals
   );

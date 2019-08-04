@@ -1,4 +1,9 @@
-import { MembershipRole, ErrorCode, Authorizations } from "../interfaces/enum";
+import {
+  MembershipRole,
+  ErrorCode,
+  Authorizations,
+  EventType
+} from "../interfaces/enum";
 import { getUserByEmail } from "../crud/user";
 import {
   createMembership,
@@ -15,6 +20,7 @@ import { can } from "../helpers/authorization";
 import { Locals, KeyValue } from "../interfaces/general";
 import { ApiKeyResponse } from "../helpers/jwt";
 import { getOrganization, getDomainByDomainName } from "../crud/organization";
+import { trackEvent } from "../helpers/tracking";
 
 export const getMembershipDetailsForUser = async (
   userId: number,
@@ -44,6 +50,13 @@ export const deleteMembershipForUser = async (
       if (currentMembers.length < 2)
         throw new Error(ErrorCode.CANNOT_DELETE_SOLE_OWNER);
     }
+    trackEvent(
+      {
+        userId: membershipId,
+        type: EventType.MEMBERSHIP_DELETED
+      },
+      locals
+    );
     await deleteMembership(membership.id);
     return;
   }
@@ -70,6 +83,13 @@ export const updateMembershipForUser = async (
           throw new Error(ErrorCode.CANNOT_UPDATE_SOLE_OWNER);
       }
     }
+    trackEvent(
+      {
+        userId: membershipId,
+        type: EventType.MEMBERSHIP_UPDATED
+      },
+      locals
+    );
     await updateMembership(membershipId, data);
     return;
   }

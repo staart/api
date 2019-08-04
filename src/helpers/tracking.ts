@@ -1,12 +1,28 @@
 import { Request, Response } from "express";
 import { verifyToken } from "./jwt";
 import { Tokens } from "../interfaces/enum";
+import { Event } from "../interfaces/tables/events";
+import { Locals } from "../interfaces/general";
 
 let trackingData: any[] = [];
+let securityEventsData: any[] = [];
 
 export const getTrackingData = () => trackingData;
+export const getSecurityEvents = () => securityEventsData;
 export const clearTrackingData = () => {
   trackingData = [];
+};
+export const clearSecurityEventsData = () => {
+  securityEventsData = [];
+};
+
+export const trackEvent = (event: Event, locals?: Locals) => {
+  event.date = new Date();
+  if (locals) {
+    event.ipAddress = locals.ipAddress;
+    event.userAgent = locals.userAgent;
+  }
+  securityEventsData.push(event);
 };
 
 export const trackUrl = async (req: Request, res: Response) => {

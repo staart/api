@@ -25,7 +25,7 @@ import {
 } from "../crud/membership";
 import { User } from "../interfaces/tables/user";
 import { Locals, KeyValue } from "../interfaces/general";
-import { createEvent, getUserEvents, deleteAllUserEvents } from "../crud/event";
+import { getUserEvents, deleteAllUserEvents } from "../crud/event";
 import { getUserEmails, deleteAllUserEmails } from "../crud/email";
 import { can } from "../helpers/authorization";
 import { getUserNotifications, updateNotification } from "../crud/notification";
@@ -35,6 +35,7 @@ import { SERVICE_2FA } from "../config";
 import { compare } from "bcryptjs";
 import { getPaginatedData } from "../crud/data";
 import { addLocationToEvents } from "../helpers/location";
+import { trackEvent } from "../helpers/tracking";
 
 export const getUserFromId = async (userId: number, tokenUserId: number) => {
   if (await can(tokenUserId, UserScopes.READ_USER, "user", userId))
@@ -51,7 +52,7 @@ export const updateUserForUser = async (
   delete data.password;
   if (await can(tokenUserId, UserScopes.UPDATE_USER, "user", updateUserId)) {
     await updateUser(updateUserId, data);
-    await createEvent(
+    trackEvent(
       {
         userId: tokenUserId,
         type: EventType.USER_UPDATED,
@@ -79,7 +80,7 @@ export const updatePasswordForUser = async (
     const correctPassword = await compare(oldPassword, user.password);
     if (!correctPassword) throw new Error(ErrorCode.INCORRECT_PASSWORD);
     await updateUser(updateUserId, { password: newPassword });
-    await createEvent(
+    trackEvent(
       {
         userId: tokenUserId,
         type: EventType.AUTH_PASSWORD_CHANGED,
@@ -103,7 +104,7 @@ export const deleteUserForUser = async (
     await deleteAllUserApprovedLocations(updateUserId);
     await deleteAllUserEvents(updateUserId);
     await deleteUser(updateUserId);
-    await createEvent(
+    trackEvent(
       {
         userId: tokenUserId,
         type: EventType.USER_DELETED,

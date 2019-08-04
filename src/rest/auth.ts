@@ -27,7 +27,6 @@ import {
   checkInvalidatedToken
 } from "../helpers/jwt";
 import { KeyValue, Locals } from "../interfaces/general";
-import { createEvent } from "../crud/event";
 import {
   EventType,
   ErrorCode,
@@ -54,6 +53,7 @@ import {
 import axios from "axios";
 import { GitHubEmail } from "../interfaces/oauth";
 import { createSlug } from "../helpers/utils";
+import { trackEvent } from "../helpers/tracking";
 
 export const validateRefreshToken = async (token: string, locals: Locals) => {
   await checkInvalidatedToken(token);
@@ -141,7 +141,7 @@ export const sendPasswordReset = async (email: string, locals?: Locals) => {
   const token = await passwordResetToken(user.id);
   await mail(email, Templates.PASSWORD_RESET, { name: user.name, token });
   if (locals)
-    await createEvent(
+    trackEvent(
       {
         userId: user.id,
         type: EventType.AUTH_PASSWORD_RESET_REQUESTED,
@@ -166,7 +166,7 @@ export const sendNewPassword = async (userId: number, email: string) => {
 export const verifyEmail = async (token: string, locals: Locals) => {
   const emailId = (<KeyValue>await verifyToken(token, Tokens.EMAIL_VERIFY)).id;
   const email = await getEmail(emailId);
-  await createEvent(
+  trackEvent(
     {
       userId: email.userId,
       type: EventType.EMAIL_VERIFIED,
@@ -184,7 +184,7 @@ export const updatePassword = async (
 ) => {
   const userId = (<KeyValue>await verifyToken(token, Tokens.PASSWORD_RESET)).id;
   await updateUser(userId, { password });
-  await createEvent(
+  trackEvent(
     {
       userId,
       type: EventType.AUTH_PASSWORD_CHANGED
@@ -226,6 +226,13 @@ export const approveLocation = async (token: string, locals: Locals) => {
   if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
   const ipAddress = tokenUser.ipAddress || locals.ipAddress;
   await addApprovedLocation(user.id, ipAddress);
+  trackEvent(
+    {
+      userId: tokenUser.id,
+      type: EventType.AUTH_APPROVE_LOCATION
+    },
+    locals
+  );
   return await getLoginResponse(
     user,
     EventType.AUTH_APPROVE_LOCATION,

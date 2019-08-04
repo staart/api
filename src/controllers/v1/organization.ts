@@ -331,7 +331,8 @@ export class OrganizationController {
         localsToTokenOrKey(res),
         organizationId,
         subscriptionId,
-        data
+        data,
+        res.locals
       )
     );
   }
@@ -357,7 +358,8 @@ export class OrganizationController {
       await createOrganizationSubscriptionForUser(
         localsToTokenOrKey(res),
         organizationId,
-        subscriptionParams
+        subscriptionParams,
+        res.locals
       )
     );
   }
@@ -392,7 +394,8 @@ export class OrganizationController {
         await createOrganizationSourceForUser(
           localsToTokenOrKey(res),
           organizationId,
-          req.body
+          req.body,
+          res.locals
         )
       );
   }
@@ -412,7 +415,8 @@ export class OrganizationController {
       await deleteOrganizationSourceForUser(
         localsToTokenOrKey(res),
         organizationId,
-        sourceId
+        sourceId,
+        res.locals
       )
     );
   }
@@ -433,7 +437,8 @@ export class OrganizationController {
         localsToTokenOrKey(res),
         organizationId,
         sourceId,
-        req.body
+        req.body,
+        res.locals
       )
     );
   }
