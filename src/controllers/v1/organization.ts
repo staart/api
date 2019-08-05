@@ -738,7 +738,7 @@ export class OrganizationController {
         localsToTokenOrKey(res),
         id,
         apiKeyId,
-        req.params
+        req.query
       )
     );
   }
