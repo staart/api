@@ -102,7 +102,7 @@
     "cors": "^2.8.5",
     "cron": "^1.7.1",
     "crypto-random-string": "^3.0.1",
-    "disposable-email-domains": "^1.0.46",
+    "disposable-email-domains": "^1.0.47",
     "elasticsearch": "^16.3.0",
     "express": "^4.17.0",
     "express-async-handler": "^1.1.4",
