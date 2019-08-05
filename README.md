@@ -44,6 +44,7 @@ Works with [Staart UI](https://github.com/o15y/staart-ui), the frontend starter 
 - [x] Caching and invalidation for common queries
 - [x] User impersonation for super-admin
 - [x] Easy redirect rules in YAML
+- [x] Store server logs in ElasticSearch every minute
 
 ## 🛠 Usage
 
