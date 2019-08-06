@@ -156,7 +156,7 @@ export const sendNewPassword = async (userId: number, email: string) => {
   const user = await getUser(userId);
   const userEmails = await getUserEmails(userId);
   if (!userEmails.filter(userEmail => userEmail.email === email).length)
-    throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+    throw new Error(ErrorCode.NOT_FOUND);
   if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
   const token = await passwordResetToken(user.id);
   await mail(email, Templates.NEW_PASSWORD, { name: user.name, token });

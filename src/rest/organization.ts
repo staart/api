@@ -39,7 +39,8 @@ import {
   EventType,
   Webhooks,
   OrgScopes,
-  Authorizations
+  Authorizations,
+  Templates
 } from "../interfaces/enum";
 import {
   getOrganizationEvents,
@@ -75,6 +76,7 @@ import { queueWebhook } from "../helpers/webhooks";
 import { User } from "../interfaces/tables/user";
 import { register } from "./auth";
 import { trackEvent } from "../helpers/tracking";
+import { mail } from "../helpers/mail";
 
 export const getOrganizationForUser = async (
   userId: number | ApiKeyResponse,
@@ -661,6 +663,7 @@ export const inviteMemberToOrganization = async (
     }
     let newUser: User;
     let userExists = false;
+    let createdUserId = 0;
     try {
       newUser = await getUserByEmail(newMemberEmail);
       userExists = true;
@@ -675,19 +678,31 @@ export const inviteMemberToOrganization = async (
           organizationId
         ));
       } catch (error) {}
+      createdUserId = newUser.id;
       if (isMemberAlready) throw new Error(ErrorCode.USER_IS_MEMBER_ALREADY);
       await createMembership({ userId: newUser.id, organizationId, role });
-      return;
     } else {
-      await register(
+      const newAccount = await register(
         { name: newMemberName },
         locals,
         newMemberEmail,
         organizationId,
         role
       );
-      return;
+      createdUserId = newAccount.userId;
     }
+    if (createdUserId) {
+      const inviter =
+        typeof userId !== "object" ? (await getUser(userId)).name : "Someone";
+      const userDetails = await getUser(createdUserId);
+      const email = await getUserPrimaryEmail(createdUserId);
+      if (email)
+        await mail(email, Templates.INVITED_TO_TEAM, {
+          ...userDetails,
+          team: organization.name
+        });
+    }
+    return;
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };

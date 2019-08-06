@@ -95,6 +95,7 @@ export enum Templates {
   EMAIL_VERIFY = "email-verify",
   PASSWORD_RESET = "password-reset",
   NEW_PASSWORD = "new-password",
+  INVITED_TO_TEAM = "invited",
   UNAPPROVED_LOCATION = "unapproved-location"
 }
 
