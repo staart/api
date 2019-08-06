@@ -73,7 +73,7 @@ export const uncleanValues = (
           item[key] = {};
         }
         if (boolValues.includes(key)) item[key] = !!item[key];
-        if (dateValues.includes(key)) {
+        if (dateValues.includes(key) && item[key]) {
           const date = item[key] as Date;
           item[key] = new Date(
             Date.UTC(
