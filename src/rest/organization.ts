@@ -699,7 +699,8 @@ export const inviteMemberToOrganization = async (
       if (email)
         await mail(email, Templates.INVITED_TO_TEAM, {
           ...userDetails,
-          team: organization.name
+          team: organization.name,
+          inviter
         });
     }
     return;

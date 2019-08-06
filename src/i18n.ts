@@ -12,7 +12,8 @@ export default {
       "password-reset": "Reset your password",
       "new-password": "Set a password for your account",
       "unapproved-location": "Login from a new location",
-      "unknown-location": "Unknown location"
+      "unknown-location": "Unknown location",
+      invited: "You've been invited to a team"
     }
   }
 } as I18N;
