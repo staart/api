@@ -80,7 +80,7 @@
     "concurrently": "^4.1.1",
     "coveralls": "^3.0.6",
     "dotenv": "^8.0.0",
-    "husky": "^3.0.2",
+    "husky": "^3.0.3",
     "jest": "^24.8.0",
     "onchange": "^6.0.0",
     "prettier": "^1.18.2",
