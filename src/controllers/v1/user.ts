@@ -46,6 +46,11 @@ import { CREATED } from "http-status-codes";
 import asyncHandler from "express-async-handler";
 import { joiValidate, userUsernameToId } from "../../helpers/utils";
 import Joi from "@hapi/joi";
+import {
+  deleteMembershipForUser,
+  getMembershipDetailsForUser,
+  updateMembershipForUser
+} from "../../rest/membership";
 
 @Controller("v1/users")
 @ClassMiddleware(authHandler)
@@ -158,6 +163,52 @@ export class UserController {
       { id }
     );
     res.json(await getMembershipsForUser(res.locals.token.id, id, req.query));
+  }
+
+  @Get(":id/memberships/:membershipId")
+  async getMembership(req: Request, res: Response) {
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const membershipId = req.params.id;
+    joiValidate(
+      {
+        id: [Joi.string().required(), Joi.number().required()],
+        membershipId: Joi.number().required()
+      },
+      { id, membershipId }
+    );
+    res.json(await getMembershipDetailsForUser(id, membershipId));
+  }
+
+  @Delete(":id/memberships/:membershipId")
+  async deleteMembership(req: Request, res: Response) {
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const membershipId = req.params.id;
+    joiValidate(
+      {
+        id: [Joi.string().required(), Joi.number().required()],
+        membershipId: Joi.number().required()
+      },
+      { id, membershipId }
+    );
+    await deleteMembershipForUser(id, membershipId, res.locals);
+    res.json({ deleted: true });
+  }
+
+  @Patch(":id/memberships/:membershipId")
+  async updateMembership(req: Request, res: Response) {
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const membershipId = req.params.id;
+    joiValidate(
+      {
+        id: [Joi.string().required(), Joi.number().required()],
+        membershipId: Joi.number().required()
+      },
+      { id, membershipId }
+    );
+    const data = req.body;
+    delete req.body.id;
+    await updateMembershipForUser(id, membershipId, data, res.locals);
+    res.json({ success: true, message: "membership-updated" });
   }
 
   @Get(":id/data")
