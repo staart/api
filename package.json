@@ -1,6 +1,6 @@
 {
   "name": "staart-manager",
-  "version": "1.0.129",
+  "version": "1.0.130",
   "main": "index.js",
   "repository": "git@github.com:AnandChowdhary/staart.git",
   "author": "Anand Chowdhary <mail@anandchowdhary.com>",
@@ -80,6 +80,7 @@
     "concurrently": "^4.1.1",
     "coveralls": "^3.0.6",
     "dotenv": "^8.0.0",
+    "has-yarn": "^2.1.0",
     "husky": "^3.0.3",
     "jest": "^24.8.0",
     "onchange": "^6.0.0",
@@ -143,5 +144,5 @@
     "setup"
   ],
   "snyk": true,
-  "staart-version": "1.0.129"
+  "staart-version": "1.0.130"
 }

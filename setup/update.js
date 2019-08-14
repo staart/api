@@ -3,6 +3,7 @@ const axios = require("axios");
 const fs = require("fs-extra");
 const path = require("path");
 const shell = require("shelljs");
+const hasYarn = require("has-yarn");
 const yourPkg = require("../package.json");
 
 dotenv.config();
@@ -24,7 +25,7 @@ const checkUpdate = async () => {
     i.name !== "staart-manager" &&
     !Object.keys(i.devDependencies).includes("staart-manager")
   ) {
-    if (process.env.USE_NPM) {
+    if (process.env.USE_NPM || !hasYarn()) {
       shell.exec("npm install --save-dev staart-manager");
     } else {
       shell.exec("yarn add -D staart-manager");
