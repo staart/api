@@ -93,7 +93,7 @@
     "yaml": "^1.6.0"
   },
   "dependencies": {
-    "@hapi/joi": "^15.1.0",
+    "@hapi/joi": "^15.1.1",
     "@sentry/node": "^5.6.1",
     "aws-sdk": "^2.510.0",
     "axios": "^0.19.0",
