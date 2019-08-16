@@ -168,7 +168,7 @@ export class UserController {
   @Get(":id/memberships/:membershipId")
   async getMembership(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
-    const membershipId = req.params.id;
+    const membershipId = req.params.membershipId;
     joiValidate(
       {
         id: [Joi.string().required(), Joi.number().required()],
@@ -182,7 +182,7 @@ export class UserController {
   @Delete(":id/memberships/:membershipId")
   async deleteMembership(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
-    const membershipId = req.params.id;
+    const membershipId = req.params.membershipId;
     joiValidate(
       {
         id: [Joi.string().required(), Joi.number().required()],
@@ -197,7 +197,7 @@ export class UserController {
   @Patch(":id/memberships/:membershipId")
   async updateMembership(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
-    const membershipId = req.params.id;
+    const membershipId = req.params.membershipId;
     joiValidate(
       {
         id: [Joi.string().required(), Joi.number().required()],
