@@ -38,6 +38,7 @@ export const trackUrl = async (req: Request, res: Response) => {
     cookies: req.cookies,
     headers: req.headers,
     url: req.url,
+    ipCountry: (req.get("cf-ipcountry") || "").toLowerCase(),
     ...res.locals
   };
   if (trackingObject.apiKey) {

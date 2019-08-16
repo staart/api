@@ -26,7 +26,8 @@ export const cleanElasticSearchQueryResponse = (response: any) => {
     const count = response.hits.total;
     const data = response.hits.hits;
     const newResponse: any = {
-      data
+      data,
+      count
     };
     if (count > data.length) {
       newResponse.hasMore = true;

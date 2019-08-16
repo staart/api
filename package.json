@@ -1,6 +1,6 @@
 {
   "name": "staart-manager",
-  "version": "1.0.132",
+  "version": "1.0.133",
   "main": "index.js",
   "repository": "git@github.com:AnandChowdhary/staart.git",
   "author": "Anand Chowdhary <mail@anandchowdhary.com>",
@@ -144,5 +144,5 @@
     "setup"
   ],
   "snyk": true,
-  "staart-version": "1.0.132"
+  "staart-version": "1.0.133"
 }

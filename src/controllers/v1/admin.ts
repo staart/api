@@ -2,7 +2,8 @@ import { Request, Response } from "express";
 import { ErrorCode } from "../../interfaces/enum";
 import {
   getAllOrganizationForUser,
-  getAllUsersForUser
+  getAllUsersForUser,
+  getServerLogsForUser
 } from "../../rest/admin";
 import {
   Get,
@@ -21,14 +22,21 @@ export class AdminController {
   async getOrganizations(req: Request, res: Response) {
     const userId = res.locals.token.id;
     if (!userId) throw new Error(ErrorCode.MISSING_FIELD);
-    res.json(await getAllOrganizationForUser(userId));
+    res.json(await getAllOrganizationForUser(userId, req.query));
   }
 
   @Get("users")
   async getUsers(req: Request, res: Response) {
     const userId = res.locals.token.id;
     if (!userId) throw new Error(ErrorCode.MISSING_FIELD);
-    res.json(await getAllUsersForUser(userId));
+    res.json(await getAllUsersForUser(userId, req.query));
+  }
+
+  @Get("server-logs")
+  async getServerLogs(req: Request, res: Response) {
+    const userId = res.locals.token.id;
+    if (!userId) throw new Error(ErrorCode.MISSING_FIELD);
+    res.json(await getServerLogsForUser(userId, req.query));
   }
 
   @Get("info")
