@@ -79,7 +79,7 @@
     "@types/yaml": "^1.0.2",
     "concurrently": "^4.1.1",
     "coveralls": "^3.0.6",
-    "dotenv": "^8.0.0",
+    "dotenv": "^8.1.0",
     "has-yarn": "^2.1.0",
     "husky": "^3.0.4",
     "jest": "^24.9.0",
