@@ -25,7 +25,7 @@ export class MembershipController {
   @Get(":id")
   @Middleware(validator({ id: Joi.number().required() }, "params"))
   async get(req: Request, res: Response) {
-    const membershipId = (req.params as any).id;
+    const membershipId = parseInt(req.params.id);
     const userId = res.locals.token.id;
     res.json(await getMembershipDetailsForUser(userId, membershipId));
   }
@@ -34,7 +34,7 @@ export class MembershipController {
   @Middleware(validator({ id: Joi.number().required() }, "params"))
   async delete(req: Request, res: Response) {
     const userId = res.locals.token.id;
-    const membershipId = (req.params as any).id;
+    const membershipId = parseInt(req.params.id);
     await deleteMembershipForUser(userId, membershipId, res.locals);
     res.json({ deleted: true });
   }
@@ -43,7 +43,7 @@ export class MembershipController {
   @Middleware(validator({ id: Joi.number().required() }, "params"))
   async patch(req: Request, res: Response) {
     const userId = res.locals.token.id;
-    const membershipId = (req.params as any).id;
+    const membershipId = parseInt(req.params.id);
     const data = req.body;
     delete req.body.id;
     await updateMembershipForUser(userId, membershipId, data, res.locals);

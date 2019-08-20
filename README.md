@@ -121,7 +121,7 @@ import { deleteOrganization } from "../crud/organization";
 @Middleware(authHandler)
 @Middleware(bruteForceHandler)
 async deleteOrg(req: Request, res: Response) {
-  const orgId = (req.params as any).id;
+  const orgId = req.params.id;
   const userId = res.locals.token.id;
   if (await can(userId, Authorizations.DELETE, "organization", orgId)) {
     await deleteOrganization(orgId);

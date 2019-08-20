@@ -223,20 +223,20 @@ export class AuthController {
   )
   async getImpersonate(req: Request, res: Response) {
     const tokenUserId = res.locals.token.id;
-    const impersonateUserId = (req.params as any).id;
+    const impersonateUserId = parseInt(req.params.id);
     res.json(await impersonate(tokenUserId, impersonateUserId, res.locals));
   }
 
   @Post("approve-location")
   async getApproveLocation(req: Request, res: Response) {
-    const token = req.body.token || (req.params as any).token;
+    const token = req.body.token || req.params.token;
     joiValidate({ token: Joi.string().required() }, { token });
     res.json(await approveLocation(token, res.locals));
   }
 
   @Post("verify-email")
   async postVerifyEmail(req: Request, res: Response) {
-    const token = req.body.token || (req.params as any).token;
+    const token = req.body.token || req.params.token;
     joiValidate({ token: Joi.string().required() }, { token });
     await verifyEmail(token, res.locals);
     res.json({ success: true, message: "auth-verify-email-success" });
