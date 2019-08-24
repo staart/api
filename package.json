@@ -1,6 +1,6 @@
 {
   "name": "staart-manager",
-  "version": "1.0.137",
+  "version": "1.0.138",
   "main": "index.js",
   "repository": "git@github.com:AnandChowdhary/staart.git",
   "author": "Anand Chowdhary <mail@anandchowdhary.com>",
@@ -9,7 +9,8 @@
     "test": "jest",
     "build": "touch .env && mkdir -p dist && cp .env dist/.env && npm run generate-routes && tsc",
     "build-babel": "touch .env && babel src -d dist --extensions '.ts' && cp .env dist/.env",
-    "start": "npm run build && node dist/src/index.js",
+    "start": "npm run build && npm run launch",
+    "launch": "node dist/src/index.js",
     "dev": "concurrently 'yarn watch-build' 'nodemon dist/src/index.js'",
     "prettier-all": "prettier '{src,examples,setup}/**/*.{ts,js,json}' --write",
     "watch-build": "onchange '{src,examples}/**/*.ts' -- yarn build-babel",
@@ -144,5 +145,5 @@
     "setup"
   ],
   "snyk": true,
-  "staart-version": "1.0.137"
+  "staart-version": "1.0.138"
 }
