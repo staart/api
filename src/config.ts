@@ -2,7 +2,7 @@ import { config } from "dotenv";
 config();
 
 // Server
-export const PORT = process.env.PORT ? parseInt(process.env.PORT) : 7007;
+export const PORT = process.env.PORT ? parseInt(process.env.PORT) : 80;
 export const BASE_URL = process.env.BASE_URL || "";
 export const SENTRY_DSN = process.env.SENTRY_DSN || "";
 
