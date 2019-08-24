@@ -151,6 +151,12 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
 
+## 🏗️ Built with Staart
+
+- [Oswald Labs Platform](https://github.com/OswaldLabsOpenSource/platform-v3)
+- [Speakup Developer](https://github.com/speakupnl/staart)
+- [**Add your Staart-based project**](https://github.com/o15y/staart/edit/master/README.md)
+
 ## 📄 License
 
 - Code: [MIT](https://github.com/o15y/staart/blob/master/LICENSE)
