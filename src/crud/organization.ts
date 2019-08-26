@@ -27,6 +27,8 @@ import {
   elasticSearch,
   cleanElasticSearchQueryResponse
 } from "../helpers/elasticsearch";
+import randomColor from "randomcolor";
+import axios from "axios";
 
 /*
  * Create a new organization for a user
@@ -37,7 +39,13 @@ export const createOrganization = async (organization: Organization) => {
   organization.createdAt = new Date();
   organization.updatedAt = organization.createdAt;
   organization.username = createSlug(organization.name);
-  // Create organization
+  const backgroundColor = randomColor({
+    luminosity: "dark",
+    format: "hex"
+  }).replace("#", "");
+  organization.profilePicture = `https://ui-avatars.com/api/?name=${encodeURIComponent(
+    organization.name || "XX"
+  ).replace(/\'/g, "%27")}&background=${backgroundColor}&color=fff`;
   return await query(
     `INSERT INTO ${tableName("organizations")} ${tableValues(organization)}`,
     Object.values(organization)
@@ -298,6 +306,35 @@ export const getDomainByDomainName = async (domain: string) => {
   ))[0];
 };
 
+export const updateOrganizationProfilePicture = async (
+  organizationId: number
+) => {
+  const domains = await getOrganizationDomains(organizationId, {});
+  if (domains && domains.data && domains.data.length) {
+    const primaryDomain = domains.data[0] as Domain;
+    const domainIcons = await axios.get(
+      `https://unavatar.now.sh/${primaryDomain}?json`
+    );
+    if (
+      domainIcons.data &&
+      domainIcons.data.url &&
+      domainIcons.data.url !== "http://unavatar.now.sh/fallback.png"
+    )
+      return await updateOrganization(organizationId, {
+        profilePicture: domainIcons.data.url
+      });
+  }
+  const organization = await getOrganization(organizationId);
+  const backgroundColor = randomColor({
+    luminosity: "dark",
+    format: "hex"
+  }).replace("#", "");
+  const profilePicture = `https://ui-avatars.com/api/?name=${encodeURIComponent(
+    organization.name || organization.username || "XX"
+  ).replace(/\'/g, "%27")}&background=${backgroundColor}&color=fff`;
+  await updateOrganization(organizationId, { profilePicture });
+};
+
 /**
  * Create a domain
  */
@@ -307,10 +344,12 @@ export const createDomain = async (domain: Domain): Promise<InsertResult> => {
   domain.verificationCode = `${JWT_ISSUER}=${cryptoRandomString({
     length: 32
   })}`;
-  return await query(
+  const response = await query(
     `INSERT INTO ${tableName("domains")} ${tableValues(domain)}`,
     Object.values(domain)
   );
+  await updateOrganizationProfilePicture(domain.organizationId);
+  return response;
 };
 
 /**
@@ -340,12 +379,14 @@ export const deleteDomain = async (
   domainId: number
 ) => {
   const currentDomain = await getDomain(organizationId, domainId);
-  return await query(
+  const response = await query(
     `DELETE FROM ${tableName(
       "domains"
     )} WHERE id = ? AND organizationId = ? LIMIT 1`,
     [domainId, organizationId]
   );
+  await updateOrganizationProfilePicture(organizationId);
+  return response;
 };
 
 /**

@@ -105,7 +105,8 @@ export class OrganizationController {
         forceTwoFactor: Joi.boolean(),
         autoJoinDomain: Joi.boolean(),
         onlyAllowDomain: Joi.boolean(),
-        ipRestrictions: Joi.string()
+        ipRestrictions: Joi.string(),
+        profilePicture: Joi.string()
       },
       "body"
     )
