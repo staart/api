@@ -28,7 +28,6 @@ import { Locals, KeyValue } from "../interfaces/general";
 import { getUserEvents, deleteAllUserEvents } from "../crud/event";
 import { getUserEmails, deleteAllUserEmails } from "../crud/email";
 import { can } from "../helpers/authorization";
-import { getUserNotifications, updateNotification } from "../crud/notification";
 import { authenticator } from "otplib";
 import { toDataURL } from "qrcode";
 import { SERVICE_2FA } from "../config";
@@ -166,26 +165,6 @@ export const getAllDataForUser = async (
   const events = await getUserEvents(userId);
   const approvedLocations = await getUserApprovedLocations(userId);
   return { user, memberships, emails, events, approvedLocations };
-};
-
-export const getNotificationsForUser = async (
-  tokenUserId: number,
-  dataUserId: number
-) => {
-  if (await can(tokenUserId, UserScopes.READ_USER, "user", dataUserId))
-    return await getUserNotifications(dataUserId);
-  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
-};
-
-export const updateNotificationForUser = async (
-  tokenUserId: number,
-  dataUserId: number,
-  notificationId: number,
-  data: KeyValue
-) => {
-  if (await can(tokenUserId, UserScopes.UPDATE_USER, "user", dataUserId))
-    return await updateNotification(notificationId, data);
-  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
 
 export const enable2FAForUser = async (tokenUserId: number, userId: number) => {

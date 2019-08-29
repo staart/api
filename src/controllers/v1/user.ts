@@ -6,8 +6,6 @@ import {
   getRecentEventsForUser,
   deleteUserForUser,
   getMembershipsForUser,
-  getNotificationsForUser,
-  updateNotificationForUser,
   enable2FAForUser,
   disable2FAForUser,
   verify2FAForUser,
@@ -295,37 +293,6 @@ export class UserController {
       res.locals
     );
     res.json({ success: true, message: "user-email-deleted" });
-  }
-
-  @Get(":id/notifications")
-  async getUserNotifications(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
-    joiValidate(
-      { id: [Joi.string().required(), Joi.number().required()] },
-      { id }
-    );
-    res.json(await getNotificationsForUser(res.locals.token.id, id));
-  }
-
-  @Patch(":id/notifications/:notificationId")
-  async updateUserNotification(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
-    const notificationId = parseInt(req.params.notificationId);
-    joiValidate(
-      {
-        id: [Joi.string().required(), Joi.number().required()],
-        notificationId: Joi.number().required()
-      },
-      { id, notificationId }
-    );
-    res.json(
-      await updateNotificationForUser(
-        res.locals.token.id,
-        id,
-        notificationId,
-        req.body
-      )
-    );
   }
 
   @Get(":id/2fa/enable")

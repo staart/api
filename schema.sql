@@ -141,22 +141,6 @@ CREATE TABLE `staart-memberships` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- ----------------------------
--- Table structure for staart-notifications
--- ----------------------------
-DROP TABLE IF EXISTS `staart-notifications`;
-CREATE TABLE `staart-notifications` (
-  `id` int(12) NOT NULL AUTO_INCREMENT,
-  `userId` int(12) NOT NULL,
-  `category` varchar(255) COLLATE utf8mb4_bin NOT NULL,
-  `text` varchar(255) COLLATE utf8mb4_bin NOT NULL,
-  `link` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
-  `read` int(1) NOT NULL DEFAULT 0,
-  `createdAt` datetime NOT NULL,
-  `updatedAt` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE current_timestamp(),
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
-
--- ----------------------------
 -- Table structure for staart-organizations
 -- ----------------------------
 DROP TABLE IF EXISTS `staart-organizations`;

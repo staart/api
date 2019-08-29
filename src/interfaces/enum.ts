@@ -141,10 +141,6 @@ export enum Genders {
   UNKNOWN = "x"
 }
 
-export enum NotificationCategories {
-  JOINED_ORGANIZATION = "joined-organization"
-}
-
 export enum OrgScopes {
   READ_ORG = "org:read",
   UPDATE_ORG = "org:update",

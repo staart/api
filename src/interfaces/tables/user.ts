@@ -1,10 +1,4 @@
-import {
-  UserRole,
-  NotificationEmails,
-  Genders,
-  NotificationCategories,
-  Tokens
-} from "../enum";
+import { UserRole, NotificationEmails, Genders, Tokens } from "../enum";
 import { IdRow, Row } from "../general";
 import { GeoLocation } from "../../helpers/location";
 
@@ -35,14 +29,6 @@ export interface ApprovedLocation {
   userId?: number;
   subnet?: string;
   createdAt?: Date;
-}
-
-export interface Notification extends IdRow {
-  userId: number;
-  category: NotificationCategories;
-  text: string;
-  link: string;
-  read?: boolean;
 }
 
 export interface BackupCode extends Row {
