@@ -4,14 +4,13 @@
  Source Server         : A11Y New
  Source Server Type    : MariaDB
  Source Server Version : 100221
- Source Host           : platform.c9ffpdgdnmej.eu-central-1.rds.amazonaws.com:3306
  Source Schema         : platform
 
  Target Server Type    : MariaDB
  Target Server Version : 100221
  File Encoding         : 65001
 
- Date: 28/07/2019 18:12:07
+ Date: 29/08/2019 12:26:46
 */
 
 SET NAMES utf8mb4;
@@ -172,6 +171,7 @@ CREATE TABLE `staart-organizations` (
   `onlyAllowDomain` int(1) NOT NULL DEFAULT 0,
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE current_timestamp(),
+  `profilePicture` varchar(255) COLLATE utf8mb4_bin NOT NULL DEFAULT 'https://unavatar.now.sh/fallback.png',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
