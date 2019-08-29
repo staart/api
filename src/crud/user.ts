@@ -236,6 +236,8 @@ export const checkApprovedLocation = async (
   userId: number,
   ipAddress: string
 ) => {
+  const user = await getUser(userId);
+  if (!user.checkLocationOnLogin) return true;
   const subnet = anonymizeIpAddress(ipAddress);
   const approvedLocations = <ApprovedLocation[]>(
     await query(

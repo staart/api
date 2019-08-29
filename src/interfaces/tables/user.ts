@@ -19,6 +19,7 @@ export interface User extends IdRow {
   gender?: Genders;
   role?: UserRole;
   profilePicture?: string;
+  checkLocationOnLogin?: boolean;
 
   // email is only used for JWT
   email?: string;

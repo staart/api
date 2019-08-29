@@ -84,7 +84,8 @@ export class UserController {
         notificationEmails: Joi.number(),
         prefersReducedMotion: Joi.boolean(),
         prefersColorSchemeDark: Joi.boolean(),
-        profilePicture: Joi.string()
+        profilePicture: Joi.string(),
+        checkLocationOnLogin: Joi.boolean()
       },
       "body"
     )

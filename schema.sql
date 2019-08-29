@@ -177,6 +177,7 @@ CREATE TABLE `staart-users` (
   `preferredLanguage` varchar(5) COLLATE utf8mb4_bin NOT NULL DEFAULT 'en-us',
   `prefersReducedMotion` int(1) NOT NULL DEFAULT 0,
   `prefersColorSchemeDark` int(1) NOT NULL DEFAULT 0,
+  `checkLocationOnLogin` int(1) NOT NULL DEFAULT 0,
   `role` int(1) NOT NULL DEFAULT 1,
   `gender` varchar(1) COLLATE utf8mb4_bin NOT NULL DEFAULT 'x',
   `profilePicture` varchar(255) COLLATE utf8mb4_bin NOT NULL,
