@@ -15,7 +15,6 @@ import {
   deleteAccessToken,
   getUserSessions,
   getSession,
-  createSession,
   deleteSession
 } from "../crud/user";
 import {
@@ -25,7 +24,6 @@ import {
 } from "../crud/membership";
 import { User } from "../interfaces/tables/user";
 import { Locals, KeyValue } from "../interfaces/general";
-import { getUserEvents, deleteAllUserEvents } from "../crud/event";
 import { getUserEmails, deleteAllUserEmails } from "../crud/email";
 import { can } from "../helpers/authorization";
 import { authenticator } from "otplib";
@@ -101,7 +99,6 @@ export const deleteUserForUser = async (
     await deleteAllUserEmails(updateUserId);
     await deleteAllUserMemberships(updateUserId);
     await deleteAllUserApprovedLocations(updateUserId);
-    await deleteAllUserEvents(updateUserId);
     await deleteUser(updateUserId);
     trackEvent(
       {
@@ -162,9 +159,8 @@ export const getAllDataForUser = async (
   const user = await getUser(userId);
   const memberships = await getUserMembershipsDetailed(userId);
   const emails = await getUserEmails(userId);
-  const events = await getUserEvents(userId);
   const approvedLocations = await getUserApprovedLocations(userId);
-  return { user, memberships, emails, events, approvedLocations };
+  return { user, memberships, emails, approvedLocations };
 };
 
 export const enable2FAForUser = async (tokenUserId: number, userId: number) => {

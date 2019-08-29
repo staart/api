@@ -11,7 +11,6 @@ import { User, BackupCode } from "../interfaces/tables/user";
 import { Email } from "../interfaces/tables/emails";
 import { Membership } from "../interfaces/tables/memberships";
 import { Organization } from "../interfaces/tables/organization";
-import { Event } from "../interfaces/tables/events";
 import { KeyValue } from "../interfaces/general";
 import { boolValues, jsonValues, dateValues, readOnlyValues } from "./utils";
 import { getUserPrimaryEmailObject } from "../crud/email";
@@ -49,7 +48,7 @@ export const query = (
  * Convert an object to MySQL-style (column) VALUES (values)
  */
 export const tableValues = (
-  object: User | BackupCode | Event | Email | Membership | Organization
+  object: User | BackupCode | Email | Membership | Organization
 ) => {
   const values = Object.keys(object)
     .map(() => "?")
@@ -62,7 +61,7 @@ export const tableValues = (
  * Convert MySQL output to stronger types, like binary to boolean and datetime to JS Date
  */
 export const uncleanValues = (
-  data: (User | BackupCode | Event | Email | Membership | Organization)[]
+  data: (User | BackupCode | Email | Membership | Organization)[]
 ) => {
   if (typeof data.map === "function") {
     data.map((item: KeyValue) => {

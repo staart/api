@@ -109,22 +109,6 @@ CREATE TABLE `staart-emails` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- ----------------------------
--- Table structure for staart-events
--- ----------------------------
-DROP TABLE IF EXISTS `staart-events`;
-CREATE TABLE `staart-events` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `userId` int(11) DEFAULT NULL,
-  `organizationId` int(11) DEFAULT NULL,
-  `type` varchar(100) COLLATE utf8mb4_bin NOT NULL,
-  `data` text COLLATE utf8mb4_bin DEFAULT NULL,
-  `ipAddress` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
-  `userAgent` text COLLATE utf8mb4_bin DEFAULT NULL,
-  `createdAt` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
-
--- ----------------------------
 -- Table structure for staart-memberships
 -- ----------------------------
 DROP TABLE IF EXISTS `staart-memberships`;
