@@ -4,6 +4,7 @@ import { Client } from "elasticsearch";
 import {
   AWS_ELASTIC_ACCESS_KEY,
   AWS_ELASTIC_SECRET_KEY,
+  AWS_ELASTIC_REGION,
   AWS_ELASTIC_HOST
 } from "../config";
 import { ErrorCode } from "../interfaces/enum";
@@ -13,7 +14,7 @@ AWS.config.update({
     AWS_ELASTIC_ACCESS_KEY,
     AWS_ELASTIC_SECRET_KEY
   ),
-  region: "eu-west-3"
+  region: AWS_ELASTIC_REGION
 });
 
 export const elasticSearch = new Client({

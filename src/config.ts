@@ -103,3 +103,4 @@ export const STRIPE_PRODUCT_ID = process.env.STRIPE_PRODUCT_ID || "";
 export const AWS_ELASTIC_ACCESS_KEY = process.env.AWS_ELASTIC_ACCESS_KEY || "";
 export const AWS_ELASTIC_SECRET_KEY = process.env.AWS_ELASTIC_SECRET_KEY || "";
 export const AWS_ELASTIC_HOST = process.env.AWS_ELASTIC_HOST || "";
+export const AWS_ELASTIC_REGION = process.env.AWS_ELASTIC_REGION || "";
