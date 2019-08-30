@@ -7,14 +7,15 @@ Please note we have a code of conduct, please follow it in all your interactions
 
 ## Pull Request Process
 
-1. Ensure any install or build dependencies are removed before the end of the layer when doing a 
+1. When making commits, make sure you are using [Gitmoji](https://github.com/carloscuesta/gitmoji).
+2. Ensure any install or build dependencies are removed before the end of the layer when doing a 
    build.
-2. Update the README.md with details of changes to the interface, this includes new environment 
+3. Update the README.md with details of changes to the interface, this includes new environment 
    variables, exposed ports, useful file locations and container parameters.
-3. Increase the version numbers in any examples files and the README.md to the new version that this 
+4. Increase the version numbers in any examples files and the README.md to the new version that this 
    Pull Request would represent. We increase the patch version in every commit to ensure people
    using Staart are always on the most recent version using our internal update system.
-4. You may merge the Pull Request in once you have the review sign-off of Anand Chowdhary, or if you 
+5. You may merge the Pull Request in once you have the review sign-off of Anand Chowdhary, or if you 
    do not have permission to do that, you may request a reviewer to merge it for you.
 
 ## Code of Conduct
