@@ -15,7 +15,6 @@ import {
   updateOrganizationSourceForUser,
   deleteOrganizationSourceForUser,
   getAllOrganizationDataForUser,
-  getOrganizationRecentEventsForUser,
   getOrganizationMembershipsForUser,
   createOrganizationSubscriptionForUser,
   getOrganizationSubscriptionForUser,
@@ -454,21 +453,6 @@ export class OrganizationController {
     );
     res.json(
       await getAllOrganizationDataForUser(
-        localsToTokenOrKey(res),
-        organizationId
-      )
-    );
-  }
-
-  @Get(":id/events")
-  async getEvents(req: Request, res: Response) {
-    const organizationId = await organizationUsernameToId(req.params.id);
-    joiValidate(
-      { organizationId: Joi.number().required() },
-      { organizationId }
-    );
-    res.json(
-      await getOrganizationRecentEventsForUser(
         localsToTokenOrKey(res),
         organizationId
       )
