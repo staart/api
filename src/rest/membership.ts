@@ -23,8 +23,8 @@ import { getOrganization, getDomainByDomainName } from "../crud/organization";
 import { trackEvent } from "../helpers/tracking";
 
 export const getMembershipDetailsForUser = async (
-  userId: number,
-  membershipId: number
+  userId: string,
+  membershipId: string
 ) => {
   if (await can(userId, Authorizations.READ, "membership", membershipId))
     return await getMembershipDetailed(membershipId);
@@ -32,8 +32,8 @@ export const getMembershipDetailsForUser = async (
 };
 
 export const deleteMembershipForUser = async (
-  tokenUserId: number | ApiKeyResponse,
-  membershipId: number,
+  tokenUserId: string | ApiKeyResponse,
+  membershipId: string,
   locals: Locals
 ) => {
   const membership = await getMembership(membershipId);
@@ -64,8 +64,8 @@ export const deleteMembershipForUser = async (
 };
 
 export const updateMembershipForUser = async (
-  userId: number | ApiKeyResponse,
-  membershipId: number,
+  userId: string | ApiKeyResponse,
+  membershipId: string,
   data: KeyValue,
   locals: Locals
 ) => {

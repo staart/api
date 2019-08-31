@@ -219,7 +219,7 @@ export class AuthController {
   @Post("impersonate/:id")
   @Middleware(authHandler)
   @Middleware(
-    validator({ impersonateUserId: Joi.number().required() }, "params")
+    validator({ impersonateUserId: Joi.string().required() }, "params")
   )
   async getImpersonate(req: Request, res: Response) {
     const tokenUserId = res.locals.token.id;

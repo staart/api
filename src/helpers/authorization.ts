@@ -231,10 +231,10 @@ const canApiKeyOrganization = (
  * Whether a user has authorization to perform an action
  */
 export const can = async (
-  user: User | number | ApiKeyResponse | AccessTokenResponse,
+  user: User | string | ApiKeyResponse | AccessTokenResponse,
   action: Authorizations | OrgScopes | UserScopes,
   targetType: "user" | "organization" | "membership" | "general",
-  target?: User | Organization | Membership | number
+  target?: User | Organization | Membership | string
 ) => {
   let userObject: User | ApiKeyResponse | undefined = undefined;
   let isApiKey = false;
@@ -249,7 +249,7 @@ export const can = async (
       userObject = user as User;
     }
   } else {
-    userObject = await getUser(user as number);
+    userObject = await getUser(user as string);
   }
 
   if (isApiKey) {
@@ -292,7 +292,7 @@ export const can = async (
 
   let targetObject: User | Organization | Membership;
   if (targetType === "user") {
-    if (typeof target === "string" || typeof target === "number")
+    if (typeof target === "string" || typeof target === "string")
       targetObject = await getUser(target);
     else targetObject = target as User;
     return await canUserUser(
@@ -301,7 +301,7 @@ export const can = async (
       targetObject as User
     );
   } else if (targetType === "organization") {
-    if (typeof target === "string" || typeof target === "number")
+    if (typeof target === "string" || typeof target === "string")
       targetObject = await getOrganization(target);
     else targetObject = target as Organization;
     return await canUserOrganization(
@@ -310,7 +310,7 @@ export const can = async (
       targetObject as Organization
     );
   } else if (targetType === "membership") {
-    if (typeof target === "string" || typeof target === "number")
+    if (typeof target === "string" || typeof target === "string")
       targetObject = await getMembership(target);
     else targetObject = target as Membership;
     return await canUserMembership(

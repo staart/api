@@ -20,5 +20,5 @@ export interface Row {
 }
 
 export interface IdRow extends Row {
-  id?: number;
+  id?: string;
 }

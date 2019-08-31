@@ -26,15 +26,15 @@ export interface User extends IdRow {
 }
 
 export interface ApprovedLocation {
-  id?: number;
-  userId?: number;
+  id?: string;
+  userId?: string;
   subnet?: string;
   createdAt?: Date;
 }
 
 export interface BackupCode extends Row {
   code: number;
-  userId: number;
+  userId: string;
   used?: boolean;
 }
 
@@ -43,12 +43,12 @@ export interface AccessToken extends IdRow {
   description?: string;
   jwtAccessToken?: string;
   scopes?: string;
-  userId: number;
+  userId: string;
   expiresAt?: Date;
 }
 export interface AccessTokenResponse {
-  id: number;
-  userId: number;
+  id: string;
+  userId: string;
   scopes: string;
   jti: string;
   sub: Tokens;
@@ -56,7 +56,7 @@ export interface AccessTokenResponse {
 }
 
 export interface Session extends IdRow {
-  userId: number;
+  userId: string;
   jwtToken: string;
   ipAddress: string;
   userAgent: string;

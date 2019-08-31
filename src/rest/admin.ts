@@ -9,7 +9,7 @@ import {
 import ms from "ms";
 
 export const getAllOrganizationForUser = async (
-  tokenUserId: number,
+  tokenUserId: string,
   query: KeyValue
 ) => {
   if (await can(tokenUserId, Authorizations.READ, "general"))
@@ -21,7 +21,7 @@ export const getAllOrganizationForUser = async (
 };
 
 export const getAllUsersForUser = async (
-  tokenUserId: number,
+  tokenUserId: string,
   query: KeyValue
 ) => {
   if (await can(tokenUserId, Authorizations.READ, "general"))
@@ -36,7 +36,7 @@ export const getAllUsersForUser = async (
  * Get an API key
  */
 export const getServerLogsForUser = async (
-  tokenUserId: number,
+  tokenUserId: string,
   query: KeyValue
 ) => {
   if (!(await can(tokenUserId, Authorizations.READ, "general")))

@@ -66,12 +66,12 @@ export const generateToken = (
  * Verify a JWT
  */
 export interface TokenResponse {
-  id: number;
+  id: string;
   ipAddress?: string;
 }
 export interface ApiKeyResponse {
-  id: number;
-  organizationId: number;
+  id: string;
+  organizationId: string;
   scopes: string;
   jti: string;
   sub: Tokens;
@@ -93,13 +93,13 @@ export const verifyToken = (
 /**
  * Generate a new email verification JWT
  */
-export const emailVerificationToken = (id: number) =>
+export const emailVerificationToken = (id: string) =>
   generateToken({ id }, TOKEN_EXPIRY_EMAIL_VERIFICATION, Tokens.EMAIL_VERIFY);
 
 /**
  * Generate a new password reset JWT
  */
-export const passwordResetToken = (id: number) =>
+export const passwordResetToken = (id: string) =>
   generateToken({ id }, TOKEN_EXPIRY_PASSWORD_RESET, Tokens.PASSWORD_RESET);
 
 /**
@@ -156,7 +156,7 @@ export const accessToken = (accessToken: AccessToken) => {
 /**
  * Generate a new approve location JWT
  */
-export const approveLocationToken = (id: number, ipAddress: string) =>
+export const approveLocationToken = (id: string, ipAddress: string) =>
   generateToken(
     { id, ipAddress },
     TOKEN_EXPIRY_APPROVE_LOCATION,
@@ -166,7 +166,7 @@ export const approveLocationToken = (id: number, ipAddress: string) =>
 /**
  * Generate a new refresh JWT
  */
-export const refreshToken = (id: number) =>
+export const refreshToken = (id: string) =>
   generateToken({ id }, TOKEN_EXPIRY_REFRESH, Tokens.REFRESH);
 
 export const postLoginTokens = async (

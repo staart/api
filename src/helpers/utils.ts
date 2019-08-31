@@ -9,7 +9,7 @@ import cryptoRandomString from "crypto-random-string";
 import { Tokens } from "../interfaces/enum";
 import { ApiKeyResponse } from "./jwt";
 import { isMatch } from "matcher";
-import Hashids from "hashids";
+import Hashids from "hashids/cjs";
 import { getUserIdFromUsername } from "../crud/user";
 import { HASH_IDS } from "../config";
 
@@ -73,33 +73,40 @@ export const organizationUsernameToId = async (id: string) => {
   if (isNaN(Number(id))) {
     return await getOrganizationIdFromUsername(id);
   } else {
-    return parseInt(id);
+    return hashIdToId(id);
   }
 };
 
-export const userUsernameToId = async (id: string, tokenUserId: number) => {
+export const userUsernameToId = async (id: string, tokenUserId: string) => {
   if (id === "me") {
     return tokenUserId;
   } else if (isNaN(Number(id))) {
     return await getUserIdFromUsername(id);
   } else {
-    return parseInt(id);
+    return hashIdToId(id);
   }
 };
 
-export const generateHashId = (id: number) => hashIds.encode(id);
+export const generateHashId = (id: string) => `hashid-${hashIds.encode(id)}`;
 
 export const hashIdToId = (id: string | number) => {
   if (typeof id === "number") return id;
-  if (id.startsWith("h")) {
-    const numberId = parseInt(hashIds.decode(id).join(""));
+  if (id.startsWith("hashid-")) {
+    const numberId = parseInt(
+      hashIds.decode(id.replace("hashid-", "")).join("")
+    );
     if (isNaN(numberId)) {
-      return parseInt(id);
+      const newId = parseInt(id);
+      if (isNaN(newId)) {
+        return id;
+      } else {
+        return newId;
+      }
     } else {
       return numberId;
     }
   }
-  return parseInt(id);
+  return id;
 };
 
 export const localsToTokenOrKey = (res: Response) => {

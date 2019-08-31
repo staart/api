@@ -17,21 +17,21 @@ export interface ApiKey extends IdRow {
   description?: string;
   jwtApiKey?: string;
   scopes?: string;
-  organizationId: number;
+  organizationId: string;
   ipRestrictions?: string;
   referrerRestrictions?: string;
   expiresAt?: Date;
 }
 
 export interface Domain extends IdRow {
-  organizationId: number;
+  organizationId: string;
   domain: string;
   verificationCode?: string;
   isVerified: boolean;
 }
 
 export interface Webhook extends IdRow {
-  organizationId: number;
+  organizationId: string;
   url: string;
   event: Webhooks;
   contentType: "application/json" | "application/x-www-form-urlencoded";

@@ -12,7 +12,14 @@ import { Email } from "../interfaces/tables/emails";
 import { Membership } from "../interfaces/tables/memberships";
 import { Organization } from "../interfaces/tables/organization";
 import { KeyValue } from "../interfaces/general";
-import { boolValues, jsonValues, dateValues, readOnlyValues } from "./utils";
+import {
+  boolValues,
+  jsonValues,
+  dateValues,
+  readOnlyValues,
+  generateHashId,
+  hashIdToId
+} from "./utils";
 import { getUserPrimaryEmailObject } from "../crud/email";
 import { InsertResult } from "../interfaces/mysql";
 import { emojify, unemojify } from "node-emoji";
@@ -36,6 +43,7 @@ export const query = (
     pool.getConnection((error, connection) => {
       if (error) return reject(error);
       if (values) values = cleanValues(values);
+      console.log("QUERY", queryString, values);
       connection.query(queryString, values, (error, result) => {
         connection.destroy();
         if (error) return reject(error);
@@ -85,6 +93,7 @@ export const uncleanValues = (
             )
           ).toISOString();
         }
+        if (key === "id") item[key] = generateHashId(item[key]);
         if (typeof item[key] === "string") item[key] = emojify(item[key]);
       });
       return item;
@@ -103,6 +112,9 @@ export const cleanValues = (
     // Clean up strings
     if (typeof value === "string") {
       value = unemojify(value.trim());
+      if (value.startsWith("hashid-")) {
+        value = hashIdToId(value);
+      }
     }
     // Convert true to 1, false to 0
     if (typeof value === "boolean") value = value ? 1 : 0;

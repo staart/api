@@ -2,9 +2,9 @@ import { EventType, Webhooks } from "../enum";
 import { GeoLocation } from "../../helpers/location";
 
 export interface Event {
-  id?: number;
-  userId?: number;
-  organizationId?: number;
+  id?: string;
+  userId?: string;
+  organizationId?: string;
   type?: EventType | Webhooks;
   data?: string | object;
   ipAddress?: string;

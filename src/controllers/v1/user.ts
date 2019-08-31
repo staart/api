@@ -58,7 +58,7 @@ export class UserController {
   async get(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate(
-      { id: [Joi.string().required(), Joi.number().required()] },
+      { id: [Joi.string().required(), Joi.string().required()] },
       { id }
     );
     res.json(await getUserFromId(id, res.locals.token.id));
@@ -93,7 +93,7 @@ export class UserController {
   async patch(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate(
-      { id: [Joi.string().required(), Joi.number().required()] },
+      { id: [Joi.string().required(), Joi.string().required()] },
       { id }
     );
     await updateUserForUser(res.locals.token.id, id, req.body, res.locals);
@@ -104,7 +104,7 @@ export class UserController {
   async delete(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate(
-      { id: [Joi.string().required(), Joi.number().required()] },
+      { id: [Joi.string().required(), Joi.string().required()] },
       { id }
     );
     res.json(await deleteUserForUser(res.locals.token.id, id, res.locals));
@@ -130,7 +130,7 @@ export class UserController {
     const newPassword = req.body.newPassword;
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.number().required()]
+        id: [Joi.string().required(), Joi.string().required()]
       },
       { id }
     );
@@ -148,7 +148,7 @@ export class UserController {
   async getRecentEvents(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate(
-      { id: [Joi.string().required(), Joi.number().required()] },
+      { id: [Joi.string().required(), Joi.string().required()] },
       { id }
     );
     res.json(await getRecentEventsForUser(res.locals.token.id, id, req.query));
@@ -158,7 +158,7 @@ export class UserController {
   async getMemberships(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate(
-      { id: [Joi.string().required(), Joi.number().required()] },
+      { id: [Joi.string().required(), Joi.string().required()] },
       { id }
     );
     res.json(await getMembershipsForUser(res.locals.token.id, id, req.query));
@@ -170,8 +170,8 @@ export class UserController {
     const membershipId = parseInt(req.params.membershipId);
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.number().required()],
-        membershipId: Joi.number().required()
+        id: [Joi.string().required(), Joi.string().required()],
+        membershipId: Joi.string().required()
       },
       { id, membershipId }
     );
@@ -184,8 +184,8 @@ export class UserController {
     const membershipId = parseInt(req.params.membershipId);
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.number().required()],
-        membershipId: Joi.number().required()
+        id: [Joi.string().required(), Joi.string().required()],
+        membershipId: Joi.string().required()
       },
       { id, membershipId }
     );
@@ -199,8 +199,8 @@ export class UserController {
     const membershipId = parseInt(req.params.membershipId);
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.number().required()],
-        membershipId: Joi.number().required()
+        id: [Joi.string().required(), Joi.string().required()],
+        membershipId: Joi.string().required()
       },
       { id, membershipId }
     );
@@ -214,7 +214,7 @@ export class UserController {
   async getUserData(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate(
-      { id: [Joi.string().required(), Joi.number().required()] },
+      { id: [Joi.string().required(), Joi.string().required()] },
       { id }
     );
     res.json(await getAllDataForUser(res.locals.token.id, id));
@@ -224,7 +224,7 @@ export class UserController {
   async getEmails(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate(
-      { id: [Joi.string().required(), Joi.number().required()] },
+      { id: [Joi.string().required(), Joi.string().required()] },
       { id }
     );
     res.json(await getAllEmailsForUser(res.locals.token.id, id, req.query));
@@ -236,7 +236,7 @@ export class UserController {
     const email = req.body.email;
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.number().required()],
+        id: [Joi.string().required(), Joi.string().required()],
         email: Joi.string()
           .email()
           .required()
@@ -253,8 +253,8 @@ export class UserController {
     const emailId = parseInt(req.params.emailId);
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.number().required()],
-        emailId: Joi.number().required()
+        id: [Joi.string().required(), Joi.string().required()],
+        emailId: Joi.string().required()
       },
       { id, emailId }
     );
@@ -267,8 +267,8 @@ export class UserController {
     const emailId = parseInt(req.params.emailId);
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.number().required()],
-        emailId: Joi.number().required()
+        id: [Joi.string().required(), Joi.string().required()],
+        emailId: Joi.string().required()
       },
       { id, emailId }
     );
@@ -282,8 +282,8 @@ export class UserController {
     const emailId = parseInt(req.params.emailId);
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.number().required()],
-        emailId: Joi.number().required()
+        id: [Joi.string().required(), Joi.string().required()],
+        emailId: Joi.string().required()
       },
       { id, emailId }
     );
@@ -300,7 +300,7 @@ export class UserController {
   async getEnable2FA(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate(
-      { id: [Joi.string().required(), Joi.number().required()] },
+      { id: [Joi.string().required(), Joi.string().required()] },
       { id }
     );
     res.json(await enable2FAForUser(res.locals.token.id, id));
@@ -312,7 +312,7 @@ export class UserController {
     const code = req.body.code;
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.number().required()],
+        id: [Joi.string().required(), Joi.string().required()],
         code: Joi.number()
           .min(5)
           .required()
@@ -326,7 +326,7 @@ export class UserController {
   async delete2FA(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate(
-      { id: [Joi.string().required(), Joi.number().required()] },
+      { id: [Joi.string().required(), Joi.string().required()] },
       { id }
     );
     res.json(await disable2FAForUser(res.locals.token.id, id));
@@ -336,7 +336,7 @@ export class UserController {
   async getBackupCodes(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate(
-      { id: [Joi.string().required(), Joi.number().required()] },
+      { id: [Joi.string().required(), Joi.string().required()] },
       { id }
     );
     res.json(await getBackupCodesForUser(res.locals.token.id, id));
@@ -346,7 +346,7 @@ export class UserController {
   async getRegenerateBackupCodes(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate(
-      { id: [Joi.string().required(), Joi.number().required()] },
+      { id: [Joi.string().required(), Joi.string().required()] },
       { id }
     );
     res.json(await regenerateBackupCodesForUser(res.locals.token.id, id));
@@ -356,7 +356,7 @@ export class UserController {
   async getUserAccessTokens(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate(
-      { id: [Joi.string().required(), Joi.number().required()] },
+      { id: [Joi.string().required(), Joi.string().required()] },
       { id }
     );
     const accessTokenParams = { ...req.query };
@@ -390,7 +390,7 @@ export class UserController {
   async putUserAccessTokens(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate(
-      { id: [Joi.string().required(), Joi.number().required()] },
+      { id: [Joi.string().required(), Joi.string().required()] },
       { id }
     );
     res
@@ -411,8 +411,8 @@ export class UserController {
     const accessTokenId = parseInt(req.params.accessTokenId);
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.number().required()],
-        accessTokenId: Joi.number().required()
+        id: [Joi.string().required(), Joi.string().required()],
+        accessTokenId: Joi.string().required()
       },
       { id, accessTokenId }
     );
@@ -437,8 +437,8 @@ export class UserController {
     const accessTokenId = parseInt(req.params.accessTokenId);
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.number().required()],
-        accessTokenId: Joi.number().required()
+        id: [Joi.string().required(), Joi.string().required()],
+        accessTokenId: Joi.string().required()
       },
       { id, accessTokenId }
     );
@@ -459,8 +459,8 @@ export class UserController {
     const accessTokenId = parseInt(req.params.accessTokenId);
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.number().required()],
-        accessTokenId: Joi.number().required()
+        id: [Joi.string().required(), Joi.string().required()],
+        accessTokenId: Joi.string().required()
       },
       { id, accessTokenId }
     );
@@ -478,7 +478,7 @@ export class UserController {
   async getUserSessions(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate(
-      { id: [Joi.string().required(), Joi.number().required()] },
+      { id: [Joi.string().required(), Joi.string().required()] },
       { id }
     );
     const sessionParams = { ...req.query };
@@ -500,8 +500,8 @@ export class UserController {
     const sessionId = parseInt(req.params.sessionId);
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.number().required()],
-        sessionId: Joi.number().required()
+        id: [Joi.string().required(), Joi.string().required()],
+        sessionId: Joi.string().required()
       },
       { id, sessionId }
     );
@@ -514,8 +514,8 @@ export class UserController {
     const sessionId = parseInt(req.params.sessionId);
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.number().required()],
-        sessionId: Joi.number().required()
+        id: [Joi.string().required(), Joi.string().required()],
+        sessionId: Joi.string().required()
       },
       { id, sessionId }
     );

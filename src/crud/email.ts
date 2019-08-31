@@ -53,7 +53,7 @@ export const createEmail = async (
  * Send an email verification link
  */
 export const sendEmailVerification = async (
-  id: number,
+  id: string,
   email: string,
   user: User
 ) => {
@@ -65,7 +65,7 @@ export const sendEmailVerification = async (
 /**
  * Resend an email verification link
  */
-export const resendEmailVerification = async (id: number) => {
+export const resendEmailVerification = async (id: string) => {
   const token = await emailVerificationToken(id);
   const emailObject = await getEmail(id);
   const email = emailObject.email;
@@ -77,7 +77,7 @@ export const resendEmailVerification = async (id: number) => {
 /**
  * Update a user's email details
  */
-export const updateEmail = async (id: number, email: KeyValue) => {
+export const updateEmail = async (id: string, email: KeyValue) => {
   email.updatedAt = new Date();
   email = removeReadOnlyValues(email);
   return await query(
@@ -89,14 +89,14 @@ export const updateEmail = async (id: number, email: KeyValue) => {
 /**
  * Delete a user's email
  */
-export const deleteEmail = async (id: number) => {
+export const deleteEmail = async (id: string) => {
   return await query(`DELETE FROM ${tableName("emails")} WHERE id = ?`, [id]);
 };
 
 /**
  * Delete a user's email
  */
-export const deleteAllUserEmails = async (userId: number) => {
+export const deleteAllUserEmails = async (userId: string) => {
   const allEmails = await getUserEmails(userId);
   allEmails.forEach(email => {
     if (email.id && email.email) {
@@ -110,7 +110,7 @@ export const deleteAllUserEmails = async (userId: number) => {
 /**
  * Get details about a user's email
  */
-export const getEmail = async (id: number) => {
+export const getEmail = async (id: string) => {
   return (<Email[]>(
     await query(`SELECT * FROM ${tableName("emails")} WHERE id = ? LIMIT 1`, [
       id
@@ -121,9 +121,9 @@ export const getEmail = async (id: number) => {
 /**
  * Get a user's primary email's detailed object
  */
-export const getUserPrimaryEmailObject = async (user: User | number) => {
+export const getUserPrimaryEmailObject = async (user: User | string) => {
   let userObject: User;
-  if (typeof user === "number") {
+  if (typeof user === "string") {
     userObject = await getUser(user);
   } else {
     userObject = user;
@@ -138,14 +138,14 @@ export const getUserPrimaryEmailObject = async (user: User | number) => {
 /**
  * Get a user's primary email
  */
-export const getUserPrimaryEmail = async (user: User | number) => {
+export const getUserPrimaryEmail = async (user: User | string) => {
   return (await getUserPrimaryEmailObject(user)).email;
 };
 
 /**
  * Get a list of all emails added by a user
  */
-export const getUserEmails = async (userId: number) => {
+export const getUserEmails = async (userId: string) => {
   return await addIsPrimaryToEmails(<Email[]>(
     await query(`SELECT * FROM ${tableName("emails")} WHERE userId = ?`, [
       userId
@@ -156,7 +156,7 @@ export const getUserEmails = async (userId: number) => {
 /**
  * Gets the best email to get in touch with a user
  */
-export const getUserBestEmail = async (userId: number) => {
+export const getUserBestEmail = async (userId: string) => {
   try {
     return await getUserPrimaryEmail(userId);
   } catch (error) {}
@@ -201,11 +201,11 @@ export const getVerifiedEmailObject = async (email: string) => {
 /**
  * Get a list of all verified emails of a user
  */
-export const getUserVerifiedEmails = async (user: User | number) => {
+export const getUserVerifiedEmails = async (user: User | string) => {
   let userId = 0;
   if (typeof user === "object" && user.id) {
     userId = user.id;
-  } else if (typeof user === "number") {
+  } else if (typeof user === "string") {
     userId = user;
   }
   if (!userId) throw new Error(ErrorCode.USER_NOT_FOUND);

@@ -9,7 +9,7 @@ import axios from "axios";
 import { JWT_ISSUER } from "../config";
 
 export const queueWebhook = (
-  organizationId: number,
+  organizationId: string,
   webhook: Webhooks,
   data?: any
 ) => {
@@ -19,7 +19,7 @@ export const queueWebhook = (
 };
 
 export const safeFireWebhook = async (
-  organizationId: number,
+  organizationId: string,
   webhook: Webhooks,
   data?: any
 ) => {

@@ -58,7 +58,7 @@ export const createOrganization = async (organization: Organization) => {
 /*
  * Get the details of a specific organization
  */
-export const getOrganization = async (id: number) => {
+export const getOrganization = async (id: string) => {
   const org = (<Organization[]>(
     await cachedQuery(
       CacheCategories.ORGANIZATION,
@@ -91,7 +91,7 @@ export const getOrganizationIdFromUsername = async (username: string) => {
  * Update an organization
  */
 export const updateOrganization = async (
-  id: number,
+  id: string,
   organization: KeyValue
 ) => {
   organization.updatedAt = new Date();
@@ -123,7 +123,7 @@ export const updateOrganization = async (
 /*
  * Delete an organization
  */
-export const deleteOrganization = async (id: number) => {
+export const deleteOrganization = async (id: string) => {
   deleteItemFromCache(CacheCategories.ORGANIZATION, id);
   return await query(`DELETE FROM ${tableName("organizations")} WHERE id = ?`, [
     id
@@ -143,7 +143,7 @@ export const getAllOrganizations = async () => {
  * Get a list of all approved locations of a user
  */
 export const getOrganizationApiKeys = async (
-  organizationId: number,
+  organizationId: string,
   query: KeyValue
 ) => {
   return await getPaginatedData({
@@ -158,7 +158,7 @@ export const getOrganizationApiKeys = async (
 /**
  * Get an API key
  */
-export const getApiKey = async (organizationId: number, apiKeyId: number) => {
+export const getApiKey = async (organizationId: string, apiKeyId: string) => {
   return (<ApiKey[]>(
     await query(
       `SELECT * FROM ${tableName(
@@ -173,8 +173,8 @@ export const getApiKey = async (organizationId: number, apiKeyId: number) => {
  * Get an API key
  */
 export const getApiKeyLogs = async (
-  organizationId: number,
-  apiKeyId: number,
+  organizationId: string,
+  apiKeyId: string,
   query: KeyValue
 ) => {
   await getApiKey(organizationId, apiKeyId);
@@ -231,8 +231,8 @@ export const createApiKey = async (apiKey: ApiKey) => {
  * Update a user's details
  */
 export const updateApiKey = async (
-  organizationId: number,
-  apiKeyId: number,
+  organizationId: string,
+  apiKeyId: string,
   data: KeyValue
 ) => {
   data.updatedAt = new Date();
@@ -252,8 +252,8 @@ export const updateApiKey = async (
  * Delete an API key
  */
 export const deleteApiKey = async (
-  organizationId: number,
-  apiKeyId: number
+  organizationId: string,
+  apiKeyId: string
 ) => {
   const currentApiKey = await getApiKey(organizationId, apiKeyId);
   if (currentApiKey.jwtApiKey) await invalidateToken(currentApiKey.jwtApiKey);
@@ -269,7 +269,7 @@ export const deleteApiKey = async (
  * Get a list of domains for an organization
  */
 export const getOrganizationDomains = async (
-  organizationId: number,
+  organizationId: string,
   query: KeyValue
 ) => {
   return await getPaginatedData({
@@ -284,7 +284,7 @@ export const getOrganizationDomains = async (
 /**
  * Get a domain
  */
-export const getDomain = async (organizationId: number, domainId: number) => {
+export const getDomain = async (organizationId: string, domainId: string) => {
   return (<Domain[]>(
     await query(
       `SELECT * FROM ${tableName(
@@ -310,7 +310,7 @@ export const getDomainByDomainName = async (domain: string) => {
 };
 
 export const updateOrganizationProfilePicture = async (
-  organizationId: number
+  organizationId: string
 ) => {
   const domains = await getOrganizationDomains(organizationId, {});
   if (domains && domains.data && domains.data.length) {
@@ -362,8 +362,8 @@ export const createDomain = async (domain: Domain): Promise<InsertResult> => {
  * Update a domain
  */
 export const updateDomain = async (
-  organizationId: number,
-  domainId: number,
+  organizationId: string,
+  domainId: string,
   data: KeyValue
 ) => {
   data.updatedAt = new Date();
@@ -381,8 +381,8 @@ export const updateDomain = async (
  * Delete a domain
  */
 export const deleteDomain = async (
-  organizationId: number,
-  domainId: number
+  organizationId: string,
+  domainId: string
 ) => {
   const currentDomain = await getDomain(organizationId, domainId);
   const response = await query(
@@ -410,7 +410,7 @@ export const checkDomainAvailability = async (username: string) => {
  * Get a list of webhooks for an organization
  */
 export const getOrganizationWebhooks = async (
-  organizationId: number,
+  organizationId: string,
   query: KeyValue
 ) => {
   return await getPaginatedData({
@@ -426,7 +426,7 @@ export const getOrganizationWebhooks = async (
  * Get a webhook
  */
 export const getOrganizationEventWebhooks = async (
-  organizationId: number,
+  organizationId: string,
   event: Webhooks
 ) => {
   return <Webhook[]>(
@@ -442,7 +442,7 @@ export const getOrganizationEventWebhooks = async (
 /**
  * Get a webhook
  */
-export const getWebhook = async (organizationId: number, webhookId: number) => {
+export const getWebhook = async (organizationId: string, webhookId: string) => {
   return (<Webhook[]>(
     await query(
       `SELECT * FROM ${tableName(
@@ -473,8 +473,8 @@ export const createWebhook = async (
  * Update a webhook
  */
 export const updateWebhook = async (
-  organizationId: number,
-  webhookId: number,
+  organizationId: string,
+  webhookId: string,
   data: KeyValue
 ) => {
   data.updatedAt = new Date();
@@ -492,8 +492,8 @@ export const updateWebhook = async (
  * Delete a webhook
  */
 export const deleteWebhook = async (
-  organizationId: number,
-  webhookId: number
+  organizationId: string,
+  webhookId: string
 ) => {
   const currentWebhook = await getWebhook(organizationId, webhookId);
   return await query(
@@ -508,7 +508,7 @@ export const deleteWebhook = async (
  * Get a detailed list of all members in an organization
  */
 export const getOrganizationMemberships = async (
-  organizationId: number,
+  organizationId: string,
   query?: KeyValue
 ) => {
   const members: any = await getPaginatedData({
@@ -526,8 +526,8 @@ export const getOrganizationMemberships = async (
  * Get details about a specific organization membership
  */
 export const getOrganizationMembership = async (
-  organizationId: number,
-  id: number
+  organizationId: string,
+  id: string
 ) => {
   return (<Membership[]>(
     await cachedQuery(
@@ -545,8 +545,8 @@ export const getOrganizationMembership = async (
  * Get a detailed version of a membership
  */
 export const getOrganizationMembershipDetailed = async (
-  organizationId: number,
-  id: number
+  organizationId: string,
+  id: string
 ) => {
   const membership = (await getOrganizationMembership(
     organizationId,
@@ -563,8 +563,8 @@ export const getOrganizationMembershipDetailed = async (
  * Update an organization membership for a user
  */
 export const updateOrganizationMembership = async (
-  organizationId: number,
-  id: number,
+  organizationId: string,
+  id: string,
   membership: KeyValue
 ) => {
   membership.updatedAt = new Date();
@@ -588,8 +588,8 @@ export const updateOrganizationMembership = async (
  * Delete an organization membership
  */
 export const deleteOrganizationMembership = async (
-  organizationId: number,
-  id: number
+  organizationId: string,
+  id: string
 ) => {
   const membershipDetails = await getOrganizationMembership(organizationId, id);
   if (membershipDetails.id)
@@ -610,7 +610,7 @@ export const deleteOrganizationMembership = async (
  * Delete all memberships in an organization
  */
 export const deleteAllOrganizationMemberships = async (
-  organizationId: number
+  organizationId: string
 ) => {
   const allMemberships = await getOrganizationMemberships(organizationId);
   for await (const membership of allMemberships.data) {

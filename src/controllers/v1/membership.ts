@@ -23,7 +23,7 @@ import Joi from "@hapi/joi";
 @ClassMiddleware(authHandler)
 export class MembershipController {
   @Get(":id")
-  @Middleware(validator({ id: Joi.number().required() }, "params"))
+  @Middleware(validator({ id: Joi.string().required() }, "params"))
   async get(req: Request, res: Response) {
     const membershipId = parseInt(req.params.id);
     const userId = res.locals.token.id;
@@ -31,7 +31,7 @@ export class MembershipController {
   }
 
   @Delete(":id")
-  @Middleware(validator({ id: Joi.number().required() }, "params"))
+  @Middleware(validator({ id: Joi.string().required() }, "params"))
   async delete(req: Request, res: Response) {
     const userId = res.locals.token.id;
     const membershipId = parseInt(req.params.id);
@@ -40,7 +40,7 @@ export class MembershipController {
   }
 
   @Patch(":id")
-  @Middleware(validator({ id: Joi.number().required() }, "params"))
+  @Middleware(validator({ id: Joi.string().required() }, "params"))
   async patch(req: Request, res: Response) {
     const userId = res.locals.token.id;
     const membershipId = parseInt(req.params.id);
