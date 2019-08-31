@@ -9,7 +9,15 @@ import cryptoRandomString from "crypto-random-string";
 import { Tokens } from "../interfaces/enum";
 import { ApiKeyResponse } from "./jwt";
 import { isMatch } from "matcher";
+import Hashids from "hashids";
 import { getUserIdFromUsername } from "../crud/user";
+import { HASH_IDS } from "../config";
+
+const hashIds = new Hashids(
+  HASH_IDS,
+  10,
+  "abcdefghijklmnopqrstuvwxyz1234567890"
+);
 
 /**
  * Capitalize each first letter in a string
@@ -77,6 +85,21 @@ export const userUsernameToId = async (id: string, tokenUserId: number) => {
   } else {
     return parseInt(id);
   }
+};
+
+export const generateHashId = (id: number) => hashIds.encode(id);
+
+export const hashIdToId = (id: string | number) => {
+  if (typeof id === "number") return id;
+  if (id.startsWith("h")) {
+    const numberId = parseInt(hashIds.decode(id).join(""));
+    if (isNaN(numberId)) {
+      return parseInt(id);
+    } else {
+      return numberId;
+    }
+  }
+  return parseInt(id);
 };
 
 export const localsToTokenOrKey = (res: Response) => {
