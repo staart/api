@@ -271,7 +271,7 @@ export const createBackupCodes = async (userId: string, count = 1) => {
 /**
  * Update a backup code
  */
-export const updateBackupCode = async (backupCode: string, code: KeyValue) => {
+export const updateBackupCode = async (backupCode: number, code: KeyValue) => {
   code.updatedAt = new Date();
   return await query(
     `UPDATE \`backup-codes\` SET ${setValues(code)} WHERE code = ?`,
@@ -282,7 +282,7 @@ export const updateBackupCode = async (backupCode: string, code: KeyValue) => {
 /**
  * Delete a backup code
  */
-export const deleteBackupCode = async (backupCode: string) => {
+export const deleteBackupCode = async (backupCode: number) => {
   return await query("DELETE FROM `backup-codes` WHERE code = ?", [backupCode]);
 };
 
@@ -303,7 +303,7 @@ export const getUserBackupCodes = async (userId: string) => {
 /**
  * Get a specific backup code
  */
-export const getUserBackupCode = async (userId: string, backupCode: string) => {
+export const getUserBackupCode = async (userId: string, backupCode: number) => {
   return (<BackupCode[]>(
     await query(
       "SELECT * FROM `backup-codes` WHERE userId = ? AND code = ? LIMIT 1",

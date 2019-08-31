@@ -18,7 +18,8 @@ import {
   dateValues,
   readOnlyValues,
   generateHashId,
-  hashIdToId
+  hashIdToId,
+  IdValues
 } from "./utils";
 import { getUserPrimaryEmailObject } from "../crud/email";
 import { InsertResult } from "../interfaces/mysql";
@@ -93,7 +94,7 @@ export const uncleanValues = (
             )
           ).toISOString();
         }
-        if (key === "id") item[key] = generateHashId(item[key]);
+        if (IdValues.includes(key)) item[key] = generateHashId(item[key]);
         if (typeof item[key] === "string") item[key] = emojify(item[key]);
       });
       return item;

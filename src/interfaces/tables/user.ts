@@ -6,7 +6,7 @@ export interface User extends IdRow {
   name: string;
   username?: string;
   nickname?: string;
-  primaryEmail?: number;
+  primaryEmail?: string;
   password?: string;
   twoFactorEnabled?: boolean;
   twoFactorSecret?: string;

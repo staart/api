@@ -641,7 +641,7 @@ export const inviteMemberToOrganization = async (
     }
     let newUser: User;
     let userExists = false;
-    let createdUserId = 0;
+    let createdUserId: string;
     try {
       newUser = await getUserByEmail(newMemberEmail);
       userExists = true;

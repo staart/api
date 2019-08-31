@@ -202,7 +202,7 @@ export const getVerifiedEmailObject = async (email: string) => {
  * Get a list of all verified emails of a user
  */
 export const getUserVerifiedEmails = async (user: User | string) => {
-  let userId = 0;
+  let userId = "";
   if (typeof user === "object" && user.id) {
     userId = user.id;
   } else if (typeof user === "string") {

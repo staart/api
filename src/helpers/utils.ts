@@ -89,8 +89,8 @@ export const userUsernameToId = async (id: string, tokenUserId: string) => {
 
 export const generateHashId = (id: string) => `hashid-${hashIds.encode(id)}`;
 
-export const hashIdToId = (id: string | number) => {
-  if (typeof id === "number") return id;
+export const hashIdToId = (id: string | number): string => {
+  if (typeof id === "number") return id.toString();
   if (id.startsWith("hashid-")) {
     const numberId = parseInt(
       hashIds.decode(id.replace("hashid-", "")).join("")
@@ -100,10 +100,10 @@ export const hashIdToId = (id: string | number) => {
       if (isNaN(newId)) {
         return id;
       } else {
-        return newId;
+        return newId.toString();
       }
     } else {
-      return numberId;
+      return numberId.toString();
     }
   }
   return id;
@@ -113,7 +113,7 @@ export const localsToTokenOrKey = (res: Response) => {
   if (res.locals.token.sub == Tokens.API_KEY) {
     return res.locals.token as ApiKeyResponse;
   }
-  return res.locals.token.id as number;
+  return res.locals.token.id as string;
 };
 
 export const createSlug = (name: string) =>
@@ -175,6 +175,11 @@ export const readOnlyValues = [
   "userId",
   "organizationId"
 ];
+
+/**
+ * MySQL columns which are for int IDs
+ */
+export const IdValues = ["id", "userId", "organizationId", "primaryEmailId"];
 
 export const joiValidate = (schemaMap: Joi.SchemaMap, data: any) => {
   const schema = Joi.object().keys(schemaMap);
