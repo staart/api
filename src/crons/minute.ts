@@ -6,6 +6,7 @@ import {
   clearSecurityEventsData
 } from "../helpers/tracking";
 import { elasticSearch } from "../helpers/elasticsearch";
+import { IdValues, hashIdToId } from "../helpers/utils";
 
 export default () => {
   new CronJob(
@@ -28,7 +29,18 @@ const storeSecurityEvents = async () => {
   month = parseInt(month) < 10 ? `0${month}` : month;
   let day = (date.getUTCDate() + 1).toString();
   day = parseInt(day) < 10 ? `0${day}` : day;
-  for await (const body of data) {
+  for await (let body of data) {
+    if (typeof body === "object") {
+      Object.keys(body).forEach(key => {
+        if (IdValues.includes(key)) body[key] = hashIdToId(body[key]);
+      });
+      if (body.data && typeof body.data === "object") {
+        Object.keys(body.data).forEach(key => {
+          if (IdValues.includes(key))
+            body.data[key] = hashIdToId(body.data[key]);
+        });
+      }
+    }
     try {
       await elasticSearch.index({
         index: `staart-events-${year}-${month}-${day}`,
