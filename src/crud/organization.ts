@@ -19,7 +19,11 @@ import { ApiKey } from "../interfaces/tables/organization";
 import { getPaginatedData } from "./data";
 import cryptoRandomString from "crypto-random-string";
 import { apiKeyToken, invalidateToken } from "../helpers/jwt";
-import { TOKEN_EXPIRY_API_KEY_MAX, JWT_ISSUER } from "../config";
+import {
+  TOKEN_EXPIRY_API_KEY_MAX,
+  JWT_ISSUER,
+  ELASTIC_LOGS_PREFIX
+} from "../config";
 import { InsertResult } from "../interfaces/mysql";
 import { Membership } from "../interfaces/tables/memberships";
 import { getUser } from "./user";
@@ -181,7 +185,7 @@ export const getApiKeyLogs = async (
   const range: string = query.range || "7d";
   const from = query.from ? parseInt(query.from) : 0;
   const result = await elasticSearch.search({
-    index: `staart-logs-*`,
+    index: `${ELASTIC_LOGS_PREFIX}*`,
     from,
     body: {
       query: {

@@ -7,6 +7,7 @@ import {
 } from "../helpers/tracking";
 import { elasticSearch } from "../helpers/elasticsearch";
 import { IdValues, hashIdToId } from "../helpers/utils";
+import { ELASTIC_EVENTS_PREFIX, ELASTIC_LOGS_PREFIX } from "../config";
 
 export default () => {
   new CronJob(
@@ -43,7 +44,7 @@ const storeSecurityEvents = async () => {
     }
     try {
       await elasticSearch.index({
-        index: `staart-events-${year}-${month}-${day}`,
+        index: `${ELASTIC_EVENTS_PREFIX}${year}-${month}-${day}`,
         body,
         type: "log"
       });
@@ -66,7 +67,7 @@ const storeTrackingLogs = async () => {
   for await (const body of data) {
     try {
       await elasticSearch.index({
-        index: `staart-logs-${year}-${month}-${day}`,
+        index: `${ELASTIC_LOGS_PREFIX}${year}-${month}-${day}`,
         body,
         type: "log"
       });
