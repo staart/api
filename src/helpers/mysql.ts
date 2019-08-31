@@ -5,7 +5,8 @@ import {
   DB_PORT,
   DB_PASSWORD,
   DB_DATABASE,
-  DB_TABLE_PREFIX
+  DB_TABLE_PREFIX,
+  HASH_ID_PREFIX
 } from "../config";
 import { User, BackupCode } from "../interfaces/tables/user";
 import { Email } from "../interfaces/tables/emails";
@@ -112,7 +113,7 @@ export const cleanValues = (
     // Clean up strings
     if (typeof value === "string") {
       value = unemojify(value.trim());
-      if (value.startsWith("hashid-")) {
+      if (value.startsWith(HASH_ID_PREFIX)) {
         value = hashIdToId(value);
       }
     }

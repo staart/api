@@ -68,6 +68,7 @@ export const JWT_SECRET = process.env.JWT_SECRET || "staart";
 export const JWT_ISSUER = process.env.JWT_ISSUER || "staart";
 export const SERVICE_2FA = process.env.SERVICE_2FA || "staart";
 export const HASH_IDS = process.env.HASH_IDS || "staart";
+export const HASH_ID_PREFIX = process.env.HASH_ID_PREFIX || "d0e8a7c-";
 
 export const TOKEN_EXPIRY_EMAIL_VERIFICATION =
   process.env.TOKEN_EXPIRY_EMAIL_VERIFICATION || "7d";

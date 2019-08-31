@@ -11,7 +11,7 @@ import { ApiKeyResponse } from "./jwt";
 import { isMatch } from "matcher";
 import Hashids from "hashids/cjs";
 import { getUserIdFromUsername } from "../crud/user";
-import { HASH_IDS } from "../config";
+import { HASH_IDS, HASH_ID_PREFIX } from "../config";
 
 const hashIds = new Hashids(
   HASH_IDS,
@@ -87,13 +87,14 @@ export const userUsernameToId = async (id: string, tokenUserId: string) => {
   }
 };
 
-export const generateHashId = (id: string) => `hashid-${hashIds.encode(id)}`;
+export const generateHashId = (id: string) =>
+  `${HASH_ID_PREFIX}${hashIds.encode(id)}`;
 
 export const hashIdToId = (id: string | number): string => {
   if (typeof id === "number") return id.toString();
-  if (id.startsWith("hashid-")) {
+  if (id.startsWith(HASH_ID_PREFIX)) {
     const numberId = parseInt(
-      hashIds.decode(id.replace("hashid-", "")).join("")
+      hashIds.decode(id.replace(HASH_ID_PREFIX, "")).join("")
     );
     if (isNaN(numberId)) {
       const newId = parseInt(id);
