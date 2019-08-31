@@ -1,6 +1,6 @@
 {
   "name": "staart-manager",
-  "version": "1.1.17",
+  "version": "1.1.18",
   "main": "index.js",
   "repository": "git@github.com:AnandChowdhary/staart.git",
   "author": "Anand Chowdhary <mail@anandchowdhary.com>",
@@ -18,7 +18,7 @@
     "generate-docs": "yarn generate-routes && typedoc --out docs ./src",
     "generate-routes": "node setup/controllers.js",
     "increment-package": "node setup/increment.js",
-    "check-update": "node setup/update.js",
+    "check-update": "node setup/check-update.js",
     "update": "git pull git@github.com:o15y/staart",
     "postinstall": "npm run check-update",
     "snyk-protect": "snyk protect"
@@ -147,5 +147,5 @@
     "setup"
   ],
   "snyk": true,
-  "staart-version": "1.1.17"
+  "staart-version": "1.1.18"
 }
