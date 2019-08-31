@@ -29,7 +29,7 @@ test("Convert date to MySQL datetime", () => {
 test("Remove sensitive info", () => {
   expect(
     deleteSensitiveInfoUser({
-      id: 1,
+      id: "wiuhoeijpaoe",
       name: "Anand Chowdhary",
       password: "1abc9c"
     }).password

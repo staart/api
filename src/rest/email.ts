@@ -16,8 +16,8 @@ import { addIsPrimaryToEmails } from "../helpers/mysql";
 import { trackEvent } from "../helpers/tracking";
 
 export const getAllEmailsForUser = async (
-  tokenUserId: number,
-  userId: number,
+  tokenUserId: string,
+  userId: string,
   query: KeyValue
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER_EMAILS, "user", userId)) {
@@ -33,9 +33,9 @@ export const getAllEmailsForUser = async (
 };
 
 export const getEmailForUser = async (
-  tokenUserId: number,
-  userId: number,
-  emailId: number
+  tokenUserId: string,
+  userId: string,
+  emailId: string
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER_EMAILS, "user", userId))
     return await getEmail(emailId);
@@ -43,9 +43,9 @@ export const getEmailForUser = async (
 };
 
 export const resendEmailVerificationForUser = async (
-  tokenUserId: number,
-  userId: number,
-  emailId: number
+  tokenUserId: string,
+  userId: string,
+  emailId: string
 ) => {
   if (
     await can(
@@ -60,8 +60,8 @@ export const resendEmailVerificationForUser = async (
 };
 
 export const addEmailToUserForUser = async (
-  tokenUserId: number,
-  userId: number,
+  tokenUserId: string,
+  userId: string,
   email: string,
   locals: Locals
 ) => {
@@ -77,9 +77,9 @@ export const addEmailToUserForUser = async (
 };
 
 export const deleteEmailFromUserForUser = async (
-  tokenUserId: number,
-  userId: number,
-  emailId: number,
+  tokenUserId: string,
+  userId: string,
+  emailId: string,
   locals: Locals
 ) => {
   if (!(await can(tokenUserId, UserScopes.DELETE_USER_EMAILS, "user", userId)))

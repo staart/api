@@ -1,6 +1,6 @@
 {
   "name": "staart-manager",
-  "version": "1.1.9",
+  "version": "1.1.17",
   "main": "index.js",
   "repository": "git@github.com:AnandChowdhary/staart.git",
   "author": "Anand Chowdhary <mail@anandchowdhary.com>",
@@ -114,6 +114,7 @@
     "fs-extra": "^8.1.0",
     "geolite2": "^1.2.1",
     "handy-redis": "^1.6.2",
+    "hashids": "^2.0.0",
     "helmet": "^3.20.1",
     "http-aws-es": "^6.0.0",
     "http-status-codes": "^1.3.2",
@@ -146,5 +147,5 @@
     "setup"
   ],
   "snyk": true,
-  "staart-version": "1.1.9"
+  "staart-version": "1.1.17"
 }

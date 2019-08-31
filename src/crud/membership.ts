@@ -31,7 +31,7 @@ export const createMembership = async (membership: Membership) => {
 /*
  * Update an organization membership for a user
  */
-export const updateMembership = async (id: number, membership: KeyValue) => {
+export const updateMembership = async (id: string, membership: KeyValue) => {
   membership.updatedAt = new Date();
   membership = removeReadOnlyValues(membership);
   const membershipDetails = await getMembership(id);
@@ -52,7 +52,7 @@ export const updateMembership = async (id: number, membership: KeyValue) => {
 /*
  * Delete an organization membership
  */
-export const deleteMembership = async (id: number) => {
+export const deleteMembership = async (id: string) => {
   const membershipDetails = await getMembership(id);
   if (membershipDetails.id)
     deleteItemFromCache(
@@ -68,7 +68,7 @@ export const deleteMembership = async (id: number) => {
 /*
  * Delete all memberships for a user
  */
-export const deleteAllUserMemberships = async (userId: number) => {
+export const deleteAllUserMemberships = async (userId: string) => {
   const allMemberships = await getUserMemberships(userId);
   for await (const membership of allMemberships) {
     if (membership.id) {
@@ -84,7 +84,7 @@ export const deleteAllUserMemberships = async (userId: number) => {
 /*
  * Get details about a specific organization membership
  */
-export const getMembership = async (id: number) => {
+export const getMembership = async (id: string) => {
   return (<Membership[]>(
     await cachedQuery(
       CacheCategories.MEMBERSHIP,
@@ -98,7 +98,7 @@ export const getMembership = async (id: number) => {
 /*
  * Get a detailed version of a membership
  */
-export const getMembershipDetailed = async (id: number) => {
+export const getMembershipDetailed = async (id: string) => {
   const membership = (await getMembership(id)) as any;
   if (!membership || !membership.id)
     throw new Error(ErrorCode.MEMBERSHIP_NOT_FOUND);
@@ -110,7 +110,7 @@ export const getMembershipDetailed = async (id: number) => {
 /*
  * Get a list of all members in an organization
  */
-export const getOrganizationMembers = async (organizationId: number) => {
+export const getOrganizationMembers = async (organizationId: string) => {
   return <Membership[]>(
     await query(
       `SELECT * FROM ${tableName("memberships")} WHERE organizationId = ?`,
@@ -119,8 +119,8 @@ export const getOrganizationMembers = async (organizationId: number) => {
   );
 };
 
-export const getUserMemberships = async (user: User | number) => {
-  if (typeof user !== "number" && typeof user !== "string") {
+export const getUserMemberships = async (user: User | string) => {
+  if (typeof user !== "string" && typeof user !== "string") {
     if (user.id) user = user.id;
     else throw new Error(ErrorCode.USER_NOT_FOUND);
   }
@@ -161,7 +161,7 @@ export const addOrganizationToMemberships = async (
 /**
  * Get a detailed object of a user's membership
  */
-export const getUserMembershipsDetailed = async (user: User | number) => {
+export const getUserMembershipsDetailed = async (user: User | string) => {
   const memberships: any = await getUserMemberships(user);
   for await (const membership of memberships) {
     membership.organization = await getOrganization(membership.organizationId);
@@ -173,14 +173,14 @@ export const getUserMembershipsDetailed = async (user: User | number) => {
  * Get a user membership of a particular organization
  */
 export const getUserOrganizationMembership = async (
-  user: User | number,
-  organization: Organization | number
+  user: User | string,
+  organization: Organization | string
 ) => {
-  if (typeof user !== "number" && typeof user !== "string") {
+  if (typeof user !== "string" && typeof user !== "string") {
     if (user.id) user = user.id;
     else throw new Error(ErrorCode.USER_NOT_FOUND);
   }
-  if (typeof organization !== "number" && typeof organization !== "string") {
+  if (typeof organization !== "string" && typeof organization !== "string") {
     if (organization.id) organization = organization.id;
     else throw new Error(ErrorCode.ORGANIZATION_NOT_FOUND);
   }

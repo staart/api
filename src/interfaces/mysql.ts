@@ -1,7 +1,7 @@
 export interface InsertResult {
   fieldCount: number;
   affectedRows: number;
-  insertId: number;
+  insertId: string;
   serverStatus: number;
   warningCount: number;
   message: string;

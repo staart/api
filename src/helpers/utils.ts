@@ -9,7 +9,15 @@ import cryptoRandomString from "crypto-random-string";
 import { Tokens } from "../interfaces/enum";
 import { ApiKeyResponse } from "./jwt";
 import { isMatch } from "matcher";
+import Hashids from "hashids/cjs";
 import { getUserIdFromUsername } from "../crud/user";
+import { HASH_IDS, HASH_ID_PREFIX } from "../config";
+
+const hashIds = new Hashids(
+  HASH_IDS,
+  10,
+  "abcdefghijklmnopqrstuvwxyz1234567890"
+);
 
 /**
  * Capitalize each first letter in a string
@@ -65,25 +73,48 @@ export const organizationUsernameToId = async (id: string) => {
   if (isNaN(Number(id))) {
     return await getOrganizationIdFromUsername(id);
   } else {
-    return parseInt(id);
+    return hashIdToId(id);
   }
 };
 
-export const userUsernameToId = async (id: string, tokenUserId: number) => {
+export const userUsernameToId = async (id: string, tokenUserId: string) => {
   if (id === "me") {
     return tokenUserId;
   } else if (isNaN(Number(id))) {
     return await getUserIdFromUsername(id);
   } else {
-    return parseInt(id);
+    return hashIdToId(id);
   }
+};
+
+export const generateHashId = (id: string) =>
+  `${HASH_ID_PREFIX}${hashIds.encode(id)}`;
+
+export const hashIdToId = (id: string | number): string => {
+  if (typeof id === "number") return id.toString();
+  if (id.startsWith(HASH_ID_PREFIX)) {
+    const numberId = parseInt(
+      hashIds.decode(id.replace(HASH_ID_PREFIX, "")).join("")
+    );
+    if (isNaN(numberId)) {
+      const newId = parseInt(id);
+      if (isNaN(newId)) {
+        return id;
+      } else {
+        return newId.toString();
+      }
+    } else {
+      return numberId.toString();
+    }
+  }
+  return id;
 };
 
 export const localsToTokenOrKey = (res: Response) => {
   if (res.locals.token.sub == Tokens.API_KEY) {
     return res.locals.token as ApiKeyResponse;
   }
-  return res.locals.token.id as number;
+  return res.locals.token.id as string;
 };
 
 export const createSlug = (name: string) =>
@@ -145,6 +176,11 @@ export const readOnlyValues = [
   "userId",
   "organizationId"
 ];
+
+/**
+ * MySQL columns which are for int IDs
+ */
+export const IdValues = ["id", "userId", "organizationId", "primaryEmail"];
 
 export const joiValidate = (schemaMap: Joi.SchemaMap, data: any) => {
   const schema = Joi.object().keys(schemaMap);

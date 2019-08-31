@@ -28,7 +28,7 @@ export const getStripeCustomer = async (id: string) => {
  * Get the details of a customer
  */
 export const createStripeCustomer = async (
-  organizationId: number,
+  organizationId: string,
   customer: Stripe.customers.ICustomerCreationOptions
 ) => {
   const created = await stripe.customers.create({

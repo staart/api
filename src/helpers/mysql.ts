@@ -5,14 +5,23 @@ import {
   DB_PORT,
   DB_PASSWORD,
   DB_DATABASE,
-  DB_TABLE_PREFIX
+  DB_TABLE_PREFIX,
+  HASH_ID_PREFIX
 } from "../config";
 import { User, BackupCode } from "../interfaces/tables/user";
 import { Email } from "../interfaces/tables/emails";
 import { Membership } from "../interfaces/tables/memberships";
 import { Organization } from "../interfaces/tables/organization";
 import { KeyValue } from "../interfaces/general";
-import { boolValues, jsonValues, dateValues, readOnlyValues } from "./utils";
+import {
+  boolValues,
+  jsonValues,
+  dateValues,
+  readOnlyValues,
+  generateHashId,
+  hashIdToId,
+  IdValues
+} from "./utils";
 import { getUserPrimaryEmailObject } from "../crud/email";
 import { InsertResult } from "../interfaces/mysql";
 import { emojify, unemojify } from "node-emoji";
@@ -85,6 +94,7 @@ export const uncleanValues = (
             )
           ).toISOString();
         }
+        if (IdValues.includes(key)) item[key] = generateHashId(item[key]);
         if (typeof item[key] === "string") item[key] = emojify(item[key]);
       });
       return item;
@@ -103,6 +113,9 @@ export const cleanValues = (
     // Clean up strings
     if (typeof value === "string") {
       value = unemojify(value.trim());
+      if (value.startsWith(HASH_ID_PREFIX)) {
+        value = hashIdToId(value);
+      }
     }
     // Convert true to 1, false to 0
     if (typeof value === "boolean") value = value ? 1 : 0;

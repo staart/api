@@ -75,7 +75,7 @@ export const createUser = async (user: User) => {
  * Get the details of a user
  * @param secureOrigin  Whether security keys (password/tokens) should be returned too
  */
-export const getUser = async (id: number, secureOrigin = false) => {
+export const getUser = async (id: string, secureOrigin = false) => {
   let user = (<User[]>(
     await cachedQuery(
       CacheCategories.USER,
@@ -118,7 +118,7 @@ export const getUserIdFromUsername = async (username: string) => {
 /**
  * Update a user's details
  */
-export const updateUser = async (id: number, user: KeyValue) => {
+export const updateUser = async (id: string, user: KeyValue) => {
   user.updatedAt = new Date();
   if (user.password) user.password = await hash(user.password, 8);
   user = removeReadOnlyValues(user);
@@ -160,7 +160,7 @@ export const updateUser = async (id: number, user: KeyValue) => {
 /**
  * Delete a user
  */
-export const deleteUser = async (id: number) => {
+export const deleteUser = async (id: string) => {
   deleteItemFromCache(CacheCategories.USER, id);
   return await query(`DELETE FROM ${tableName("users")} WHERE id = ?`, [id]);
 };
@@ -170,7 +170,7 @@ export const deleteUser = async (id: number) => {
  * @param ipAddress  IP address for the new location
  */
 export const addApprovedLocation = async (
-  userId: number,
+  userId: string,
   ipAddress: string
 ) => {
   const subnet = anonymizeIpAddress(ipAddress);
@@ -190,7 +190,7 @@ export const addApprovedLocation = async (
 /**
  * Get a list of all approved locations of a user
  */
-export const getUserApprovedLocations = async (userId: number) => {
+export const getUserApprovedLocations = async (userId: string) => {
   return await query(
     `SELECT * FROM ${tableName("approved-locations")} WHERE userId = ?`,
     [userId]
@@ -221,7 +221,7 @@ export const checkUsernameAvailability = async (username: string) => {
 /**
  * Delete all approved locations for a user
  */
-export const deleteAllUserApprovedLocations = async (userId: number) => {
+export const deleteAllUserApprovedLocations = async (userId: string) => {
   return await query(
     `DELETE FROM ${tableName("approved-locations")} WHERE userId = ?`,
     [userId]
@@ -233,7 +233,7 @@ export const deleteAllUserApprovedLocations = async (userId: number) => {
  * @param ipAddress  IP address for checking
  */
 export const checkApprovedLocation = async (
-  userId: number,
+  userId: string,
   ipAddress: string
 ) => {
   const user = await getUser(userId);
@@ -255,13 +255,13 @@ export const checkApprovedLocation = async (
  * Create 2FA backup codes for user
  * @param count - Number of backup codes to create
  */
-export const createBackupCodes = async (userId: number, count = 1) => {
+export const createBackupCodes = async (userId: string, count = 1) => {
   for await (const x of Array.from(Array(count).keys())) {
     const code: BackupCode = { code: randomInt(100000, 999999), userId };
     code.createdAt = new Date();
     code.updatedAt = code.createdAt;
     await query(
-      `INSERT INTO \`backup-codes\` ${tableValues(code)}`,
+      `INSERT INTO ${tableName("backup-codes")} ${tableValues(code)}`,
       Object.values(code)
     );
   }
@@ -274,7 +274,7 @@ export const createBackupCodes = async (userId: number, count = 1) => {
 export const updateBackupCode = async (backupCode: number, code: KeyValue) => {
   code.updatedAt = new Date();
   return await query(
-    `UPDATE \`backup-codes\` SET ${setValues(code)} WHERE code = ?`,
+    `UPDATE ${tableName("backup-codes")} SET ${setValues(code)} WHERE code = ?`,
     [...Object.values(code), backupCode]
   );
 };
@@ -283,30 +283,41 @@ export const updateBackupCode = async (backupCode: number, code: KeyValue) => {
  * Delete a backup code
  */
 export const deleteBackupCode = async (backupCode: number) => {
-  return await query("DELETE FROM `backup-codes` WHERE code = ?", [backupCode]);
+  return await query(
+    `DELETE FROM ${tableName("backup-codes")} WHERE code = ?`,
+    [backupCode]
+  );
 };
 
 /**
  * Delete all backup codes of a user
  */
-export const deleteUserBackupCodes = async (userId: number) => {
-  return await query("DELETE FROM `backup-codes` WHERE userId = ?", [userId]);
+export const deleteUserBackupCodes = async (userId: string) => {
+  return await query(
+    `DELETE FROM ${tableName("backup-codes")} WHERE userId = ?`,
+    [userId]
+  );
 };
 
 /**
  * Get all backup codes of a user
  */
-export const getUserBackupCodes = async (userId: number) => {
-  return await query("SELECT * FROM `backup-codes` WHERE userId = ?", [userId]);
+export const getUserBackupCodes = async (userId: string) => {
+  return await query(
+    `SELECT * FROM ${tableName("backup-codes")} WHERE userId = ?`,
+    [userId]
+  );
 };
 
 /**
  * Get a specific backup code
  */
-export const getUserBackupCode = async (userId: number, backupCode: number) => {
+export const getUserBackupCode = async (userId: string, backupCode: number) => {
   return (<BackupCode[]>(
     await query(
-      "SELECT * FROM `backup-codes` WHERE userId = ? AND code = ? LIMIT 1",
+      `SELECT * FROM ${tableName(
+        "backup-codes"
+      )} WHERE userId = ? AND code = ? LIMIT 1`,
       [userId, backupCode]
     )
   ))[0];
@@ -315,7 +326,7 @@ export const getUserBackupCode = async (userId: number, backupCode: number) => {
 /**
  * Get a list of all approved locations of a user
  */
-export const getUserAccessTokens = async (userId: number, query: KeyValue) => {
+export const getUserAccessTokens = async (userId: string, query: KeyValue) => {
   return await getPaginatedData({
     table: "access-tokens",
     conditions: {
@@ -328,7 +339,7 @@ export const getUserAccessTokens = async (userId: number, query: KeyValue) => {
 /**
  * Get an API key
  */
-export const getAccessToken = async (userId: number, accessTokenId: number) => {
+export const getAccessToken = async (userId: string, accessTokenId: string) => {
   return (<AccessToken[]>(
     await query(
       `SELECT * FROM ${tableName(
@@ -358,8 +369,8 @@ export const createAccessToken = async (newAccessToken: AccessToken) => {
  * Update a user's details
  */
 export const updateAccessToken = async (
-  userId: number,
-  accessTokenId: number,
+  userId: string,
+  accessTokenId: string,
   data: KeyValue
 ) => {
   data.updatedAt = new Date();
@@ -380,8 +391,8 @@ export const updateAccessToken = async (
  * Delete an API key
  */
 export const deleteAccessToken = async (
-  userId: number,
-  accessTokenId: number
+  userId: string,
+  accessTokenId: string
 ) => {
   const currentAccessToken = await getAccessToken(userId, accessTokenId);
   if (currentAccessToken.jwtAccessToken)
@@ -397,7 +408,7 @@ export const deleteAccessToken = async (
 /**
  * Get a list of all valid sessions of a user
  */
-export const getUserSessions = async (userId: number, query: KeyValue) => {
+export const getUserSessions = async (userId: string, query: KeyValue) => {
   const data = await getPaginatedData({
     table: "sessions",
     conditions: {
@@ -416,7 +427,7 @@ export const getUserSessions = async (userId: number, query: KeyValue) => {
 /**
  * Get a session
  */
-export const getSession = async (userId: number, sessionId: number) => {
+export const getSession = async (userId: string, sessionId: string) => {
   const data = await addLocationToSession(
     (<Session[]>(
       await query(
@@ -447,8 +458,8 @@ export const createSession = async (newSession: Session) => {
  * Update a user's details
  */
 export const updateSession = async (
-  userId: number,
-  sessionId: number,
+  userId: string,
+  sessionId: string,
   data: KeyValue
 ) => {
   data.updatedAt = new Date();
@@ -465,7 +476,7 @@ export const updateSession = async (
  * Update a user's details
  */
 export const updateSessionByJwt = async (
-  userId: number,
+  userId: string,
   sessionJwt: string,
   data: KeyValue
 ) => {
@@ -482,7 +493,7 @@ export const updateSessionByJwt = async (
 /**
  * Invalidate a session
  */
-export const deleteSession = async (userId: number, sessionId: number) => {
+export const deleteSession = async (userId: string, sessionId: string) => {
   const currentSession = await getSession(userId, sessionId);
   if (currentSession.jwtToken) await invalidateToken(currentSession.jwtToken);
   return await query(

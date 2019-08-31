@@ -34,15 +34,15 @@ import { getPaginatedData } from "../crud/data";
 import { addLocationToEvents } from "../helpers/location";
 import { trackEvent } from "../helpers/tracking";
 
-export const getUserFromId = async (userId: number, tokenUserId: number) => {
+export const getUserFromId = async (userId: string, tokenUserId: string) => {
   if (await can(tokenUserId, UserScopes.READ_USER, "user", userId))
     return getUser(userId);
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
 
 export const updateUserForUser = async (
-  tokenUserId: number,
-  updateUserId: number,
+  tokenUserId: string,
+  updateUserId: string,
   data: User,
   locals: Locals
 ) => {
@@ -63,8 +63,8 @@ export const updateUserForUser = async (
 };
 
 export const updatePasswordForUser = async (
-  tokenUserId: number,
-  updateUserId: number,
+  tokenUserId: string,
+  updateUserId: string,
   oldPassword: string,
   newPassword: string,
   locals: Locals
@@ -91,8 +91,8 @@ export const updatePasswordForUser = async (
 };
 
 export const deleteUserForUser = async (
-  tokenUserId: number,
-  updateUserId: number,
+  tokenUserId: string,
+  updateUserId: string,
   locals: Locals
 ) => {
   if (await can(tokenUserId, UserScopes.DELETE_USER, "user", updateUserId)) {
@@ -114,8 +114,8 @@ export const deleteUserForUser = async (
 };
 
 export const getRecentEventsForUser = async (
-  tokenUserId: number,
-  dataUserId: number,
+  tokenUserId: string,
+  dataUserId: string,
   query: KeyValue
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER, "user", dataUserId)) {
@@ -131,8 +131,8 @@ export const getRecentEventsForUser = async (
 };
 
 export const getMembershipsForUser = async (
-  tokenUserId: number,
-  dataUserId: number,
+  tokenUserId: string,
+  dataUserId: string,
   query: KeyValue
 ) => {
   if (
@@ -150,8 +150,8 @@ export const getMembershipsForUser = async (
 };
 
 export const getAllDataForUser = async (
-  tokenUserId: number,
-  userId: number
+  tokenUserId: string,
+  userId: string
 ) => {
   // Rethink this permission
   if (!(await can(tokenUserId, UserScopes.READ_USER, "user", userId)))
@@ -163,7 +163,7 @@ export const getAllDataForUser = async (
   return { user, memberships, emails, approvedLocations };
 };
 
-export const enable2FAForUser = async (tokenUserId: number, userId: number) => {
+export const enable2FAForUser = async (tokenUserId: string, userId: string) => {
   if (!(await can(tokenUserId, UserScopes.ENABLE_USER_2FA, "user", userId)))
     throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
   const secret = authenticator.generateSecret();
@@ -174,8 +174,8 @@ export const enable2FAForUser = async (tokenUserId: number, userId: number) => {
 };
 
 export const verify2FAForUser = async (
-  tokenUserId: number,
-  userId: number,
+  tokenUserId: string,
+  userId: string,
   verificationCode: number
 ) => {
   if (!(await can(tokenUserId, UserScopes.ENABLE_USER_2FA, "user", userId)))
@@ -189,8 +189,8 @@ export const verify2FAForUser = async (
 };
 
 export const disable2FAForUser = async (
-  tokenUserId: number,
-  userId: number
+  tokenUserId: string,
+  userId: string
 ) => {
   if (!(await can(tokenUserId, UserScopes.DISABLE_USER_2FA, "user", userId)))
     throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
@@ -199,8 +199,8 @@ export const disable2FAForUser = async (
 };
 
 export const getBackupCodesForUser = async (
-  tokenUserId: number,
-  userId: number
+  tokenUserId: string,
+  userId: string
 ) => {
   if (
     !(await can(tokenUserId, UserScopes.READ_USER_BACKUP_CODES, "user", userId))
@@ -210,8 +210,8 @@ export const getBackupCodesForUser = async (
 };
 
 export const regenerateBackupCodesForUser = async (
-  tokenUserId: number,
-  userId: number
+  tokenUserId: string,
+  userId: string
 ) => {
   if (
     !(await can(
@@ -228,8 +228,8 @@ export const regenerateBackupCodesForUser = async (
 };
 
 export const getUserAccessTokensForUser = async (
-  tokenUserId: number,
-  userId: number,
+  tokenUserId: string,
+  userId: string,
   query: KeyValue
 ) => {
   if (
@@ -240,9 +240,9 @@ export const getUserAccessTokensForUser = async (
 };
 
 export const getUserAccessTokenForUser = async (
-  tokenUserId: number,
-  userId: number,
-  accessTokenId: number
+  tokenUserId: string,
+  userId: string,
+  accessTokenId: string
 ) => {
   if (
     await can(tokenUserId, UserScopes.READ_USER_ACCESS_TOKENS, "user", userId)
@@ -252,9 +252,9 @@ export const getUserAccessTokenForUser = async (
 };
 
 export const updateAccessTokenForUser = async (
-  tokenUserId: number,
-  userId: number,
-  accessTokenId: number,
+  tokenUserId: string,
+  userId: string,
+  accessTokenId: string,
   data: KeyValue,
   locals: Locals
 ) => {
@@ -268,8 +268,8 @@ export const updateAccessTokenForUser = async (
 };
 
 export const createAccessTokenForUser = async (
-  tokenUserId: number,
-  userId: number,
+  tokenUserId: string,
+  userId: string,
   accessToken: KeyValue,
   locals: Locals
 ) => {
@@ -283,9 +283,9 @@ export const createAccessTokenForUser = async (
 };
 
 export const deleteAccessTokenForUser = async (
-  tokenUserId: number,
-  userId: number,
-  accessTokenId: number,
+  tokenUserId: string,
+  userId: string,
+  accessTokenId: string,
   locals: Locals
 ) => {
   if (
@@ -298,8 +298,8 @@ export const deleteAccessTokenForUser = async (
 };
 
 export const getUserSessionsForUser = async (
-  tokenUserId: number,
-  userId: number,
+  tokenUserId: string,
+  userId: string,
   query: KeyValue
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER_SESSION, "user", userId))
@@ -308,9 +308,9 @@ export const getUserSessionsForUser = async (
 };
 
 export const getUserSessionForUser = async (
-  tokenUserId: number,
-  userId: number,
-  sessionId: number
+  tokenUserId: string,
+  userId: string,
+  sessionId: string
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER_SESSION, "user", userId))
     return await getSession(userId, sessionId);
@@ -318,9 +318,9 @@ export const getUserSessionForUser = async (
 };
 
 export const deleteSessionForUser = async (
-  tokenUserId: number,
-  userId: number,
-  sessionId: number,
+  tokenUserId: string,
+  userId: string,
+  sessionId: string,
   locals: Locals
 ) => {
   if (await can(tokenUserId, UserScopes.DELETE_USER_SESSION, "user", userId)) {

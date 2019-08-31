@@ -28,7 +28,7 @@ import {
 } from "../../helpers/middleware";
 import { CREATED } from "http-status-codes";
 import asyncHandler from "express-async-handler";
-import { safeRedirect, joiValidate } from "../../helpers/utils";
+import { safeRedirect, joiValidate, hashIdToId } from "../../helpers/utils";
 import Joi from "@hapi/joi";
 import { FRONTEND_URL, BASE_URL } from "../../config";
 import {
@@ -219,11 +219,11 @@ export class AuthController {
   @Post("impersonate/:id")
   @Middleware(authHandler)
   @Middleware(
-    validator({ impersonateUserId: Joi.number().required() }, "params")
+    validator({ impersonateUserId: Joi.string().required() }, "params")
   )
   async getImpersonate(req: Request, res: Response) {
     const tokenUserId = res.locals.token.id;
-    const impersonateUserId = parseInt(req.params.id);
+    const impersonateUserId = hashIdToId(req.params.id);
     res.json(await impersonate(tokenUserId, impersonateUserId, res.locals));
   }
 
