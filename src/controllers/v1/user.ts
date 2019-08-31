@@ -73,7 +73,7 @@ export class UserController {
           .regex(/^[a-zA-Z ]*$/),
         username: Joi.string().regex(/^[a-z0-9\-]+$/i),
         nickname: Joi.string(),
-        primaryEmail: Joi.number(),
+        primaryEmail: Joi.string(),
         countryCode: Joi.string().length(2),
         password: Joi.string().min(6),
         gender: Joi.string().length(1),

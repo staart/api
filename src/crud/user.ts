@@ -261,7 +261,7 @@ export const createBackupCodes = async (userId: string, count = 1) => {
     code.createdAt = new Date();
     code.updatedAt = code.createdAt;
     await query(
-      `INSERT INTO \`backup-codes\` ${tableValues(code)}`,
+      `INSERT INTO ${tableName("backup-codes")} ${tableValues(code)}`,
       Object.values(code)
     );
   }
@@ -274,7 +274,7 @@ export const createBackupCodes = async (userId: string, count = 1) => {
 export const updateBackupCode = async (backupCode: number, code: KeyValue) => {
   code.updatedAt = new Date();
   return await query(
-    `UPDATE \`backup-codes\` SET ${setValues(code)} WHERE code = ?`,
+    `UPDATE ${tableName("backup-codes")} SET ${setValues(code)} WHERE code = ?`,
     [...Object.values(code), backupCode]
   );
 };
@@ -283,21 +283,30 @@ export const updateBackupCode = async (backupCode: number, code: KeyValue) => {
  * Delete a backup code
  */
 export const deleteBackupCode = async (backupCode: number) => {
-  return await query("DELETE FROM `backup-codes` WHERE code = ?", [backupCode]);
+  return await query(
+    `DELETE FROM ${tableName("backup-codes")} WHERE code = ?`,
+    [backupCode]
+  );
 };
 
 /**
  * Delete all backup codes of a user
  */
 export const deleteUserBackupCodes = async (userId: string) => {
-  return await query("DELETE FROM `backup-codes` WHERE userId = ?", [userId]);
+  return await query(
+    `DELETE FROM ${tableName("backup-codes")} WHERE userId = ?`,
+    [userId]
+  );
 };
 
 /**
  * Get all backup codes of a user
  */
 export const getUserBackupCodes = async (userId: string) => {
-  return await query("SELECT * FROM `backup-codes` WHERE userId = ?", [userId]);
+  return await query(
+    `SELECT * FROM ${tableName("backup-codes")} WHERE userId = ?`,
+    [userId]
+  );
 };
 
 /**
@@ -306,7 +315,9 @@ export const getUserBackupCodes = async (userId: string) => {
 export const getUserBackupCode = async (userId: string, backupCode: number) => {
   return (<BackupCode[]>(
     await query(
-      "SELECT * FROM `backup-codes` WHERE userId = ? AND code = ? LIMIT 1",
+      `SELECT * FROM ${tableName(
+        "backup-codes"
+      )} WHERE userId = ? AND code = ? LIMIT 1`,
       [userId, backupCode]
     )
   ))[0];

@@ -44,7 +44,6 @@ export const query = (
     pool.getConnection((error, connection) => {
       if (error) return reject(error);
       if (values) values = cleanValues(values);
-      console.log("QUERY", queryString, values);
       connection.query(queryString, values, (error, result) => {
         connection.destroy();
         if (error) return reject(error);
