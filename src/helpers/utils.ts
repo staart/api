@@ -180,7 +180,13 @@ export const readOnlyValues = [
 /**
  * MySQL columns which are for int IDs
  */
-export const IdValues = ["id", "userId", "organizationId", "primaryEmail"];
+export const IdValues = [
+  "id",
+  "userId",
+  "organizationId",
+  "primaryEmail",
+  "apiKeyId"
+];
 
 export const joiValidate = (schemaMap: Joi.SchemaMap, data: any) => {
   const schema = Joi.object().keys(schemaMap);
