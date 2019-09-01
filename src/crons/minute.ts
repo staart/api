@@ -66,6 +66,17 @@ const storeTrackingLogs = async () => {
   day = parseInt(day) < 10 ? `0${day}` : day;
   for await (const body of data) {
     try {
+      if (typeof body === "object") {
+        Object.keys(body).forEach(key => {
+          if (IdValues.includes(key)) body[key] = hashIdToId(body[key]);
+        });
+        if (body.data && typeof body.data === "object") {
+          Object.keys(body.data).forEach(key => {
+            if (IdValues.includes(key))
+              body.data[key] = hashIdToId(body.data[key]);
+          });
+        }
+      }
       await elasticSearch.index({
         index: `${ELASTIC_LOGS_PREFIX}${year}-${month}-${day}`,
         body,
