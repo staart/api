@@ -64,7 +64,7 @@ To update your installation of Staart, run the following:
 node setup/update.js
 ```
 
-If you've used the "Use this template" option on GitHub, you might have to force pull the first time since the histories wouldn't match.
+If you've used the "Use this template" option on GitHub, you might have to force pull from `o15y/staart` the first time since the histories wouldn't match. You can use the flag `--allow-unrelated-histories` in this case.
 
 ## 💻 API
 
