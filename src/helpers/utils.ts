@@ -185,7 +185,8 @@ export const IdValues = [
   "userId",
   "organizationId",
   "primaryEmail",
-  "apiKeyId"
+  "apiKeyId",
+  "apiKeyOrganizationId"
 ];
 
 export const joiValidate = (schemaMap: Joi.SchemaMap, data: any) => {
