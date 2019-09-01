@@ -99,10 +99,6 @@ export const newOrganizationForUser = async (
     userId,
     role: MembershipRole.OWNER
   });
-  await createStripeCustomer(organizationId, {
-    email: await getUserPrimaryEmail(userId),
-    name: (await getUser(userId)).name
-  });
   return;
 };
 
