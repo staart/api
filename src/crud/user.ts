@@ -491,6 +491,19 @@ export const updateSessionByJwt = async (
 };
 
 /**
+ * Update a user's details
+ */
+export const deleteSessionByJwt = async (
+  userId: string,
+  sessionJwt: string
+) => {
+  return await query(
+    `DELETE FROM ${tableName("sessions")} WHERE jwtToken = ? AND userId = ?`,
+    [sessionJwt, userId]
+  );
+};
+
+/**
  * Invalidate a session
  */
 export const deleteSession = async (userId: string, sessionId: string) => {

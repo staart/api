@@ -7,7 +7,8 @@ import {
   addApprovedLocation,
   getUserBackupCode,
   updateBackupCode,
-  checkUsernameAvailability
+  checkUsernameAvailability,
+  deleteSessionByJwt
 } from "../crud/user";
 import { InsertResult } from "../interfaces/mysql";
 import {
@@ -62,6 +63,12 @@ export const validateRefreshToken = async (token: string, locals: Locals) => {
   if (!data.id) throw new Error(ErrorCode.USER_NOT_FOUND);
   const user = await getUser(data.id);
   return await postLoginTokens(user, locals, token);
+};
+
+export const invalidateRefreshToken = async (token: string, locals: Locals) => {
+  const data = <User>await verifyToken(token, Tokens.REFRESH);
+  if (!data.id) throw new Error(ErrorCode.USER_NOT_FOUND);
+  await deleteSessionByJwt(data.id, token);
 };
 
 export const login = async (

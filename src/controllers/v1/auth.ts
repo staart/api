@@ -9,7 +9,8 @@ import {
   approveLocation,
   verifyEmail,
   register,
-  login2FA
+  login2FA,
+  invalidateRefreshToken
 } from "../../rest/auth";
 import { verifyToken, LoginResponse } from "../../helpers/jwt";
 import {
@@ -179,6 +180,14 @@ export class AuthController {
       req.body.token || (req.get("Authorization") || "").replace("Bearer ", "");
     joiValidate({ token: Joi.string().required() }, { token });
     res.json(await validateRefreshToken(token, res.locals));
+  }
+
+  @Post("logout")
+  async postLogout(req: Request, res: Response) {
+    const token =
+      req.body.token || (req.get("Authorization") || "").replace("Bearer ", "");
+    joiValidate({ token: Joi.string().required() }, { token });
+    res.json(await invalidateRefreshToken(token, res.locals));
   }
 
   @Post("reset-password/request")
