@@ -136,6 +136,8 @@ dist/
 docs/
 src/app.ts
 
-# Ignore .env
+# Environment variables
 *.env
 
+# Redis dump
+dump.rdb
