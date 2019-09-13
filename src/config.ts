@@ -9,7 +9,7 @@ export const SENTRY_DSN = process.env.SENTRY_DSN || "";
 // Rate limiting
 export const BRUTE_FREE_RETRIES = process.env.BRUTE_FREE_RETRIES
   ? parseInt(process.env.BRUTE_FREE_RETRIES)
-  : 50;
+  : 100;
 export const BRUTE_LIFETIME = process.env.BRUTE_LIFETIME
   ? parseInt(process.env.BRUTE_LIFETIME)
   : 300000;
