@@ -1,14 +1,17 @@
 ![Staart](https://raw.githubusercontent.com/o15y/staart/master/assets/logo.png)
 
-Staart is a Node.js backend starter for SaaS startups written in TypeScript. It has built-in user management and authentication, billing, organizations, GDPR tools, and more.
+Staart is a Node.js backend starter for SaaS startups written in TypeScript. It
+has built-in user management and authentication, billing, organizations, GDPR
+tools, and more.
 
-|  | Status |
-| - | - |
-| Build | [![GitHub Actions](https://github.com/o15y/staart/workflows/Node%20CI/badge.svg)](https://github.com/o15y/staart/actions) [![Travis CI](https://img.shields.io/travis/o15y/staart?label=Travis%20CI)](https://travis-ci.org/o15y/staart) [![Circle CI](https://img.shields.io/circleci/build/github/o15y/staart?label=Circle%20CI)](https://circleci.com/gh/o15y/staart) [![Azure Pipelines](https://dev.azure.com/anandchowdhary0001/Staart/_apis/build/status/o15y.staart?branchName=master)](https://dev.azure.com/anandchowdhary0001/Staart/_build/latest?definitionId=4&branchName=master) [![Cirrus CI](https://img.shields.io/cirrus/github/o15y/staart?label=Cirrus%20CI)](https://cirrus-ci.com/github/o15y/staart) |
-| Dependencies | [![Dependencies](https://img.shields.io/david/o15y/staart.svg)](https://david-dm.org/o15y/staart) [![Dev dependencies](https://img.shields.io/david/dev/o15y/staart.svg)](https://david-dm.org/o15y/staart) ![Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/github/o15y/staart.svg) |
-| Community | [![Contributors](https://img.shields.io/github/contributors/o15y/staart.svg)](https://github.com/o15y/staart/graphs/contributors) [![GitHub](https://img.shields.io/github/license/o15y/staart.svg)](https://github.com/o15y/staart/blob/master/LICENSE) ![Type definitions](https://img.shields.io/badge/types-TypeScript-blue.svg) |
+|              | Status                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Build        | [![GitHub Actions](https://github.com/o15y/staart/workflows/Node%20CI/badge.svg)](https://github.com/o15y/staart/actions) [![Travis CI](https://img.shields.io/travis/o15y/staart?label=Travis%20CI)](https://travis-ci.org/o15y/staart) [![Circle CI](https://img.shields.io/circleci/build/github/o15y/staart?label=Circle%20CI)](https://circleci.com/gh/o15y/staart) [![Azure Pipelines](https://dev.azure.com/anandchowdhary0001/Staart/_apis/build/status/o15y.staart?branchName=master)](https://dev.azure.com/anandchowdhary0001/Staart/_build/latest?definitionId=4&branchName=master) [![Cirrus CI](https://img.shields.io/cirrus/github/o15y/staart?label=Cirrus%20CI)](https://cirrus-ci.com/github/o15y/staart) |
+| Dependencies | [![Dependencies](https://img.shields.io/david/o15y/staart.svg)](https://david-dm.org/o15y/staart) [![Dev dependencies](https://img.shields.io/david/dev/o15y/staart.svg)](https://david-dm.org/o15y/staart) ![Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/github/o15y/staart.svg)                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Community    | [![Contributors](https://img.shields.io/github/contributors/o15y/staart.svg)](https://github.com/o15y/staart/graphs/contributors) [![GitHub](https://img.shields.io/github/license/o15y/staart.svg)](https://github.com/o15y/staart/blob/master/LICENSE) ![Type definitions](https://img.shields.io/badge/types-TypeScript-blue.svg)                                                                                                                                                                                                                                                                                                                                                                                         |
 
-Staart is build to work with [Staart UI](https://github.com/o15y/staart-ui), the frontend starter for SaaS.
+Staart is build to work with [Staart UI](https://github.com/o15y/staart-ui), the
+frontend starter for SaaS.
 
 ## ⭐ Features
 
@@ -48,8 +51,10 @@ Staart is build to work with [Staart UI](https://github.com/o15y/staart-ui), the
 
 1. Use this template or fork this repository
 1. Install dependencies with `yarn` or `npm i`
-1. Add a `.env` file based on [config.ts](https://github.com/o15y/staart/blob/master/src/config.ts).
-1. Create MariaDB/MySQL tables based on [schema.sql](https://github.com/o15y/staart/blob/master/schema.sql)
+1. Add a `.env` file based on
+   [config.ts](https://github.com/o15y/staart/blob/master/src/config.ts).
+1. Create MariaDB/MySQL tables based on
+   [schema.sql](https://github.com/o15y/staart/blob/master/schema.sql)
 1. Add your controllers in the `./src/controllers` directory
 1. Generate your `app.ts` file using `yarn generate-routes`
 1. Build with `yarn build` and deploy with `yarn start`
@@ -62,11 +67,14 @@ To update your installation of Staart, run the following:
 node setup/update.js
 ```
 
-If you've used the "Use this template" option on GitHub, you might have to force pull from `o15y/staart` the first time since the histories wouldn't match. You can use the flag `--allow-unrelated-histories` in this case.
+If you've used the "Use this template" option on GitHub, you might have to force
+pull from `o15y/staart` the first time since the histories wouldn't match. You
+can use the flag `--allow-unrelated-histories` in this case.
 
 ## 💻 API
 
-Staart comes with tens of helper and CRUD methods for users, organizations, and more.
+Staart comes with tens of helper and CRUD methods for users, organizations, and
+more.
 
 **[View wiki docs →](https://github.com/o15y/staart/wiki)**
 
@@ -78,7 +86,9 @@ Staart comes with tens of helper and CRUD methods for users, organizations, and 
 
 ## 👩‍💼 Getting started
 
-After forking this repository, you can get started by writing your first endpoint. We do this by creating a new file in the `./src/controllers` folder. For example, create `api.ts`:
+After forking this repository, you can get started by writing your first
+endpoint. We do this by creating a new file in the `./src/controllers` folder.
+For example, create `api.ts`:
 
 ```ts
 import { Request, Response } from "express";
@@ -106,17 +116,28 @@ export class ApiController {
 }
 ```
 
-The above code 20 lines of code with create a new endpoint which can be accessed at `example.com/api/hello?name=Anand`, which will respond with a JSON object with the text "Hello, Anand!".
+The above code 20 lines of code with create a new endpoint which can be accessed
+at `example.com/api/hello?name=Anand`, which will respond with a JSON object
+with the text "Hello, Anand!".
 
-Staart code is easily understandable. You create a new controller, `api`, which means all routes in this class will have the prefix `/api`. Then, you create an HTTP GET method `hello` and use our built-in validator to say that the query parameter `name` must be a `string` of at least 3 characters.
+Staart code is easily understandable. You create a new controller, `api`, which
+means all routes in this class will have the prefix `/api`. Then, you create an
+HTTP GET method `hello` and use our built-in validator to say that the query
+parameter `name` must be a `string` of at least 3 characters.
 
-With the `asyncHandler`, you can use async functions and Staart will handle errors for you. In this case, if the provided name is Anand, your function returns a JSON response "Hello, Anand!" and otherwise sends an error 404.
+With the `asyncHandler`, you can use async functions and Staart will handle
+errors for you. In this case, if the provided name is Anand, your function
+returns a JSON response "Hello, Anand!" and otherwise sends an error 404.
 
 ### Helpers
 
-For common tasks such as finding users or authorizing API keys, Staart provides various helper functions.
+For common tasks such as finding users or authorizing API keys, Staart provides
+various helper functions.
 
-Let's look at what you need to do if you want to let users be able to delete organizations. For this, you want to check where a user is actually allowed to delete that organization, if they're logged in, and make sure nobody can brute force this endpoint.
+Let's look at what you need to do if you want to let users be able to delete
+organizations. For this, you want to check where a user is actually allowed to
+delete that organization, if they're logged in, and make sure nobody can brute
+force this endpoint.
 
 ```ts
 import { can } from "../helpers/authorization";
@@ -141,15 +162,21 @@ async deleteOrg(req: Request, res: Response) {
 
 In the above example, the Staart helpers and middleware used are:
 
-- Authentication (`authHandler`): Checks if a user's token is valid and adds `res.locals.token`; and if it isn't, sends a `401 Unauthorized` error.
-- Brute force prevention (`bruteForceHandler`): Prevents users from making too many requests in a short time, can be configured via `./src/config.ts`
-- Authorization (`can`): Returns whether a user is allowed to perform an action based on their permissions
+- Authentication (`authHandler`): Checks if a user's token is valid and adds
+  `res.locals.token`; and if it isn't, sends a `401 Unauthorized` error.
+- Brute force prevention (`bruteForceHandler`): Prevents users from making too
+  many requests in a short time, can be configured via `./src/config.ts`
+- Authorization (`can`): Returns whether a user is allowed to perform an action
+  based on their permissions
 
-Of course, we actually prefer to write our logic in the `rest` folder and only the handler as a controller. For a deeper dive into Staart, look at our [Wiki docs](https://github.com/o15y/staart/wiki).
+Of course, we actually prefer to write our logic in the `rest` folder and only
+the handler as a controller. For a deeper dive into Staart, look at our
+[Wiki docs](https://github.com/o15y/staart/wiki).
 
 ## 👥 Contributors
 
-Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+Thanks goes to these wonderful people
+([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore -->
@@ -165,7 +192,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+This project follows the
+[all-contributors](https://github.com/all-contributors/all-contributors)
+specification. Contributions of any kind welcome!
 
 ## 🏗️ Built with Staart
 
@@ -175,14 +204,15 @@ This project follows the [all-contributors](https://github.com/all-contributors/
 
 ## 🏁 Staart Ecosystem
 
-The Staart ecosystem consists of open-source projects to build your SaaS startup, written in TypeScript.
+The Staart ecosystem consists of open-source projects to build your SaaS
+startup, written in TypeScript.
 
-|  |  |  |
-| - | - | - |
-| [🛠️ Staart](https://github.com/o15y/staart) | Node.js backend with RESTful APIs | [![Travis CI](https://img.shields.io/travis/o15y/staart)](https://travis-ci.org/o15y/staart) [![GitHub](https://img.shields.io/github/license/o15y/staart.svg)](https://github.com/o15y/staart/blob/master/LICENSE) |
-| [🌐 Staart UI](https://github.com/o15y/staart-ui) | Frontend Vue.js Progressive Web App | [![Travis CI](https://img.shields.io/travis/o15y/staart-ui)](https://travis-ci.org/o15y/staart-ui) [![GitHub](https://img.shields.io/github/license/o15y/staart-ui.svg)](https://github.com/o15y/staart-ui/blob/master/LICENSE) |
+|                                                           |                                      |                                                                                                                                                                                                                                                 |
+| --------------------------------------------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [🛠️ Staart](https://github.com/o15y/staart)               | Node.js backend with RESTful APIs    | [![Travis CI](https://img.shields.io/travis/o15y/staart)](https://travis-ci.org/o15y/staart) [![GitHub](https://img.shields.io/github/license/o15y/staart.svg)](https://github.com/o15y/staart/blob/master/LICENSE)                             |
+| [🌐 Staart UI](https://github.com/o15y/staart-ui)         | Frontend Vue.js Progressive Web App  | [![Travis CI](https://img.shields.io/travis/o15y/staart-ui)](https://travis-ci.org/o15y/staart-ui) [![GitHub](https://img.shields.io/github/license/o15y/staart-ui.svg)](https://github.com/o15y/staart-ui/blob/master/LICENSE)                 |
 | [📱 Staart Native](https://github.com/o15y/staart-native) | React Native app for Android and iOS | [![Travis CI](https://img.shields.io/travis/o15y/staart-native)](https://travis-ci.org/o15y/staart-native) [![GitHub](https://img.shields.io/github/license/o15y/staart-native.svg)](https://github.com/o15y/staart-native/blob/master/LICENSE) |
-| [🎨 Staart.css](https://github.com/o15y/staart.css) | Sass/CSS framework and utilities | [![Travis CI](https://img.shields.io/travis/o15y/staart.css)](https://travis-ci.org/o15y/staart.css) [![GitHub](https://img.shields.io/github/license/o15y/staart.css.svg)](https://github.com/o15y/staart.css/blob/master/LICENSE) |
+| [🎨 Staart.css](https://github.com/o15y/staart.css)       | Sass/CSS framework and utilities     | [![Travis CI](https://img.shields.io/travis/o15y/staart.css)](https://travis-ci.org/o15y/staart.css) [![GitHub](https://img.shields.io/github/license/o15y/staart.css.svg)](https://github.com/o15y/staart.css/blob/master/LICENSE)             |
 
 ## 📄 License
 
