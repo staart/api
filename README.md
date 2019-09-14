@@ -159,6 +159,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="http://komiserback@gmail.com"><img src="https://avatars3.githubusercontent.com/u/36298335?v=4" width="100px;" alt="reallinfo"/><br /><sub><b>reallinfo</b></sub></a><br /><a href="#design-reallinfo" title="Design">🎨</a></td>
     <td align="center"><a href="https://github.com/coooolers"><img src="https://avatars2.githubusercontent.com/u/20610084?v=4" width="100px;" alt="Cool"/><br /><sub><b>Cool</b></sub></a><br /><a href="https://github.com/o15y/staart/issues?q=author%3Acoooolers" title="Bug reports">🐛</a> <a href="#ideas-coooolers" title="Ideas, Planning, & Feedback">🤔</a></td>
     <td align="center"><a href="https://github.com/ektek"><img src="https://avatars1.githubusercontent.com/u/54689503?v=4" width="100px;" alt="EK"/><br /><sub><b>EK</b></sub></a><br /><a href="https://github.com/o15y/staart/issues?q=author%3Aektek" title="Bug reports">🐛</a> <a href="https://github.com/o15y/staart/commits?author=ektek" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/mattp95"><img src="https://avatars0.githubusercontent.com/u/29185361?v=4" width="100px;" alt="mattp95"/><br /><sub><b>mattp95</b></sub></a><br /><a href="https://github.com/o15y/staart/issues?q=author%3Amattp95" title="Bug reports">🐛</a></td>
   </tr>
 </table>
 
