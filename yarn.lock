@@ -745,10 +745,10 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@hapi/address@^2.1.1":
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/@hapi/address/-/address-2.1.1.tgz#61395b5ed94c4cb19c2dc4c85969cff3d40d583f"
-  integrity sha512-DYuHzu978pP1XW1GD3HGvLnAFjbQTIgc2+V153FGkbS2pgo9haigCdwBnUDrbhaOkgiJlbZvoEqDrcxSLHpiWA==
+"@hapi/address@^2.1.2":
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/@hapi/address/-/address-2.1.2.tgz#1c794cd6dbf2354d1eb1ef10e0303f573e1c7222"
+  integrity sha512-O4QDrx+JoGKZc6aN64L04vqa7e41tIiLU+OvKdcYaEMP97UttL0f9GIi9/0A4WAMx0uBd6SidDIhktZhgOcN8Q==
 
 "@hapi/formula@^1.2.0":
   version "1.2.0"
@@ -760,12 +760,12 @@
   resolved "https://registry.yarnpkg.com/@hapi/hoek/-/hoek-8.2.4.tgz#684a14f4ca35d46f44abc87dfc696e5e4fe8a020"
   integrity sha512-Ze5SDNt325yZvNO7s5C4fXDscjJ6dcqLFXJQ/M7dZRQCewuDj2iDUuBi6jLQt+APbW9RjjVEvLr35FXuOEqjow==
 
-"@hapi/joi@16.1.2":
-  version "16.1.2"
-  resolved "https://registry.yarnpkg.com/@hapi/joi/-/joi-16.1.2.tgz#c566d9e0d81d6847f7622f7d5e23adadaa2d7332"
-  integrity sha512-wkMIEMQQPNmat9P7zws7wO8Gon9W3NgG5Pac1m0LK8bQ1bbszofxzL0CJogAgzitk5rZZw5/txR+wOK/ioLmGw==
+"@hapi/joi@16.1.3":
+  version "16.1.3"
+  resolved "https://registry.yarnpkg.com/@hapi/joi/-/joi-16.1.3.tgz#7a4c99537e60b2f99e27b062cfdc19675317696c"
+  integrity sha512-oCRf3n9cwqbhoHzhRfLKPZh1dBlKpMnRfhUl6h0GWW8OSBnt89JB7dsb/qPvisWNOjH+b/asjkb4fTne2W9x2Q==
   dependencies:
-    "@hapi/address" "^2.1.1"
+    "@hapi/address" "^2.1.2"
     "@hapi/formula" "^1.2.0"
     "@hapi/hoek" "^8.2.4"
     "@hapi/pinpoint" "^1.0.2"
