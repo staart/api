@@ -114,7 +114,7 @@
     "geolite2": "^1.2.1",
     "handy-redis": "^1.6.2",
     "hashids": "^2.0.1",
-    "helmet": "^3.21.0",
+    "helmet": "^3.21.1",
     "http-aws-es": "^6.0.0",
     "http-status-codes": "^1.3.2",
     "ip-anonymize": "^0.1.0",
