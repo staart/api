@@ -90,7 +90,7 @@
     "ts-jest": "^24.1.0",
     "typedoc": "^0.15.0",
     "typescript": "^3.6.3",
-    "yaml": "^1.6.0"
+    "yaml": "^1.7.0"
   },
   "dependencies": {
     "@hapi/joi": "16.1.4",
