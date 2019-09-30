@@ -11,7 +11,8 @@ import {
 } from "../config";
 import { ErrorCode } from "../interfaces/enum";
 import { logError } from "./errors";
-import { getSystemInformation } from "./utils";
+import systemInfo from "systeminformation";
+import pkg from "../../package.json";
 
 AWS.config.update({
   credentials: new AWS.Credentials(
@@ -25,6 +26,22 @@ export const elasticSearch = new Client({
   host: AWS_ELASTIC_HOST,
   connectionClass
 });
+
+const getSystemInformation = async () => {
+  return {
+    system: await systemInfo.system(),
+    time: systemInfo.time(),
+    cpu: await systemInfo.cpu(),
+    osInfo: await systemInfo.osInfo(),
+    package: {
+      name: pkg.name,
+      version: pkg.version,
+      repository: pkg.repository,
+      author: pkg.author,
+      "staart-version": pkg["staart-version"]
+    }
+  };
+};
 
 getSystemInformation()
   .then(body =>
