@@ -1,5 +1,6 @@
 import { ErrorCode } from "../interfaces/enum";
 import { HTTPError } from "../interfaces/general";
+import chalk from "chalk";
 import Joi from "@hapi/joi";
 
 /**
@@ -37,4 +38,14 @@ export const sendError = (error: string) => {
   }
   console.log("Backup error", error);
   return { status: 500, code: error } as HTTPError;
+};
+
+export const logError = (category: string, error: string, level: 1 | 2 = 2) => {
+  if (level === 1)
+    return console.log(
+      `${chalk.bold.red("❌  ERROR")} ${chalk.red(category)}: ${error}`
+    );
+  console.log(
+    `${chalk.bold.yellow("⚠️  WARNING")} ${chalk.yellow(category)}: ${error}`
+  );
 };
