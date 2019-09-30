@@ -48,8 +48,8 @@ export const getPaginatedData = async ({
   )) as any[];
   return {
     data,
-    hasMore: data.length === itemsPerPage,
-    next: data.length === itemsPerPage && data[data.length - 1][primaryKey]
+    hasMore: data.length == itemsPerPage,
+    next: data.length == itemsPerPage && data[data.length - 1][primaryKey]
   };
 };
 
