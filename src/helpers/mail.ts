@@ -94,4 +94,6 @@ sendMail({
   message: "This is an example email to test your Staart email configuration."
 })
   .then(() => {})
-  .catch(() => logError("Invalid email config", "Could not send a test email"));
+  .catch(() =>
+    logError("Invalid email config", "Could not send a test email", 1)
+  );
