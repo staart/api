@@ -88,7 +88,8 @@ export enum ErrorCode {
   DOMAIN_MISSING_FILE = "400/domain-missing-file",
   DOMAIN_MISSING_DNS = "400/domain-missing-dns",
   DOMAIN_ALREADY_VERIFIED = "400/domain-already-verified",
-  CANNOT_INVITE_DOMAIN = "400/cannot-invite-domain"
+  CANNOT_INVITE_DOMAIN = "400/cannot-invite-domain",
+  UNABLE_TO_SEND_EMAIL = "500/unable-to-email"
 }
 
 export enum Templates {
