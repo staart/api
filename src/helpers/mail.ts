@@ -21,6 +21,8 @@ import Joi from "@hapi/joi";
 import { joiValidate } from "./utils";
 import { ErrorCode } from "../interfaces/enum";
 import { logError } from "./errors";
+import systemInfo from "systeminformation";
+import pkg from "../../package.json";
 
 const client = createClient({
   key: SES_ACCESS,
@@ -91,7 +93,18 @@ sendMail({
   from: SES_EMAIL,
   to: TEST_EMAIL,
   subject: "Test from Staart",
-  message: "This is an example email to test your Staart email configuration."
+  message: `This is an example email to test your Staart email configuration.\n\n${JSON.stringify(
+    {
+      time: systemInfo.time(),
+      package: {
+        name: pkg.name,
+        version: pkg.version,
+        repository: pkg.repository,
+        author: pkg.author,
+        "staart-version": pkg["staart-version"]
+      }
+    }
+  )}`
 })
   .then(() => {})
   .catch(() =>

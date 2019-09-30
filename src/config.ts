@@ -111,3 +111,5 @@ export const ELASTIC_LOGS_PREFIX =
   process.env.ELASTIC_LOGS_PREFIX || "staart-logs-";
 export const ELASTIC_EVENTS_PREFIX =
   process.env.ELASTIC_EVENTS_PREFIX || "staart-events-";
+export const ELASTIC_INSTANCES_INDEX =
+  process.env.ELASTIC_INSTANCES_INDEX || "staart-instances";

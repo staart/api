@@ -5,9 +5,13 @@ import {
   AWS_ELASTIC_ACCESS_KEY,
   AWS_ELASTIC_SECRET_KEY,
   AWS_ELASTIC_REGION,
-  AWS_ELASTIC_HOST
+  AWS_ELASTIC_HOST,
+  ELASTIC_EVENTS_PREFIX,
+  ELASTIC_INSTANCES_INDEX
 } from "../config";
 import { ErrorCode } from "../interfaces/enum";
+import { logError } from "./errors";
+import { getSystemInformation } from "./utils";
 
 AWS.config.update({
   credentials: new AWS.Credentials(
@@ -21,6 +25,19 @@ export const elasticSearch = new Client({
   host: AWS_ELASTIC_HOST,
   connectionClass
 });
+
+getSystemInformation()
+  .then(body =>
+    elasticSearch.index({
+      index: ELASTIC_INSTANCES_INDEX,
+      body,
+      type: "log"
+    })
+  )
+  .then(() => {})
+  .catch(() =>
+    logError("ElasticSearch configuration error", "Unable to log event", 1)
+  );
 
 export const cleanElasticSearchQueryResponse = (response: any) => {
   if (response.hits && response.hits.hits) {
