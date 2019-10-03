@@ -48,10 +48,7 @@ export const createOrganization = async (organization: Organization) => {
     format: "hex"
   }).replace("#", "");
   organization.profilePicture = `https://ui-avatars.com/api/?name=${encodeURIComponent(
-    organization.name || "XX"
-  ).replace(
-    /^([a-zA-Z0-9 _-]+)$/gi,
-    ""
+    (organization.name || "XX").substring(0, 2).toUpperCase()
   )}&background=${backgroundColor}&color=fff`;
   return await query(
     `INSERT INTO ${tableName("organizations")} ${tableValues(organization)}`,

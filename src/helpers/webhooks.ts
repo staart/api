@@ -29,13 +29,17 @@ export const safeFireWebhook = async (
   );
   for await (const hook of webhooksToFire) {
     try {
-      await fireSingleWebhook(hook, data);
+      await fireSingleWebhook(hook, webhook, data);
     } catch (error) {}
   }
   return;
 };
 
-const fireSingleWebhook = async (webhook: Webhook, data?: any) => {
+const fireSingleWebhook = async (
+  webhook: Webhook,
+  hookType: Webhooks,
+  data?: any
+) => {
   let secret;
   if (webhook.secret)
     secret = createHmac("sha1", webhook.secret)
@@ -47,7 +51,10 @@ const fireSingleWebhook = async (webhook: Webhook, data?: any) => {
       "X-Signature": secret,
       "Content-Type": webhook.contentType
     },
-    data
+    data: {
+      hookType,
+      data
+    }
   };
   const result = await axios.post(webhook.url, options);
   if (webhook.id)

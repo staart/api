@@ -110,7 +110,7 @@ export const updateOrganizationForUser = async (
 ) => {
   if (await can(userId, OrgScopes.UPDATE_ORG, "organization", organizationId)) {
     await updateOrganization(organizationId, data);
-    queueWebhook(organizationId, Webhooks.UPDATE_ORGANIZATION);
+    queueWebhook(organizationId, Webhooks.UPDATE_ORGANIZATION, data);
     trackEvent({ organizationId, type: Webhooks.UPDATE_ORGANIZATION }, locals);
     return;
   }
@@ -176,7 +176,7 @@ export const updateOrganizationBillingForUser = async (
     } else {
       result = await createStripeCustomer(organizationId, data);
     }
-    queueWebhook(organizationId, Webhooks.UPDATE_ORGANIZATION_BILLING);
+    queueWebhook(organizationId, Webhooks.UPDATE_ORGANIZATION_BILLING, data);
     trackEvent(
       { organizationId, type: Webhooks.UPDATE_ORGANIZATION_BILLING },
       locals
@@ -340,7 +340,11 @@ export const updateOrganizationSubscriptionForUser = async (
         subscriptionId,
         data
       );
-      queueWebhook(organizationId, Webhooks.UPDATE_ORGANIZATION_SUBSCRIPTION);
+      queueWebhook(
+        organizationId,
+        Webhooks.UPDATE_ORGANIZATION_SUBSCRIPTION,
+        data
+      );
       trackEvent(
         { organizationId, type: Webhooks.UPDATE_ORGANIZATION_SUBSCRIPTION },
         locals
@@ -372,7 +376,11 @@ export const createOrganizationSubscriptionForUser = async (
         organization.stripeCustomerId,
         params
       );
-      queueWebhook(organizationId, Webhooks.CREATE_ORGANIZATION_SUBSCRIPTION);
+      queueWebhook(
+        organizationId,
+        Webhooks.CREATE_ORGANIZATION_SUBSCRIPTION,
+        params
+      );
       trackEvent(
         { organizationId, type: Webhooks.CREATE_ORGANIZATION_SUBSCRIPTION },
         locals
@@ -415,7 +423,11 @@ export const deleteOrganizationSourceForUser = async (
         organization.stripeCustomerId,
         sourceId
       );
-      queueWebhook(organizationId, Webhooks.DELETE_ORGANIZATION_SOURCE);
+      queueWebhook(
+        organizationId,
+        Webhooks.DELETE_ORGANIZATION_SOURCE,
+        sourceId
+      );
       trackEvent(
         { organizationId, type: Webhooks.DELETE_ORGANIZATION_SOURCE },
         locals
@@ -449,7 +461,7 @@ export const updateOrganizationSourceForUser = async (
         sourceId,
         data
       );
-      queueWebhook(organizationId, Webhooks.UPDATE_ORGANIZATION_SOURCE);
+      queueWebhook(organizationId, Webhooks.UPDATE_ORGANIZATION_SOURCE, data);
       trackEvent(
         { organizationId, type: Webhooks.UPDATE_ORGANIZATION_SOURCE },
         locals
@@ -481,7 +493,7 @@ export const createOrganizationSourceForUser = async (
         organization.stripeCustomerId,
         card
       );
-      queueWebhook(organizationId, Webhooks.CREATE_ORGANIZATION_SOURCE);
+      queueWebhook(organizationId, Webhooks.CREATE_ORGANIZATION_SOURCE, card);
       trackEvent(
         { organizationId, type: Webhooks.CREATE_ORGANIZATION_SOURCE },
         locals
@@ -750,7 +762,7 @@ export const updateApiKeyForUser = async (
     )
   ) {
     const result = await updateApiKey(organizationId, apiKeyId, data);
-    queueWebhook(organizationId, Webhooks.UPDATE_API_KEY);
+    queueWebhook(organizationId, Webhooks.UPDATE_API_KEY, data);
     trackEvent({ organizationId, type: Webhooks.UPDATE_API_KEY }, locals);
     return result;
   }
@@ -772,7 +784,7 @@ export const createApiKeyForUser = async (
     )
   ) {
     const result = await createApiKey({ organizationId, ...apiKey });
-    queueWebhook(organizationId, Webhooks.CREATE_API_KEY);
+    queueWebhook(organizationId, Webhooks.CREATE_API_KEY, apiKey);
     trackEvent({ organizationId, type: Webhooks.CREATE_API_KEY }, locals);
     return result;
   }
@@ -794,7 +806,7 @@ export const deleteApiKeyForUser = async (
     )
   ) {
     const result = await deleteApiKey(organizationId, apiKeyId);
-    queueWebhook(organizationId, Webhooks.DELETE_API_KEY);
+    queueWebhook(organizationId, Webhooks.DELETE_API_KEY, apiKeyId);
     trackEvent({ organizationId, type: Webhooks.DELETE_API_KEY }, locals);
     return result;
   }
@@ -851,7 +863,7 @@ export const updateDomainForUser = async (
     )
   ) {
     const result = await updateDomain(organizationId, domainId, data);
-    queueWebhook(organizationId, Webhooks.UPDATE_DOMAIN);
+    queueWebhook(organizationId, Webhooks.UPDATE_DOMAIN, data);
     trackEvent({ organizationId, type: Webhooks.UPDATE_DOMAIN }, locals);
     return result;
   }
@@ -879,7 +891,7 @@ export const createDomainForUser = async (
       ...domain,
       isVerified: false
     });
-    queueWebhook(organizationId, Webhooks.CREATE_DOMAIN);
+    queueWebhook(organizationId, Webhooks.CREATE_DOMAIN, domain);
     trackEvent({ organizationId, type: Webhooks.CREATE_DOMAIN }, locals);
     return result;
   }
@@ -901,7 +913,7 @@ export const deleteDomainForUser = async (
     )
   ) {
     const result = await deleteDomain(organizationId, domainId);
-    queueWebhook(organizationId, Webhooks.DELETE_DOMAIN);
+    queueWebhook(organizationId, Webhooks.DELETE_DOMAIN, domainId);
     trackEvent({ organizationId, type: Webhooks.DELETE_DOMAIN }, locals);
     return result;
   }
@@ -936,7 +948,10 @@ export const verifyDomainForUser = async (
           const result = await updateDomain(organizationId, domainId, {
             isVerified: true
           });
-          queueWebhook(organizationId, Webhooks.VERIFY_DOMAIN);
+          queueWebhook(organizationId, Webhooks.VERIFY_DOMAIN, {
+            domainId,
+            method
+          });
           trackEvent({ organizationId, type: Webhooks.VERIFY_DOMAIN }, locals);
           return result;
         }
@@ -949,7 +964,10 @@ export const verifyDomainForUser = async (
         const result = await updateDomain(organizationId, domainId, {
           isVerified: true
         });
-        queueWebhook(organizationId, Webhooks.VERIFY_DOMAIN);
+        queueWebhook(organizationId, Webhooks.VERIFY_DOMAIN, {
+          domainId,
+          method
+        });
         trackEvent({ organizationId, type: Webhooks.VERIFY_DOMAIN }, locals);
         return result;
       } else {
@@ -1011,7 +1029,7 @@ export const updateWebhookForUser = async (
     )
   ) {
     const result = await updateWebhook(organizationId, webhookId, data);
-    queueWebhook(organizationId, Webhooks.UPDATE_WEBHOOK);
+    queueWebhook(organizationId, Webhooks.UPDATE_WEBHOOK, data);
     trackEvent({ organizationId, type: Webhooks.UPDATE_WEBHOOK }, locals);
     return result;
   }
@@ -1036,7 +1054,7 @@ export const createWebhookForUser = async (
       organizationId,
       ...webhook
     } as Webhook);
-    queueWebhook(organizationId, Webhooks.CREATE_WEBHOOK);
+    queueWebhook(organizationId, Webhooks.CREATE_WEBHOOK, webhook);
     trackEvent({ organizationId, type: Webhooks.CREATE_WEBHOOK }, locals);
     return result;
   }
@@ -1058,7 +1076,7 @@ export const deleteWebhookForUser = async (
     )
   ) {
     const result = await deleteWebhook(organizationId, webhookId);
-    queueWebhook(organizationId, Webhooks.DELETE_WEBHOOK);
+    queueWebhook(organizationId, Webhooks.DELETE_WEBHOOK, webhookId);
     trackEvent({ organizationId, type: Webhooks.DELETE_WEBHOOK }, locals);
     return result;
   }
