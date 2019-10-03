@@ -19,7 +19,6 @@ import {
   Controller,
   Middleware,
   ClassWrapper,
-  ClassMiddleware,
   Wrapper
 } from "@overnightjs/core";
 import {
@@ -72,10 +71,10 @@ const OAuthRedirect = (
 };
 
 @Controller("v1/auth")
-@ClassMiddleware(bruteForceHandler)
 @ClassWrapper(asyncHandler)
 export class AuthController {
   @Post("register")
+  @Middleware(bruteForceHandler)
   @Middleware(
     validator(
       {
@@ -117,6 +116,7 @@ export class AuthController {
   }
 
   @Post("login")
+  @Middleware(bruteForceHandler)
   @Middleware(
     validator(
       {
