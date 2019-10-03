@@ -94,7 +94,7 @@
     "yaml": "^1.7.0"
   },
   "dependencies": {
-    "@hapi/joi": "15.1.1",
+    "@hapi/joi": "16.1.5",
     "@sentry/node": "^5.6.2",
     "aws-sdk": "^2.540.0",
     "axios": "^0.19.0",
