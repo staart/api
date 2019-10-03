@@ -21,7 +21,8 @@
     "check-update": "node setup/check-update.js",
     "update": "git pull git@github.com:o15y/staart",
     "postinstall": "npm run check-update",
-    "snyk-protect": "snyk protect"
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "husky": {
     "hooks": {
