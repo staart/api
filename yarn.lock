@@ -3673,20 +3673,20 @@ http-status-codes@^1.3.2:
   resolved "https://registry.yarnpkg.com/http-status-codes/-/http-status-codes-1.3.2.tgz#181dfa4455ef454e5e4d827718fca3936680d10d"
   integrity sha512-nDUtj0ltIt08tGi2VWSpSzNNFye0v3YSe9lX3lIqLTuVvvRiYCvs4QQBSHo0eomFYw1wlUuofurUAlTm+vHnXg==
 
+"https-proxy-agent-snyk-fork@git://github.com/snyk/node-https-proxy-agent#fix/https-agent-vuln":
+  version "2.2.2-fixed-mitm-vuln"
+  uid "5e86ccb682d0c833c8daa25ee6f91c670161cd66"
+  resolved "git://github.com/snyk/node-https-proxy-agent#5e86ccb682d0c833c8daa25ee6f91c670161cd66"
+  dependencies:
+    agent-base "^4.3.0"
+    debug "^3.1.0"
+
 https-proxy-agent@2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/https-proxy-agent/-/https-proxy-agent-2.2.1.tgz#51552970fa04d723e04c56d04178c3f92592bbc0"
   integrity sha512-HPCTS1LW51bcyMYbxUIOO4HEOlQ1/1qRaFWcyxvwaqUS9TY88aoEuHUY33kuAh1YhVVaDQhLZsnPd+XNARWZlQ==
   dependencies:
     agent-base "^4.1.0"
-    debug "^3.1.0"
-
-https-proxy-agent@^2.2.1:
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/https-proxy-agent/-/https-proxy-agent-2.2.2.tgz#271ea8e90f836ac9f119daccd39c19ff7dfb0793"
-  integrity sha512-c8Ndjc9Bkpfx/vCJueCPy0jlP4ccCCSNDp8xwCZzPjKJUm+B+u9WX2x98Qx4n1PiMNTWo3D7KK5ifNV/yJyRzg==
-  dependencies:
-    agent-base "^4.3.0"
     debug "^3.1.0"
 
 humanize-ms@^1.2.1:
@@ -5728,16 +5728,16 @@ p-try@^2.0.0:
   resolved "https://registry.yarnpkg.com/p-try/-/p-try-2.2.0.tgz#cb2868540e313d61de58fafbe35ce9004d5540e6"
   integrity sha512-R4nPAVTAU0B9D35/Gk3uJf/7XYbQcyohSKdvAxIRSNghFl4e71hVoGnBNQz9cWaXxO2I10KTC+3jMdvvoKw6dQ==
 
-pac-proxy-agent@^3.0.0:
+"pac-proxy-agent@git://github.com/snyk/node-pac-proxy-agent.git#fix/https-proxy-agent-vuln":
   version "3.0.0"
-  resolved "https://registry.yarnpkg.com/pac-proxy-agent/-/pac-proxy-agent-3.0.0.tgz#11d578b72a164ad74bf9d5bac9ff462a38282432"
-  integrity sha512-AOUX9jES/EkQX2zRz0AW7lSx9jD//hQS8wFXBvcnd/J2Py9KaMJMqV/LPqJssj1tgGufotb2mmopGPR15ODv1Q==
+  uid e962ea0fe8db650a55e349e1b422e3ac99bfe451
+  resolved "git://github.com/snyk/node-pac-proxy-agent.git#e962ea0fe8db650a55e349e1b422e3ac99bfe451"
   dependencies:
     agent-base "^4.2.0"
     debug "^3.1.0"
     get-uri "^2.0.0"
     http-proxy-agent "^2.1.0"
-    https-proxy-agent "^2.2.1"
+    https-proxy-agent-snyk-fork "git://github.com/snyk/node-https-proxy-agent#fix/https-agent-vuln"
     pac-resolver "^3.0.0"
     raw-body "^2.2.0"
     socks-proxy-agent "^4.0.1"
@@ -6048,17 +6048,17 @@ proxy-addr@~2.0.5:
     forwarded "~0.1.2"
     ipaddr.js "1.9.0"
 
-proxy-agent@^3.1.0:
+"proxy-agent@git://github.com/snyk/node-proxy-agent.git#fix/https-agent-vuln":
   version "3.1.0"
-  resolved "https://registry.yarnpkg.com/proxy-agent/-/proxy-agent-3.1.0.tgz#3cf86ee911c94874de4359f37efd9de25157c113"
-  integrity sha512-IkbZL4ClW3wwBL/ABFD2zJ8iP84CY0uKMvBPk/OceQe/cEjrxzN1pMHsLwhbzUoRhG9QbSxYC+Z7LBkTiBNvrA==
+  uid c25ef74cbe593a4d60a71ff3053466e4b3171711
+  resolved "git://github.com/snyk/node-proxy-agent.git#c25ef74cbe593a4d60a71ff3053466e4b3171711"
   dependencies:
     agent-base "^4.2.0"
     debug "^3.1.0"
     http-proxy-agent "^2.1.0"
-    https-proxy-agent "^2.2.1"
+    https-proxy-agent-snyk-fork "git://github.com/snyk/node-https-proxy-agent#fix/https-agent-vuln"
     lru-cache "^4.1.2"
-    pac-proxy-agent "^3.0.0"
+    pac-proxy-agent "git://github.com/snyk/node-pac-proxy-agent.git#fix/https-proxy-agent-vuln"
     proxy-from-env "^1.0.0"
     socks-proxy-agent "^4.0.1"
 
@@ -6962,10 +6962,10 @@ snyk-try-require@1.3.1, snyk-try-require@^1.1.1, snyk-try-require@^1.3.1:
     lru-cache "^4.0.0"
     then-fs "^2.0.0"
 
-snyk@^1.230.4:
-  version "1.230.4"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.230.4.tgz#0e5154ea6e8fc878eb9b95ec3c87dd09358f4bce"
-  integrity sha512-1xpEgpWinKZlFkeJ0flkwSfLqfeCYOwECl8CqpsqrKX3ZW1Dds7lDnctHJscMByvCbxYwR27KuKqpJJCUUw5Qw==
+snyk@^1.230.5:
+  version "1.230.5"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.230.5.tgz#d47a012af6facefe05065c935afe332b5ea889de"
+  integrity sha512-kzy6FHMyneVXcezBVO0xRbEDSZSPj9Z/fDH4HFwOm5cpm/HErQ8B86fO6KtfSNIsruWUFcobEzP1q41nOdleAQ==
   dependencies:
     "@snyk/cli-interface" "^2.0.3"
     "@snyk/dep-graph" "1.12.0"
@@ -6986,7 +6986,7 @@ snyk@^1.230.4:
     needle "^2.2.4"
     opn "^5.5.0"
     os-name "^3.0.0"
-    proxy-agent "^3.1.0"
+    proxy-agent "git://github.com/snyk/node-proxy-agent.git#fix/https-agent-vuln"
     proxy-from-env "^1.0.0"
     semver "^6.0.0"
     snyk-config "^2.2.1"
