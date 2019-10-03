@@ -592,6 +592,10 @@ export const deleteOrganizationMembership = async (
   organizationId: string,
   id: string
 ) => {
+  // Check if there's only one member in this team
+  const members = await getOrganizationMemberships(organizationId);
+  if (members && members.data && members.length === 1)
+    throw new Error(ErrorCode.CANNOT_DELETE_SOLE_MEMBER);
   const membershipDetails = await getOrganizationMembership(organizationId, id);
   if (membershipDetails.id)
     deleteItemFromCache(

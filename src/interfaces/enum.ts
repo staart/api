@@ -72,6 +72,7 @@ export enum ErrorCode {
   UNVERIFIED_EMAIL = "401/unverified-email",
   GOOGLE_AUTH_ERROR = "401/google-auth-error",
   UNAPPROVED_LOCATION = "401/unapproved-location",
+  CANNOT_DELETE_SOLE_MEMBER = "400/cannot-delete-sole-member",
   CANNOT_DELETE_SOLE_OWNER = "400/cannot-delete-sole-owner",
   CANNOT_UPDATE_SOLE_OWNER = "400/cannot-update-sole-owner",
   USER_IS_MEMBER_ALREADY = "400/user-is-member-already",
