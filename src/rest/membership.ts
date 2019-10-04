@@ -40,16 +40,18 @@ export const deleteMembershipForUser = async (
   if (!membership || !membership.id)
     throw new Error(ErrorCode.MEMBERSHIP_NOT_FOUND);
   if (await can(tokenUserId, Authorizations.DELETE, "membership", membership)) {
+    const organizationMembers = await getOrganizationMembers(
+      membership.organizationId
+    );
     if (membership.role == MembershipRole.OWNER) {
-      const organizationMembers = await getOrganizationMembers(
-        membership.organizationId
-      );
       const currentMembers = organizationMembers.filter(
         member => member.role == MembershipRole.OWNER
       );
       if (currentMembers.length < 2)
         throw new Error(ErrorCode.CANNOT_DELETE_SOLE_OWNER);
     }
+    if (organizationMembers.length === 1)
+      throw new Error(ErrorCode.CANNOT_DELETE_SOLE_MEMBER);
     trackEvent(
       {
         userId: membershipId,

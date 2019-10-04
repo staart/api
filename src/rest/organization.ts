@@ -615,8 +615,13 @@ export const deleteOrganizationMembershipForUser = async (
       "organization",
       organizationId
     )
-  )
+  ) {
+    // Check if there's only one member in this team
+    const members = await getOrganizationMemberships(organizationId);
+    if (members && members.data && members.length === 1)
+      throw new Error(ErrorCode.CANNOT_DELETE_SOLE_MEMBER);
     return await deleteOrganizationMembership(organizationId, membershipId);
+  }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
 
