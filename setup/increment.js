@@ -10,7 +10,7 @@ const incrementVersion = async () => {
     .map((a, i) => (i === 2 ? parseInt(a) + 1 : a))
     .join(".");
   pkg.version = newVersion;
-  if (pkg.name === "staart-manager") pkg["staart-version"] = newVersion;
+  if (pkg.name === "@staart/manager") pkg["staart-version"] = newVersion;
   await fs.writeFile(
     path.join(__dirname, "..", "package.json"),
     JSON.stringify(pkg, null, 2)

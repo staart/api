@@ -22,13 +22,13 @@ const checkUpdate = async () => {
     (await fs.readFile(path.join(__dirname, "..", "package.json"))).toString()
   );
   if (
-    i.name !== "staart-manager" &&
-    !Object.keys(i.devDependencies).includes("staart-manager")
+    i.name !== "@staart/manager" &&
+    !Object.keys(i.devDependencies).includes("@staart/manager")
   ) {
     if (process.env.USE_NPM || !hasYarn()) {
-      shell.exec("npm install --save-dev staart-manager");
+      shell.exec("npm install --save-dev @staart/manager");
     } else {
-      shell.exec("yarn add -D staart-manager");
+      shell.exec("yarn add -D @staart/manager");
     }
   }
   return;
