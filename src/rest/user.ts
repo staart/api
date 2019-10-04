@@ -15,7 +15,10 @@ import {
   deleteAccessToken,
   getUserSessions,
   getSession,
-  deleteSession
+  deleteSession,
+  getUserIdentities,
+  getIdentity,
+  deleteIdentity
 } from "../crud/user";
 import {
   deleteAllUserMemberships,
@@ -325,6 +328,39 @@ export const deleteSessionForUser = async (
 ) => {
   if (await can(tokenUserId, UserScopes.DELETE_USER_SESSION, "user", userId)) {
     await deleteSession(userId, sessionId);
+    return;
+  }
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const getUserIdentitiesForUser = async (
+  tokenUserId: string,
+  userId: string,
+  query: KeyValue
+) => {
+  if (await can(tokenUserId, UserScopes.READ_USER_IDENTITY, "user", userId))
+    return await getUserIdentities(userId, query);
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const getUserIdentityForUser = async (
+  tokenUserId: string,
+  userId: string,
+  identityId: string
+) => {
+  if (await can(tokenUserId, UserScopes.READ_USER_IDENTITY, "user", userId))
+    return await getIdentity(userId, identityId);
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const deleteIdentityForUser = async (
+  tokenUserId: string,
+  userId: string,
+  identityId: string,
+  locals: Locals
+) => {
+  if (await can(tokenUserId, UserScopes.DELETE_USER_IDENTITY, "user", userId)) {
+    await deleteIdentity(userId, identityId);
     return;
   }
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);

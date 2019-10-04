@@ -10,7 +10,8 @@ import {
   ApprovedLocation,
   BackupCode,
   AccessToken,
-  Session
+  Session,
+  Identity
 } from "../interfaces/tables/user";
 import {
   capitalizeFirstAndLastLetter,
@@ -512,5 +513,78 @@ export const deleteSession = async (userId: string, sessionId: string) => {
   return await query(
     `DELETE FROM ${tableName("sessions")} WHERE id = ? AND userId = ? LIMIT 1`,
     [sessionId, userId]
+  );
+};
+
+/**
+ * Get a list of all identities of a user
+ */
+export const getUserIdentities = async (userId: string, query: KeyValue) => {
+  const data = await getPaginatedData({
+    table: "identities",
+    conditions: {
+      userId
+    },
+    ...query,
+    sort: "desc"
+  });
+  return data;
+};
+
+/**
+ * Get a identity
+ */
+export const getIdentity = async (userId: string, identityId: string) => {
+  const data = (<Identity[]>(
+    await query(
+      `SELECT * FROM ${tableName(
+        "identities"
+      )} WHERE id = ? AND userId = ? LIMIT 1`,
+      [identityId, userId]
+    )
+  ))[0];
+  return data;
+};
+
+/**
+ * Create a identity
+ */
+export const createIdentity = async (newIdentity: Identity) => {
+  newIdentity.createdAt = new Date();
+  newIdentity.updatedAt = newIdentity.createdAt;
+  return await query(
+    `INSERT INTO ${tableName("identities")} ${tableValues(newIdentity)}`,
+    Object.values(newIdentity)
+  );
+};
+
+/**
+ * Update a user's identity
+ */
+export const updateIdentity = async (
+  userId: string,
+  identityId: string,
+  data: KeyValue
+) => {
+  data.updatedAt = new Date();
+  data = removeReadOnlyValues(data);
+  return await query(
+    `UPDATE ${tableName("identities")} SET ${setValues(
+      data
+    )} WHERE id = ? AND userId = ?`,
+    [...Object.values(data), identityId, userId]
+  );
+};
+
+/**
+ * Delete an identity
+ */
+export const deleteIdentity = async (userId: string, identityId: string) => {
+  await getIdentity(userId, identityId);
+  return await query(
+    `DELETE FROM ${tableName(
+      "identities"
+    )} WHERE id = ? AND userId = ? LIMIT 1`,
+    [identityId, userId]
   );
 };

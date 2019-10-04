@@ -19,7 +19,10 @@ import {
   getUserAccessTokensForUser,
   deleteSessionForUser,
   getUserSessionForUser,
-  getUserSessionsForUser
+  getUserSessionsForUser,
+  getUserIdentitiesForUser,
+  deleteIdentityForUser,
+  getUserIdentityForUser
 } from "../../rest/user";
 import {
   Get,
@@ -521,6 +524,61 @@ export class UserController {
     );
     res.json(
       await deleteSessionForUser(res.locals.token.id, id, sessionId, res.locals)
+    );
+  }
+
+  @Get(":id/identities")
+  async getUserIdentities(req: Request, res: Response) {
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    joiValidate(
+      { id: [Joi.string().required(), Joi.string().required()] },
+      { id }
+    );
+    const identityParams = { ...req.query };
+    joiValidate(
+      {
+        start: Joi.string(),
+        itemsPerPage: Joi.number()
+      },
+      identityParams
+    );
+    res.json(
+      await getUserIdentitiesForUser(res.locals.token.id, id, identityParams)
+    );
+  }
+
+  @Get(":id/identities/:identityId")
+  async getUserIdentity(req: Request, res: Response) {
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const identityId = hashIdToId(req.params.identityId);
+    joiValidate(
+      {
+        id: [Joi.string().required(), Joi.string().required()],
+        identityId: Joi.string().required()
+      },
+      { id, identityId }
+    );
+    res.json(await getUserIdentityForUser(res.locals.token.id, id, identityId));
+  }
+
+  @Delete(":id/identities/:identityId")
+  async deleteUserIdentity(req: Request, res: Response) {
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const identityId = hashIdToId(req.params.identityId);
+    joiValidate(
+      {
+        id: [Joi.string().required(), Joi.string().required()],
+        identityId: Joi.string().required()
+      },
+      { id, identityId }
+    );
+    res.json(
+      await deleteIdentityForUser(
+        res.locals.token.id,
+        id,
+        identityId,
+        res.locals
+      )
     );
   }
 }
