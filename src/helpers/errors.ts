@@ -1,7 +1,7 @@
 import { ErrorCode } from "../interfaces/enum";
 import { HTTPError } from "../interfaces/general";
-import chalk from "chalk";
 import Joi from "@hapi/joi";
+import { error, warn } from "signale";
 
 /**
  * Parse default errors and send a safe string
@@ -40,12 +40,7 @@ export const sendError = (error: string) => {
   return { status: 500, code: error } as HTTPError;
 };
 
-export const logError = (category: string, error: string, level: 1 | 2 = 2) => {
-  if (level === 1)
-    return console.log(
-      `${chalk.bold.red("❌  ERROR")} ${chalk.red(category)}: ${error}`
-    );
-  console.log(
-    `${chalk.bold.yellow("⚠️  WARNING")} ${chalk.yellow(category)}: ${error}`
-  );
+export const logError = (category: string, err: string, level: 1 | 2 = 2) => {
+  if (level === 1) return error(`${category}: ${err}`);
+  warn(`${category}: ${err}`);
 };

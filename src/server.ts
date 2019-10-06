@@ -4,6 +4,7 @@ import cors from "cors";
 import responseTime from "response-time";
 import { json, urlencoded } from "body-parser";
 import { Server } from "@overnightjs/core";
+import { success } from "signale";
 
 // This `join` is required for static files in app.ts
 import { join } from "path";
@@ -47,6 +48,6 @@ export class Staart extends Server {
   }
 
   public start(port: number): void {
-    this.app.listen(port, () => console.log(`✅  Listening on ${port}`));
+    this.app.listen(port, () => success(`Listening on ${port}`));
   }
 }
