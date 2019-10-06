@@ -8,6 +8,7 @@ import {
 import { elasticSearch } from "../helpers/elasticsearch";
 import { IdValues, hashIdToId } from "../helpers/utils";
 import { ELASTIC_EVENTS_PREFIX, ELASTIC_LOGS_PREFIX } from "../config";
+import { error } from "signale";
 
 export default () => {
   new CronJob(
@@ -48,8 +49,8 @@ const storeSecurityEvents = async () => {
         body,
         type: "log"
       });
-    } catch (error) {
-      console.log("Got error in saving to ElasticSearch", error);
+    } catch (err) {
+      error("Got error in saving to ElasticSearch", err);
     }
   }
   clearSecurityEventsData();
@@ -82,8 +83,8 @@ const storeTrackingLogs = async () => {
         body,
         type: "log"
       });
-    } catch (error) {
-      console.log("Got error in saving to ElasticSearch", error);
+    } catch (err) {
+      error("Got error in saving to ElasticSearch", err);
     }
   }
   clearTrackingData();

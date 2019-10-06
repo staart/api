@@ -1,5 +1,6 @@
 const fs = require("fs-extra");
 const path = require("path");
+const { error } = require("signale");
 
 const incrementVersion = async () => {
   const pkg = JSON.parse(
@@ -19,5 +20,5 @@ const incrementVersion = async () => {
 
 incrementVersion()
   .then(() => {})
-  .catch(error => console.log("ERROR", error))
+  .catch(err => error(err))
   .then(() => process.exit(0));

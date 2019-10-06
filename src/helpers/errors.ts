@@ -36,7 +36,7 @@ export const sendError = (error: string) => {
     const code = error.split("/")[1];
     return { status, code } as HTTPError;
   }
-  console.log("Backup error", error);
+  warn(error);
   return { status: 500, code: error } as HTTPError;
 };
 

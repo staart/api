@@ -4,6 +4,7 @@ const fs = require("fs-extra");
 const path = require("path");
 const shell = require("shelljs");
 const hasYarn = require("has-yarn");
+const { info, warn, error } = require("signale");
 const yourPkg = require("../package.json");
 
 dotenv.config();
@@ -13,10 +14,10 @@ const packageUrl =
 const checkUpdate = async () => {
   const pkg = (await axios.get(packageUrl)).data;
   const v = yourPkg["staart-version"];
-  console.log("Most recent version is", pkg.version);
-  console.log("Your version is", v);
+  info("Most recent version is", pkg.version);
+  info("Your version is", v);
   if (v !== pkg.version) {
-    console.log("🚨  Staart update required");
+    warn("🚨  Staart update required");
   }
   const i = JSON.parse(
     (await fs.readFile(path.join(__dirname, "..", "package.json"))).toString()
@@ -36,4 +37,4 @@ const checkUpdate = async () => {
 
 checkUpdate()
   .then(() => {})
-  .catch(error => console.log("ERROR", error));
+  .catch(err => error("ERROR", err));

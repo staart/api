@@ -2,7 +2,7 @@ const fs = require("fs-extra");
 const path = require("path");
 const yaml = require("yaml");
 const recursive = require("recursive-readdir");
-const { success, pending } = require("signale");
+const { success, pending, error } = require("signale");
 
 const SRC = path.join(__dirname, "..", "src");
 let server = fs.readFileSync(path.join(SRC, "server.ts")).toString();
@@ -120,4 +120,4 @@ setup()
     pending("Compiling TypeScript");
     process.exit(0);
   })
-  .catch(error => console.log("Error in setup", error));
+  .catch(err => error("Error in setup", err));
