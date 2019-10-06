@@ -80,6 +80,7 @@ export enum ErrorCode {
   NOT_ENABLED_2FA = "400/invalid-2fa-token",
   INVALID_2FA_TOKEN = "401/invalid-2fa-token",
   OAUTH_NO_ID = "422/oauth-no-id",
+  OAUTH_IDENTITY_TAKEN = "409/oauth-identity-taken",
   OAUTH_NO_NAME = "422/oauth-no-name",
   OAUTH_ERROR = "400/oauth-error",
   OAUTH_NO_EMAIL = "404/oauth-no-email",

@@ -553,6 +553,21 @@ export const getIdentity = async (userId: string, identityId: string) => {
   return data;
 };
 
+/**
+ * Get a identity
+ */
+export const getIdentityByServiceId = async (service: string, id: string) => {
+  const data = (<Identity[]>(
+    await query(
+      `SELECT * FROM ${tableName(
+        "identities"
+      )} WHERE service = ? AND identityId = ? LIMIT 1`,
+      [service, id]
+    )
+  ))[0];
+  return data;
+};
+
 const github = new ClientOAuth2({
   clientId: GITHUB_CLIENT_ID,
   clientSecret: GITHUB_CLIENT_SECRET,
@@ -575,6 +590,20 @@ export const createIdentityGetOAuthLink = async (
 };
 
 /**
+ * Create a identity: Check if available
+ */
+export const checkIdentityAvailability = async (
+  service: string,
+  id: string
+) => {
+  try {
+    const identity = await getIdentityByServiceId(service, id);
+    if (identity && identity.id) return false;
+  } catch (error) {}
+  return true;
+};
+
+/**
  * Create a identity: Connect OAuth
  */
 export const createIdentityConnect = async (
@@ -583,7 +612,6 @@ export const createIdentityConnect = async (
   code: string
 ) => {
   if (service === "github") {
-    console.log("Got here 1");
     try {
       const token = (await github.code.getToken(
         `${FRONTEND_URL}/auth/connect-identity/github?code=${code}`
@@ -594,10 +622,13 @@ export const createIdentityConnect = async (
         }
       })).data;
       if (!data.id) throw new Error(ErrorCode.OAUTH_NO_ID);
+      if (!(await checkIdentityAvailability(service, data.id)))
+        throw new Error(ErrorCode.OAUTH_IDENTITY_TAKEN);
       await createIdentity({
         userId,
         identityId: data.id,
-        type: service
+        type: service,
+        loginName: data.login
       });
     } catch (error) {
       throw new Error(ErrorCode.OAUTH_ERROR);

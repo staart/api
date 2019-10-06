@@ -67,4 +67,5 @@ export interface Identity extends IdRow {
   userId: string;
   type: string;
   identityId: string;
+  loginName?: string;
 }
