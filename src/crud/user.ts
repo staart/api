@@ -614,26 +614,27 @@ export const createIdentityConnect = async (
   code: string
 ) => {
   if (service === "github") {
+    let data: any;
     try {
       const token = (await github.code.getToken(
         `${FRONTEND_URL}/auth/connect-identity/github?code=${code}`
       )).accessToken;
-      const data = (await Axios.get("https://api.github.com/user", {
+      data = (await Axios.get("https://api.github.com/user", {
         headers: {
           Authorization: `token ${token}`
         }
       })).data;
-      if (!data.id) throw new Error(ErrorCode.OAUTH_NO_ID);
-      await checkIdentityAvailability(service, data.id);
-      await createIdentity({
-        userId,
-        identityId: data.id,
-        type: service,
-        loginName: data.login
-      });
     } catch (error) {
       throw new Error(ErrorCode.OAUTH_ERROR);
     }
+    if (!data || !data.id) throw new Error(ErrorCode.OAUTH_NO_ID);
+    await checkIdentityAvailability(service, data.id);
+    await createIdentity({
+      userId,
+      identityId: data.id,
+      type: service,
+      loginName: data.login
+    });
     return { success: true };
   }
 };
