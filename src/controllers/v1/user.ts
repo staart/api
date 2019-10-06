@@ -22,7 +22,9 @@ import {
   getUserSessionsForUser,
   getUserIdentitiesForUser,
   deleteIdentityForUser,
-  getUserIdentityForUser
+  getUserIdentityForUser,
+  createUserIdentityForUser,
+  connectUserIdentityForUser
 } from "../../rest/user";
 import {
   Get,
@@ -544,6 +546,36 @@ export class UserController {
     );
     res.json(
       await getUserIdentitiesForUser(res.locals.token.id, id, identityParams)
+    );
+  }
+
+  @Put(":id/identities")
+  async createUserIdentity(req: Request, res: Response) {
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    joiValidate(
+      { id: [Joi.string().required(), Joi.string().required()] },
+      { id }
+    );
+    res.json(
+      await createUserIdentityForUser(res.locals.token.id, id, req.body)
+    );
+  }
+
+  @Post(":id/identities/:service")
+  async connectUserIdentity(req: Request, res: Response) {
+    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    joiValidate(
+      { id: [Joi.string().required(), Joi.string().required()] },
+      { id }
+    );
+    const service = req.params.service;
+    const code = req.body.code;
+    joiValidate(
+      { service: Joi.string().required(), code: Joi.string().required() },
+      { service, code }
+    );
+    res.json(
+      await connectUserIdentityForUser(res.locals.token.id, id, service, code)
     );
   }
 

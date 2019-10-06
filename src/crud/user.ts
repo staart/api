@@ -31,11 +31,18 @@ import md5 from "md5";
 import randomInt from "random-int";
 import { getPaginatedData } from "./data";
 import { accessToken, invalidateToken } from "../helpers/jwt";
-import { TOKEN_EXPIRY_API_KEY_MAX } from "../config";
+import {
+  TOKEN_EXPIRY_API_KEY_MAX,
+  GITHUB_CLIENT_SECRET,
+  GITHUB_CLIENT_ID,
+  FRONTEND_URL
+} from "../config";
 import {
   addLocationToSession,
   addLocationToSessions
 } from "../helpers/location";
+import ClientOAuth2 from "client-oauth2";
+import Axios from "axios";
 
 /**
  * Get a list of all ${tableName("users")}
@@ -544,6 +551,59 @@ export const getIdentity = async (userId: string, identityId: string) => {
     )
   ))[0];
   return data;
+};
+
+const github = new ClientOAuth2({
+  clientId: GITHUB_CLIENT_ID,
+  clientSecret: GITHUB_CLIENT_SECRET,
+  redirectUri: `${FRONTEND_URL}/auth/connect-identity/github`,
+  authorizationUri: "https://github.com/login/oauth/authorize",
+  accessTokenUri: "https://github.com/login/oauth/access_token",
+  scopes: ["read:user", "user:email"]
+});
+
+/**
+ * Create a identity: Get an OAuth link
+ */
+export const createIdentityGetOAuthLink = async (
+  userId: string,
+  newIdentity: KeyValue
+) => {
+  if (newIdentity.service === "github") {
+    return { url: github.code.getUri() };
+  }
+};
+
+/**
+ * Create a identity: Connect OAuth
+ */
+export const createIdentityConnect = async (
+  userId: string,
+  service: string,
+  code: string
+) => {
+  if (service === "github") {
+    console.log("Got here 1");
+    try {
+      const token = (await github.code.getToken(
+        `${FRONTEND_URL}/auth/connect-identity/github?code=${code}`
+      )).accessToken;
+      const data = (await Axios.get("https://api.github.com/user", {
+        headers: {
+          Authorization: `token ${token}`
+        }
+      })).data;
+      if (!data.id) throw new Error(ErrorCode.OAUTH_NO_ID);
+      await createIdentity({
+        userId,
+        identityId: data.id,
+        type: service
+      });
+    } catch (error) {
+      throw new Error(ErrorCode.OAUTH_ERROR);
+    }
+    return { success: true };
+  }
 };
 
 /**

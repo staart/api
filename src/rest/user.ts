@@ -18,14 +18,16 @@ import {
   deleteSession,
   getUserIdentities,
   getIdentity,
-  deleteIdentity
+  deleteIdentity,
+  createIdentityGetOAuthLink,
+  createIdentityConnect
 } from "../crud/user";
 import {
   deleteAllUserMemberships,
   getUserMembershipsDetailed,
   addOrganizationToMemberships
 } from "../crud/membership";
-import { User } from "../interfaces/tables/user";
+import { User, Identity } from "../interfaces/tables/user";
 import { Locals, KeyValue } from "../interfaces/general";
 import { getUserEmails, deleteAllUserEmails } from "../crud/email";
 import { can } from "../helpers/authorization";
@@ -340,6 +342,26 @@ export const getUserIdentitiesForUser = async (
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER_IDENTITY, "user", userId))
     return await getUserIdentities(userId, query);
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+
+export const createUserIdentityForUser = async (
+  tokenUserId: string,
+  userId: string,
+  body: KeyValue
+) => {
+  if (await can(tokenUserId, UserScopes.CREATE_USER_IDENTITY, "user", userId))
+    return await createIdentityGetOAuthLink(userId, body);
+  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+};
+export const connectUserIdentityForUser = async (
+  tokenUserId: string,
+  userId: string,
+  service: string,
+  code: string
+) => {
+  if (await can(tokenUserId, UserScopes.CREATE_USER_IDENTITY, "user", userId))
+    return await createIdentityConnect(userId, service, code);
   throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
 };
 
