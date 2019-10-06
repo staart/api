@@ -561,7 +561,7 @@ export const getIdentityByServiceId = async (service: string, id: string) => {
     await query(
       `SELECT * FROM ${tableName(
         "identities"
-      )} WHERE service = ? AND identityId = ? LIMIT 1`,
+      )} WHERE type = ? AND identityId = ? LIMIT 1`,
       [service, id]
     )
   ))[0];
@@ -596,10 +596,12 @@ export const checkIdentityAvailability = async (
   service: string,
   id: string
 ) => {
+  let has = false;
   try {
     const identity = await getIdentityByServiceId(service, id);
-    if (identity && identity.id) return false;
+    if (identity && identity.id) has = true;
   } catch (error) {}
+  if (has) throw new Error(ErrorCode.OAUTH_IDENTITY_TAKEN);
   return true;
 };
 
@@ -622,8 +624,7 @@ export const createIdentityConnect = async (
         }
       })).data;
       if (!data.id) throw new Error(ErrorCode.OAUTH_NO_ID);
-      if (!(await checkIdentityAvailability(service, data.id)))
-        throw new Error(ErrorCode.OAUTH_IDENTITY_TAKEN);
+      await checkIdentityAvailability(service, data.id);
       await createIdentity({
         userId,
         identityId: data.id,
