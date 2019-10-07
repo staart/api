@@ -80,7 +80,7 @@
     "@types/stripe": "^6.32.8",
     "@types/validator": "^10.11.3",
     "@types/yaml": "^1.0.2",
-    "concurrently": "^4.1.2",
+    "concurrently": "^5.0.0",
     "coveralls": "^3.0.6",
     "dotenv": "^8.1.0",
     "has-yarn": "^2.1.0",
