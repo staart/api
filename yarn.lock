@@ -1093,6 +1093,13 @@
     source-map-support "^0.5.7"
     tslib "^1.9.3"
 
+"@staart/redis@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@staart/redis/-/redis-1.0.0.tgz#afc26acf17289d8161fee3385c8c69ae9eb2e8c3"
+  integrity sha512-JZjsW8Aj7VEEbu+aNn4WCP1TboatOo5GXXYeyUYNxuTkmSrCue8F0LCVA5l7B76FrJGUCWJ55+u/XsT7/pBYEA==
+  dependencies:
+    handy-redis "^1.6.2"
+
 "@types/agent-base@^4.2.0":
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/@types/agent-base/-/agent-base-4.2.0.tgz#00644e8b395b40e1bf50aaf1d22cabc1200d5051"
@@ -1390,9 +1397,9 @@
   integrity sha512-ewFXqrQHlFsgc09MK5jP5iR7vumV/BYayNC6PgJO2LPe8vrnNFyjQjSppfEngITi0qvfKtzFvgKymGheFM9UOA==
 
 "@types/redis@^2.8.6":
-  version "2.8.13"
-  resolved "https://registry.yarnpkg.com/@types/redis/-/redis-2.8.13.tgz#fdd76d9a8b7c36ff24d8506a94ef2a890c87f498"
-  integrity sha512-p86cm5P6DMotUqCS6odQRz0JJwc5QXZw9eyH0ALVIqmq12yqtex5ighWyGFHKxak9vaA/GF/Ilu0KZ0MuXXUbg==
+  version "2.8.14"
+  resolved "https://registry.yarnpkg.com/@types/redis/-/redis-2.8.14.tgz#2ed46d0f923f7ccd63fbe73a46a1241e606cf716"
+  integrity sha512-255dzsOLJdXFHBio9/aMHGozNkoiBUgc+g2nlNjbTSp5qcAlmpm4Z6Xs3pKOBLNIKdZbA2BkUxWvYSIwKra0Yw==
   dependencies:
     "@types/node" "*"
 
