@@ -1,6 +1,6 @@
 {
   "name": "@staart/manager",
-  "version": "1.1.52",
+  "version": "1.1.53",
   "main": "index.js",
   "repository": "git@github.com:AnandChowdhary/staart.git",
   "author": "Anand Chowdhary <mail@anandchowdhary.com>",
@@ -22,8 +22,7 @@
     "update": "git pull git@github.com:o15y/staart",
     "postinstall": "npm run check-update",
     "publish-package": "npm publish --access public",
-    "snyk-protect": "snyk protect",
-    "prepublish": "npm run snyk-protect"
+    "snyk-protect": "snyk protect"
   },
   "husky": {
     "hooks": {
@@ -150,5 +149,5 @@
     "setup"
   ],
   "snyk": true,
-  "staart-version": "1.1.52"
+  "staart-version": "1.1.53"
 }
