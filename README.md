@@ -120,7 +120,8 @@ Let's look at what you need to do if you want to let users be able to delete org
 
 ```ts
 import { can } from "../helpers/authorization";
-import { Authorizations, ErrorCode } from "../interfaces/enum";
+import { Authorizations } from "../interfaces/enum";
+import { INSUFFICIENT_PERMISSION } from "@staart/errors";
 import { authHandler, bruteForceHandler } from "../helpers/middleware";
 import { deleteOrganization } from "../crud/organization";
 
@@ -135,7 +136,7 @@ async deleteOrg(req: Request, res: Response) {
     await deleteOrganization(orgId);
     return res.status(204);
   }
-  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+  throw new Error(INSUFFICIENT_PERMISSION);
 }
 ```
 

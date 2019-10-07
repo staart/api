@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
-import { ErrorCode, UserRole, Tokens } from "../../interfaces/enum";
+import { UserRole, Tokens } from "../../interfaces/enum";
+import { INVALID_TOKEN } from "@staart/errors";
 import {
   sendPasswordReset,
   login,
@@ -170,7 +171,7 @@ export class AuthController {
       const data = await verifyToken(token, subject);
       res.json({ verified: true, data });
     } catch (error) {
-      throw new Error(ErrorCode.INVALID_TOKEN);
+      throw new Error(INVALID_TOKEN);
     }
   }
 

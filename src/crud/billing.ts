@@ -1,7 +1,7 @@
 import Stripe, { subscriptions, IList } from "stripe";
 import { STRIPE_SECRET_KEY, STRIPE_PRODUCT_ID } from "../config";
 import { updateOrganization } from "./organization";
-import { ErrorCode } from "../interfaces/enum";
+import { INVOICE_NOT_FOUND, SUBSCRIPTION_NOT_FOUND } from "@staart/errors";
 const stripe = new Stripe(STRIPE_SECRET_KEY);
 
 const cleanStripeResponse = (response: IList<any>) => {
@@ -94,7 +94,7 @@ export const getStripeInvoices = async (
  */
 export const getStripeInvoice = async (id: string, invoiceId: string) => {
   const invoice = await stripe.invoices.retrieve(invoiceId);
-  if (invoice.customer !== id) throw new Error(ErrorCode.INVOICE_NOT_FOUND);
+  if (invoice.customer !== id) throw new Error(INVOICE_NOT_FOUND);
   return invoice;
 };
 
@@ -139,8 +139,7 @@ export const getStripeSubscription = async (
   subscriptionId: string
 ) => {
   const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-  if (subscription.customer !== id)
-    throw new Error(ErrorCode.SUBSCRIPTION_NOT_FOUND);
+  if (subscription.customer !== id) throw new Error(SUBSCRIPTION_NOT_FOUND);
   return subscription;
 };
 
