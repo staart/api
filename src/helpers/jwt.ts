@@ -10,7 +10,15 @@ import {
   TOKEN_EXPIRY_API_KEY_MAX
 } from "../config";
 import { User, AccessToken } from "../interfaces/tables/user";
-import { Tokens, ErrorCode, EventType, Templates } from "../interfaces/enum";
+import { Tokens, EventType, Templates } from "../interfaces/enum";
+import {
+  USER_NOT_FOUND,
+  UNVERIFIED_EMAIL,
+  UNAPPROVED_LOCATION,
+  REVOKED_TOKEN,
+  IP_RANGE_CHECK_FAIL,
+  REFERRER_CHECK_FAIL
+} from "@staart/errors";
 import {
   deleteSensitiveInfoUser,
   removeFalsyValues,
@@ -173,7 +181,7 @@ export const postLoginTokens = async (
   locals: Locals,
   refreshTokenString?: string
 ) => {
-  if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
+  if (!user.id) throw new Error(USER_NOT_FOUND);
   const refresh = await refreshToken(user.id);
   if (!refreshTokenString) {
     await createSession({
@@ -211,9 +219,9 @@ export const getLoginResponse = async (
   strategy: string,
   locals: Locals
 ): Promise<LoginResponse> => {
-  if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
+  if (!user.id) throw new Error(USER_NOT_FOUND);
   const verifiedEmails = await getUserVerifiedEmails(user);
-  if (!verifiedEmails.length) throw new Error(ErrorCode.UNVERIFIED_EMAIL);
+  if (!verifiedEmails.length) throw new Error(UNVERIFIED_EMAIL);
   if (locals) {
     if (!(await checkApprovedLocation(user.id, locals.ipAddress))) {
       const location = await getGeolocationFromIp(locals.ipAddress);
@@ -228,7 +236,7 @@ export const getLoginResponse = async (
           token: await approveLocationToken(user.id, locals.ipAddress)
         }
       );
-      throw new Error(ErrorCode.UNAPPROVED_LOCATION);
+      throw new Error(UNAPPROVED_LOCATION);
     }
   }
   if (user.twoFactorEnabled)
@@ -251,7 +259,7 @@ export const checkInvalidatedToken = async (token: string) => {
     details.jti &&
     (await redis.get(`${JWT_ISSUER}-revoke-${details.sub}-${details.jti}`))
   )
-    throw new Error(ErrorCode.REVOKED_TOKEN);
+    throw new Error(REVOKED_TOKEN);
 };
 
 /**
@@ -280,7 +288,7 @@ export const checkIpRestrictions = (apiKey: ApiKeyResponse, locals: Locals) => {
       apiKey.ipRestrictions.split(",").map(range => range.trim())
     )
   )
-    throw new Error(ErrorCode.IP_RANGE_CHECK_FAIL);
+    throw new Error(IP_RANGE_CHECK_FAIL);
 };
 
 export const checkReferrerRestrictions = (
@@ -289,5 +297,5 @@ export const checkReferrerRestrictions = (
 ) => {
   if (!apiKey.referrerRestrictions || !domain) return;
   if (!includesDomainInCommaList(apiKey.referrerRestrictions, domain))
-    throw new Error(ErrorCode.REFERRER_CHECK_FAIL);
+    throw new Error(REFERRER_CHECK_FAIL);
 };

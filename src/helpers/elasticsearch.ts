@@ -6,10 +6,9 @@ import {
   AWS_ELASTIC_SECRET_KEY,
   AWS_ELASTIC_REGION,
   AWS_ELASTIC_HOST,
-  ELASTIC_EVENTS_PREFIX,
   ELASTIC_INSTANCES_INDEX
 } from "../config";
-import { ErrorCode } from "../interfaces/enum";
+import { RESOURCE_NOT_FOUND } from "@staart/errors";
 import { logError } from "./errors";
 import systemInfo from "systeminformation";
 import pkg from "../../package.json";
@@ -71,5 +70,5 @@ export const cleanElasticSearchQueryResponse = (response: any) => {
     }
     return newResponse;
   }
-  throw new Error(ErrorCode.NOT_FOUND);
+  throw new Error(RESOURCE_NOT_FOUND);
 };

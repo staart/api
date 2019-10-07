@@ -1,4 +1,4 @@
-import { ErrorCode } from "../interfaces/enum";
+import { EXPIRED_TOKEN, INVALID_TOKEN } from "@staart/errors";
 import { HTTPError } from "../interfaces/general";
 import Joi from "@hapi/joi";
 import { error, warn } from "signale";
@@ -17,12 +17,12 @@ export const safeError = (error: string) => {
     return sendError(`422/${joiError.details[0].message}`);
   }
   if (errorString === "TokenExpiredError: jwt expired")
-    return sendError(ErrorCode.EXPIRED_TOKEN);
+    return sendError(EXPIRED_TOKEN);
   if (
     errorString.startsWith("JsonWebTokenError") ||
     errorString.startsWith("JsonWebTokenjwt")
   )
-    return sendError(ErrorCode.INVALID_TOKEN);
+    return sendError(INVALID_TOKEN);
   return sendError(errorString);
 };
 

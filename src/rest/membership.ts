@@ -1,16 +1,15 @@
+import { MembershipRole, Authorizations, EventType } from "../interfaces/enum";
 import {
-  MembershipRole,
-  ErrorCode,
-  Authorizations,
-  EventType
-} from "../interfaces/enum";
-import { getUserByEmail } from "../crud/user";
+  INSUFFICIENT_PERMISSION,
+  MEMBERSHIP_NOT_FOUND,
+  CANNOT_DELETE_SOLE_OWNER,
+  CANNOT_DELETE_SOLE_MEMBER,
+  CANNOT_UPDATE_SOLE_OWNER
+} from "@staart/errors";
 import {
-  createMembership,
   getMembership,
   deleteMembership,
   getOrganizationMembers,
-  getUserOrganizationMembership,
   getMembershipDetailed,
   updateMembership
 } from "../crud/membership";
@@ -28,7 +27,7 @@ export const getMembershipDetailsForUser = async (
 ) => {
   if (await can(userId, Authorizations.READ, "membership", membershipId))
     return await getMembershipDetailed(membershipId);
-  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+  throw new Error(INSUFFICIENT_PERMISSION);
 };
 
 export const deleteMembershipForUser = async (
@@ -37,8 +36,7 @@ export const deleteMembershipForUser = async (
   locals: Locals
 ) => {
   const membership = await getMembership(membershipId);
-  if (!membership || !membership.id)
-    throw new Error(ErrorCode.MEMBERSHIP_NOT_FOUND);
+  if (!membership || !membership.id) throw new Error(MEMBERSHIP_NOT_FOUND);
   if (await can(tokenUserId, Authorizations.DELETE, "membership", membership)) {
     const organizationMembers = await getOrganizationMembers(
       membership.organizationId
@@ -47,11 +45,10 @@ export const deleteMembershipForUser = async (
       const currentMembers = organizationMembers.filter(
         member => member.role == MembershipRole.OWNER
       );
-      if (currentMembers.length < 2)
-        throw new Error(ErrorCode.CANNOT_DELETE_SOLE_OWNER);
+      if (currentMembers.length < 2) throw new Error(CANNOT_DELETE_SOLE_OWNER);
     }
     if (organizationMembers.length === 1)
-      throw new Error(ErrorCode.CANNOT_DELETE_SOLE_MEMBER);
+      throw new Error(CANNOT_DELETE_SOLE_MEMBER);
     trackEvent(
       {
         userId: membershipId,
@@ -62,7 +59,7 @@ export const deleteMembershipForUser = async (
     await deleteMembership(membership.id);
     return;
   }
-  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+  throw new Error(INSUFFICIENT_PERMISSION);
 };
 
 export const updateMembershipForUser = async (
@@ -82,7 +79,7 @@ export const updateMembershipForUser = async (
           member => member.role == MembershipRole.OWNER
         );
         if (currentMembers.length < 2)
-          throw new Error(ErrorCode.CANNOT_UPDATE_SOLE_OWNER);
+          throw new Error(CANNOT_UPDATE_SOLE_OWNER);
       }
     }
     trackEvent(
@@ -95,5 +92,5 @@ export const updateMembershipForUser = async (
     await updateMembership(membershipId, data);
     return;
   }
-  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+  throw new Error(INSUFFICIENT_PERMISSION);
 };

@@ -11,7 +11,12 @@ import { Email } from "../interfaces/tables/emails";
 import { KeyValue } from "../interfaces/general";
 import { User } from "../interfaces/tables/user";
 import { getUser } from "./user";
-import { ErrorCode, Templates } from "../interfaces/enum";
+import { Templates } from "../interfaces/enum";
+import {
+  MISSING_PRIMARY_EMAIL,
+  USER_NOT_FOUND,
+  EMAIL_EXISTS
+} from "@staart/errors";
 import { emailVerificationToken } from "../helpers/jwt";
 import { mail } from "../helpers/mail";
 import { InsertResult } from "../interfaces/mysql";
@@ -129,7 +134,7 @@ export const getUserPrimaryEmailObject = async (user: User | string) => {
     userObject = user;
   }
   const primaryEmailId = userObject.primaryEmail;
-  if (!primaryEmailId) throw new Error(ErrorCode.MISSING_PRIMARY_EMAIL);
+  if (!primaryEmailId) throw new Error(MISSING_PRIMARY_EMAIL);
   const email = await getEmail(primaryEmailId);
   email.isPrimary = true;
   return email;
@@ -208,7 +213,7 @@ export const getUserVerifiedEmails = async (user: User | string) => {
   } else if (typeof user === "string") {
     userId = user;
   }
-  if (!userId) throw new Error(ErrorCode.USER_NOT_FOUND);
+  if (!userId) throw new Error(USER_NOT_FOUND);
   return await addIsPrimaryToEmails(<Email[]>(
     await query(
       `SELECT * FROM ${tableName(
@@ -226,6 +231,6 @@ export const checkIfNewEmail = async (email: string) => {
   } catch (error) {
     hasEmail = false;
   }
-  if (hasEmail) throw new Error(ErrorCode.EMAIL_EXISTS);
+  if (hasEmail) throw new Error(EMAIL_EXISTS);
   return;
 };

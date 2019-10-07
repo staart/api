@@ -19,7 +19,7 @@ import wildcardDomains from "disposable-email-domains/wildcard.json";
 import i18n from "../i18n";
 import Joi from "@hapi/joi";
 import { joiValidate } from "./utils";
-import { ErrorCode } from "../interfaces/enum";
+import { DISPOSABLE_EMAIL } from "@staart/errors";
 import { logError } from "./errors";
 import systemInfo from "systeminformation";
 import pkg from "../../package.json";
@@ -79,13 +79,12 @@ export const checkIfDisposableEmail = (email: string) => {
     { email }
   );
   const domain = email.split("@")[1];
-  if (disposableDomains.includes(domain))
-    throw new Error(ErrorCode.DISPOSABLE_EMAIL);
+  if (disposableDomains.includes(domain)) throw new Error(DISPOSABLE_EMAIL);
   const potentialMatches = wildcardDomains.filter(w => domain.includes(w));
   potentialMatches.forEach(
     d => (isDisposable = isDisposable || isMatch(email, `*.${d}`))
   );
-  if (isDisposable) throw new Error(ErrorCode.DISPOSABLE_EMAIL);
+  if (isDisposable) throw new Error(DISPOSABLE_EMAIL);
   return;
 };
 

@@ -1,7 +1,8 @@
 import NodeCache from "node-cache";
 import { CACHE_TTL, CACHE_CHECK_PERIOD } from "../config";
 import { query } from "./mysql";
-import { ErrorCode, CacheCategories } from "../interfaces/enum";
+import { CacheCategories } from "../interfaces/enum";
+import { RESOURCE_NOT_FOUND } from "@staart/errors";
 
 const cache = new NodeCache({
   stdTTL: CACHE_TTL,
@@ -61,5 +62,5 @@ export const cachedQuery = async (
     storeItemInCache(category, item, databaseItem);
     return databaseItem;
   }
-  throw new Error(ErrorCode.NOT_FOUND);
+  throw new Error(RESOURCE_NOT_FOUND);
 };

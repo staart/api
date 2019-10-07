@@ -20,11 +20,14 @@ import {
 } from "../helpers/utils";
 import { hash } from "bcryptjs";
 import { KeyValue } from "../interfaces/general";
+import { NotificationEmails, CacheCategories } from "../interfaces/enum";
 import {
-  ErrorCode,
-  NotificationEmails,
-  CacheCategories
-} from "../interfaces/enum";
+  USER_NOT_FOUND,
+  USERNAME_EXISTS,
+  OAUTH_IDENTITY_TAKEN,
+  OAUTH_ERROR,
+  OAUTH_NO_ID
+} from "@staart/errors";
 import { getEmail, getVerifiedEmailObject } from "./email";
 import { cachedQuery, deleteItemFromCache } from "../helpers/cache";
 import md5 from "md5";
@@ -92,7 +95,7 @@ export const getUser = async (id: string, secureOrigin = false) => {
       [id]
     )
   ))[0];
-  if (!user) throw new Error(ErrorCode.USER_NOT_FOUND);
+  if (!user) throw new Error(USER_NOT_FOUND);
   if (!secureOrigin) user = deleteSensitiveInfoUser(user);
   return user;
 };
@@ -102,8 +105,7 @@ export const getUser = async (id: string, secureOrigin = false) => {
  */
 export const getUserByEmail = async (email: string, secureOrigin = false) => {
   const emailObject = await getVerifiedEmailObject(email);
-  if (!emailObject || !emailObject.userId)
-    throw new Error(ErrorCode.USER_NOT_FOUND);
+  if (!emailObject || !emailObject.userId) throw new Error(USER_NOT_FOUND);
   return await getUser(emailObject.userId, secureOrigin);
 };
 
@@ -120,7 +122,7 @@ export const getUserIdFromUsername = async (username: string) => {
     )
   ))[0];
   if (user && user.id) return user.id;
-  throw new Error(ErrorCode.USER_NOT_FOUND);
+  throw new Error(USER_NOT_FOUND);
 };
 
 /**
@@ -154,7 +156,7 @@ export const updateUser = async (id: string, user: KeyValue) => {
       usernameOwner.id &&
       usernameOwner.id != originalUser.id
     )
-      throw new Error(ErrorCode.USERNAME_EXISTS);
+      throw new Error(USERNAME_EXISTS);
     if (originalUser.username && user.username !== originalUser.username)
       deleteItemFromCache(CacheCategories.USER_USERNAME, originalUser.username);
   }
@@ -601,7 +603,7 @@ export const checkIdentityAvailability = async (
     const identity = await getIdentityByServiceId(service, id);
     if (identity && identity.id) has = true;
   } catch (error) {}
-  if (has) throw new Error(ErrorCode.OAUTH_IDENTITY_TAKEN);
+  if (has) throw new Error(OAUTH_IDENTITY_TAKEN);
   return true;
 };
 
@@ -625,9 +627,9 @@ export const createIdentityConnect = async (
         }
       })).data;
     } catch (error) {
-      throw new Error(ErrorCode.OAUTH_ERROR);
+      throw new Error(OAUTH_ERROR);
     }
-    if (!data || !data.id) throw new Error(ErrorCode.OAUTH_NO_ID);
+    if (!data || !data.id) throw new Error(OAUTH_NO_ID);
     await checkIdentityAvailability(service, data.id);
     await createIdentity({
       userId,

@@ -14,7 +14,8 @@ import {
   FACEBOOK_CLIENT_SECRET
 } from "../config";
 import { Locals } from "../interfaces/general";
-import { ErrorCode, EventType } from "../interfaces/enum";
+import { EventType } from "../interfaces/enum";
+import { OAUTH_NO_NAME, OAUTH_NO_EMAIL } from "@staart/errors";
 import { getUserByEmail, getUser } from "../crud/user";
 import { getLoginResponse } from "../helpers/jwt";
 import { User } from "../interfaces/tables/user";
@@ -29,8 +30,8 @@ export const loginWithOAuth2Service = async (
   email: string,
   locals: Locals
 ) => {
-  if (!name) throw new Error(ErrorCode.OAUTH_NO_NAME);
-  if (!email) throw new Error(ErrorCode.OAUTH_NO_EMAIL);
+  if (!name) throw new Error(OAUTH_NO_NAME);
+  if (!email) throw new Error(OAUTH_NO_EMAIL);
   let user: User | undefined;
   try {
     user = await getUserByEmail(email);
@@ -77,7 +78,7 @@ export const salesforce = {
         }
       }
     )).data;
-    if (!data.email_verified) throw new Error(ErrorCode.OAUTH_NO_EMAIL);
+    if (!data.email_verified) throw new Error(OAUTH_NO_EMAIL);
     return loginWithOAuth2Service("salesforce", data.name, data.email, locals);
   }
 };

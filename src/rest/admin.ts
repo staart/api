@@ -1,6 +1,7 @@
 import { can } from "../helpers/authorization";
-import { Authorizations, ErrorCode } from "../interfaces/enum";
+import { Authorizations } from "../interfaces/enum";
 import { getPaginatedData } from "../crud/data";
+import { INSUFFICIENT_PERMISSION } from "@staart/errors";
 import { KeyValue } from "../interfaces/general";
 import {
   cleanElasticSearchQueryResponse,
@@ -18,7 +19,7 @@ export const getAllOrganizationForUser = async (
       table: "organizations",
       ...query
     });
-  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+  throw new Error(INSUFFICIENT_PERMISSION);
 };
 
 export const getAllUsersForUser = async (
@@ -30,7 +31,7 @@ export const getAllUsersForUser = async (
       table: "users",
       ...query
     });
-  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+  throw new Error(INSUFFICIENT_PERMISSION);
 };
 
 /**
@@ -41,7 +42,7 @@ export const getServerLogsForUser = async (
   query: KeyValue
 ) => {
   if (!(await can(tokenUserId, Authorizations.READ, "general")))
-    throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+    throw new Error(INSUFFICIENT_PERMISSION);
   const range: string = query.range || "7d";
   const from = query.from ? parseInt(query.from) : 0;
   const result = await elasticSearch.search({

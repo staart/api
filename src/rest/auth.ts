@@ -30,13 +30,24 @@ import {
 import { KeyValue, Locals } from "../interfaces/general";
 import {
   EventType,
-  ErrorCode,
   MembershipRole,
   Templates,
   Tokens,
   Authorizations
 } from "../interfaces/enum";
 import { compare } from "bcryptjs";
+import {
+  USER_NOT_FOUND,
+  MISSING_PASSWORD,
+  INVALID_LOGIN,
+  NOT_ENABLED_2FA,
+  INVALID_2FA_TOKEN,
+  USERNAME_EXISTS,
+  RESOURCE_NOT_FOUND,
+  INSUFFICIENT_PERMISSION,
+  OAUTH_NO_NAME,
+  OAUTH_NO_EMAIL
+} from "@staart/errors";
 import { createMembership } from "../crud/membership";
 import { can } from "../helpers/authorization";
 import { authenticator } from "otplib";
@@ -60,14 +71,14 @@ import { getDomainByDomainName } from "../crud/organization";
 export const validateRefreshToken = async (token: string, locals: Locals) => {
   await checkInvalidatedToken(token);
   const data = <User>await verifyToken(token, Tokens.REFRESH);
-  if (!data.id) throw new Error(ErrorCode.USER_NOT_FOUND);
+  if (!data.id) throw new Error(USER_NOT_FOUND);
   const user = await getUser(data.id);
   return await postLoginTokens(user, locals, token);
 };
 
 export const invalidateRefreshToken = async (token: string, locals: Locals) => {
   const data = <User>await verifyToken(token, Tokens.REFRESH);
-  if (!data.id) throw new Error(ErrorCode.USER_NOT_FOUND);
+  if (!data.id) throw new Error(USER_NOT_FOUND);
   await deleteSessionByJwt(data.id, token);
 };
 
@@ -77,20 +88,20 @@ export const login = async (
   locals: Locals
 ) => {
   const user = await getUserByEmail(email, true);
-  if (!user.password) throw new Error(ErrorCode.MISSING_PASSWORD);
-  if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
+  if (!user.password) throw new Error(MISSING_PASSWORD);
+  if (!user.id) throw new Error(USER_NOT_FOUND);
   const correctPassword = await compare(password, user.password);
   if (correctPassword)
     return await getLoginResponse(user, EventType.AUTH_LOGIN, "local", locals);
-  throw new Error(ErrorCode.INVALID_LOGIN);
+  throw new Error(INVALID_LOGIN);
 };
 
 export const login2FA = async (code: number, token: string, locals: Locals) => {
   const data = (await verifyToken(token, Tokens.TWO_FACTOR)) as any;
   const user = await getUser(data.id, true);
   const secret = user.twoFactorSecret;
-  if (!secret) throw new Error(ErrorCode.NOT_ENABLED_2FA);
-  if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
+  if (!secret) throw new Error(NOT_ENABLED_2FA);
+  if (!user.id) throw new Error(USER_NOT_FOUND);
   if (authenticator.check(code.toString(), secret))
     return await postLoginTokens(user, locals);
   const backupCode = await getUserBackupCode(data.id, code);
@@ -98,7 +109,7 @@ export const login2FA = async (code: number, token: string, locals: Locals) => {
     await updateBackupCode(backupCode.code, { used: true });
     return await postLoginTokens(user, locals);
   }
-  throw new Error(ErrorCode.INVALID_2FA_TOKEN);
+  throw new Error(INVALID_2FA_TOKEN);
 };
 
 export const register = async (
@@ -115,7 +126,7 @@ export const register = async (
   }
   if (!user.username) user.username = createSlug(user.name);
   if (!(await checkUsernameAvailability(user.username)))
-    throw new Error(ErrorCode.USERNAME_EXISTS);
+    throw new Error(USERNAME_EXISTS);
   const result = <InsertResult>await createUser(user);
   const userId = result.insertId;
   // Set email
@@ -160,7 +171,7 @@ export const register = async (
 
 export const sendPasswordReset = async (email: string, locals?: Locals) => {
   const user = await getUserByEmail(email);
-  if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
+  if (!user.id) throw new Error(USER_NOT_FOUND);
   const token = await passwordResetToken(user.id);
   await mail(email, Templates.PASSWORD_RESET, { name: user.name, token });
   if (locals)
@@ -179,8 +190,8 @@ export const sendNewPassword = async (userId: string, email: string) => {
   const user = await getUser(userId);
   const userEmails = await getUserEmails(userId);
   if (!userEmails.filter(userEmail => userEmail.email === email).length)
-    throw new Error(ErrorCode.NOT_FOUND);
-  if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
+    throw new Error(RESOURCE_NOT_FOUND);
+  if (!user.id) throw new Error(USER_NOT_FOUND);
   const token = await passwordResetToken(user.id);
   await mail(email, Templates.NEW_PASSWORD, { name: user.name, token });
   return;
@@ -236,7 +247,7 @@ export const impersonate = async (
       "impersonate",
       locals
     );
-  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+  throw new Error(INSUFFICIENT_PERMISSION);
 };
 
 export const approveLocation = async (token: string, locals: Locals) => {
@@ -244,9 +255,9 @@ export const approveLocation = async (token: string, locals: Locals) => {
     token,
     Tokens.APPROVE_LOCATION
   )) as TokenResponse;
-  if (!tokenUser.id) throw new Error(ErrorCode.USER_NOT_FOUND);
+  if (!tokenUser.id) throw new Error(USER_NOT_FOUND);
   const user = await getUser(tokenUser.id);
-  if (!user.id) throw new Error(ErrorCode.USER_NOT_FOUND);
+  if (!user.id) throw new Error(USER_NOT_FOUND);
   const ipAddress = tokenUser.ipAddress || locals.ipAddress;
   await addApprovedLocation(user.id, ipAddress);
   trackEvent(
@@ -348,8 +359,8 @@ export const githubCallback = async (url: string, locals: Locals) => {
   if (email && name) {
     return await loginOrRegisterWithEmail("facebook", email, name, locals);
   }
-  if (!name) throw new Error(ErrorCode.OAUTH_NO_NAME);
-  throw new Error(ErrorCode.OAUTH_NO_EMAIL);
+  if (!name) throw new Error(OAUTH_NO_NAME);
+  throw new Error(OAUTH_NO_EMAIL);
 };
 
 export const facebook = new ClientOAuth2({
@@ -374,8 +385,8 @@ export const facebookCallback = async (url: string, locals: Locals) => {
   if (email && name) {
     return await loginOrRegisterWithEmail("facebook", email, name, locals);
   }
-  if (!name) throw new Error(ErrorCode.OAUTH_NO_NAME);
-  throw new Error(ErrorCode.OAUTH_NO_EMAIL);
+  if (!name) throw new Error(OAUTH_NO_NAME);
+  throw new Error(OAUTH_NO_EMAIL);
 };
 
 export const salesforce = new ClientOAuth2({
@@ -399,13 +410,13 @@ export const salesforceCallback = async (url: string, locals: Locals) => {
         }
       }
     )).data;
-    if (!data.email_verified) throw new Error(ErrorCode.OAUTH_NO_EMAIL);
+    if (!data.email_verified) throw new Error(OAUTH_NO_EMAIL);
     email = data.email;
     name = data.name;
   } catch (error) {}
   if (email && name) {
     return await loginOrRegisterWithEmail("salesforce", email, name, locals);
   }
-  if (!name) throw new Error(ErrorCode.OAUTH_NO_NAME);
-  throw new Error(ErrorCode.OAUTH_NO_EMAIL);
+  if (!name) throw new Error(OAUTH_NO_NAME);
+  throw new Error(OAUTH_NO_EMAIL);
 };

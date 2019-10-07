@@ -14,7 +14,8 @@ import {
   checkIpRestrictions,
   checkReferrerRestrictions
 } from "./jwt";
-import { ErrorCode, Tokens } from "../interfaces/enum";
+import { Tokens } from "../interfaces/enum";
+import { MISSING_TOKEN } from "@staart/errors";
 import {
   BRUTE_LIFETIME,
   BRUTE_FREE_RETRIES,
@@ -153,7 +154,7 @@ export const authHandler = async (
   }
 
   if (res.locals.token) return next();
-  const error = safeError(ErrorCode.MISSING_TOKEN);
+  const error = safeError(MISSING_TOKEN);
   res.status(error.status);
   return res.json(error);
 };

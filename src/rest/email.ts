@@ -8,7 +8,8 @@ import {
   checkIfNewEmail,
   resendEmailVerification
 } from "../crud/email";
-import { ErrorCode, EventType, UserScopes } from "../interfaces/enum";
+import { EventType, UserScopes } from "../interfaces/enum";
+import { INSUFFICIENT_PERMISSION, EMAIL_CANNOT_DELETE } from "@staart/errors";
 import { updateUser } from "../crud/user";
 import { can } from "../helpers/authorization";
 import { getPaginatedData } from "../crud/data";
@@ -29,7 +30,7 @@ export const getAllEmailsForUser = async (
     emails.data = await addIsPrimaryToEmails(emails.data);
     return emails;
   }
-  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+  throw new Error(INSUFFICIENT_PERMISSION);
 };
 
 export const getEmailForUser = async (
@@ -39,7 +40,7 @@ export const getEmailForUser = async (
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER_EMAILS, "user", userId))
     return await getEmail(emailId);
-  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+  throw new Error(INSUFFICIENT_PERMISSION);
 };
 
 export const resendEmailVerificationForUser = async (
@@ -56,7 +57,7 @@ export const resendEmailVerificationForUser = async (
     )
   )
     return await resendEmailVerification(emailId);
-  throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+  throw new Error(INSUFFICIENT_PERMISSION);
 };
 
 export const addEmailToUserForUser = async (
@@ -66,7 +67,7 @@ export const addEmailToUserForUser = async (
   locals: Locals
 ) => {
   if (!(await can(tokenUserId, UserScopes.CREATE_USER_EMAILS, "user", userId)))
-    throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+    throw new Error(INSUFFICIENT_PERMISSION);
   await checkIfNewEmail(email);
   await createEmail({ email, userId });
   trackEvent(
@@ -83,13 +84,12 @@ export const deleteEmailFromUserForUser = async (
   locals: Locals
 ) => {
   if (!(await can(tokenUserId, UserScopes.DELETE_USER_EMAILS, "user", userId)))
-    throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+    throw new Error(INSUFFICIENT_PERMISSION);
   const email = await getEmail(emailId);
-  if (email.userId != userId)
-    throw new Error(ErrorCode.INSUFFICIENT_PERMISSION);
+  if (email.userId != userId) throw new Error(INSUFFICIENT_PERMISSION);
   const verifiedEmails = await getUserVerifiedEmails(userId);
   if (verifiedEmails.length === 1 && email.isVerified)
-    throw new Error(ErrorCode.EMAIL_CANNOT_DELETE);
+    throw new Error(EMAIL_CANNOT_DELETE);
   const currentPrimaryEmailId = (await getUserPrimaryEmailObject(userId)).id;
   if (currentPrimaryEmailId == emailId) {
     const nextVerifiedEmail = verifiedEmails.filter(

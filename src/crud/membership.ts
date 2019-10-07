@@ -9,11 +9,15 @@ import { Membership } from "../interfaces/tables/memberships";
 import { KeyValue } from "../interfaces/general";
 import { User } from "../interfaces/tables/user";
 import { getOrganization } from "./organization";
-import { ErrorCode, CacheCategories } from "../interfaces/enum";
+import { CacheCategories } from "../interfaces/enum";
 import { deleteItemFromCache, cachedQuery } from "../helpers/cache";
 import { getUser } from "./user";
 import { Organization } from "../interfaces/tables/organization";
-import { getPaginatedData } from "./data";
+import {
+  MEMBERSHIP_NOT_FOUND,
+  USER_NOT_FOUND,
+  ORGANIZATION_NOT_FOUND
+} from "@staart/errors";
 
 /*
  * Create a new organization membership for a user
@@ -100,8 +104,7 @@ export const getMembership = async (id: string) => {
  */
 export const getMembershipDetailed = async (id: string) => {
   const membership = (await getMembership(id)) as any;
-  if (!membership || !membership.id)
-    throw new Error(ErrorCode.MEMBERSHIP_NOT_FOUND);
+  if (!membership || !membership.id) throw new Error(MEMBERSHIP_NOT_FOUND);
   membership.organization = await getOrganization(membership.organizationId);
   membership.user = await getUser(membership.userId);
   return membership;
@@ -122,7 +125,7 @@ export const getOrganizationMembers = async (organizationId: string) => {
 export const getUserMemberships = async (user: User | string) => {
   if (typeof user !== "string" && typeof user !== "string") {
     if (user.id) user = user.id;
-    else throw new Error(ErrorCode.USER_NOT_FOUND);
+    else throw new Error(USER_NOT_FOUND);
   }
   return <Membership[]>(
     await cachedQuery(
@@ -178,11 +181,11 @@ export const getUserOrganizationMembership = async (
 ) => {
   if (typeof user !== "string" && typeof user !== "string") {
     if (user.id) user = user.id;
-    else throw new Error(ErrorCode.USER_NOT_FOUND);
+    else throw new Error(USER_NOT_FOUND);
   }
   if (typeof organization !== "string" && typeof organization !== "string") {
     if (organization.id) organization = organization.id;
-    else throw new Error(ErrorCode.ORGANIZATION_NOT_FOUND);
+    else throw new Error(ORGANIZATION_NOT_FOUND);
   }
   return (<Membership[]>(
     await query(

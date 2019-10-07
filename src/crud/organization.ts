@@ -14,7 +14,13 @@ import ms from "ms";
 import { capitalizeFirstAndLastLetter, createSlug } from "../helpers/utils";
 import { KeyValue } from "../interfaces/general";
 import { cachedQuery, deleteItemFromCache } from "../helpers/cache";
-import { CacheCategories, ErrorCode, Webhooks } from "../interfaces/enum";
+import { CacheCategories, Webhooks } from "../interfaces/enum";
+import {
+  INVALID_INPUT,
+  ORGANIZATION_NOT_FOUND,
+  USERNAME_EXISTS,
+  MEMBERSHIP_NOT_FOUND
+} from "@staart/errors";
 import { ApiKey } from "../interfaces/tables/organization";
 import { getPaginatedData } from "./data";
 import cryptoRandomString from "crypto-random-string";
@@ -38,7 +44,7 @@ import axios from "axios";
  * Create a new organization for a user
  */
 export const createOrganization = async (organization: Organization) => {
-  if (!organization.name) throw new Error(ErrorCode.INVALID_INPUT);
+  if (!organization.name) throw new Error(INVALID_INPUT);
   organization.name = capitalizeFirstAndLastLetter(organization.name);
   organization.createdAt = new Date();
   organization.updatedAt = organization.createdAt;
@@ -69,7 +75,7 @@ export const getOrganization = async (id: string) => {
     )
   ))[0];
   if (org) return org;
-  throw new Error(ErrorCode.ORGANIZATION_NOT_FOUND);
+  throw new Error(ORGANIZATION_NOT_FOUND);
 };
 
 /*
@@ -85,7 +91,7 @@ export const getOrganizationIdFromUsername = async (username: string) => {
     )
   ))[0];
   if (org && org.id) return org.id;
-  throw new Error(ErrorCode.ORGANIZATION_NOT_FOUND);
+  throw new Error(ORGANIZATION_NOT_FOUND);
 };
 
 /*
@@ -106,7 +112,7 @@ export const updateOrganization = async (
     const currentOwner = await getOrganizationIdFromUsername(
       originalOrganization.username
     );
-    if (currentOwner != id) throw new Error(ErrorCode.USERNAME_EXISTS);
+    if (currentOwner != id) throw new Error(USERNAME_EXISTS);
     deleteItemFromCache(
       CacheCategories.ORGANIZATION_USERNAME,
       originalOrganization.username
@@ -553,8 +559,7 @@ export const getOrganizationMembershipDetailed = async (
     organizationId,
     id
   )) as any;
-  if (!membership || !membership.id)
-    throw new Error(ErrorCode.MEMBERSHIP_NOT_FOUND);
+  if (!membership || !membership.id) throw new Error(MEMBERSHIP_NOT_FOUND);
   membership.organization = await getOrganization(membership.organizationId);
   membership.user = await getUser(membership.userId);
   return membership;

@@ -1,7 +1,6 @@
 import { User, AccessTokenResponse } from "../interfaces/tables/user";
 import { Organization } from "../interfaces/tables/organization";
 import {
-  ErrorCode,
   Authorizations,
   UserRole,
   MembershipRole,
@@ -14,6 +13,7 @@ import { getUserMemberships, getMembership } from "../crud/membership";
 import { getOrganization } from "../crud/organization";
 import { Membership } from "../interfaces/tables/memberships";
 import { ApiKeyResponse } from "./jwt";
+import { ORGANIZATION_NOT_FOUND, USER_NOT_FOUND } from "@staart/errors";
 
 /**
  * Whether a user can perform an action on another user
@@ -267,7 +267,7 @@ export const can = async (
         target
       );
     } else {
-      throw new Error(ErrorCode.ORGANIZATION_NOT_FOUND);
+      throw new Error(ORGANIZATION_NOT_FOUND);
     }
   } else if (isAccessToken) {
     if (target && typeof target === "object") {
@@ -284,11 +284,11 @@ export const can = async (
         target
       );
     } else {
-      throw new Error(ErrorCode.USER_NOT_FOUND);
+      throw new Error(USER_NOT_FOUND);
     }
   }
 
-  if (!userObject || !userObject.id) throw new Error(ErrorCode.USER_NOT_FOUND);
+  if (!userObject || !userObject.id) throw new Error(USER_NOT_FOUND);
 
   let targetObject: User | Organization | Membership;
   if (targetType === "user") {
