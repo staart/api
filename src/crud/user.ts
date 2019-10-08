@@ -648,7 +648,7 @@ export const createIdentityConnect = async (
       if (token && typeof token === "object")
         data = {
           id: token.puid,
-          loginName: token.email
+          login: token.email
         };
     }
   } catch (error) {
