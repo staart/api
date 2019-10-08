@@ -41,7 +41,9 @@ import {
   GITHUB_CLIENT_ID,
   FRONTEND_URL,
   MICROSOFT_CLIENT_ID,
-  MICROSOFT_CLIENT_SECRET
+  MICROSOFT_CLIENT_SECRET,
+  FACEBOOK_CLIENT_ID,
+  FACEBOOK_CLIENT_SECRET
 } from "../config";
 import {
   addLocationToSession,
@@ -589,6 +591,14 @@ const microsoft = new ClientOAuth2({
   accessTokenUri: "https://login.microsoftonline.com/common/oauth2/token",
   scopes: ["user.read"]
 });
+const facebook = new ClientOAuth2({
+  clientId: FACEBOOK_CLIENT_ID,
+  clientSecret: FACEBOOK_CLIENT_SECRET,
+  redirectUri: `${FRONTEND_URL}/auth/connect-identity/facebook`,
+  authorizationUri: "https://www.facebook.com/v4.0/dialog/oauth",
+  accessTokenUri: "https://graph.facebook.com/v4.0/oauth/access_token",
+  scopes: ["default"]
+});
 
 /**
  * Create a identity: Get an OAuth link
@@ -603,6 +613,14 @@ export const createIdentityGetOAuthLink = async (
 
   if (newIdentity.service === "microsoft") {
     return { url: microsoft.code.getUri() };
+  }
+
+  if (newIdentity.service === "facebook") {
+    return {
+      url: facebook.code
+        .getUri()
+        .replace("&scope=default&response_type=code", "")
+    };
   }
 
   throw new Error(OAUTH_ERROR);
@@ -650,6 +668,17 @@ export const createIdentityConnect = async (
           id: token.puid,
           login: token.email
         };
+    }
+
+    if (service === "facebook") {
+      const token = (await facebook.code.getToken(url)).accessToken;
+      const result = (await Axios.get(
+        `https://graph.facebook.com/v4.0/me?access_token=${token}`
+      )).data;
+      data = {
+        id: result.id,
+        login: result.name
+      };
     }
   } catch (error) {
     throw new Error(OAUTH_ERROR);
