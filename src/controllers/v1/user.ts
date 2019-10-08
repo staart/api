@@ -569,13 +569,13 @@ export class UserController {
       { id }
     );
     const service = req.params.service;
-    const code = req.body.code;
+    const url = req.body.url;
     joiValidate(
-      { service: Joi.string().required(), code: Joi.string().required() },
-      { service, code }
+      { service: Joi.string().required(), url: Joi.string().required() },
+      { service, url }
     );
     res.json(
-      await connectUserIdentityForUser(res.locals.token.id, id, service, code)
+      await connectUserIdentityForUser(res.locals.token.id, id, service, url)
     );
   }
 

@@ -13,6 +13,7 @@ import {
   Session,
   Identity
 } from "../interfaces/tables/user";
+import { decode } from "jsonwebtoken";
 import {
   capitalizeFirstAndLastLetter,
   deleteSensitiveInfoUser,
@@ -38,7 +39,9 @@ import {
   TOKEN_EXPIRY_API_KEY_MAX,
   GITHUB_CLIENT_SECRET,
   GITHUB_CLIENT_ID,
-  FRONTEND_URL
+  FRONTEND_URL,
+  MICROSOFT_CLIENT_ID,
+  MICROSOFT_CLIENT_SECRET
 } from "../config";
 import {
   addLocationToSession,
@@ -578,6 +581,14 @@ const github = new ClientOAuth2({
   accessTokenUri: "https://github.com/login/oauth/access_token",
   scopes: ["read:user", "user:email"]
 });
+const microsoft = new ClientOAuth2({
+  clientId: MICROSOFT_CLIENT_ID,
+  clientSecret: MICROSOFT_CLIENT_SECRET,
+  redirectUri: `${FRONTEND_URL}/auth/connect-identity/microsoft`,
+  authorizationUri: "https://login.microsoftonline.com/common/oauth2/authorize",
+  accessTokenUri: "https://login.microsoftonline.com/common/oauth2/token",
+  scopes: ["user.read"]
+});
 
 /**
  * Create a identity: Get an OAuth link
@@ -589,6 +600,12 @@ export const createIdentityGetOAuthLink = async (
   if (newIdentity.service === "github") {
     return { url: github.code.getUri() };
   }
+
+  if (newIdentity.service === "microsoft") {
+    return { url: microsoft.code.getUri() };
+  }
+
+  throw new Error(OAUTH_ERROR);
 };
 
 /**
@@ -613,32 +630,42 @@ export const checkIdentityAvailability = async (
 export const createIdentityConnect = async (
   userId: string,
   service: string,
-  code: string
+  url: string
 ) => {
-  if (service === "github") {
-    let data: any;
-    try {
-      const token = (await github.code.getToken(
-        `${FRONTEND_URL}/auth/connect-identity/github?code=${code}`
-      )).accessToken;
+  let data: any;
+  try {
+    if (service === "github") {
+      const token = (await github.code.getToken(url)).accessToken;
       data = (await Axios.get("https://api.github.com/user", {
         headers: {
           Authorization: `token ${token}`
         }
       })).data;
-    } catch (error) {
-      throw new Error(OAUTH_ERROR);
     }
-    if (!data || !data.id) throw new Error(OAUTH_NO_ID);
-    await checkIdentityAvailability(service, data.id);
-    await createIdentity({
-      userId,
-      identityId: data.id,
-      type: service,
-      loginName: data.login
-    });
-    return { success: true };
+
+    if (service === "microsoft") {
+      const token = decode((await microsoft.code.getToken(url)).accessToken);
+      if (token && typeof token === "object")
+        data = {
+          id: token.puid,
+          loginName: token.email
+        };
+    }
+  } catch (error) {
+    throw new Error(OAUTH_ERROR);
   }
+
+  console.log("I got data", data);
+
+  if (!data || !data.id) throw new Error(OAUTH_NO_ID);
+  await checkIdentityAvailability(service, data.id);
+  await createIdentity({
+    userId,
+    identityId: data.id,
+    type: service,
+    loginName: data.login
+  });
+  return { success: true };
 };
 
 /**

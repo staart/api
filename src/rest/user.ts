@@ -365,10 +365,10 @@ export const connectUserIdentityForUser = async (
   tokenUserId: string,
   userId: string,
   service: string,
-  code: string
+  url: string
 ) => {
   if (await can(tokenUserId, UserScopes.CREATE_USER_IDENTITY, "user", userId))
-    return await createIdentityConnect(userId, service, code);
+    return await createIdentityConnect(userId, service, url);
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
