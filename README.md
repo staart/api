@@ -70,11 +70,11 @@ Staart comes with tens of helper and CRUD methods for users, organizations, and 
 
 **[View wiki docs →](https://github.com/o15y/staart/wiki)**
 
-**[View TypeDoc →](https://staart-docs.o15y.com)**
+**[View TypeDoc →](https://staart-typedoc.netlify.com)**
 
 **[View API demo →](https://staart.caprover.oswaldlabs.com)**
 
-**[View frontend demo →](https://staart-demo.o15y.com)**
+**[View frontend demo →](https://staart-ui.o15y.now.sh)**
 
 ## 👩‍💼 Getting started
 
