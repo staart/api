@@ -191,7 +191,7 @@ export const IdValues = [
 
 export const joiValidate = (schemaMap: Joi.SchemaMap, data: any) => {
   const schema = Joi.object().keys(schemaMap);
-  const result = Joi.validate(data, schema);
+  const result = schema.validate(data);
   if (result.error) throw new Error(`joi:${JSON.stringify(result.error)}`);
   return true;
 };

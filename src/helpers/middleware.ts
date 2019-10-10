@@ -2,7 +2,7 @@ import { Request, Response, NextFunction, RequestHandler } from "express";
 import Brute from "express-brute";
 import RateLimit from "express-rate-limit";
 import slowDown from "express-slow-down";
-import Joi from "@hapi/joi";
+import { SchemaMap } from "@hapi/joi";
 import pkg from "../../package.json";
 import ms from "ms";
 import { safeError } from "./errors";
@@ -228,7 +228,7 @@ export const cachedResponse = (time: string) => {
 };
 
 export const validator = (
-  schemaMap: Joi.SchemaMap,
+  schemaMap: SchemaMap,
   type: "body" | "params" | "query"
 ) => {
   return (req: Request, res: Response, next: NextFunction) => {
