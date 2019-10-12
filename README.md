@@ -68,7 +68,7 @@ If you've used the "Use this template" option on GitHub, you might have to force
 
 Staart comes with tens of helper and CRUD methods for users, organizations, and more.
 
-**[View wiki docs →](https://github.com/o15y/staart/wiki)**
+**[View docss →](https://staart.js.org/backend)**
 
 **[View TypeDoc →](https://staart-typedoc.netlify.com)**
 
@@ -147,6 +147,19 @@ In the above example, the Staart helpers and middleware used are:
 - Authorization (`can`): Returns whether a user is allowed to perform an action based on their permissions
 
 Of course, we actually prefer to write our logic in the `rest` folder and only the handler as a controller. For a deeper dive into Staart, look at our [Wiki docs](https://github.com/o15y/staart/wiki).
+
+## Documentation
+
+- [Getting started](https://staart.js.org/backend/getting-started.html)
+- [Setting up environment variables](https://staart.js.org/backend/setting-up-environment-variables.html)
+- [Creating a controller](https://staart.js.org/backend/creating-a-controller.html)
+- [Updating Staart](https://staart.js.org/backend/update.html)
+- [Response headers](https://staart.js.org/backend/response-headers.html)
+- [Throwing errors](https://staart.js.org/backend/throwing-errors.html)
+- [Authorization](https://staart.js.org/backend/authorization.html)
+- [API key authentication](https://staart.js.org/backend/api-key-authentication.html)
+- [Redirects](https://staart.js.org/backend/redirects.html)
+- [Serving static files](https://staart.js.org/backend/serving-static-files.html)
 
 ## 👥 Contributors
 
