@@ -205,4 +205,19 @@ CREATE TABLE `staart-webhooks` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
+-- ----------------------------
+-- Table structure for staart-identities
+-- ----------------------------
+DROP TABLE IF EXISTS `staart-identities`;
+CREATE TABLE `staart-identities` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `userId` int(11) NOT NULL,
+  `type` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `identityId` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `loginName` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
 SET FOREIGN_KEY_CHECKS = 1;
