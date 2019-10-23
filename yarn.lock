@@ -5438,13 +5438,12 @@ nocache@2.1.0:
   resolved "https://registry.yarnpkg.com/nocache/-/nocache-2.1.0.tgz#120c9ffec43b5729b1d5de88cd71aa75a0ba491f"
   integrity sha512-0L9FvHG3nfnnmaEQPjT9xhfN4ISk0A8/2j4M37Np4mcDesJjHgEUfgPhdCyZuFI954tjokaIj/A3NdpFNdEh4Q==
 
-node-cache@^4.2.1:
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/node-cache/-/node-cache-4.2.1.tgz#efd8474dee4edec4138cdded580f5516500f7334"
-  integrity sha512-BOb67bWg2dTyax5kdef5WfU3X8xu4wPg+zHzkvls0Q/QpYycIFRLEEIdAx9Wma43DxG6Qzn4illdZoYseKWa4A==
+node-cache@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/node-cache/-/node-cache-5.0.0.tgz#3cbf44b15eb1f955a30f09caaa4037008e84729f"
+  integrity sha512-Wtt0K7r8ojiziSvg7Ga5NZ9wSTTY0rRywnXaqB71NiXc2D6R4QdeQCzwOpAwKzIXZoGmj+ru5OfRnwYdi5T8rg==
   dependencies:
     clone "2.x"
-    lodash "^4.17.15"
 
 node-emoji@^1.10.0:
   version "1.10.0"
