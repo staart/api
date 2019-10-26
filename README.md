@@ -64,11 +64,20 @@ node setup/update.js
 
 If you've used the "Use this template" option on GitHub, you might have to force pull from `o15y/staart` the first time since the histories wouldn't match. You can use the flag `--allow-unrelated-histories` in this case.
 
-## 💻 API
+## 💻 Docs
 
-Staart comes with tens of helper and CRUD methods for users, organizations, and more.
+- [Getting started](https://staart.js.org/backend/getting-started.html)
+- [Setting up environment variables](https://staart.js.org/backend/setting-up-environment-variables.html)
+- [Creating a controller](https://staart.js.org/backend/creating-a-controller.html)
+- [Updating Staart](https://staart.js.org/backend/update.html)
+- [Response headers](https://staart.js.org/backend/response-headers.html)
+- [Throwing errors](https://staart.js.org/backend/throwing-errors.html)
+- [Authorization](https://staart.js.org/backend/authorization.html)
+- [API key authentication](https://staart.js.org/backend/api-key-authentication.html)
+- [Redirects](https://staart.js.org/backend/redirects.html)
+- [Serving static files](https://staart.js.org/backend/serving-static-files.html)
 
-**[View docss →](https://staart.js.org/backend)**
+**[View docs site →](https://staart.js.org/backend)**
 
 **[View TypeDoc →](https://staart-typedoc.netlify.com)**
 
@@ -148,19 +157,6 @@ In the above example, the Staart helpers and middleware used are:
 
 Of course, we actually prefer to write our logic in the `rest` folder and only the handler as a controller. For a deeper dive into Staart, look at our [Wiki docs](https://github.com/o15y/staart/wiki).
 
-## Documentation
-
-- [Getting started](https://staart.js.org/backend/getting-started.html)
-- [Setting up environment variables](https://staart.js.org/backend/setting-up-environment-variables.html)
-- [Creating a controller](https://staart.js.org/backend/creating-a-controller.html)
-- [Updating Staart](https://staart.js.org/backend/update.html)
-- [Response headers](https://staart.js.org/backend/response-headers.html)
-- [Throwing errors](https://staart.js.org/backend/throwing-errors.html)
-- [Authorization](https://staart.js.org/backend/authorization.html)
-- [API key authentication](https://staart.js.org/backend/api-key-authentication.html)
-- [Redirects](https://staart.js.org/backend/redirects.html)
-- [Serving static files](https://staart.js.org/backend/serving-static-files.html)
-
 ## 👥 Contributors
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -187,14 +183,15 @@ This project follows the [all-contributors](https://github.com/all-contributors/
 - [Speakup Developer](https://github.com/speakupnl/staart)
 - [**Add your Staart-based project**](https://github.com/o15y/staart/edit/master/README.md)
 
-## 🏁 Staart Ecosystem
+## [🏁 Staart Ecosystem](https://staart.js.org)
 
 The Staart ecosystem consists of open-source projects to build your SaaS startup, written in TypeScript.
 
 | Package |  |  |
 | - | - | - |
-| [🛠️ Staart](https://github.com/o15y/staart) | Node.js backend with RESTful APIs | [![Travis CI](https://img.shields.io/travis/o15y/staart)](https://travis-ci.org/o15y/staart) [![GitHub](https://img.shields.io/github/license/o15y/staart.svg)](https://github.com/o15y/staart/blob/master/LICENSE) [![npm package version](https://img.shields.io/npm/v/@staart/manager)](https://www.npmjs.com/package/@staart/manager) |
+| [🛠️ Staart Backend](https://github.com/o15y/staart) | Node.js backend with RESTful APIs | [![Travis CI](https://img.shields.io/travis/o15y/staart)](https://travis-ci.org/o15y/staart) [![GitHub](https://img.shields.io/github/license/o15y/staart.svg)](https://github.com/o15y/staart/blob/master/LICENSE) [![npm package version](https://img.shields.io/npm/v/@staart/manager)](https://www.npmjs.com/package/@staart/manager) |
 | [🌐 Staart UI](https://github.com/o15y/staart-ui) | Frontend Vue.js Progressive Web App | [![Travis CI](https://img.shields.io/travis/o15y/staart-ui)](https://travis-ci.org/o15y/staart-ui) [![GitHub](https://img.shields.io/github/license/o15y/staart-ui.svg)](https://github.com/o15y/staart-ui/blob/master/LICENSE) [![npm package version](https://img.shields.io/npm/v/@staart/ui)](https://www.npmjs.com/package/@staart/ui) |
+| [📑 Staart Site](https://github.com/staart/site) | Static site generator for docs/helpdesk | [![Travis CI](https://img.shields.io/travis/staart/site)](https://travis-ci.org/staart/site) [![GitHub](https://img.shields.io/github/license/staart/site.svg)](https://github.com/staart/site/blob/master/LICENSE) [![npm package version](https://img.shields.io/npm/v/@staart/site)](https://www.npmjs.com/package/@staart/site) |
 | [📱 Staart Native](https://github.com/o15y/staart-native) | React Native app for Android and iOS | [![Travis CI](https://img.shields.io/travis/o15y/staart-native)](https://travis-ci.org/o15y/staart-native) [![GitHub](https://img.shields.io/github/license/o15y/staart-native.svg)](https://github.com/o15y/staart-native/blob/master/LICENSE) [![npm package version](https://img.shields.io/npm/v/@staart/native)](https://www.npmjs.com/package/@staart/native) |
 | [🎨 Staart.css](https://github.com/o15y/staart.css) | Sass/CSS framework and utilities | [![Travis CI](https://img.shields.io/travis/o15y/staart.css)](https://travis-ci.org/o15y/staart.css) [![GitHub](https://img.shields.io/github/license/o15y/staart.css.svg)](https://github.com/o15y/staart.css/blob/master/LICENSE) [![npm package version](https://img.shields.io/npm/v/@staart/css)](https://www.npmjs.com/package/@staart/css) |
 
