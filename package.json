@@ -1,6 +1,6 @@
 {
   "name": "@staart/manager",
-  "version": "1.1.61",
+  "version": "1.1.62",
   "main": "index.js",
   "repository": "git@github.com:AnandChowdhary/staart.git",
   "author": "Anand Chowdhary <mail@anandchowdhary.com>",
@@ -98,6 +98,7 @@
     "@hapi/joi": "^16.1.7",
     "@sentry/node": "^5.7.1",
     "@staart/errors": "^1.0.0",
+    "@staart/messages": "^1.0.0",
     "@staart/redis": "^1.0.0",
     "aws-sdk": "^2.556.0",
     "axios": "^0.19.0",
@@ -149,5 +150,5 @@
     "setup"
   ],
   "snyk": true,
-  "staart-version": "1.1.61"
+  "staart-version": "1.1.62"
 }
