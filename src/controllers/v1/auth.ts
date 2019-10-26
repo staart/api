@@ -14,6 +14,7 @@ import {
   invalidateRefreshToken
 } from "../../rest/auth";
 import { verifyToken, LoginResponse } from "../../helpers/jwt";
+import { RESOURCE_CREATED, respond } from "@staart/messages";
 import {
   Get,
   Post,
@@ -27,7 +28,6 @@ import {
   bruteForceHandler,
   validator
 } from "../../helpers/middleware";
-import { CREATED } from "http-status-codes";
 import asyncHandler from "express-async-handler";
 import { safeRedirect, joiValidate, hashIdToId } from "../../helpers/utils";
 import Joi from "@hapi/joi";
@@ -111,9 +111,7 @@ export class AuthController {
       req.body.organizationId,
       req.body.membershipRole
     );
-    res
-      .status(CREATED)
-      .json({ success: true, message: "auth-register-success" });
+    return respond(req, res, RESOURCE_CREATED);
   }
 
   @Post("login")

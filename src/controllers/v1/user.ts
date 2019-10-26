@@ -38,6 +38,7 @@ import {
   Middleware
 } from "@overnightjs/core";
 import { authHandler, validator } from "../../helpers/middleware";
+import { RESOURCE_CREATED, respond } from "@staart/messages";
 import {
   getAllEmailsForUser,
   addEmailToUserForUser,
@@ -45,7 +46,6 @@ import {
   getEmailForUser,
   resendEmailVerificationForUser
 } from "../../rest/email";
-import { CREATED } from "http-status-codes";
 import asyncHandler from "express-async-handler";
 import { joiValidate, userUsernameToId, hashIdToId } from "../../helpers/utils";
 import Joi from "@hapi/joi";
@@ -249,7 +249,7 @@ export class UserController {
       { id, email }
     );
     await addEmailToUserForUser(res.locals.token.id, id, email, res.locals);
-    res.status(CREATED).json({ success: true, message: "user-email-created" });
+    return respond(req, res, RESOURCE_CREATED);
   }
 
   @Get(":id/emails/:emailId")
@@ -398,16 +398,13 @@ export class UserController {
       { id: [Joi.string().required(), Joi.string().required()] },
       { id }
     );
-    res
-      .status(CREATED)
-      .json(
-        await createAccessTokenForUser(
-          res.locals.token.id,
-          id,
-          req.body,
-          res.locals
-        )
-      );
+    await createAccessTokenForUser(
+      res.locals.token.id,
+      id,
+      req.body,
+      res.locals
+    );
+    return respond(req, res, RESOURCE_CREATED);
   }
 
   @Get(":id/access-tokens/:accessTokenId")
