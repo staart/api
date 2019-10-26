@@ -42,7 +42,7 @@ import {
   updateOrganizationMembershipForUser,
   getOrganizationApiKeyLogsForUser
 } from "../../rest/organization";
-import { RESOURCE_CREATED, respond } from "@staart/messages";
+import { RESOURCE_CREATED, respond, RESOURCE_UPDATED } from "@staart/messages";
 import {
   Get,
   Put,
@@ -118,7 +118,7 @@ export class OrganizationController {
       req.body,
       res.locals
     );
-    res.json({ success: true, message: "organization-updated" });
+    return respond(req, res, RESOURCE_UPDATED, { resource: "Team" });
   }
 
   @Delete(":id")
