@@ -105,6 +105,9 @@ export const AWS_ELASTIC_ACCESS_KEY = process.env.AWS_ELASTIC_ACCESS_KEY || "";
 export const AWS_ELASTIC_SECRET_KEY = process.env.AWS_ELASTIC_SECRET_KEY || "";
 export const AWS_ELASTIC_HOST = process.env.AWS_ELASTIC_HOST || "";
 export const AWS_ELASTIC_REGION = process.env.AWS_ELASTIC_REGION || "";
+export const ELASTIC_HOST = process.env.ELASTIC_HOST || "";
+export const ELASTIC_LOG = process.env.ELASTIC_LOG || "";
+export const ELASTIC_API_VERSION = process.env.ELASTIC_API_VERSION || "7.2";
 export const ELASTIC_LOGS_PREFIX =
   process.env.ELASTIC_LOGS_PREFIX || "staart-logs-";
 export const ELASTIC_EVENTS_PREFIX =
