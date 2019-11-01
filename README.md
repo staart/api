@@ -8,7 +8,7 @@ Staart is a Node.js backend starter for SaaS startups written in TypeScript. It 
 | Dependencies | [![Dependencies](https://img.shields.io/david/staart/api.svg)](https://david-dm.org/staart/api) [![Dev dependencies](https://img.shields.io/david/dev/staart/api.svg)](https://david-dm.org/staart/api) ![Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/github/staart/api.svg) |
 | Community | [![Contributors](https://img.shields.io/github/contributors/staart/api.svg)](https://github.com/staart/api/graphs/contributors) [![GitHub](https://img.shields.io/github/license/staart/api.svg)](https://github.com/staart/api/blob/master/LICENSE) ![Type definitions](https://img.shields.io/badge/types-TypeScript-blue.svg) [![npm package version](https://img.shields.io/npm/v/@staart/manager)](https://www.npmjs.com/package/@staart/manager) |
 
-Staart is build to work with [Staart UI](https://github.com/o15y/staart-ui), the frontend starter for SaaS.
+Staart is build to work with [Staart UI](https://github.com/staart/ui), the frontend starter for SaaS.
 
 ## ⭐ Features
 
@@ -48,8 +48,8 @@ Staart is build to work with [Staart UI](https://github.com/o15y/staart-ui), the
 
 1. Use this template or fork this repository
 1. Install dependencies with `yarn` or `npm i`
-1. Add a `.env` file based on [config.ts](https://github.com/o15y/staart/blob/master/src/config.ts).
-1. Create MariaDB/MySQL tables based on [schema.sql](https://github.com/o15y/staart/blob/master/schema.sql)
+1. Add a `.env` file based on [config.ts](https://github.com/staart/api/blob/master/src/config.ts).
+1. Create MariaDB/MySQL tables based on [schema.sql](https://github.com/staart/api/blob/master/schema.sql)
 1. Add your controllers in the `./src/controllers` directory
 1. Generate your `app.ts` file using `yarn generate-routes`
 1. Build with `yarn build` and deploy with `yarn start`
@@ -62,7 +62,7 @@ To update your installation of Staart, run the following:
 node setup/update.js
 ```
 
-If you've used the "Use this template" option on GitHub, you might have to force pull from `o15y/staart` the first time since the histories wouldn't match. You can use the flag `--allow-unrelated-histories` in this case.
+If you've used the "Use this template" option on GitHub, you might have to force pull from `staart/api` the first time since the histories wouldn't match. You can use the flag `--allow-unrelated-histories` in this case.
 
 ## 💻 Docs
 
@@ -155,7 +155,7 @@ In the above example, the Staart helpers and middleware used are:
 - Brute force prevention (`bruteForceHandler`): Prevents users from making too many requests in a short time, can be configured via `./src/config.ts`
 - Authorization (`can`): Returns whether a user is allowed to perform an action based on their permissions
 
-Of course, we actually prefer to write our logic in the `rest` folder and only the handler as a controller. For a deeper dive into Staart, look at our [Wiki docs](https://github.com/o15y/staart/wiki).
+Of course, we actually prefer to write our logic in the `rest` folder and only the handler as a controller. For a deeper dive into Staart, look at our [Wiki docs](https://github.com/staart/api/wiki).
 
 ## 👥 Contributors
 
@@ -165,11 +165,11 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- prettier-ignore -->
 <table>
   <tr>
-    <td align="center"><a href="https://anandchowdhary.com/?utm_source=github&utm_campaign=about-link"><img src="https://avatars3.githubusercontent.com/u/2841780?v=4" width="100px;" alt="Anand Chowdhary"/><br /><sub><b>Anand Chowdhary</b></sub></a><br /><a href="https://github.com/o15y/staart/commits?author=AnandChowdhary" title="Code">💻</a> <a href="https://github.com/o15y/staart/commits?author=AnandChowdhary" title="Documentation">📖</a> <a href="#design-AnandChowdhary" title="Design">🎨</a></td>
+    <td align="center"><a href="https://anandchowdhary.com/?utm_source=github&utm_campaign=about-link"><img src="https://avatars3.githubusercontent.com/u/2841780?v=4" width="100px;" alt="Anand Chowdhary"/><br /><sub><b>Anand Chowdhary</b></sub></a><br /><a href="https://github.com/staart/api/commits?author=AnandChowdhary" title="Code">💻</a> <a href="https://github.com/staart/api/commits?author=AnandChowdhary" title="Documentation">📖</a> <a href="#design-AnandChowdhary" title="Design">🎨</a></td>
     <td align="center"><a href="http://komiserback@gmail.com"><img src="https://avatars3.githubusercontent.com/u/36298335?v=4" width="100px;" alt="reallinfo"/><br /><sub><b>reallinfo</b></sub></a><br /><a href="#design-reallinfo" title="Design">🎨</a></td>
-    <td align="center"><a href="https://github.com/coooolers"><img src="https://avatars2.githubusercontent.com/u/20610084?v=4" width="100px;" alt="Cool"/><br /><sub><b>Cool</b></sub></a><br /><a href="https://github.com/o15y/staart/issues?q=author%3Acoooolers" title="Bug reports">🐛</a> <a href="#ideas-coooolers" title="Ideas, Planning, & Feedback">🤔</a></td>
-    <td align="center"><a href="https://github.com/ektek"><img src="https://avatars1.githubusercontent.com/u/54689503?v=4" width="100px;" alt="EK"/><br /><sub><b>EK</b></sub></a><br /><a href="https://github.com/o15y/staart/issues?q=author%3Aektek" title="Bug reports">🐛</a> <a href="https://github.com/o15y/staart/commits?author=ektek" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/mattp95"><img src="https://avatars0.githubusercontent.com/u/29185361?v=4" width="100px;" alt="mattp95"/><br /><sub><b>mattp95</b></sub></a><br /><a href="https://github.com/o15y/staart/issues?q=author%3Amattp95" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://github.com/coooolers"><img src="https://avatars2.githubusercontent.com/u/20610084?v=4" width="100px;" alt="Cool"/><br /><sub><b>Cool</b></sub></a><br /><a href="https://github.com/staart/api/issues?q=author%3Acoooolers" title="Bug reports">🐛</a> <a href="#ideas-coooolers" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="https://github.com/ektek"><img src="https://avatars1.githubusercontent.com/u/54689503?v=4" width="100px;" alt="EK"/><br /><sub><b>EK</b></sub></a><br /><a href="https://github.com/staart/api/issues?q=author%3Aektek" title="Bug reports">🐛</a> <a href="https://github.com/staart/api/commits?author=ektek" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/mattp95"><img src="https://avatars0.githubusercontent.com/u/29185361?v=4" width="100px;" alt="mattp95"/><br /><sub><b>mattp95</b></sub></a><br /><a href="https://github.com/staart/api/issues?q=author%3Amattp95" title="Bug reports">🐛</a></td>
   </tr>
 </table>
 
@@ -181,7 +181,7 @@ This project follows the [all-contributors](https://github.com/all-contributors/
 
 - [Oswald Labs Platform](https://github.com/OswaldLabsOpenSource/platform-v3)
 - [Speakup Developer](https://github.com/speakupnl/staart)
-- [**Add your Staart-based project**](https://github.com/o15y/staart/edit/master/README.md)
+- [**Add your Staart-based project**](https://github.com/staart/api/edit/master/README.md)
 
 ## [🏁 Staart Ecosystem](https://staart.js.org)
 
@@ -197,5 +197,5 @@ The Staart ecosystem consists of open-source projects to build your SaaS startup
 
 ## 📄 License
 
-- Code: [MIT](https://github.com/o15y/staart-native/blob/master/LICENSE)
+- Code: [MIT](https://github.com/staart/api/blob/master/LICENSE)
 - Logo and assets: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)

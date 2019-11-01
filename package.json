@@ -1,8 +1,8 @@
 {
   "name": "@staart/manager",
-  "version": "1.1.68",
+  "version": "1.1.69",
   "main": "index.js",
-  "repository": "git@github.com:AnandChowdhary/staart.git",
+  "repository": "git@github.com:staart/api.git",
   "author": "Anand Chowdhary <mail@anandchowdhary.com>",
   "license": "MIT",
   "scripts": {
@@ -19,7 +19,7 @@
     "generate-routes": "node setup/controllers.js",
     "increment-package": "node setup/increment.js",
     "check-update": "node setup/check-update.js",
-    "update": "git pull git@github.com:o15y/staart",
+    "update": "git pull git@github.com:staart/api",
     "postinstall": "npm run check-update",
     "publish-package": "npm publish --access public",
     "snyk-protect": "snyk protect"
@@ -149,5 +149,5 @@
     "setup"
   ],
   "snyk": true,
-  "staart-version": "1.1.68"
+  "staart-version": "1.1.69"
 }

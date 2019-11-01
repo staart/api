@@ -9,7 +9,7 @@ const yourPkg = require("../package.json");
 
 dotenv.config();
 const packageUrl =
-  "https://raw.githubusercontent.com/o15y/staart/master/package.json";
+  "https://raw.githubusercontent.com/staart/api/master/package.json";
 
 const checkUpdate = async () => {
   const pkg = (await axios.get(packageUrl)).data;
