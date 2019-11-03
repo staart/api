@@ -50,6 +50,7 @@ export const trackUrl = async (req: Request, res: Response) => {
       trackingObject.apiKeyId = token.id;
       trackingObject.apiKeyOrganizationId = token.organizationId;
       trackingObject.apiKeyJti = token.jti;
+      delete trackingObject.apiKey;
     } catch (error) {
       return;
     }
