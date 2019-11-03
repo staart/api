@@ -195,6 +195,19 @@ The Staart ecosystem consists of open-source projects to build your SaaS startup
 | [📱 Staart Native](https://github.com/staart/native) | React Native app for Android and iOS | [![Travis CI](https://img.shields.io/travis/staart/native)](https://travis-ci.org/staart/native) [![Docs](https://img.shields.io/endpoint?url=https%3A%2F%2Fstaart.js.org%2Fshield-schema%2Fnative.json)](https://staart.js.org/native) [![npm package version](https://img.shields.io/npm/v/@staart/native)](https://www.npmjs.com/package/@staart/native) |
 | [🎨 Staart.css](https://github.com/staart/css) | Sass/CSS framework and utilities | [![Travis CI](https://img.shields.io/travis/staart/css)](https://travis-ci.org/staart/css) [![Docs](https://img.shields.io/endpoint?url=https%3A%2F%2Fstaart.js.org%2Fshield-schema%2Fcss.json)](https://staart.js.org/css) [![npm package version](https://img.shields.io/npm/v/@staart/css)](https://www.npmjs.com/package/@staart/css) |
 
+## 💝 Sponsors
+
+The development of Staart projects is supported by these wonderful companies. [Find us on OpenCollective](https://opencollective.com/staart)
+
+<!-- prettier-ignore -->
+<table>
+  <tr>
+    <td align="center"><a href="https://github.com/OswaldLabsOpenSource"><img src="https://avatars3.githubusercontent.com/u/21421587?v=4" width="100px" alt=""/><br><sub><b>Oswald Labs</b></sub></a></td>
+    <td align="center"><a href="https://github.com/O15Y"><img src="https://avatars3.githubusercontent.com/u/48348500?v=4" width="100px" alt=""/><br><sub><b>O15Y</b></sub></a></td>
+    <td align="center"><a href="https://github.com/speakupnl"><img src="https://avatars3.githubusercontent.com/u/33686381?v=4" width="100px" alt=""/><br><sub><b>Speakup</b></sub></a></td>
+  </tr>
+</table>
+
 ## 📄 License
 
 - Code: [MIT](https://github.com/staart/api/blob/master/LICENSE)
