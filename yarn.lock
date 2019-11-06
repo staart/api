@@ -139,6 +139,18 @@
     "@babel/helper-replace-supers" "^7.7.0"
     "@babel/helper-split-export-declaration" "^7.7.0"
 
+"@babel/helper-create-class-features-plugin@^7.7.0":
+  version "7.7.0"
+  resolved "https://registry.yarnpkg.com/@babel/helper-create-class-features-plugin/-/helper-create-class-features-plugin-7.7.0.tgz#bcdc223abbfdd386f94196ae2544987f8df775e8"
+  integrity sha512-MZiB5qvTWoyiFOgootmRSDV1udjIqJW/8lmxgzKq6oDqxdmHUjeP2ZUOmgHdYjmUVNABqRrHjYAYRvj8Eox/UA==
+  dependencies:
+    "@babel/helper-function-name" "^7.7.0"
+    "@babel/helper-member-expression-to-functions" "^7.7.0"
+    "@babel/helper-optimise-call-expression" "^7.7.0"
+    "@babel/helper-plugin-utils" "^7.0.0"
+    "@babel/helper-replace-supers" "^7.7.0"
+    "@babel/helper-split-export-declaration" "^7.7.0"
+
 "@babel/helper-create-regexp-features-plugin@^7.7.0":
   version "7.7.0"
   resolved "https://registry.yarnpkg.com/@babel/helper-create-regexp-features-plugin/-/helper-create-regexp-features-plugin-7.7.0.tgz#2e8badfe201cfafb5d930f46cf1e0b6f1cdcab23"
@@ -745,12 +757,12 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.0.0"
 
-"@babel/plugin-transform-typescript@^7.6.0":
-  version "7.6.3"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-typescript/-/plugin-transform-typescript-7.6.3.tgz#dddb50cf3b8b2ef70b22e5326e9a91f05a1db13b"
-  integrity sha512-aiWINBrPMSC3xTXRNM/dfmyYuPNKY/aexYqBgh0HBI5Y+WO5oRAqW/oROYeYHrF4Zw12r9rK4fMk/ZlAmqx/FQ==
+"@babel/plugin-transform-typescript@^7.7.0":
+  version "7.7.0"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-typescript/-/plugin-transform-typescript-7.7.0.tgz#182be03fa8bd2ffd0629791a1eaa4373b7589d38"
+  integrity sha512-y3KYbcfKe+8ziRXiGhhnGrVysDBo5+aJdB+x8sanM0K41cnmK7Q5vBlQLMbOnW/HPjLG9bg7dLgYDQZZG9T09g==
   dependencies:
-    "@babel/helper-create-class-features-plugin" "^7.6.0"
+    "@babel/helper-create-class-features-plugin" "^7.7.0"
     "@babel/helper-plugin-utils" "^7.0.0"
     "@babel/plugin-syntax-typescript" "^7.2.0"
 
@@ -827,13 +839,13 @@
     js-levenshtein "^1.1.3"
     semver "^5.5.0"
 
-"@babel/preset-typescript@^7.6.0":
-  version "7.6.0"
-  resolved "https://registry.yarnpkg.com/@babel/preset-typescript/-/preset-typescript-7.6.0.tgz#25768cb8830280baf47c45ab1a519a9977498c98"
-  integrity sha512-4xKw3tTcCm0qApyT6PqM9qniseCE79xGHiUnNdKGdxNsGUc2X7WwZybqIpnTmoukg3nhPceI5KPNzNqLNeIJww==
+"@babel/preset-typescript@^7.7.0":
+  version "7.7.0"
+  resolved "https://registry.yarnpkg.com/@babel/preset-typescript/-/preset-typescript-7.7.0.tgz#5d7682d938160ceaf51c3d4239e9521ef893474c"
+  integrity sha512-WZ3qvtAJy8w/i6wqq5PuDnkCUXaLUTHIlJujfGHmHxsT5veAbEdEjl3cC/3nXfyD0bzlWsIiMdUhZgrXjd9QWg==
   dependencies:
     "@babel/helper-plugin-utils" "^7.0.0"
-    "@babel/plugin-transform-typescript" "^7.6.0"
+    "@babel/plugin-transform-typescript" "^7.7.0"
 
 "@babel/runtime@^7.6.3":
   version "7.6.3"
