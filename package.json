@@ -47,7 +47,7 @@
     "@babel/plugin-transform-runtime": "^7.6.2",
     "@babel/polyfill": "^7.7.0",
     "@babel/preset-env": "^7.7.1",
-    "@babel/preset-typescript": "^7.7.0",
+    "@babel/preset-typescript": "^7.7.2",
     "@overnightjs/core": "^1.6.9",
     "@types/bcryptjs": "^2.4.2",
     "@types/cors": "^2.8.6",
