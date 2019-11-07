@@ -1298,10 +1298,10 @@
   dependencies:
     dotenv "*"
 
-"@types/elasticsearch@*", "@types/elasticsearch@^5.0.35":
-  version "5.0.35"
-  resolved "https://registry.yarnpkg.com/@types/elasticsearch/-/elasticsearch-5.0.35.tgz#e0a3d2c2c8239a2cd9fae04360f759c553bc4b7b"
-  integrity sha512-oqQylLukPuPtQWPKT7NeTZ23sVNAF9GYAJCMIexxO/Rjmtdv95I1hdfORp7r+eukyqQ3Y5xUS6ZA5mPkKl6JwA==
+"@types/elasticsearch@*", "@types/elasticsearch@^5.0.36":
+  version "5.0.36"
+  resolved "https://registry.yarnpkg.com/@types/elasticsearch/-/elasticsearch-5.0.36.tgz#5799894db7d83a478d19dc36127957579071702c"
+  integrity sha512-uV1mcrQIscL1HuewQ4XoEmv64tIBP/fN6u+LfBJEzO6DfXLZeogmP6odybxzFDg0C85/e102++3XKV68lYScLQ==
 
 "@types/events@*":
   version "3.0.0"
