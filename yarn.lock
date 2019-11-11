@@ -1416,10 +1416,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/marked@^0.7.0":
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/@types/marked/-/marked-0.7.0.tgz#b9de675412d26515b069ad478cf43165816d1d90"
-  integrity sha512-UcrlF5NyA7DwckjJeE7xUfEB83i4a3KsS+dH7/gqWKJnTnUOW0W0eL52EhtB6+nKw9LTX/IS5nsK3wDhjZ1GAA==
+"@types/marked@^0.7.1":
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/@types/marked/-/marked-0.7.1.tgz#2f56cb2aa942efde23bd2beb9e07f4b6ddd25563"
+  integrity sha512-QMgeCgUMyNKfteIzmVuFcyGXORiD67fbEQbwbfJLIn+HejcyaQm0H00q66PJz8bMb8Ve4JrsJ2JXuStyZ4DjZg==
 
 "@types/md5@^2.1.33":
   version "2.1.33"
