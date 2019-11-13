@@ -135,7 +135,7 @@
     "node-ses": "^2.2.1",
     "otplib": "^11.0.1",
     "qrcode": "^1.4.4",
-    "query-string": "^6.8.3",
+    "query-string": "^6.9.0",
     "random-int": "^2.0.1",
     "randomcolor": "^0.5.4",
     "response-time": "^2.3.2",
