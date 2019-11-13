@@ -7001,10 +7001,10 @@ snyk-go-plugin@1.11.1:
     tmp "0.0.33"
     tslib "^1.10.0"
 
-snyk-gradle-plugin@3.2.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/snyk-gradle-plugin/-/snyk-gradle-plugin-3.2.0.tgz#eb5ae694658c8b3674402622980bcc82bad638a5"
-  integrity sha512-0fopfp3g7xzs2D20pQBZgP2x4jugyr0cASv/Px3WEfsQR+bJlfk6h67euhH24lOl0fhdTYfz4oiteWPskb39sg==
+snyk-gradle-plugin@3.2.1:
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/snyk-gradle-plugin/-/snyk-gradle-plugin-3.2.1.tgz#f7d1f4b8976400cb1c7eb5e4a4aab7a21f9ed70f"
+  integrity sha512-YYBjM0I+6w9aIDdtQa7uFQe19VWDZ6mG7quEmi00gLcUe7sI2sho0VAKi1OeoHmD3j0wjpZ4y3jQxnWZ9jdHow==
   dependencies:
     "@snyk/cli-interface" "2.2.0"
     "@types/debug" "^4.1.4"
@@ -7152,10 +7152,10 @@ snyk-try-require@1.3.1, snyk-try-require@^1.1.1, snyk-try-require@^1.3.1:
     lru-cache "^4.0.0"
     then-fs "^2.0.0"
 
-snyk@^1.245.0:
-  version "1.245.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.245.0.tgz#3400ca7a23acec5d68037b420aefcdec8f87f2a3"
-  integrity sha512-ObCnw/M41zD4ZCv8g5CvcLPlxnnMoCrJemByhJIEuZ7308fCcBhwojGhubhe6qYhVFGhrPtFiUyI7mOSZYrBiQ==
+snyk@^1.246.0:
+  version "1.246.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.246.0.tgz#8400597188d1433dac225dfc9bee27fc1ac5d471"
+  integrity sha512-jbvd2haQm1z75D/P7ObYMAc5+6qBJ+2DeLnQzlRKj2ZSvZdD+RyzagW9ye+TQvzexgZnBxhX50aq3ZnDPULoJQ==
   dependencies:
     "@snyk/cli-interface" "2.2.0"
     "@snyk/dep-graph" "1.13.1"
@@ -7183,7 +7183,7 @@ snyk@^1.245.0:
     snyk-config "^2.2.1"
     snyk-docker-plugin "1.33.1"
     snyk-go-plugin "1.11.1"
-    snyk-gradle-plugin "3.2.0"
+    snyk-gradle-plugin "3.2.1"
     snyk-module "1.9.1"
     snyk-mvn-plugin "2.4.0"
     snyk-nodejs-lockfile-parser "1.16.1"
