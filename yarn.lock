@@ -3455,10 +3455,10 @@ gauge@~2.7.3:
     strip-ansi "^3.0.1"
     wide-align "^1.1.0"
 
-geolite2@^1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/geolite2/-/geolite2-1.2.1.tgz#b7c62d182021d398f7fc3c9d09a01c067b36cb36"
-  integrity sha512-4NqR+Wr4/KMSDrTq+0jnxL+xiMBiUXFiLBuMCs5gChLhZD6uvWICQxQV3MNpRH3FPGnB4gKHs3gGaYd+6X4sGQ==
+geolite2@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/geolite2/-/geolite2-2.0.0.tgz#b6f634913bf6bf96f5f35be9d153a26098d901be"
+  integrity sha512-vzq623dPf4LcSkx+ORMfqWUWYwUYFouGPTtJCOKWehqV8zTFeA+/706tGcJHBhJrayzjLxaUPnuYIkse4e/wdQ==
 
 get-caller-file@^1.0.1:
   version "1.0.3"
