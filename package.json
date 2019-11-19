@@ -124,7 +124,7 @@
     "ip-range-check": "^0.2.0",
     "jsonwebtoken": "^8.5.1",
     "marked": "^0.7.0",
-    "matcher": "^2.0.0",
+    "matcher": "^2.1.0",
     "maxmind": "^4.0.0",
     "md5": "^2.2.1",
     "ms": "^2.1.2",
