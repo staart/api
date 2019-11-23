@@ -1566,10 +1566,10 @@
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-1.0.1.tgz#0a851d3bd96498fa25c33ab7278ed3bd65f06c3e"
   integrity sha512-l42BggppR6zLmpfU6fq9HEa2oGPEI8yrSPL3GITjfRInppYFahObbIQOQK3UGxEnyQpltZLaPe75046NOZQikw==
 
-"@types/stripe@^7.13.8":
-  version "7.13.8"
-  resolved "https://registry.yarnpkg.com/@types/stripe/-/stripe-7.13.8.tgz#7e7da3d8330224ff2fc8a57bb48f06f1bd8c2aef"
-  integrity sha512-bjZPdiNr5DCZeTYr7ALGb585barvz47yhGPv+WmttAjs+laCOs18joHuv9o9MQohQukCa5NppeL1VmTpANOFtg==
+"@types/stripe@^7.13.9":
+  version "7.13.9"
+  resolved "https://registry.yarnpkg.com/@types/stripe/-/stripe-7.13.9.tgz#b16447c4bd7fed4c30564ab8d919ce44f052799a"
+  integrity sha512-69SIElV8p6UftsO3yTj4hQbCZnyWGKASapbIUToIczA7hAeMP3PIWQVzvaVhU4WrGj6w0DyOc4mrLl9WkAO+aw==
   dependencies:
     "@types/node" "*"
 
