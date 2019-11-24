@@ -95,7 +95,7 @@
     "yaml": "^1.7.2"
   },
   "dependencies": {
-    "@hapi/joi": "^16.1.7",
+    "@hapi/joi": "^16.1.8",
     "@sentry/node": "^5.9.0",
     "@staart/errors": "^1.0.0",
     "@staart/messages": "^1.0.0",
