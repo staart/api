@@ -7048,10 +7048,10 @@ snyk-policy@1.13.5:
     snyk-try-require "^1.3.1"
     then-fs "^2.0.0"
 
-snyk-python-plugin@^1.13.3:
-  version "1.13.3"
-  resolved "https://registry.yarnpkg.com/snyk-python-plugin/-/snyk-python-plugin-1.13.3.tgz#34587001de2cca8fb400f3f21110c29b39a80e83"
-  integrity sha512-Ud7mHmpMG4uCChvYLx5jA8HwOV/FNpT65xTxSt+6wsOjIUTuLiqM86mbvgzgk3pir8vMP9yQEsCi1i0zYLBArw==
+snyk-python-plugin@^1.14.0:
+  version "1.14.0"
+  resolved "https://registry.yarnpkg.com/snyk-python-plugin/-/snyk-python-plugin-1.14.0.tgz#43d7933352514460d0c7732372b89d919f5bebac"
+  integrity sha512-OZYkI7Xq++DgxNk8SrJPJK24y0WFTI5Jf10dI+FyoF2Gz1GxqmNNF4B/4yd+QqrSoIJ1SlM75qqG4M0qj8rylQ==
   dependencies:
     "@snyk/cli-interface" "^2.0.3"
     tmp "0.0.33"
@@ -7114,10 +7114,10 @@ snyk-try-require@1.3.1, snyk-try-require@^1.1.1, snyk-try-require@^1.3.1:
     lru-cache "^4.0.0"
     then-fs "^2.0.0"
 
-snyk@^1.252.0:
-  version "1.252.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.252.0.tgz#f12b23b3dc8e0149d2b8c809910d4f587c45ec08"
-  integrity sha512-hp0wXUkGvZEmt+iTwZfkPZh14I8Uf23gaJUcygYV/ViXLpTWjo4QI09wc6UvtFu+MMX4VX9ryRU7A2xcmb3i/w==
+snyk@^1.254.0:
+  version "1.254.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.254.0.tgz#243eb96606730f7954bc4e304c9607cfef10b746"
+  integrity sha512-l4Bu+QKsOmDfCJWMnrgMz101opLiCEyx8VJosZ12bBb5ccKTT92GFeJIAvLQfdSTSsrHlkQbc2ATuWjZcqFDgw==
   dependencies:
     "@snyk/cli-interface" "2.3.0"
     "@snyk/dep-graph" "1.13.1"
@@ -7152,7 +7152,7 @@ snyk@^1.252.0:
     snyk-nuget-plugin "1.13.1"
     snyk-php-plugin "1.7.0"
     snyk-policy "1.13.5"
-    snyk-python-plugin "^1.13.3"
+    snyk-python-plugin "^1.14.0"
     snyk-resolve "1.0.1"
     snyk-resolve-deps "4.4.0"
     snyk-sbt-plugin "2.9.0"
