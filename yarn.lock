@@ -1276,10 +1276,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/geolite2@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@types/geolite2/-/geolite2-1.2.0.tgz#f66dcdd395e5be29dff5d8c476c4cfb015a5e0d7"
-  integrity sha512-fSEel9sfeC8XGS/CD8duQhaGtAS9Ho3ehVEzAUZWFWpSiHKYX4fkJleEy08qbpF5tU4AnMHGGVKi0EvpI6tYag==
+"@types/geolite2@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@types/geolite2/-/geolite2-2.0.0.tgz#4b0f7af0d5460b0d67ff981df6f12c72f105c092"
+  integrity sha512-/ADzCQbkeiuu1FGPvh02pxdVhTzMjNOqM8hnOaga+m9nO2BB9puC+qGuGqmFedEmyPSl1pq1pQfgkgxFIE28cg==
 
 "@types/hapi__joi@^16.0.4":
   version "16.0.4"
