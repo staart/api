@@ -4,7 +4,7 @@ Staart is a Node.js backend starter for SaaS startups written in TypeScript. It 
 
 |  | Status |
 | - | - |
-| Build | [![GitHub Actions](https://github.com/staart/api/workflows/Node%20CI/badge.svg)](https://github.com/staart/api/actions) [![Travis CI](https://img.shields.io/travis/staart/api?label=Travis%20CI)](https://travis-ci.org/staart/api) [![Circle CI](https://img.shields.io/circleci/build/github/staart/api?label=Circle%20CI)](https://circleci.com/gh/staart/api) [![Azure Pipelines](https://dev.azure.com/staart/api/_apis/build/status/staart.api?branchName=master)](https://dev.azure.com/staart/api/_build/latest?definitionId=1&branchName=master) |
+| Build | [![Financial Contributors on Open Collective](https://opencollective.com/staart/all/badge.svg?label=financial+contributors)](https://opencollective.com/staart) [![GitHub Actions](https://github.com/staart/api/workflows/Node%20CI/badge.svg)](https://github.com/staart/api/actions) [![Travis CI](https://img.shields.io/travis/staart/api?label=Travis%20CI)](https://travis-ci.org/staart/api) [![Circle CI](https://img.shields.io/circleci/build/github/staart/api?label=Circle%20CI)](https://circleci.com/gh/staart/api) [![Azure Pipelines](https://dev.azure.com/staart/api/_apis/build/status/staart.api?branchName=master)](https://dev.azure.com/staart/api/_build/latest?definitionId=1&branchName=master) |
 | Dependencies | [![Dependencies](https://img.shields.io/david/staart/api.svg)](https://david-dm.org/staart/api) [![Dev dependencies](https://img.shields.io/david/dev/staart/api.svg)](https://david-dm.org/staart/api) ![Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/github/staart/api.svg) |
 | Community | [![Contributors](https://img.shields.io/github/contributors/staart/api.svg)](https://github.com/staart/api/graphs/contributors) [![GitHub](https://img.shields.io/github/license/staart/api.svg)](https://github.com/staart/api/blob/master/LICENSE) ![Type definitions](https://img.shields.io/badge/types-TypeScript-blue.svg) [![npm package version](https://img.shields.io/npm/v/@staart/manager)](https://www.npmjs.com/package/@staart/manager) |
 
@@ -207,6 +207,36 @@ The development of Staart projects is supported by these wonderful companies. [F
     <td align="center"><a href="https://github.com/speakupnl"><img src="https://avatars3.githubusercontent.com/u/33686381?v=4" width="100px" alt=""/><br><sub><b>Speakup</b></sub></a></td>
   </tr>
 </table>
+
+## Contributors
+
+### Code Contributors
+
+This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
+<a href="https://github.com/staart/api/graphs/contributors"><img src="https://opencollective.com/staart/contributors.svg?width=890&button=false" /></a>
+
+### Financial Contributors
+
+Become a financial contributor and help us sustain our community. [[Contribute](https://opencollective.com/staart/contribute)]
+
+#### Individuals
+
+<a href="https://opencollective.com/staart"><img src="https://opencollective.com/staart/individuals.svg?width=890"></a>
+
+#### Organizations
+
+Support this project with your organization. Your logo will show up here with a link to your website. [[Contribute](https://opencollective.com/staart/contribute)]
+
+<a href="https://opencollective.com/staart/organization/0/website"><img src="https://opencollective.com/staart/organization/0/avatar.svg"></a>
+<a href="https://opencollective.com/staart/organization/1/website"><img src="https://opencollective.com/staart/organization/1/avatar.svg"></a>
+<a href="https://opencollective.com/staart/organization/2/website"><img src="https://opencollective.com/staart/organization/2/avatar.svg"></a>
+<a href="https://opencollective.com/staart/organization/3/website"><img src="https://opencollective.com/staart/organization/3/avatar.svg"></a>
+<a href="https://opencollective.com/staart/organization/4/website"><img src="https://opencollective.com/staart/organization/4/avatar.svg"></a>
+<a href="https://opencollective.com/staart/organization/5/website"><img src="https://opencollective.com/staart/organization/5/avatar.svg"></a>
+<a href="https://opencollective.com/staart/organization/6/website"><img src="https://opencollective.com/staart/organization/6/avatar.svg"></a>
+<a href="https://opencollective.com/staart/organization/7/website"><img src="https://opencollective.com/staart/organization/7/avatar.svg"></a>
+<a href="https://opencollective.com/staart/organization/8/website"><img src="https://opencollective.com/staart/organization/8/avatar.svg"></a>
+<a href="https://opencollective.com/staart/organization/9/website"><img src="https://opencollective.com/staart/organization/9/avatar.svg"></a>
 
 ## 📄 License
 
