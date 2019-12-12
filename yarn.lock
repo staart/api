@@ -2814,15 +2814,15 @@ dotenv@*, dotenv@^8.2.0:
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-8.2.0.tgz#97e619259ada750eea3e4ea3e26bceea5424b16a"
   integrity sha512-8sJ78ElpbDJBHNeBzUbUVLsqKdccaa/BXF1uPTw3GrvQTBgrQrtObr2mUrE38vzYd8cEv+m/JBfDLioYcfXoaw==
 
-dotnet-deps-parser@4.5.2:
-  version "4.5.2"
-  resolved "https://registry.yarnpkg.com/dotnet-deps-parser/-/dotnet-deps-parser-4.5.2.tgz#f3223fa2b9d0d247c3e855d6b5a292904c2c8109"
-  integrity sha512-bk5Q1luEwQ10rrBwZbtTxUNadaLz2dM6xzOLoTK+oUBcaq6saCeELmkIgdG+Fwkn58XRgLQvOySVS0gp4OG6RA==
+dotnet-deps-parser@4.7.0:
+  version "4.7.0"
+  resolved "https://registry.yarnpkg.com/dotnet-deps-parser/-/dotnet-deps-parser-4.7.0.tgz#eaa0810c37a43fbcae12892b031ec3b73b4697a7"
+  integrity sha512-dmXi1UzukjjgjMuov65Ibv4fGJyVXPj2mVyEkLZob4Q2aQ5WJYAn6R2MWckq0N9X1CE6rrdvROAyXl/v/aGLpw==
   dependencies:
     "@types/xml2js" "0.4.3"
     lodash "^4.17.11"
     source-map-support "^0.5.7"
-    tslib "^1.9.3"
+    tslib "^1.10.0"
     xml2js "0.4.19"
 
 double-ended-queue@^2.1.0-0:
@@ -7033,13 +7033,13 @@ snyk-nodejs-lockfile-parser@1.16.1:
     tslib "^1.9.3"
     uuid "^3.3.2"
 
-snyk-nuget-plugin@1.13.1:
-  version "1.13.1"
-  resolved "https://registry.yarnpkg.com/snyk-nuget-plugin/-/snyk-nuget-plugin-1.13.1.tgz#e94f6b129b62f7c0134851be233deab5a472518b"
-  integrity sha512-2AQVeahBK7Rt38p0Acl1fMsFQu3dsqoRODPoRaS0IM/bOBzVdAkDF9pCb5yKMREGpMZcyRFkt8Q+hGiUk0Nlfg==
+snyk-nuget-plugin@1.14.0:
+  version "1.14.0"
+  resolved "https://registry.yarnpkg.com/snyk-nuget-plugin/-/snyk-nuget-plugin-1.14.0.tgz#085c397ab3da8d00ef4778d25c3e56b6a1bea460"
+  integrity sha512-RqXZQEA1s9LIA3euvLtx17UQQ1/q/sHkUf6p0sgTxG2D1xQI8vMtrbDxYgfpPwaHK22AjGaeK3J0TgPND5qZdw==
   dependencies:
     debug "^3.1.0"
-    dotnet-deps-parser "4.5.2"
+    dotnet-deps-parser "4.7.0"
     jszip "^3.1.5"
     lodash "^4.17.14"
     snyk-paket-parser "1.5.0"
@@ -7143,10 +7143,10 @@ snyk-try-require@1.3.1, snyk-try-require@^1.1.1, snyk-try-require@^1.3.1:
     lru-cache "^4.0.0"
     then-fs "^2.0.0"
 
-snyk@^1.258.2:
-  version "1.258.2"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.258.2.tgz#ef26ee26dc11c141c1b646e219a91b93eb5370f8"
-  integrity sha512-SGVl7Wk82YFhemPuJQZvFkNdSefe6HAQcEbXp4AotwPiYPSP0wLNVuOPlKWakOduBB7/zEAZltRL2+0dv23txQ==
+snyk@^1.259.0:
+  version "1.259.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.259.0.tgz#8d9416638291adcd257e0130b4f89948ce42ceb1"
+  integrity sha512-miPuJtJeJ7rX3620ZeoDum5z9tNbpbwogqlOlccYY6UiAUFWnmEhqFxpSeGMq3aguj+rYmyGwClhP2LooGgUaA==
   dependencies:
     "@snyk/cli-interface" "2.3.0"
     "@snyk/dep-graph" "1.13.1"
@@ -7178,7 +7178,7 @@ snyk@^1.258.2:
     snyk-module "1.9.1"
     snyk-mvn-plugin "2.7.0"
     snyk-nodejs-lockfile-parser "1.16.1"
-    snyk-nuget-plugin "1.13.1"
+    snyk-nuget-plugin "1.14.0"
     snyk-php-plugin "1.7.0"
     snyk-policy "1.13.5"
     snyk-python-plugin "^1.14.0"
