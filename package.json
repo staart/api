@@ -48,7 +48,7 @@
     "@babel/polyfill": "^7.7.0",
     "@babel/preset-env": "^7.7.6",
     "@babel/preset-typescript": "^7.7.4",
-    "@overnightjs/core": "^1.6.10",
+    "@overnightjs/core": "^1.6.11",
     "@types/bcryptjs": "^2.4.2",
     "@types/cors": "^2.8.6",
     "@types/cron": "^1.7.1",
