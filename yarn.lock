@@ -972,10 +972,10 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
-"@overnightjs/core@^1.6.10":
-  version "1.6.10"
-  resolved "https://registry.yarnpkg.com/@overnightjs/core/-/core-1.6.10.tgz#017f140ea671bcdab1a3f037458541a5728dbf67"
-  integrity sha512-cOJ1zsD6JEUDBJp5O3+V9pjRxVAmRPMlFW2Hdtty9G2mZdVG91dT2CcLS6LjWkpnDQWZ03KIk1A3EaEi5K4lVA==
+"@overnightjs/core@^1.6.11":
+  version "1.6.11"
+  resolved "https://registry.yarnpkg.com/@overnightjs/core/-/core-1.6.11.tgz#090f18220cfba012bd6d8d0b72dc3f439c511af4"
+  integrity sha512-ehcFhYz7zDFk4uUDMtl9l8bAT1orwA1LXa5+2CCjKmc9WfUla73LTwSIY3cjyKPrhZRq9MUQ7KUIjNWdpVZ7Xw==
   dependencies:
     express "^4.16.3"
     reflect-metadata "^0.1.13"
