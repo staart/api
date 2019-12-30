@@ -1,6 +1,6 @@
 {
   "name": "@staart/manager",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "main": "index.js",
   "repository": "git@github.com:staart/api.git",
   "author": "Anand Chowdhary <mail@anandchowdhary.com>",
@@ -73,13 +73,13 @@
     "@types/node-emoji": "^1.8.1",
     "@types/qrcode": "^1.3.4",
     "@types/randomcolor": "^0.5.3",
-    "@types/request": "^2.48.3",
+    "@types/request": "^2.48.4",
     "@types/response-time": "^2.3.4",
     "@types/signale": "^1.2.1",
     "@types/stripe": "^7.13.19",
     "@types/validator": "^12.0.1",
     "@types/yaml": "^1.2.0",
-    "concurrently": "^5.0.1",
+    "concurrently": "^5.0.2",
     "coveralls": "^3.0.9",
     "dotenv": "^8.2.0",
     "has-yarn": "^2.1.0",
@@ -98,9 +98,9 @@
     "@hapi/joi": "^16.1.8",
     "@sentry/node": "^5.10.2",
     "@staart/errors": "^1.0.0",
-    "@staart/messages": "^1.0.0",
+    "@staart/messages": "^1.1.1",
     "@staart/redis": "^1.0.0",
-    "aws-sdk": "^2.595.0",
+    "aws-sdk": "^2.596.0",
     "axios": "^0.19.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
@@ -132,7 +132,7 @@
     "node-cache": "^5.1.0",
     "node-emoji": "^1.10.0",
     "node-ses": "^2.2.1",
-    "otplib": "^11.0.1",
+    "otplib": "^12.0.0",
     "qrcode": "^1.4.4",
     "query-string": "^6.9.0",
     "random-int": "^2.0.1",
@@ -148,5 +148,5 @@
     "setup"
   ],
   "snyk": true,
-  "staart-version": "1.2.1"
+  "staart-version": "1.2.2"
 }
