@@ -133,7 +133,7 @@
     "node-cache": "^5.1.0",
     "node-emoji": "^1.10.0",
     "node-ses": "^2.2.1",
-    "otplib": "^11.0.1",
+    "otplib": "^12.0.0",
     "qrcode": "^1.4.4",
     "query-string": "^6.9.0",
     "random-int": "^2.0.1",
