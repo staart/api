@@ -151,11 +151,13 @@ export const getUserPrimaryEmail = async (user: User | string) => {
  * Get a list of all emails added by a user
  */
 export const getUserEmails = async (userId: string) => {
-  return await addIsPrimaryToEmails(<Email[]>(
-    await query(`SELECT * FROM ${tableName("emails")} WHERE userId = ?`, [
-      userId
-    ])
-  ));
+  return await addIsPrimaryToEmails(
+    <Email[]>(
+      await query(`SELECT * FROM ${tableName("emails")} WHERE userId = ?`, [
+        userId
+      ])
+    )
+  );
 };
 
 /**
@@ -214,14 +216,16 @@ export const getUserVerifiedEmails = async (user: User | string) => {
     userId = user;
   }
   if (!userId) throw new Error(USER_NOT_FOUND);
-  return await addIsPrimaryToEmails(<Email[]>(
-    await query(
-      `SELECT * FROM ${tableName(
-        "emails"
-      )} WHERE userId = ? AND isVerified = 1`,
-      [userId]
+  return await addIsPrimaryToEmails(
+    <Email[]>(
+      await query(
+        `SELECT * FROM ${tableName(
+          "emails"
+        )} WHERE userId = ? AND isVerified = 1`,
+        [userId]
+      )
     )
-  ));
+  );
 };
 
 export const checkIfNewEmail = async (email: string) => {

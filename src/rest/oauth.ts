@@ -70,14 +70,13 @@ export const salesforce = {
   }),
   callback: async (url: string, locals: Locals) => {
     const token = (await salesforce.client.code.getToken(url)).accessToken;
-    const data = (await axios.get(
-      "https://login.salesforce.com/services/oauth2/userinfo",
-      {
+    const data = (
+      await axios.get("https://login.salesforce.com/services/oauth2/userinfo", {
         headers: {
           Authorization: `Bearer ${token}`
         }
-      }
-    )).data;
+      })
+    ).data;
     if (!data.email_verified) throw new Error(OAUTH_NO_EMAIL);
     return loginWithOAuth2Service("salesforce", data.name, data.email, locals);
   }
@@ -93,11 +92,13 @@ export const github = {
   }),
   callback: async (url: string, locals: Locals) => {
     const token = (await github.client.code.getToken(url)).accessToken;
-    const data = (await axios.get("https://api.github.com/user", {
-      headers: {
-        Authorization: `token ${token}`
-      }
-    })).data;
+    const data = (
+      await axios.get("https://api.github.com/user", {
+        headers: {
+          Authorization: `token ${token}`
+        }
+      })
+    ).data;
     return loginWithOAuth2Service("github", data.name, data.email, locals);
   }
 };
@@ -112,9 +113,11 @@ export const facebook = {
   }),
   callback: async (url: string, locals: Locals) => {
     const token = (await facebook.client.code.getToken(url)).accessToken;
-    const data = (await axios.get(
-      `https://graph.facebook.com/v3.3/me?fields=name,email&access_token=${token}`
-    )).data;
+    const data = (
+      await axios.get(
+        `https://graph.facebook.com/v3.3/me?fields=name,email&access_token=${token}`
+      )
+    ).data;
     return loginWithOAuth2Service("facebook", data.name, data.email, locals);
   }
 };
@@ -151,11 +154,13 @@ export const microsoft = {
   }),
   callback: async (url: string, locals: Locals) => {
     const token = (await microsoft.client.code.getToken(url)).accessToken;
-    const data = (await axios.get("https://graph.microsoft.com/v1.0/me", {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })).data;
+    const data = (
+      await axios.get("https://graph.microsoft.com/v1.0/me", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+    ).data;
     console.log(JSON.stringify(data));
     return loginWithOAuth2Service(
       "microsoft",

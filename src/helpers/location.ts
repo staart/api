@@ -1,5 +1,5 @@
 import maxmind, { CityResponse } from "maxmind";
-import geoLite2 from "geolite2";
+import { join } from "path";
 import { Event } from "../interfaces/tables/events";
 import { Session } from "../interfaces/tables/user";
 import { getItemFromCache, storeItemInCache } from "./cache";
@@ -21,7 +21,9 @@ export const getGeolocationFromIp = async (
 ): Promise<GeoLocation | undefined> => {
   const cachedLookup = getItemFromCache(CacheCategories.IP_LOOKUP, ipAddress);
   if (cachedLookup) return cachedLookup as GeoLocation;
-  const lookup = await maxmind.open<CityResponse>(geoLite2.paths.city);
+  const lookup = await maxmind.open<CityResponse>(
+    join(__dirname, "dbs/GeoLite2-City.mmdb")
+  );
   const ipLookup = lookup.get(ipAddress);
   if (!ipLookup) return;
   const location: any = {};

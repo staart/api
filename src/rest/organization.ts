@@ -955,9 +955,11 @@ export const verifyDomainForUser = async (
     if (!domain.verificationCode) throw new Error(DOMAIN_UNABLE_TO_VERIFY);
     if (method === "file") {
       try {
-        const file: string = (await axios.get(
-          `http://${domain.domain}/.well-known/${JWT_ISSUER}-verify.txt`
-        )).data;
+        const file: string = (
+          await axios.get(
+            `http://${domain.domain}/.well-known/${JWT_ISSUER}-verify.txt`
+          )
+        ).data;
         if (file.trim() === domain.verificationCode) {
           const result = await updateDomain(organizationId, domainId, {
             isVerified: true

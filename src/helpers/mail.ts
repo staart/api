@@ -53,9 +53,11 @@ export const mail = async (
   data: any = {}
 ) => {
   const altText = render(
-    (await readFile(
-      join(__dirname, "..", "..", "..", "src", "templates", `${template}.md`)
-    )).toString(),
+    (
+      await readFile(
+        join(__dirname, "..", "..", "..", "src", "templates", `${template}.md`)
+      )
+    ).toString(),
     { ...data, frontendUrl: FRONTEND_URL }
   );
   const message = marked(altText);

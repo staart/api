@@ -654,11 +654,13 @@ export const createIdentityConnect = async (
   try {
     if (service === "github") {
       const token = (await github.code.getToken(url)).accessToken;
-      data = (await Axios.get("https://api.github.com/user", {
-        headers: {
-          Authorization: `token ${token}`
-        }
-      })).data;
+      data = (
+        await Axios.get("https://api.github.com/user", {
+          headers: {
+            Authorization: `token ${token}`
+          }
+        })
+      ).data;
     }
 
     if (service === "microsoft") {
@@ -672,9 +674,11 @@ export const createIdentityConnect = async (
 
     if (service === "facebook") {
       const token = (await facebook.code.getToken(url)).accessToken;
-      const result = (await Axios.get(
-        `https://graph.facebook.com/v4.0/me?access_token=${token}`
-      )).data;
+      const result = (
+        await Axios.get(
+          `https://graph.facebook.com/v4.0/me?access_token=${token}`
+        )
+      ).data;
       data = {
         id: result.id,
         login: result.name

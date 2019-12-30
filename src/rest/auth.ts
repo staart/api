@@ -331,11 +331,13 @@ export const githubCallback = async (url: string, locals: Locals) => {
   const response = await github.code.getToken(url);
   let email: string | undefined;
   let name: string | undefined;
-  const emails = ((await axios.get("https://api.github.com/user/emails", {
-    headers: {
-      Authorization: `token ${response.accessToken}`
-    }
-  })).data as GitHubEmail[]).filter(emails => (emails.verified = true));
+  const emails = ((
+    await axios.get("https://api.github.com/user/emails", {
+      headers: {
+        Authorization: `token ${response.accessToken}`
+      }
+    })
+  ).data as GitHubEmail[]).filter(emails => (emails.verified = true));
   for await (const email of emails) {
     try {
       const user = await getUserByEmail(email.email);
@@ -347,11 +349,13 @@ export const githubCallback = async (url: string, locals: Locals) => {
       );
     } catch (error) {}
   }
-  const me = (await axios.get("https://api.github.com/user", {
-    headers: {
-      Authorization: `token ${response.accessToken}`
-    }
-  })).data;
+  const me = (
+    await axios.get("https://api.github.com/user", {
+      headers: {
+        Authorization: `token ${response.accessToken}`
+      }
+    })
+  ).data;
   try {
     email = emails[0].email;
     name = me.name;
@@ -376,9 +380,11 @@ export const facebookCallback = async (url: string, locals: Locals) => {
   let email: string | undefined;
   let name: string | undefined;
   try {
-    const data = (await axios.get(
-      `https://graph.facebook.com/me?fields=email name&access_token=${response.data.access_token}`
-    )).data;
+    const data = (
+      await axios.get(
+        `https://graph.facebook.com/me?fields=email name&access_token=${response.data.access_token}`
+      )
+    ).data;
     email = data.email;
     name = data.name;
   } catch (error) {}
@@ -402,14 +408,13 @@ export const salesforceCallback = async (url: string, locals: Locals) => {
   let email: string | undefined;
   let name: string | undefined;
   try {
-    const data = (await axios.get(
-      "https://login.salesforce.com/services/oauth2/userinfo",
-      {
+    const data = (
+      await axios.get("https://login.salesforce.com/services/oauth2/userinfo", {
         headers: {
           Authorization: `Bearer ${response.data.access_token}`
         }
-      }
-    )).data;
+      })
+    ).data;
     if (!data.email_verified) throw new Error(OAUTH_NO_EMAIL);
     email = data.email;
     name = data.name;
