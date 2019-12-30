@@ -212,3 +212,5 @@ The development of Staart projects is supported by these wonderful companies. [F
 
 - Code: [MIT](https://github.com/staart/api/blob/master/LICENSE)
 - Logo and assets: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+- [GeoLite2](https://dev.maxmind.com/geoip/geoip2/geolite2/): [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+- [GeoNames](http://www.geonames.org/): [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)
