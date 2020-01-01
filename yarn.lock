@@ -7446,10 +7446,10 @@ symbol-tree@^3.2.2:
   resolved "https://registry.yarnpkg.com/symbol-tree/-/symbol-tree-3.2.4.tgz#430637d248ba77e078883951fb9aa0eed7c63fa2"
   integrity sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==
 
-systeminformation@^4.16.0:
-  version "4.16.0"
-  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-4.16.0.tgz#d92ce821efdab720496c60656bf65cc68fb03f8c"
-  integrity sha512-1FjxPJSw7ad0zug+1YIQATj6Cn+wM5OBASEpjohEeOD2EGPIf0Cnhthd1L2O1YX+wKgOMuPldGfxYdo8yNHEIg==
+systeminformation@^4.16.1:
+  version "4.16.1"
+  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-4.16.1.tgz#662beb2a820a311c242ae110285d80109286cffa"
+  integrity sha512-h/qDSRA4pPWm2d4JmTH75imJXfhen/s5JY6nG/3ZkK0GPJZ5UYIHegFqIj8Id6mnE8Y57vjHsPyd9wqrSnWtdQ==
 
 tar-stream@^2.1.0:
   version "2.1.0"
