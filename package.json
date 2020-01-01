@@ -124,7 +124,7 @@
     "jsonwebtoken": "^8.5.1",
     "marked": "^0.8.0",
     "matcher": "^2.1.0",
-    "maxmind": "^4.0.0",
+    "maxmind": "^4.1.0",
     "md5": "^2.2.1",
     "ms": "^2.1.2",
     "mustache": "^3.2.1",
