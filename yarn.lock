@@ -1343,10 +1343,10 @@
   resolved "https://registry.yarnpkg.com/@types/geolite2/-/geolite2-2.0.0.tgz#4b0f7af0d5460b0d67ff981df6f12c72f105c092"
   integrity sha512-/ADzCQbkeiuu1FGPvh02pxdVhTzMjNOqM8hnOaga+m9nO2BB9puC+qGuGqmFedEmyPSl1pq1pQfgkgxFIE28cg==
 
-"@types/hapi__joi@^16.0.5":
-  version "16.0.5"
-  resolved "https://registry.yarnpkg.com/@types/hapi__joi/-/hapi__joi-16.0.5.tgz#8dd7143be3cc472d7a553514719acf8ecf237478"
-  integrity sha512-S4nI6xEl68ULkzxLkPYlPQgOxIv5FXhrb4A3TgBADYU/JBVfpXt8DwVWgkgYeX3h7S/wbVsNOsUONkcE3LwpqQ==
+"@types/hapi__joi@^16.0.6":
+  version "16.0.6"
+  resolved "https://registry.yarnpkg.com/@types/hapi__joi/-/hapi__joi-16.0.6.tgz#aa8f7dff93fdd3db6506ca2433a8302d8819fad1"
+  integrity sha512-rpU8FNMGxhYIF6bUlxZYO4drNjqUWCGrf4UINABAJzdcrPs4bP+Bz5VXzp8rOPZsNynnaDXbiU/MyjOGlfeczg==
 
 "@types/helmet@^0.0.45":
   version "0.0.45"
