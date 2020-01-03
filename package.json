@@ -1,14 +1,14 @@
 {
   "name": "@staart/manager",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "main": "index.js",
   "repository": "git@github.com:staart/api.git",
   "author": "Anand Chowdhary <mail@anandchowdhary.com>",
   "license": "MIT",
   "scripts": {
     "test": "jest",
-    "build": "touch .env && mkdir -p dist && cp .env dist/.env && npm run generate-routes && tsc && cp -r lfs dist/src",
-    "build-babel": "touch .env && babel src -d dist --extensions '.ts' && cp .env dist/.env && cp -r lfs dist/src",
+    "build": "touch .env && mkdir -p dist && cp .env dist/.env && npm run generate-routes && tsc",
+    "build-babel": "touch .env && babel src -d dist --extensions '.ts' && cp .env dist/.env",
     "start": "npm run build && npm run launch",
     "launch": "node dist/src/index.js",
     "dev": "concurrently 'yarn watch-build' 'nodemon dist/src/index.js'",
@@ -148,5 +148,5 @@
     "setup"
   ],
   "snyk": true,
-  "staart-version": "1.2.3"
+  "staart-version": "1.2.4"
 }
