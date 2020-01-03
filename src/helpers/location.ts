@@ -19,27 +19,29 @@ export interface GeoLocation {
 export const getGeolocationFromIp = async (
   ipAddress: string
 ): Promise<GeoLocation | undefined> => {
-  const cachedLookup = getItemFromCache(CacheCategories.IP_LOOKUP, ipAddress);
-  if (cachedLookup) return cachedLookup as GeoLocation;
-  const lookup = await maxmind.open<CityResponse>(geolite2.paths.city);
-  const ipLookup = lookup.get(ipAddress);
-  if (!ipLookup) return;
-  const location: any = {};
-  if (ipLookup.city) location.city = ipLookup.city.names.en;
-  if (ipLookup.continent) location.continent = ipLookup.continent.names.en;
-  if (ipLookup.country) location.country_code = ipLookup.country.iso_code;
-  if (ipLookup.location) location.latitude = ipLookup.location.latitude;
-  if (ipLookup.location) location.longitude = ipLookup.location.longitude;
-  if (ipLookup.location) location.time_zone = ipLookup.location.time_zone;
-  if (ipLookup.location)
-    location.accuracy_radius = ipLookup.location.accuracy_radius;
-  if (ipLookup.postal) location.zip_code = ipLookup.postal.code;
-  if (ipLookup.subdivisions)
-    location.region_name = ipLookup.subdivisions[0].names.en;
-  if (ipLookup.subdivisions)
-    location.region_code = ipLookup.subdivisions[0].iso_code;
-  storeItemInCache(CacheCategories.IP_LOOKUP, ipAddress, location);
-  return location;
+  try {
+    const cachedLookup = getItemFromCache(CacheCategories.IP_LOOKUP, ipAddress);
+    if (cachedLookup) return cachedLookup as GeoLocation;
+    const lookup = await maxmind.open<CityResponse>(geolite2.paths.city);
+    const ipLookup = lookup.get(ipAddress);
+    if (!ipLookup) return;
+    const location: any = {};
+    if (ipLookup.city) location.city = ipLookup.city.names.en;
+    if (ipLookup.continent) location.continent = ipLookup.continent.names.en;
+    if (ipLookup.country) location.country_code = ipLookup.country.iso_code;
+    if (ipLookup.location) location.latitude = ipLookup.location.latitude;
+    if (ipLookup.location) location.longitude = ipLookup.location.longitude;
+    if (ipLookup.location) location.time_zone = ipLookup.location.time_zone;
+    if (ipLookup.location)
+      location.accuracy_radius = ipLookup.location.accuracy_radius;
+    if (ipLookup.postal) location.zip_code = ipLookup.postal.code;
+    if (ipLookup.subdivisions)
+      location.region_name = ipLookup.subdivisions[0].names.en;
+    if (ipLookup.subdivisions)
+      location.region_code = ipLookup.subdivisions[0].iso_code;
+    storeItemInCache(CacheCategories.IP_LOOKUP, ipAddress, location);
+    return location;
+  } catch (error) {}
 };
 
 export const addLocationToEvents = async (events: Event[]) => {
