@@ -1010,10 +1010,10 @@
     "@otplib/plugin-crypto" "^12.0.0"
     "@otplib/plugin-thirty-two" "^12.0.0"
 
-"@overnightjs/core@^1.6.11":
-  version "1.6.11"
-  resolved "https://registry.yarnpkg.com/@overnightjs/core/-/core-1.6.11.tgz#090f18220cfba012bd6d8d0b72dc3f439c511af4"
-  integrity sha512-ehcFhYz7zDFk4uUDMtl9l8bAT1orwA1LXa5+2CCjKmc9WfUla73LTwSIY3cjyKPrhZRq9MUQ7KUIjNWdpVZ7Xw==
+"@overnightjs/core@^1.6.12":
+  version "1.6.12"
+  resolved "https://registry.yarnpkg.com/@overnightjs/core/-/core-1.6.12.tgz#254712b51f369f7a97d7673e162ae43790301592"
+  integrity sha512-fM0MH+pcgUcVMfXs1xE0kwQSvANMj8hjneJh4GmtEecCop1olHje2NSPGjdulQkW6l5nqq+cAVRC767fGPEgZg==
   dependencies:
     express "^4.16.3"
     reflect-metadata "^0.1.13"
