@@ -96,7 +96,7 @@
   },
   "dependencies": {
     "@hapi/joi": "^16.1.8",
-    "@sentry/node": "^5.10.2",
+    "@sentry/node": "^5.11.0",
     "@staart/errors": "^1.0.0",
     "@staart/messages": "^1.1.1",
     "@staart/redis": "^1.0.0",
