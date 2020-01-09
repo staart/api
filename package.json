@@ -83,7 +83,7 @@
     "coveralls": "^3.0.9",
     "dotenv": "^8.2.0",
     "has-yarn": "^2.1.0",
-    "husky": "^4.0.2",
+    "husky": "^4.0.3",
     "jest": "^24.9.0",
     "onchange": "^6.1.0",
     "prettier": "^1.19.1",
