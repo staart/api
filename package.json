@@ -62,7 +62,7 @@
     "@types/hapi__joi": "^16.0.6",
     "@types/helmet": "^0.0.45",
     "@types/http-aws-es": "^6.0.0",
-    "@types/jest": "^24.0.25",
+    "@types/jest": "^24.9.0",
     "@types/jsonwebtoken": "^8.3.6",
     "@types/marked": "^0.7.2",
     "@types/md5": "^2.1.33",
