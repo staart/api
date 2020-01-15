@@ -1511,7 +1511,7 @@
   resolved "https://registry.yarnpkg.com/@types/node-emoji/-/node-emoji-1.8.1.tgz#689cb74fdf6e84309bcafce93a135dfecd01de3f"
   integrity sha512-0fRfA90FWm6KJfw6P9QGyo0HDTCmthZ7cWaBQndITlaWLTZ6njRyKwrwpzpg+n6kBXBIGKeUHEQuBx7bphGJkA==
 
-"@types/node@*", "@types/node@^13.1.7":
+"@types/node@*", "@types/node@^13.1.0", "@types/node@^13.1.7":
   version "13.1.7"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-13.1.7.tgz#db51d28b8dfacfe4fb2d0da88f5eb0a2eca00675"
   integrity sha512-HU0q9GXazqiKwviVxg9SI/+t/nAsGkvLDkIdxz+ObejG2nX6Si00TeLqHMoS+a/1tjH7a8YpKVQwtgHuMQsldg==
@@ -7499,11 +7499,12 @@ strip-json-comments@~2.0.1:
   resolved "https://registry.yarnpkg.com/strip-json-comments/-/strip-json-comments-2.0.1.tgz#3c531942e908c2697c0ec344858c286c7ca0a60a"
   integrity sha1-PFMZQukIwml8DsNEhYwobHygpgo=
 
-stripe@^7.15.0:
-  version "7.15.0"
-  resolved "https://registry.yarnpkg.com/stripe/-/stripe-7.15.0.tgz#03593caec169b698997c091b07d21da701eeee18"
-  integrity sha512-TmouNGv1rIU7cgw7iFKjdQueJSwYKdPRPBuO7eNjrRliZUnsf2bpJqYe+n6ByarUJr38KmhLheVUxDyRawByPQ==
+stripe@^8.2.0:
+  version "8.2.0"
+  resolved "https://registry.yarnpkg.com/stripe/-/stripe-8.2.0.tgz#b39368a0baa3dc7825802f48f84f5258b5d6ffaa"
+  integrity sha512-Ho9KsRFJDGWyEegg5KRwW0c+oqJ/GZe2MsDeVxlqmtbigSh3uQlBFZ4RLNEem7VfWq3twzdAf+rripHgmD6biA==
   dependencies:
+    "@types/node" "^13.1.0"
     qs "^6.6.0"
 
 supports-color@^2.0.0:
