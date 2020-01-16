@@ -91,7 +91,7 @@
     "shelljs": "^0.8.3",
     "ts-jest": "^24.3.0",
     "typedoc": "^0.16.6",
-    "typescript": "^3.7.4",
+    "typescript": "^3.7.5",
     "yaml": "^1.7.2"
   },
   "dependencies": {
