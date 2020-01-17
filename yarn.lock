@@ -1494,10 +1494,10 @@
   resolved "https://registry.yarnpkg.com/@types/ms/-/ms-0.7.31.tgz#31b7ca6407128a3d2bbc27fe2d21b345397f6197"
   integrity sha512-iiUgKzV9AuaEkZqkOLDIvlQiL6ltuZd9tGcW3gwpnX8JbuiuhFlEGmmFXEXkN50Cvq7Os88IY2v0dkDqXYWVgA==
 
-"@types/mustache@^3.2.0":
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/@types/mustache/-/mustache-3.2.0.tgz#9bf5557a9114b04ce914add3e484294d4d9b8cdd"
-  integrity sha512-wpzYsmClHJ/QDHo2gIlzaN3lzIK2VI7/+mgT9R48iQwWTrb+mGEVX06FfDgBEcM1OpfpsS1gQ0bAUGECwDiStw==
+"@types/mustache@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@types/mustache/-/mustache-4.0.0.tgz#8db01fdff5210646a9d8819ad2aca0ccb5fef12a"
+  integrity sha512-AVBOcLJenbpCIJcHUvGWj+YMlaiwcFlGK1YEH2mePXkB5B/vQLrFkHG9IpBH71mXnkbibc4V8Nnn1wJSxcgCEA==
 
 "@types/mysql@^2.15.8":
   version "2.15.8"
