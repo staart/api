@@ -2650,10 +2650,10 @@ create-error-class@^3.0.0:
   dependencies:
     capture-stack-trace "^1.0.0"
 
-cron@^1.7.2:
-  version "1.7.2"
-  resolved "https://registry.yarnpkg.com/cron/-/cron-1.7.2.tgz#2ea1f35c138a07edac2ac5af5084ed6fee5723db"
-  integrity sha512-+SaJ2OfeRvfQqwXQ2kgr0Y5pzBR/lijf5OpnnaruwWnmI799JfWr2jN2ItOV9s3A/+TFOt6mxvKzQq5F0Jp6VQ==
+cron@^1.8.1:
+  version "1.8.1"
+  resolved "https://registry.yarnpkg.com/cron/-/cron-1.8.1.tgz#258bc8a08a44a621e7366c05846a4f83ca91f808"
+  integrity sha512-T60noGxx/2h4FDRBf6449FrINbitSCwIZEcDIwbIPX+mkNkNH0t/4yw0RBGpOiA5yveM4koNHcAuIFopp7vbuA==
   dependencies:
     moment-timezone "^0.5.x"
 
