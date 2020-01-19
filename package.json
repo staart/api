@@ -67,7 +67,7 @@
     "@types/marked": "^0.7.2",
     "@types/md5": "^2.1.33",
     "@types/ms": "^0.7.31",
-    "@types/mustache": "^3.2.0",
+    "@types/mustache": "^4.0.0",
     "@types/mysql": "^2.15.8",
     "@types/node": "^13.1.8",
     "@types/node-emoji": "^1.8.1",
