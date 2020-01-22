@@ -59,7 +59,7 @@
     "@types/express-slow-down": "^1.1.1",
     "@types/fs-extra": "^8.0.1",
     "@types/geolite2": "^2.0.0",
-    "@types/hapi__joi": "^16.0.6",
+    "@types/hapi__joi": "^16.0.7",
     "@types/helmet": "^0.0.45",
     "@types/http-aws-es": "^6.0.0",
     "@types/jest": "^24.9.0",
