@@ -3466,9 +3466,9 @@ fs-minipass@^1.2.5:
     minipass "^2.2.1"
 
 fs-minipass@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/fs-minipass/-/fs-minipass-2.0.0.tgz#a6415edab02fae4b9e9230bc87ee2e4472003cd1"
-  integrity sha512-40Qz+LFXmd9tzYVnnBmZvFfvAADfUA14TXPK1s7IfElJTIZ97rA8w4Kin7Wt5JBrC3ShnnFJO/5vPjPEeJIq9A==
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/fs-minipass/-/fs-minipass-2.1.0.tgz#7f5036fdbf12c63c169190cbe4199c852271f9fb"
+  integrity sha512-V/JgOLFCS+R6Vcq0slCuaeWEdNC3ouDlJMNIsacH2VtALiu9mV4LPrHc5cDl8k5aw6J8jwgWWpiTo5RYhmIzvg==
   dependencies:
     minipass "^3.0.0"
 
@@ -3527,10 +3527,10 @@ gensync@^1.0.0-beta.1:
   resolved "https://registry.yarnpkg.com/gensync/-/gensync-1.0.0-beta.1.tgz#58f4361ff987e5ff6e1e7a210827aa371eaac269"
   integrity sha512-r8EC6NO1sngH/zdD9fiRDLdcgnbayXah+mLgManTaIZJqEC1MZstmnox8KpnI2/fxQwrp5OpCOYWLp4rBl4Jcg==
 
-geolite2@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/geolite2/-/geolite2-3.0.0.tgz#f4032258fc4390f80e0ec81aef595c19ff0bdc0f"
-  integrity sha512-Hbhux/YqXwsTY8XdNFftpRY63PgcoErRzzAMcpd8sCDvh17GREa3Ow38DmAty5CyogS7xLRSOABnAQmbIYlwDw==
+geolite2-redist@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/geolite2-redist/-/geolite2-redist-1.0.3.tgz#39249ec893af5c5a4c04b7445c4c4dbe5ff31d62"
+  integrity sha512-Y+hCdzKlqMCIUQZhAWm8KJJMCezT76MouU7eVG2Rt2TkXpFFpwBnR428DTsLgKu9sY5GkOVwsFfAmS2rWzv5Sg==
   dependencies:
     tar "^5.0.5"
 

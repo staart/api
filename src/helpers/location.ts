@@ -3,7 +3,7 @@ import { Event } from "../interfaces/tables/events";
 import { Session } from "../interfaces/tables/user";
 import { getItemFromCache, storeItemInCache } from "./cache";
 import { CacheCategories } from "../interfaces/enum";
-import geolite2 from "geolite2";
+import geolite2 from "geolite2-redist";
 
 export interface GeoLocation {
   city?: string;
@@ -22,7 +22,9 @@ export const getGeolocationFromIp = async (
   try {
     const cachedLookup = getItemFromCache(CacheCategories.IP_LOOKUP, ipAddress);
     if (cachedLookup) return cachedLookup as GeoLocation;
-    const lookup = await maxmind.open<CityResponse>(geolite2.paths.city);
+    const lookup = await geolite2.open<CityResponse>("GeoLite2-City", path => {
+      return maxmind.open(path);
+    });
     const ipLookup = lookup.get(ipAddress);
     if (!ipLookup) return;
     const location: any = {};
