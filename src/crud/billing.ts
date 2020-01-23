@@ -1,10 +1,13 @@
-import Stripe, { subscriptions, IList } from "stripe";
-import { STRIPE_SECRET_KEY, STRIPE_PRODUCT_ID } from "../config";
+import Stripe from "stripe";
 import { updateOrganization } from "./organization";
+import { STRIPE_SECRET_KEY, STRIPE_PRODUCT_ID } from "../config";
 import { INVOICE_NOT_FOUND, SUBSCRIPTION_NOT_FOUND } from "@staart/errors";
-const stripe = new Stripe(STRIPE_SECRET_KEY);
+const stripe = new Stripe(STRIPE_SECRET_KEY, {
+  apiVersion: "2019-12-03",
+  typescript: true
+});
 
-const cleanStripeResponse = (response: IList<any>) => {
+const cleanStripeResponse = (response: Stripe.ApiList<any>) => {
   const newResponse = { ...response } as any;
   newResponse.hasMore = response.has_more;
   if (newResponse.hasMore) {
@@ -29,7 +32,7 @@ export const getStripeCustomer = async (id: string) => {
  */
 export const createStripeCustomer = async (
   organizationId: string,
-  customer: Stripe.customers.ICustomerCreationOptions
+  customer: Stripe.CustomerCreateParams
 ) => {
   const created = await stripe.customers.create({
     ...customer,
@@ -53,7 +56,7 @@ export const deleteStripeCustomer = async (id: string) => {
  */
 export const updateStripeCustomer = async (
   id: string,
-  customer: Stripe.customers.ICustomerUpdateOptions
+  customer: Stripe.CustomerUpdateParams
 ) => {
   await stripe.customers.update(id, customer);
   return { success: true, message: "billing-customer-updated" };
@@ -72,19 +75,22 @@ export const getStripeInvoices = async (
     subscription
   }: {
     start?: string;
-    billing?: subscriptions.SubscriptionBilling;
+    billing?: Stripe.InvoiceListParams.CollectionMethod;
     itemsPerPage?: number;
     subscription?: string;
   }
 ) => {
   return cleanStripeResponse(
-    await stripe.invoices.list({
-      customer: id,
-      starting_after: start !== "0" ? start : undefined,
-      billing,
-      limit: itemsPerPage,
-      subscription
-    })
+    await stripe.invoices.list(
+      {
+        customer: id,
+        starting_after: start !== "0" ? start : undefined,
+        collection_method: billing,
+        limit: itemsPerPage,
+        subscription
+      },
+      undefined
+    )
   );
 };
 
@@ -112,17 +118,17 @@ export const getStripeSubscriptions = async (
     status
   }: {
     start?: string;
-    billing?: subscriptions.SubscriptionBilling;
+    billing?: Stripe.Subscription.CollectionMethod;
     itemsPerPage?: number;
     plan?: string;
-    status?: subscriptions.SubscriptionStatus;
+    status?: Stripe.Subscription.Status;
   }
 ) => {
   return cleanStripeResponse(
     await stripe.subscriptions.list({
       customer: id,
       starting_after: start !== "0" ? start : undefined,
-      billing,
+      collection_method: billing,
       limit: itemsPerPage,
       plan,
       status
@@ -150,7 +156,7 @@ export const getStripeSubscription = async (
 export const updateStripeSubscription = async (
   id: string,
   subscriptionId: string,
-  data: subscriptions.ISubscriptionUpdateItem
+  data: Stripe.SubscriptionUpdateParams
 ) => {
   await getStripeSubscription(id, subscriptionId);
   await stripe.subscriptions.update(subscriptionId, data);
@@ -171,7 +177,7 @@ export const createStripeSubscription = async (
   }: {
     tax_percent?: number;
     plan: string;
-    billing?: subscriptions.SubscriptionBilling;
+    billing?: Stripe.Subscription.CollectionMethod;
     number_of_seats?: number;
   }
 ) => {
@@ -180,35 +186,9 @@ export const createStripeSubscription = async (
     tax_percent,
     trial_from_plan: true,
     items: [{ plan, quantity: number_of_seats }],
-    billing
+    collection_method: billing
   });
   return { success: true, message: "billing-subscription-created" };
-};
-
-/**
- * Create a new subscription
- * @param id - Stripe customer ID
- */
-export const createStripeSubscriptionSession = async (
-  id: string,
-  {
-    plan
-  }: {
-    tax_percent?: number;
-    plan: string;
-    billing?: subscriptions.SubscriptionBilling;
-    number_of_seats?: number;
-  }
-) => {
-  return await (stripe as any).checkout.sessions.create({
-    customer: id,
-    success_url: "http://localhost:3000/manage/1/subscriptions/success",
-    cancel_url: "http://localhost:3000/manage/1/subscriptions/cancel",
-    payment_method_types: ["card"],
-    subscription_data: {
-      items: [{ plan }]
-    }
-  });
 };
 
 /**
