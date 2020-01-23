@@ -1,6 +1,7 @@
 os:
   - linux
 language: node_js
+version: 1.0
 node_js:
   - "10.16.0"
 services:
@@ -10,6 +11,7 @@ install:
 script:
   - "yarn build"
 deploy:
+  edge: true
   provider: npm
   email: $NPM_EMAIL
   api_key: $NPM_TOKEN
