@@ -3,7 +3,7 @@ os:
 language: node_js
 version: 1.0
 node_js:
-  - "10.16.0"
+  - "12.14.1"
 services:
   - redis-server
 install:
