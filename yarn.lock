@@ -1601,13 +1601,6 @@
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-1.0.1.tgz#0a851d3bd96498fa25c33ab7278ed3bd65f06c3e"
   integrity sha512-l42BggppR6zLmpfU6fq9HEa2oGPEI8yrSPL3GITjfRInppYFahObbIQOQK3UGxEnyQpltZLaPe75046NOZQikw==
 
-"@types/stripe@^7.13.20":
-  version "7.13.20"
-  resolved "https://registry.yarnpkg.com/@types/stripe/-/stripe-7.13.20.tgz#f97fdc3db2f7d5b1388e2f277b450863df8aca8f"
-  integrity sha512-PP/IXu1HOvtsRWpTm1em+MfKVcNjPSiYwmK0IP9D5QAH5L3r5JiN4DshUpcO8sixAmXUE0JGtiW1Jqmekme7RA==
-  dependencies:
-    "@types/node" "*"
-
 "@types/tough-cookie@*", "@types/tough-cookie@^2.3.5":
   version "2.3.5"
   resolved "https://registry.yarnpkg.com/@types/tough-cookie/-/tough-cookie-2.3.5.tgz#9da44ed75571999b65c37b60c9b2b88db54c585d"

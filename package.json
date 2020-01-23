@@ -1,6 +1,6 @@
 {
   "name": "@staart/manager",
-  "version": "1.2.12",
+  "version": "1.2.13",
   "main": "index.js",
   "repository": "git@github.com:staart/api.git",
   "author": "Anand Chowdhary <mail@anandchowdhary.com>",
@@ -76,7 +76,6 @@
     "@types/request": "^2.48.4",
     "@types/response-time": "^2.3.4",
     "@types/signale": "^1.2.1",
-    "@types/stripe": "^7.13.20",
     "@types/validator": "^12.0.1",
     "@types/yaml": "^1.2.0",
     "concurrently": "^5.0.2",
@@ -149,5 +148,5 @@
     "setup"
   ],
   "snyk": true,
-  "staart-version": "1.2.12"
+  "staart-version": "1.2.13"
 }
