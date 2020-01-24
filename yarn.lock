@@ -3724,19 +3724,7 @@ glob-parent@^5.0.0:
   dependencies:
     is-glob "^4.0.1"
 
-glob@^7.0.0, glob@^7.1.1, glob@^7.1.2, glob@^7.1.3:
-  version "7.1.4"
-  resolved "https://registry.yarnpkg.com/glob/-/glob-7.1.4.tgz#aa608a2f6c577ad357e1ae5a5c26d9a8d1969255"
-  integrity sha512-hkLPepehmnKk41pUGm3sYxoFs/umurYfYJCerbXEyFIWcAzvpipAgVkBqqT9RBKMGjnq6kMuyYwha6csxbiM1A==
-  dependencies:
-    fs.realpath "^1.0.0"
-    inflight "^1.0.4"
-    inherits "2"
-    minimatch "^3.0.4"
-    once "^1.3.0"
-    path-is-absolute "^1.0.0"
-
-glob@^7.1.4:
+glob@^7.0.0, glob@^7.1.1, glob@^7.1.2, glob@^7.1.3, glob@^7.1.4:
   version "7.1.6"
   resolved "https://registry.yarnpkg.com/glob/-/glob-7.1.6.tgz#141f33b81a7c2492e125594307480c46679278a6"
   integrity sha512-LwaxwyZ72Lk7vZINtNNrywX0ZuLyStrdDtabefZKAY5ZGJhVtgdznluResxNmPitE0SAO+O26sWTHeKSI2wMBA==
@@ -7355,10 +7343,10 @@ snyk-try-require@1.3.1, snyk-try-require@^1.1.1, snyk-try-require@^1.3.1:
     lru-cache "^4.0.0"
     then-fs "^2.0.0"
 
-snyk@^1.279.1:
-  version "1.279.1"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.279.1.tgz#5665edcba8f6f7d5677df67bbaf8e329be0fb9e6"
-  integrity sha512-i2bpYgXgRYUCKKuVOjVha3P9tl4T7fXurF/IAwnyueaXRcoos8LHeka9larQArEAHkOGqHgq94ZFhkleo8lZiA==
+snyk@^1.279.2:
+  version "1.279.2"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.279.2.tgz#4e51225fca271ed33aaa321da1e46e922461953a"
+  integrity sha512-6BssMSfsr04NHDazSXvh5TLa+6I4KkMHzP92/n/8y/54M/vl51TtwEloGQEM5djek6dy299H9EKjbQgUVq3raA==
   dependencies:
     "@snyk/cli-interface" "2.3.0"
     "@snyk/dep-graph" "1.13.1"
