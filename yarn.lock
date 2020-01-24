@@ -3639,10 +3639,10 @@ gensync@^1.0.0-beta.1:
   resolved "https://registry.yarnpkg.com/gensync/-/gensync-1.0.0-beta.1.tgz#58f4361ff987e5ff6e1e7a210827aa371eaac269"
   integrity sha512-r8EC6NO1sngH/zdD9fiRDLdcgnbayXah+mLgManTaIZJqEC1MZstmnox8KpnI2/fxQwrp5OpCOYWLp4rBl4Jcg==
 
-geolite2-redist@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/geolite2-redist/-/geolite2-redist-1.0.3.tgz#39249ec893af5c5a4c04b7445c4c4dbe5ff31d62"
-  integrity sha512-Y+hCdzKlqMCIUQZhAWm8KJJMCezT76MouU7eVG2Rt2TkXpFFpwBnR428DTsLgKu9sY5GkOVwsFfAmS2rWzv5Sg==
+geolite2-redist@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/geolite2-redist/-/geolite2-redist-1.0.4.tgz#10000518368ff60c6933fe71bb87a555a360f12f"
+  integrity sha512-Wocof3AIzXsvhMT4DlFYbFi9/gG6f6h3CMa9QNATR8RQJpj48Is4bvzZ9VQ3ibg1kHids9891e/PW2Dwxm9jQg==
   dependencies:
     tar "^5.0.5"
 
