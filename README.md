@@ -1,4 +1,5 @@
 [![Staart API](https://raw.githubusercontent.com/staart/staart.js.org/master/assets/svg/api.svg?sanitize=true)](https://staart.js.org/api)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fstaart%2Fapi.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fstaart%2Fapi?ref=badge_shield)
 
 Staart is a Node.js backend starter for SaaS startups written in TypeScript. It has built-in user management and authentication, billing, organizations, GDPR tools, and more.
 
@@ -215,3 +216,6 @@ The development of Staart projects is supported by these wonderful companies. [F
 - Logo and assets: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
 - [GeoLite2](https://dev.maxmind.com/geoip/geoip2/geolite2/): [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
 - [GeoNames](http://www.geonames.org/): [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fstaart%2Fapi.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fstaart%2Fapi?ref=badge_large)
