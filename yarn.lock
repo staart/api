@@ -7724,10 +7724,10 @@ symbol-tree@^3.2.2:
   resolved "https://registry.yarnpkg.com/symbol-tree/-/symbol-tree-3.2.4.tgz#430637d248ba77e078883951fb9aa0eed7c63fa2"
   integrity sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==
 
-systeminformation@^4.19.4:
-  version "4.19.4"
-  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-4.19.4.tgz#c1cb59a18693c60b107585cd32227381fa348277"
-  integrity sha512-dmJRp+gWzqi6zHWZweFoMSYQmtdKx3tqlNw/HCoZyK8HJg3g3o5IiMQ7VjUe7w7IYx9N2DDLwzD+8Epq211Qyg==
+systeminformation@^4.20.1:
+  version "4.20.1"
+  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-4.20.1.tgz#6196f29f1e0ad851a3962a6050a09b46edf6f89b"
+  integrity sha512-q9Qf8WgYzZ6JvcCYy45aGxCtF/I7CPliwT3kNZHdCFapgbBAl9n2wuYAnmZ66pv6AShQNKEHC9raFrsaZoAu2g==
 
 tar-stream@^2.1.0:
   version "2.1.0"
