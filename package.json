@@ -140,7 +140,7 @@
     "response-time": "^2.3.2",
     "signale": "^1.4.0",
     "slugify": "^1.3.6",
-    "snyk": "^1.287.0",
+    "snyk": "^1.288.0",
     "stripe": "^8.8.0",
     "systeminformation": "^4.21.0"
   },
