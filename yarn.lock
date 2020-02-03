@@ -3899,10 +3899,10 @@ has@^1.0.1, has@^1.0.3:
   dependencies:
     function-bind "^1.1.1"
 
-hashids@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/hashids/-/hashids-2.1.0.tgz#96eec6de3081a76dcd839650a6a26e6081e729d3"
-  integrity sha512-N53K2p7TrwKLNHKHcEDH+qpiAgO9JfyPEg8Tfy4fB9AcVhwxlTanJ55HVV9BQJQ6ajM1Wfmtl2wgKuEbcucolw==
+hashids@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/hashids/-/hashids-2.2.0.tgz#a4983ff9e8229cf580b9e0f47be7bbe2b826b147"
+  integrity sha512-l2E88aM4Bktb/B+6UUO9XBx+sXOfcYVY8KCoZxgXXqilVWZuI19Q77G6iMUs+KwJFSQBBlBWvUWJdzMbl9/GsQ==
 
 helmet-crossdomain@0.4.0:
   version "0.4.0"
