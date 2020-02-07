@@ -2957,10 +2957,10 @@ dijkstrajs@^1.0.1:
   resolved "https://registry.yarnpkg.com/dijkstrajs/-/dijkstrajs-1.0.1.tgz#d3cd81221e3ea40742cfcde556d4e99e98ddc71b"
   integrity sha1-082BIh4+pAdCz83lVtTpnpjdxxs=
 
-disposable-email-domains@^1.0.51:
-  version "1.0.51"
-  resolved "https://registry.yarnpkg.com/disposable-email-domains/-/disposable-email-domains-1.0.51.tgz#723217aa91ada7fd5884a53a378a77e1f7608415"
-  integrity sha512-KiNrnKLz++/FhqkPAQKlvLBh9U2wFu7hPLBso7dFKXMX9MGQMT5MvuZgFjtjwr8SQQ8OL5OF2eGxqkOtgm9RGA==
+disposable-email-domains@^1.0.52:
+  version "1.0.52"
+  resolved "https://registry.yarnpkg.com/disposable-email-domains/-/disposable-email-domains-1.0.52.tgz#28c8f9befafe2c991858e74acf7a742760b145a2"
+  integrity sha512-0m1VmfPCpaf2/fKTBFSrZlghifBzEdWa0APoUAeLiNIde0mjYY7hhTc2wMC8dZaYebDEXhpNez/9syDxI+ciDw==
 
 dns-prefetch-control@0.2.0:
   version "0.2.0"
