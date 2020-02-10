@@ -142,7 +142,7 @@
     "slugify": "^1.3.6",
     "snyk": "^1.290.2",
     "stripe": "^8.14.0",
-    "systeminformation": "^4.21.1"
+    "systeminformation": "^4.21.2"
   },
   "files": [
     "setup"
