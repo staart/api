@@ -141,7 +141,7 @@
     "signale": "^1.4.0",
     "slugify": "^1.3.6",
     "snyk": "^1.291.0",
-    "stripe": "^8.17.0",
+    "stripe": "^8.18.0",
     "systeminformation": "^4.21.2"
   },
   "files": [
