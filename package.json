@@ -89,7 +89,7 @@
     "recursive-readdir": "^2.2.2",
     "shelljs": "^0.8.3",
     "ts-jest": "^25.2.0",
-    "typedoc": "^0.16.9",
+    "typedoc": "^0.16.10",
     "typescript": "^3.7.5",
     "yaml": "^1.7.2"
   },
