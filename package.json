@@ -99,7 +99,7 @@
     "@staart/errors": "^1.0.0",
     "@staart/messages": "^1.1.1",
     "@staart/redis": "^1.0.0",
-    "aws-sdk": "^2.621.0",
+    "aws-sdk": "^2.622.0",
     "axios": "^0.19.2",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
