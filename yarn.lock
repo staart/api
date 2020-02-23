@@ -1199,10 +1199,17 @@
   dependencies:
     tslib "^1.9.3"
 
-"@snyk/cli-interface@2.3.1", "@snyk/cli-interface@^2.0.3":
+"@snyk/cli-interface@2.3.1":
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/@snyk/cli-interface/-/cli-interface-2.3.1.tgz#73f2f4bd717b9f03f096ede3ff5830eb8d2f3716"
   integrity sha512-JZvsmhDXSyjv1dkc12lPI3tNTNYlIaOiIQMYFg2RgqF3QmWjTyBUgRZcF7LoKyufHtS4dIudM6k1aHBpSaDrhw==
+  dependencies:
+    tslib "^1.9.3"
+
+"@snyk/cli-interface@2.3.2", "@snyk/cli-interface@^2.0.3":
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/@snyk/cli-interface/-/cli-interface-2.3.2.tgz#e93afa82de15b912e657f1ba86f9d7963983e594"
+  integrity sha512-jmZyxVHqzYU1GfdnWCGdd68WY/lAzpPVyqalHazPj4tFJehrSfEFc82RMTYAMgXEJuvFRFIwhsvXh3sWUhIQmg==
   dependencies:
     tslib "^1.9.3"
 
@@ -7324,12 +7331,12 @@ snyk-try-require@1.3.1, snyk-try-require@^1.1.1, snyk-try-require@^1.3.1:
     lru-cache "^4.0.0"
     then-fs "^2.0.0"
 
-snyk@^1.295.0:
-  version "1.295.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.295.0.tgz#c4b09cd46ca3a64a5f64ac54b0a7da6251036c4d"
-  integrity sha512-4tRFx6c6kUAk55m5B86DlyENCS/0BIvRQhRj6C15PFKfsv+rh+dPTcYAujGCLch9WbWRI9OqOr+exUO/5YEPng==
+snyk@^1.295.1:
+  version "1.295.1"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.295.1.tgz#8da91a0efc72aec1a62c703bdfb455db36a6fcb6"
+  integrity sha512-E97CO/Yqn5uhScA7sG56IfgKmFWIhA68oHLMYvlK7rmFQni0yInqt6jl64/Cp5GJLtgsVty0isA7IFDugHhcZg==
   dependencies:
-    "@snyk/cli-interface" "2.3.0"
+    "@snyk/cli-interface" "2.3.2"
     "@snyk/configstore" "^3.2.0-rc1"
     "@snyk/dep-graph" "1.13.1"
     "@snyk/gemfile" "1.2.0"
