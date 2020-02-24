@@ -1,6 +1,6 @@
 {
   "name": "@staart/manager",
-  "version": "1.2.15",
+  "version": "1.3.0",
   "main": "index.js",
   "repository": "git@github.com:staart/api.git",
   "author": "Anand Chowdhary <mail@anandchowdhary.com>",
@@ -11,11 +11,11 @@
     "build-babel": "touch .env && babel src -d dist --extensions '.ts' && cp .env dist/.env",
     "start": "npm run build && npm run launch",
     "launch": "node dist/src/index.js",
-    "dev": "concurrently 'yarn watch-build' 'nodemon dist/src/index.js'",
+    "dev": "concurrently 'npm run watch-build' 'nodemon dist/src/index.js'",
     "prettier-all": "prettier '{src,examples,setup}/**/*.{ts,js,json}' --write",
-    "watch-build": "onchange '{src,examples}/**/*.ts' -- yarn build-babel",
+    "watch-build": "onchange '{src,examples}/**/*.ts' -- npm run build-babel",
     "watch-prettier": "onchange '{src,examples}/**/*.{ts,json}' -- prettier --write {{changed}}",
-    "generate-docs": "yarn generate-routes && typedoc --out docs ./src",
+    "generate-docs": "npm run generate-routes && typedoc --out docs ./src",
     "generate-routes": "node setup/controllers.js",
     "increment-package": "node setup/increment.js",
     "check-update": "node setup/check-update.js",
@@ -26,7 +26,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn increment-package && yarn prettier-all && git add ."
+      "pre-commit": "npm run increment-package && npm run prettier-all && git add ."
     }
   },
   "engines": {
