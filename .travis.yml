@@ -6,8 +6,8 @@ node_js:
 services:
   - redis-server
 install:
-  - "yarn"
+  - "npm ci"
 script:
-  - "yarn build"
+  - "npm run build"
 env:
   - YARN_GPG=no

@@ -1,3 +1,3 @@
 [build]
-  command = "yarn generate-docs"
+  command = "npm run generate-docs"
   publish = "docs"
