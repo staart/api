@@ -55,12 +55,17 @@ export const CACHE_CHECK_PERIOD = process.env.CACHE_CHECK_PERIOD
 
 // Email
 export const FRONTEND_URL = process.env.FRONTEND_URL || "https://example.com";
+export const ALLOW_DISPOSABLE_EMAILS = !!process.env.DISPOSABLE_EMAIL;
+export const TEST_EMAIL = process.env.TEST_EMAIL || "staart@mailinator.com";
+/// If you want to use AWS SES to send emails:
 export const SES_EMAIL = process.env.SES_EMAIL || "";
 export const SES_REGION = process.env.SES_REGION || "eu-west-1";
 export const SES_ACCESS = process.env.SES_ACCESS || "";
 export const SES_SECRET = process.env.SES_SECRET || "";
-export const ALLOW_DISPOSABLE_EMAILS = !!process.env.DISPOSABLE_EMAIL;
-export const TEST_EMAIL = process.env.TEST_EMAIL || "staart@mailinator.com";
+/// If you want to use SMTP to send emails:
+export const EMAIL_FROM = process.env.EMAIL_FROM || "";
+export const EMAIL_HOST = process.env.EMAIL_HOST || "";
+export const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD || "";
 
 // Auth and tokens
 export const JWT_SECRET = process.env.JWT_SECRET || "staart";
