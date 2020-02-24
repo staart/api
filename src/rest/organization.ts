@@ -43,22 +43,22 @@ import {
 import { Locals, KeyValue } from "../interfaces/general";
 import { can } from "../helpers/authorization";
 import {
-  getStripeCustomer,
-  createStripeCustomer,
-  updateStripeCustomer,
-  getStripeInvoices,
-  getStripeSubscriptions,
-  getStripeProductPricing,
-  getStripeSources,
-  getStripeSource,
-  createStripeSource,
-  updateStripeSource,
-  deleteStripeSource,
-  deleteStripeCustomer,
-  getStripeSubscription,
-  updateStripeSubscription,
-  getStripeInvoice,
-  createStripeSubscription
+  getCustomer,
+  createCustomer,
+  updateCustomer,
+  getInvoices,
+  getSubscriptions,
+  getProductPricing,
+  getSources,
+  getSource,
+  createSource,
+  updateSource,
+  deleteSource,
+  deleteCustomer,
+  getSubscription,
+  updateSubscription,
+  getInvoice,
+  createSubscription
 } from "@staart/payments";
 import {
   CANNOT_DELETE_SOLE_MEMBER,
@@ -135,7 +135,7 @@ export const deleteOrganizationForUser = async (
   if (await can(userId, OrgScopes.DELETE_ORG, "organization", organizationId)) {
     const organizationDetails = await getOrganization(organizationId);
     if (organizationDetails.stripeCustomerId)
-      await deleteStripeCustomer(organizationDetails.stripeCustomerId);
+      await deleteCustomer(organizationDetails.stripeCustomerId);
     await deleteOrganization(organizationId);
     await deleteAllOrganizationMemberships(organizationId);
     queueWebhook(organizationId, Webhooks.DELETE_ORGANIZATION);
@@ -159,7 +159,7 @@ export const getOrganizationBillingForUser = async (
   ) {
     const organization = await getOrganization(organizationId);
     if (organization.stripeCustomerId)
-      return await getStripeCustomer(organization.stripeCustomerId);
+      return await getCustomer(organization.stripeCustomerId);
     throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -182,13 +182,9 @@ export const updateOrganizationBillingForUser = async (
     const organization = await getOrganization(organizationId);
     let result;
     if (organization.stripeCustomerId) {
-      result = await updateStripeCustomer(organization.stripeCustomerId, data);
+      result = await updateCustomer(organization.stripeCustomerId, data);
     } else {
-      result = await createStripeCustomer(
-        organizationId,
-        data,
-        updateOrganization
-      );
+      result = await createCustomer(organizationId, data, updateOrganization);
     }
     queueWebhook(organizationId, Webhooks.UPDATE_ORGANIZATION_BILLING, data);
     trackEvent(
@@ -215,7 +211,7 @@ export const getOrganizationInvoicesForUser = async (
   ) {
     const organization = await getOrganization(organizationId);
     if (organization.stripeCustomerId)
-      return await getStripeInvoices(organization.stripeCustomerId, params);
+      return await getInvoices(organization.stripeCustomerId, params);
     throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -236,7 +232,7 @@ export const getOrganizationInvoiceForUser = async (
   ) {
     const organization = await getOrganization(organizationId);
     if (organization.stripeCustomerId)
-      return await getStripeInvoice(organization.stripeCustomerId, invoiceId);
+      return await getInvoice(organization.stripeCustomerId, invoiceId);
     throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -257,7 +253,7 @@ export const getOrganizationSourcesForUser = async (
   ) {
     const organization = await getOrganization(organizationId);
     if (organization.stripeCustomerId)
-      return await getStripeSources(organization.stripeCustomerId, params);
+      return await getSources(organization.stripeCustomerId, params);
     throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -278,7 +274,7 @@ export const getOrganizationSourceForUser = async (
   ) {
     const organization = await getOrganization(organizationId);
     if (organization.stripeCustomerId)
-      return await getStripeSource(organization.stripeCustomerId, sourceId);
+      return await getSource(organization.stripeCustomerId, sourceId);
     throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -299,10 +295,7 @@ export const getOrganizationSubscriptionsForUser = async (
   ) {
     const organization = await getOrganization(organizationId);
     if (organization.stripeCustomerId)
-      return await getStripeSubscriptions(
-        organization.stripeCustomerId,
-        params
-      );
+      return await getSubscriptions(organization.stripeCustomerId, params);
     throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -323,7 +316,7 @@ export const getOrganizationSubscriptionForUser = async (
   ) {
     const organization = await getOrganization(organizationId);
     if (organization.stripeCustomerId)
-      return await getStripeSubscription(
+      return await getSubscription(
         organization.stripeCustomerId,
         subscriptionId
       );
@@ -349,7 +342,7 @@ export const updateOrganizationSubscriptionForUser = async (
   ) {
     const organization = await getOrganization(organizationId);
     if (organization.stripeCustomerId) {
-      const result = await updateStripeSubscription(
+      const result = await updateSubscription(
         organization.stripeCustomerId,
         subscriptionId,
         data
@@ -386,7 +379,7 @@ export const createOrganizationSubscriptionForUser = async (
   ) {
     const organization = await getOrganization(organizationId);
     if (organization.stripeCustomerId) {
-      const result = await createStripeSubscription(
+      const result = await createSubscription(
         organization.stripeCustomerId,
         params
       );
@@ -413,7 +406,7 @@ export const getOrganizationPricingPlansForUser = async (
   if (
     await can(userId, OrgScopes.READ_ORG_PLANS, "organization", organizationId)
   )
-    return await getStripeProductPricing();
+    return await getProductPricing();
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -433,7 +426,7 @@ export const deleteOrganizationSourceForUser = async (
   ) {
     const organization = await getOrganization(organizationId);
     if (organization.stripeCustomerId) {
-      const result = await deleteStripeSource(
+      const result = await deleteSource(
         organization.stripeCustomerId,
         sourceId
       );
@@ -470,7 +463,7 @@ export const updateOrganizationSourceForUser = async (
   ) {
     const organization = await getOrganization(organizationId);
     if (organization.stripeCustomerId) {
-      const result = await updateStripeSource(
+      const result = await updateSource(
         organization.stripeCustomerId,
         sourceId,
         data
@@ -503,10 +496,7 @@ export const createOrganizationSourceForUser = async (
   ) {
     const organization = await getOrganization(organizationId);
     if (organization.stripeCustomerId) {
-      const result = await createStripeSource(
-        organization.stripeCustomerId,
-        card
-      );
+      const result = await createSource(organization.stripeCustomerId, card);
       queueWebhook(organizationId, Webhooks.CREATE_ORGANIZATION_SOURCE, card);
       trackEvent(
         { organizationId, type: Webhooks.CREATE_ORGANIZATION_SOURCE },
@@ -538,13 +528,10 @@ export const getAllOrganizationDataForUser = async (
     let invoices = {} as any;
     let sources = {} as any;
     if (organization.stripeCustomerId) {
-      billing = await getStripeCustomer(organization.stripeCustomerId);
-      subscriptions = await getStripeSubscriptions(
-        organization.stripeCustomerId,
-        {}
-      );
-      invoices = await getStripeInvoices(organization.stripeCustomerId, {});
-      sources = await getStripeSources(organization.stripeCustomerId, {});
+      billing = await getCustomer(organization.stripeCustomerId);
+      subscriptions = await getSubscriptions(organization.stripeCustomerId, {});
+      invoices = await getInvoices(organization.stripeCustomerId, {});
+      sources = await getSources(organization.stripeCustomerId, {});
     }
     return {
       organization,
