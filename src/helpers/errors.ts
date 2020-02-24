@@ -35,8 +35,3 @@ export const sendError = (error: string) => {
   warn(error);
   return { status: 500, code: error } as HTTPError;
 };
-
-export const logError = (category: string, err: string, level: 1 | 2 = 2) => {
-  if (level === 1) return error(`${category}: ${err}`);
-  warn(`${category}: ${err}`);
-};
