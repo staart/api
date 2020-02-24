@@ -1,3 +1,4 @@
+import { checkIfDisposableEmail } from "@staart/disposable-email";
 import { User } from "../interfaces/tables/user";
 import {
   createUser,
@@ -18,7 +19,7 @@ import {
   checkIfNewEmail,
   getUserEmails
 } from "../crud/email";
-import { mail, checkIfDisposableEmail } from "../helpers/mail";
+import { mail } from "../helpers/mail";
 import {
   verifyToken,
   passwordResetToken,

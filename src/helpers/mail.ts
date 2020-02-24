@@ -13,13 +13,7 @@ import { readFile } from "fs-extra";
 import { join } from "path";
 import { render } from "mustache";
 import marked from "marked";
-import { isMatch } from "matcher";
-import disposableDomains from "disposable-email-domains/index.json";
-import wildcardDomains from "disposable-email-domains/wildcard.json";
 import i18n from "../i18n";
-import Joi from "@hapi/joi";
-import { joiValidate } from "./utils";
-import { DISPOSABLE_EMAIL } from "@staart/errors";
 import { logError } from "./errors";
 import systemInfo from "systeminformation";
 import pkg from "../../package.json";
@@ -68,26 +62,6 @@ export const mail = async (
     message,
     altText
   });
-};
-
-export const checkIfDisposableEmail = (email: string) => {
-  let isDisposable = false;
-  joiValidate(
-    {
-      email: Joi.string()
-        .email()
-        .required()
-    },
-    { email }
-  );
-  const domain = email.split("@")[1];
-  if (disposableDomains.includes(domain)) throw new Error(DISPOSABLE_EMAIL);
-  const potentialMatches = wildcardDomains.filter(w => domain.includes(w));
-  potentialMatches.forEach(
-    d => (isDisposable = isDisposable || isMatch(email, `*.${d}`))
-  );
-  if (isDisposable) throw new Error(DISPOSABLE_EMAIL);
-  return;
 };
 
 sendMail({
