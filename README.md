@@ -94,7 +94,7 @@ import { Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import { Get, Controller, ClassWrapper, Middleware } from "@overnightjs/core";
 import { authHandler, validator } from "../helpers/middleware";
-import Joi from "@hapi/joi";
+import { Joi } from "@staart/validate";
 
 @Controller("api")
 @ClassWrapper(asyncHandler)

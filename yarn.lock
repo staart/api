@@ -1326,10 +1326,10 @@
   dependencies:
     handy-redis "^1.6.2"
 
-"@staart/validate@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@staart/validate/-/validate-2.0.0.tgz#bee6c121562e220e903634d7ca281b53fe9dee40"
-  integrity sha512-Wjm63poebuorhWOmj1IY+Gmyz0VdHtFPH4dBCE+mn5naICXLkcKSnCw3Dfz5cf0nyr2Ij0YJ7F9NPJhybxgtfQ==
+"@staart/validate@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@staart/validate/-/validate-2.1.0.tgz#4a8dc6a3a4c432f649aa20df294c35939a68dfcd"
+  integrity sha512-X6ebYQ7NJE0bV8LcO384UJU4v+0JuaYe7hDmx3j+rFifYRwL5mLMG+19UvASTsa4fY0d87HIORXqFiMA627vbQ==
   dependencies:
     "@hapi/joi" "^17.1.0"
 

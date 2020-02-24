@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import Brute from "express-brute";
 import RateLimit from "express-rate-limit";
 import slowDown from "express-slow-down";
-import { SchemaMap } from "@hapi/joi";
+import { SchemaMap } from "@staart/validate";
 import pkg from "../../package.json";
 import ms from "ms";
 import { safeError } from "./errors";

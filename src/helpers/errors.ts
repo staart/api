@@ -1,6 +1,6 @@
 import { EXPIRED_TOKEN, INVALID_TOKEN } from "@staart/errors";
 import { HTTPError } from "../interfaces/general";
-import { ValidationError } from "@hapi/joi";
+import { ValidationError } from "@staart/validate";
 import { error, warn } from "signale";
 
 /**

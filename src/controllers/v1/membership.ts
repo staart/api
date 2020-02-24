@@ -7,7 +7,6 @@ import {
 import {
   Get,
   Patch,
-  Put,
   Delete,
   Controller,
   ClassMiddleware,
@@ -16,7 +15,7 @@ import {
 } from "@overnightjs/core";
 import { authHandler, validator } from "../../helpers/middleware";
 import asyncHandler from "express-async-handler";
-import Joi from "@hapi/joi";
+import { Joi } from "@staart/validate";
 import { hashIdToId } from "../../helpers/utils";
 
 @Controller("v1/memberships")
