@@ -59,7 +59,7 @@ import {
   updateStripeSubscription,
   getStripeInvoice,
   createStripeSubscription
-} from "../crud/billing";
+} from "@staart/payments";
 import {
   CANNOT_DELETE_SOLE_MEMBER,
   CANNOT_INVITE_DOMAIN,
@@ -184,7 +184,11 @@ export const updateOrganizationBillingForUser = async (
     if (organization.stripeCustomerId) {
       result = await updateStripeCustomer(organization.stripeCustomerId, data);
     } else {
-      result = await createStripeCustomer(organizationId, data);
+      result = await createStripeCustomer(
+        organizationId,
+        data,
+        updateOrganization
+      );
     }
     queueWebhook(organizationId, Webhooks.UPDATE_ORGANIZATION_BILLING, data);
     trackEvent(

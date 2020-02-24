@@ -98,6 +98,7 @@
     "@staart/errors": "^1.2.0",
     "@staart/mail": "^1.1.0",
     "@staart/messages": "^1.1.1",
+    "@staart/payments": "^1.0.0",
     "@staart/redis": "^1.0.0",
     "@staart/validate": "^2.1.0",
     "aws-sdk": "^2.625.0",
