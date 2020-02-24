@@ -1,23 +1,22 @@
 import { FRONTEND_URL, TEST_EMAIL } from "../config";
 import { readFile } from "fs-extra";
 import { join } from "path";
-import { render } from "mustache";
-import marked from "marked";
 import i18n from "../i18n";
 import { logError } from "@staart/errors";
 import { sendMail } from "@staart/mail";
+import { render } from "@staart/mustache-markdown";
 import systemInfo from "systeminformation";
 import pkg from "../../package.json";
 
 /**
- * Send a new email using AWS SES
+ * Send a new email using AWS SES or SMTP
  */
 export const mail = async (
   to: number | string,
   template: string,
   data: any = {}
 ) => {
-  const altText = render(
+  const result = render(
     (
       await readFile(
         join(__dirname, "..", "..", "..", "src", "templates", `${template}.md`)
@@ -25,7 +24,8 @@ export const mail = async (
     ).toString(),
     { ...data, frontendUrl: FRONTEND_URL }
   );
-  const message = marked(altText);
+  const altText = result[0];
+  const message = result[1];
   return await sendMail({
     to: to.toString(),
     subject: i18n.en.emails[template] || "",
