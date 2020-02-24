@@ -11,8 +11,7 @@ import {
   ELASTIC_LOG,
   ELASTIC_API_VERSION
 } from "../config";
-import { RESOURCE_NOT_FOUND } from "@staart/errors";
-import { logError } from "./errors";
+import { RESOURCE_NOT_FOUND, logError } from "@staart/errors";
 import systemInfo from "systeminformation";
 import pkg from "../../package.json";
 

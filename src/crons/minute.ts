@@ -8,7 +8,7 @@ import {
 import { elasticSearch } from "../helpers/elasticsearch";
 import { IdValues, hashIdToId } from "../helpers/utils";
 import { ELASTIC_EVENTS_PREFIX, ELASTIC_LOGS_PREFIX } from "../config";
-import { error } from "signale";
+import { error } from "@staart/errors";
 
 export default () => {
   new CronJob(

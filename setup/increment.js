@@ -1,6 +1,6 @@
 const fs = require("fs-extra");
 const path = require("path");
-const { error } = require("signale");
+const { error } = require("@staart/errors");
 
 const incrementVersion = async () => {
   const pkg = JSON.parse(

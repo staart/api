@@ -4,7 +4,7 @@ const fs = require("fs-extra");
 const path = require("path");
 const shell = require("shelljs");
 const hasYarn = require("has-yarn");
-const { info, warn, error } = require("signale");
+const { info, warn, error } = require("@staart/errors");
 const yourPkg = require("../package.json");
 
 dotenv.config();

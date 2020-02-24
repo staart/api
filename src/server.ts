@@ -4,7 +4,7 @@ import cors from "cors";
 import responseTime from "response-time";
 import { json, urlencoded } from "body-parser";
 import { Server } from "@overnightjs/core";
-import { success } from "signale";
+import { success } from "@staart/errors";
 
 // This `join` is required for static files in app.ts
 import { join } from "path";

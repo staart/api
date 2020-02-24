@@ -14,7 +14,7 @@ import { join } from "path";
 import { render } from "mustache";
 import marked from "marked";
 import i18n from "../i18n";
-import { logError } from "./errors";
+import { logError } from "@staart/errors";
 import systemInfo from "systeminformation";
 import pkg from "../../package.json";
 
