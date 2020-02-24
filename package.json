@@ -96,7 +96,7 @@
   "dependencies": {
     "@hapi/joi": "^17.1.0",
     "@sentry/node": "^5.12.4",
-    "@staart/errors": "^1.0.0",
+    "@staart/errors": "^1.2.0",
     "@staart/messages": "^1.1.1",
     "@staart/redis": "^1.0.0",
     "aws-sdk": "^2.625.0",
