@@ -31,7 +31,6 @@ import {
 } from "@staart/errors";
 import { getEmail, getVerifiedEmailObject } from "./email";
 import { cachedQuery, deleteItemFromCache } from "../helpers/cache";
-import md5 from "md5";
 import randomInt from "random-int";
 import { getPaginatedData } from "./data";
 import { accessToken, invalidateToken } from "../helpers/jwt";
@@ -51,6 +50,7 @@ import {
 } from "../helpers/location";
 import ClientOAuth2 from "client-oauth2";
 import Axios from "axios";
+import { createHash } from "crypto";
 
 /**
  * Get a list of all ${tableName("users")}
@@ -77,7 +77,9 @@ export const createUser = async (user: User) => {
   user.prefersColorSchemeDark = user.prefersColorSchemeDark || false;
   user.profilePicture =
     user.profilePicture ||
-    `https://api.adorable.io/avatars/285/${md5(user.name)}.png`;
+    `https://api.adorable.io/avatars/285/${createHash("md5")
+      .update(user.name)
+      .digest("hex")}.png`;
   user.createdAt = new Date();
   user.updatedAt = user.createdAt;
   // Create user
@@ -142,10 +144,12 @@ export const updateUser = async (id: string, user: KeyValue) => {
     const originalUser = await getUser(id);
     if ((originalUser.profilePicture || "").includes("api.adorable.io")) {
       const emailDetails = await getEmail(user.primaryEmail);
-      user.profilePicture = `https://www.gravatar.com/avatar/${md5(
-        emailDetails.email
-      )}?d=${encodeURIComponent(
-        `https://api.adorable.io/avatars/285/${md5(originalUser.name)}.png`
+      user.profilePicture = `https://www.gravatar.com/avatar/${createHash("md5")
+        .update(emailDetails.email)
+        .digest("hex")}?d=${encodeURIComponent(
+        `https://api.adorable.io/avatars/285/${createHash("md5")
+          .update(originalUser.name)
+          .digest("hex")}.png`
       )}`;
     }
   }
