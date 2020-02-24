@@ -1313,10 +1313,10 @@
     http-status-codes "^1.3.2"
     signale "^1.4.0"
 
-"@staart/mail@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@staart/mail/-/mail-1.1.0.tgz#b2181c03fdfdc464d90ff135f9da8eae03dce669"
-  integrity sha512-X26vA/SsfdS8bdgsksXdkT73mYlBBvTbevmq/mNLl3BxO9siRHh+cV3v92w943bW6BQJl9IkbSmMfFDA/osLgQ==
+"@staart/mail@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@staart/mail/-/mail-1.1.1.tgz#ca7f606eca12cd90002e0c37f0cce52565ad11a3"
+  integrity sha512-reGM+ulT1KHLSy96tkcoGVLoVDX9wR/LSXiWGnOmCoaJgkKVwpNPnVfOpntGhF+7dXUlEf8ENSZX9iHct3RP6A==
   dependencies:
     "@types/nodemailer" "^6.4.0"
     aws-sdk "^2.625.0"
