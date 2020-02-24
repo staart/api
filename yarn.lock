@@ -1304,10 +1304,10 @@
     disposable-email-domains "^1.0.52"
     matcher "^2.1.0"
 
-"@staart/errors@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@staart/errors/-/errors-1.1.0.tgz#4bdb4590992583fc0f2f2b67d3c81a95a3a7f344"
-  integrity sha512-6fi2EBQGDTuVZN75EajCa3IuPlnVk9L5jQNrELCKHftlvjxmFF0L4Y8yFSx4zOtv0ZFfz2XNwQe9tbam+02gKw==
+"@staart/errors@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@staart/errors/-/errors-1.2.0.tgz#58c35b72b5303d52d745749645f8380d345b4ea9"
+  integrity sha512-UM5GyVhiaEk5pacCSkeopXq7nbEQV1tXCqOrGUrZmYMpf7C+P/QxE5QRMh2lRkskeWihw/Wt+k8f+N7PEMGSdg==
   dependencies:
     http-status-codes "^1.3.2"
     signale "^1.4.0"
