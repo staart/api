@@ -14,11 +14,8 @@ import {
   Identity
 } from "../interfaces/tables/user";
 import { decode } from "jsonwebtoken";
-import {
-  capitalizeFirstAndLastLetter,
-  deleteSensitiveInfoUser,
-  anonymizeIpAddress
-} from "../helpers/utils";
+import { deleteSensitiveInfoUser } from "../helpers/utils";
+import { capitalizeFirstAndLastLetter, anonymizeIpAddress } from "@staart/text";
 import { hash } from "bcryptjs";
 import { KeyValue } from "../interfaces/general";
 import { NotificationEmails, CacheCategories } from "../interfaces/enum";

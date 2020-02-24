@@ -39,9 +39,9 @@ import { mail } from "./mail";
 import { getGeolocationFromIp } from "./location";
 import i18n from "../i18n";
 import { ApiKey } from "../interfaces/tables/organization";
-import cryptoRandomString from "crypto-random-string";
 import ipRangeCheck from "ip-range-check";
 import redis from "@staart/redis";
+import { randomString } from "@staart/text";
 
 /**
  * Generate a new JWT
@@ -60,7 +60,7 @@ export const generateToken = (
         expiresIn,
         subject,
         issuer: JWT_ISSUER,
-        jwtid: cryptoRandomString({ length: 12 })
+        jwtid: randomString({ length: 12 })
       },
       (error, token) => {
         if (error) return reject(error);

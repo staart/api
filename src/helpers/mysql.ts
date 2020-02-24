@@ -18,10 +18,9 @@ import {
   jsonValues,
   dateValues,
   readOnlyValues,
-  generateHashId,
-  hashIdToId,
   IdValues
 } from "./utils";
+import { generateHashId, hashIdToId } from "@staart/text";
 import { getUserPrimaryEmailObject } from "../crud/email";
 import { InsertResult } from "../interfaces/mysql";
 import { emojify, unemojify } from "node-emoji";

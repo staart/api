@@ -59,9 +59,9 @@ import { MembershipRole } from "../../interfaces/enum";
 import asyncHandler from "express-async-handler";
 import {
   organizationUsernameToId,
-  localsToTokenOrKey,
-  hashIdToId
+  localsToTokenOrKey
 } from "../../helpers/utils";
+import { hashIdToId } from "@staart/text";
 import { joiValidate, Joi } from "@staart/validate";
 
 @Controller("v1/organizations")

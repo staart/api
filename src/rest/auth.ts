@@ -65,7 +65,7 @@ import {
 } from "../config";
 import axios from "axios";
 import { GitHubEmail } from "../interfaces/oauth";
-import { createSlug } from "../helpers/utils";
+import { createSlug } from "@staart/text";
 import { trackEvent } from "../helpers/tracking";
 import { getDomainByDomainName } from "../crud/organization";
 

@@ -47,7 +47,8 @@ import {
   resendEmailVerificationForUser
 } from "../../rest/email";
 import asyncHandler from "express-async-handler";
-import { userUsernameToId, hashIdToId } from "../../helpers/utils";
+import { userUsernameToId } from "../../helpers/utils";
+import { hashIdToId } from "@staart/text";
 import { joiValidate, Joi } from "@staart/validate";
 import {
   deleteMembershipForUser,

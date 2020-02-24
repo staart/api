@@ -11,7 +11,11 @@ import {
   Webhook
 } from "../interfaces/tables/organization";
 import ms from "ms";
-import { capitalizeFirstAndLastLetter, createSlug } from "../helpers/utils";
+import {
+  capitalizeFirstAndLastLetter,
+  createSlug,
+  randomString
+} from "@staart/text";
 import { KeyValue } from "../interfaces/general";
 import { cachedQuery, deleteItemFromCache } from "../helpers/cache";
 import { CacheCategories, Webhooks } from "../interfaces/enum";
@@ -23,7 +27,6 @@ import {
 } from "@staart/errors";
 import { ApiKey } from "../interfaces/tables/organization";
 import { getPaginatedData } from "./data";
-import cryptoRandomString from "crypto-random-string";
 import { apiKeyToken, invalidateToken } from "../helpers/jwt";
 import {
   TOKEN_EXPIRY_API_KEY_MAX,
@@ -354,7 +357,7 @@ export const updateOrganizationProfilePicture = async (
 export const createDomain = async (domain: Domain): Promise<InsertResult> => {
   domain.createdAt = new Date();
   domain.updatedAt = domain.createdAt;
-  domain.verificationCode = `${JWT_ISSUER}=${cryptoRandomString({
+  domain.verificationCode = `${JWT_ISSUER}=${randomString({
     length: 32
   })}`;
   const response = await query(

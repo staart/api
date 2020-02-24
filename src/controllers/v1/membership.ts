@@ -16,7 +16,7 @@ import {
 import { authHandler, validator } from "../../helpers/middleware";
 import asyncHandler from "express-async-handler";
 import { Joi } from "@staart/validate";
-import { hashIdToId } from "../../helpers/utils";
+import { hashIdToId } from "@staart/text";
 
 @Controller("v1/memberships")
 @ClassWrapper(asyncHandler)
