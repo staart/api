@@ -29,8 +29,7 @@ import {
   validator
 } from "../../helpers/middleware";
 import asyncHandler from "express-async-handler";
-import { safeRedirect, joiValidate, hashIdToId } from "../../helpers/utils";
-import Joi from "@hapi/joi";
+import { safeRedirect, hashIdToId } from "../../helpers/utils";
 import { FRONTEND_URL, BASE_URL } from "../../config";
 import {
   salesforce,
@@ -40,6 +39,7 @@ import {
   facebook
 } from "../../rest/oauth";
 import { stringify } from "querystring";
+import { joiValidate, Joi } from "@staart/validate";
 
 const OAuthRedirector = (action: RequestHandler) => (
   ...args: [Request, Response, NextFunction]

@@ -58,12 +58,11 @@ import { authHandler, validator } from "../../helpers/middleware";
 import { MembershipRole } from "../../interfaces/enum";
 import asyncHandler from "express-async-handler";
 import {
-  joiValidate,
   organizationUsernameToId,
   localsToTokenOrKey,
   hashIdToId
 } from "../../helpers/utils";
-import Joi from "@hapi/joi";
+import { joiValidate, Joi } from "@staart/validate";
 
 @Controller("v1/organizations")
 @ClassWrapper(asyncHandler)

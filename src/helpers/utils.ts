@@ -1,7 +1,6 @@
 import anonymize from "ip-anonymize";
 import { User } from "../interfaces/tables/user";
 import dns from "dns";
-import Joi from "@hapi/joi";
 import { getOrganizationIdFromUsername } from "../crud/organization";
 import { Request, Response } from "express";
 import slugify from "slugify";
@@ -12,6 +11,7 @@ import { isMatch } from "matcher";
 import Hashids from "hashids/cjs";
 import { getUserIdFromUsername } from "../crud/user";
 import { HASH_IDS, HASH_ID_PREFIX } from "../config";
+import { joiValidate, Joi } from "@staart/validate";
 
 const hashIds = new Hashids(
   HASH_IDS,
@@ -188,13 +188,6 @@ export const IdValues = [
   "apiKeyId",
   "apiKeyOrganizationId"
 ];
-
-export const joiValidate = (schemaMap: Joi.SchemaMap, data: any) => {
-  const schema = Joi.object().keys(schemaMap);
-  const result = schema.validate(data);
-  if (result.error) throw new Error(`joi:${JSON.stringify(result.error)}`);
-  return true;
-};
 
 export const removeFalsyValues = (value: any) => {
   if (value && typeof value === "object") {

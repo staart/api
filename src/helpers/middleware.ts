@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction, RequestHandler } from "express";
+import { Request, Response, NextFunction } from "express";
 import Brute from "express-brute";
 import RateLimit from "express-rate-limit";
 import slowDown from "express-slow-down";
@@ -28,8 +28,10 @@ import {
   PUBLIC_RATE_LIMIT_MAX
 } from "../config";
 import { ApiKey } from "../interfaces/tables/organization";
-import { joiValidate, includesDomainInCommaList } from "./utils";
+import { includesDomainInCommaList } from "./utils";
 import { trackUrl } from "./tracking";
+import { joiValidate } from "@staart/validate";
+
 const store = new Brute.MemoryStore();
 const bruteForce = new Brute(store, {
   freeRetries: BRUTE_FREE_RETRIES,
