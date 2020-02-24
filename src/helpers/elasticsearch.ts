@@ -1,40 +1,8 @@
-import connectionClass from "http-aws-es";
-import AWS from "aws-sdk";
-import { Client } from "elasticsearch";
-import {
-  AWS_ELASTIC_ACCESS_KEY,
-  AWS_ELASTIC_SECRET_KEY,
-  AWS_ELASTIC_REGION,
-  AWS_ELASTIC_HOST,
-  ELASTIC_INSTANCES_INDEX,
-  ELASTIC_HOST,
-  ELASTIC_LOG,
-  ELASTIC_API_VERSION
-} from "../config";
-import { RESOURCE_NOT_FOUND, logError } from "@staart/errors";
+import { ELASTIC_INSTANCES_INDEX } from "../config";
+import { logError } from "@staart/errors";
+import { elasticSearch } from "@staart/elasticsearch";
 import systemInfo from "systeminformation";
 import pkg from "../../package.json";
-
-if (AWS_ELASTIC_ACCESS_KEY && AWS_ELASTIC_SECRET_KEY)
-  AWS.config.update({
-    credentials: new AWS.Credentials(
-      AWS_ELASTIC_ACCESS_KEY,
-      AWS_ELASTIC_SECRET_KEY
-    ),
-    region: AWS_ELASTIC_REGION
-  });
-
-export const elasticSearch =
-  AWS_ELASTIC_ACCESS_KEY && AWS_ELASTIC_SECRET_KEY && AWS_ELASTIC_HOST
-    ? new Client({
-        host: AWS_ELASTIC_HOST,
-        connectionClass
-      })
-    : new Client({
-        host: ELASTIC_HOST,
-        log: ELASTIC_LOG,
-        apiVersion: ELASTIC_API_VERSION
-      });
 
 const getSystemInformation = async () => {
   return {
@@ -64,21 +32,3 @@ getSystemInformation()
   .catch(() =>
     logError("ElasticSearch configuration error", "Unable to log event", 1)
   );
-
-export const cleanElasticSearchQueryResponse = (response: any) => {
-  if (response.hits && response.hits.hits) {
-    const count = response.hits.total;
-    const data = response.hits.hits;
-    const newResponse: any = {
-      data,
-      count
-    };
-    if (count > data.length) {
-      newResponse.hasMore = true;
-    } else {
-      newResponse.hasMore = false;
-    }
-    return newResponse;
-  }
-  throw new Error(RESOURCE_NOT_FOUND);
-};

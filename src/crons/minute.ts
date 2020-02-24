@@ -5,7 +5,7 @@ import {
   getSecurityEvents,
   clearSecurityEventsData
 } from "../helpers/tracking";
-import { elasticSearch } from "../helpers/elasticsearch";
+import { elasticSearch } from "@staart/elasticsearch";
 import { IdValues, hashIdToId } from "../helpers/utils";
 import { ELASTIC_EVENTS_PREFIX, ELASTIC_LOGS_PREFIX } from "../config";
 import { error } from "@staart/errors";

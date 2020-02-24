@@ -36,7 +36,7 @@ import { getUser } from "./user";
 import {
   elasticSearch,
   cleanElasticSearchQueryResponse
-} from "../helpers/elasticsearch";
+} from "@staart/elasticsearch";
 import randomColor from "randomcolor";
 import axios from "axios";
 
@@ -217,7 +217,7 @@ export const getApiKeyLogs = async (
       size: 10
     }
   });
-  return cleanElasticSearchQueryResponse(result);
+  return cleanElasticSearchQueryResponse(result.body, 10);
 };
 
 /**

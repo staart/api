@@ -6,7 +6,7 @@ import { KeyValue } from "../interfaces/general";
 import {
   cleanElasticSearchQueryResponse,
   elasticSearch
-} from "../helpers/elasticsearch";
+} from "@staart/elasticsearch";
 import ms from "ms";
 import { ELASTIC_LOGS_PREFIX } from "../config";
 
@@ -70,5 +70,5 @@ export const getServerLogsForUser = async (
       size: 10
     }
   });
-  return cleanElasticSearchQueryResponse(result);
+  return cleanElasticSearchQueryResponse(result.body, 10);
 };
