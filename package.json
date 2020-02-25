@@ -127,7 +127,7 @@
     "random-int": "^2.0.1",
     "randomcolor": "^0.5.4",
     "response-time": "^2.3.2",
-    "snyk": "^1.296.1",
+    "snyk": "^1.297.0",
     "systeminformation": "^4.22.3"
   },
   "files": [
