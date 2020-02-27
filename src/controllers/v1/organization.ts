@@ -578,10 +578,7 @@ export class OrganizationController {
   @Get(":id/api-keys")
   async getUserApiKeys(req: Request, res: Response) {
     const id = await organizationUsernameToId(req.params.id);
-    joiValidate(
-      { id: [Joi.string().required(), Joi.string().required()] },
-      { id }
-    );
+    joiValidate({ id: Joi.string().required() }, { id });
     const apiKeyParams = { ...req.query };
     joiValidate(
       {
@@ -614,10 +611,7 @@ export class OrganizationController {
   )
   async putUserApiKeys(req: Request, res: Response) {
     const id = await organizationUsernameToId(req.params.id);
-    joiValidate(
-      { id: [Joi.string().required(), Joi.string().required()] },
-      { id }
-    );
+    joiValidate({ id: Joi.string().required() }, { id });
     await createApiKeyForUser(
       localsToTokenOrKey(res),
       id,
@@ -633,7 +627,7 @@ export class OrganizationController {
     const apiKeyId = req.params.apiKeyId;
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.string().required()],
+        id: Joi.string().required(),
         apiKeyId: Joi.string().required()
       },
       { id, apiKeyId }
@@ -661,7 +655,7 @@ export class OrganizationController {
     const apiKeyId = req.params.apiKeyId;
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.string().required()],
+        id: Joi.string().required(),
         apiKeyId: Joi.string().required()
       },
       { id, apiKeyId }
@@ -683,7 +677,7 @@ export class OrganizationController {
     const apiKeyId = req.params.apiKeyId;
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.string().required()],
+        id: Joi.string().required(),
         apiKeyId: Joi.string().required()
       },
       { id, apiKeyId }
@@ -704,7 +698,7 @@ export class OrganizationController {
     const apiKeyId = req.params.apiKeyId;
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.string().required()],
+        id: Joi.string().required(),
         apiKeyId: Joi.string().required()
       },
       { id, apiKeyId }
@@ -722,10 +716,7 @@ export class OrganizationController {
   @Get(":id/domains")
   async getUserDomains(req: Request, res: Response) {
     const id = await organizationUsernameToId(req.params.id);
-    joiValidate(
-      { id: [Joi.string().required(), Joi.string().required()] },
-      { id }
-    );
+    joiValidate({ id: Joi.string().required() }, { id });
     const domainParams = { ...req.query };
     joiValidate(
       {
@@ -754,10 +745,7 @@ export class OrganizationController {
   )
   async putUserDomains(req: Request, res: Response) {
     const id = await organizationUsernameToId(req.params.id);
-    joiValidate(
-      { id: [Joi.string().required(), Joi.string().required()] },
-      { id }
-    );
+    joiValidate({ id: Joi.string().required() }, { id });
     await createDomainForUser(
       localsToTokenOrKey(res),
       id,
@@ -773,7 +761,7 @@ export class OrganizationController {
     const domainId = req.params.domainId;
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.string().required()],
+        id: Joi.string().required(),
         domainId: Joi.string().required()
       },
       { id, domainId }
@@ -797,7 +785,7 @@ export class OrganizationController {
     const domainId = req.params.domainId;
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.string().required()],
+        id: Joi.string().required(),
         domainId: Joi.string().required()
       },
       { id, domainId }
@@ -819,7 +807,7 @@ export class OrganizationController {
     const domainId = req.params.domainId;
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.string().required()],
+        id: Joi.string().required(),
         domainId: Joi.string().required()
       },
       { id, domainId }
@@ -841,7 +829,7 @@ export class OrganizationController {
     const method = req.body.method || req.query.method;
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.string().required()],
+        id: Joi.string().required(),
         domainId: Joi.string().required(),
         method: Joi.string()
           .allow(["file", "dns"])
@@ -863,10 +851,7 @@ export class OrganizationController {
   @Get(":id/webhooks")
   async getUserWebhooks(req: Request, res: Response) {
     const id = await organizationUsernameToId(req.params.id);
-    joiValidate(
-      { id: [Joi.string().required(), Joi.string().required()] },
-      { id }
-    );
+    joiValidate({ id: Joi.string().required() }, { id });
     const webhookParams = { ...req.query };
     joiValidate(
       {
@@ -899,10 +884,7 @@ export class OrganizationController {
   )
   async putUserWebhooks(req: Request, res: Response) {
     const id = await organizationUsernameToId(req.params.id);
-    joiValidate(
-      { id: [Joi.string().required(), Joi.string().required()] },
-      { id }
-    );
+    joiValidate({ id: Joi.string().required() }, { id });
     await createWebhookForUser(
       localsToTokenOrKey(res),
       id,
@@ -918,7 +900,7 @@ export class OrganizationController {
     const webhookId = req.params.webhookId;
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.string().required()],
+        id: Joi.string().required(),
         webhookId: Joi.string().required()
       },
       { id, webhookId }
@@ -950,7 +932,7 @@ export class OrganizationController {
     const webhookId = req.params.webhookId;
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.string().required()],
+        id: Joi.string().required(),
         webhookId: Joi.string().required()
       },
       { id, webhookId }
@@ -972,7 +954,7 @@ export class OrganizationController {
     const webhookId = req.params.webhookId;
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.string().required()],
+        id: Joi.string().required(),
         webhookId: Joi.string().required()
       },
       { id, webhookId }

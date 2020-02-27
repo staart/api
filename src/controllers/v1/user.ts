@@ -62,10 +62,7 @@ export class UserController {
   @Get(":id")
   async get(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
-    joiValidate(
-      { id: [Joi.string().required(), Joi.string().required()] },
-      { id }
-    );
+    joiValidate({ id: Joi.string().required() }, { id });
     res.json(await getUserFromId(id, res.locals.token.id));
   }
 
@@ -97,10 +94,7 @@ export class UserController {
   )
   async patch(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
-    joiValidate(
-      { id: [Joi.string().required(), Joi.string().required()] },
-      { id }
-    );
+    joiValidate({ id: Joi.string().required() }, { id });
     await updateUserForUser(res.locals.token.id, id, req.body, res.locals);
     res.json({ success: true, message: "user-updated" });
   }
@@ -108,10 +102,7 @@ export class UserController {
   @Delete(":id")
   async delete(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
-    joiValidate(
-      { id: [Joi.string().required(), Joi.string().required()] },
-      { id }
-    );
+    joiValidate({ id: Joi.string().required() }, { id });
     res.json(await deleteUserForUser(res.locals.token.id, id, res.locals));
   }
 
@@ -135,7 +126,7 @@ export class UserController {
     const newPassword = req.body.newPassword;
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.string().required()]
+        id: Joi.string().required()
       },
       { id }
     );
@@ -152,20 +143,14 @@ export class UserController {
   @Get(":id/events")
   async getRecentEvents(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
-    joiValidate(
-      { id: [Joi.string().required(), Joi.string().required()] },
-      { id }
-    );
+    joiValidate({ id: Joi.string().required() }, { id });
     res.json(await getRecentEventsForUser(res.locals.token.id, id, req.query));
   }
 
   @Get(":id/memberships")
   async getMemberships(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
-    joiValidate(
-      { id: [Joi.string().required(), Joi.string().required()] },
-      { id }
-    );
+    joiValidate({ id: Joi.string().required() }, { id });
     res.json(await getMembershipsForUser(res.locals.token.id, id, req.query));
   }
 
@@ -175,7 +160,7 @@ export class UserController {
     const membershipId = req.params.membershipId;
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.string().required()],
+        id: Joi.string().required(),
         membershipId: Joi.string().required()
       },
       { id, membershipId }
@@ -189,7 +174,7 @@ export class UserController {
     const membershipId = req.params.membershipId;
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.string().required()],
+        id: Joi.string().required(),
         membershipId: Joi.string().required()
       },
       { id, membershipId }
@@ -204,7 +189,7 @@ export class UserController {
     const membershipId = req.params.membershipId;
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.string().required()],
+        id: Joi.string().required(),
         membershipId: Joi.string().required()
       },
       { id, membershipId }
@@ -218,20 +203,14 @@ export class UserController {
   @Get(":id/data")
   async getUserData(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
-    joiValidate(
-      { id: [Joi.string().required(), Joi.string().required()] },
-      { id }
-    );
+    joiValidate({ id: Joi.string().required() }, { id });
     res.json(await getAllDataForUser(res.locals.token.id, id));
   }
 
   @Get(":id/emails")
   async getEmails(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
-    joiValidate(
-      { id: [Joi.string().required(), Joi.string().required()] },
-      { id }
-    );
+    joiValidate({ id: Joi.string().required() }, { id });
     res.json(await getAllEmailsForUser(res.locals.token.id, id, req.query));
   }
 
@@ -241,7 +220,7 @@ export class UserController {
     const email = req.body.email;
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.string().required()],
+        id: Joi.string().required(),
         email: Joi.string()
           .email()
           .required()
@@ -258,7 +237,7 @@ export class UserController {
     const emailId = req.params.emailId;
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.string().required()],
+        id: Joi.string().required(),
         emailId: Joi.string().required()
       },
       { id, emailId }
@@ -272,7 +251,7 @@ export class UserController {
     const emailId = req.params.emailId;
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.string().required()],
+        id: Joi.string().required(),
         emailId: Joi.string().required()
       },
       { id, emailId }
@@ -287,7 +266,7 @@ export class UserController {
     const emailId = req.params.emailId;
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.string().required()],
+        id: Joi.string().required(),
         emailId: Joi.string().required()
       },
       { id, emailId }
@@ -304,10 +283,7 @@ export class UserController {
   @Get(":id/2fa/enable")
   async getEnable2FA(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
-    joiValidate(
-      { id: [Joi.string().required(), Joi.string().required()] },
-      { id }
-    );
+    joiValidate({ id: Joi.string().required() }, { id });
     res.json(await enable2FAForUser(res.locals.token.id, id));
   }
 
@@ -317,7 +293,7 @@ export class UserController {
     const code = req.body.code;
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.string().required()],
+        id: Joi.string().required(),
         code: Joi.number()
           .min(5)
           .required()
@@ -330,40 +306,28 @@ export class UserController {
   @Delete(":id/2fa")
   async delete2FA(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
-    joiValidate(
-      { id: [Joi.string().required(), Joi.string().required()] },
-      { id }
-    );
+    joiValidate({ id: Joi.string().required() }, { id });
     res.json(await disable2FAForUser(res.locals.token.id, id));
   }
 
   @Get(":id/backup-codes")
   async getBackupCodes(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
-    joiValidate(
-      { id: [Joi.string().required(), Joi.string().required()] },
-      { id }
-    );
+    joiValidate({ id: Joi.string().required() }, { id });
     res.json(await getBackupCodesForUser(res.locals.token.id, id));
   }
 
   @Get(":id/backup-codes/regenerate")
   async getRegenerateBackupCodes(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
-    joiValidate(
-      { id: [Joi.string().required(), Joi.string().required()] },
-      { id }
-    );
+    joiValidate({ id: Joi.string().required() }, { id });
     res.json(await regenerateBackupCodesForUser(res.locals.token.id, id));
   }
 
   @Get(":id/access-tokens")
   async getUserAccessTokens(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
-    joiValidate(
-      { id: [Joi.string().required(), Joi.string().required()] },
-      { id }
-    );
+    joiValidate({ id: Joi.string().required() }, { id });
     const accessTokenParams = { ...req.query };
     joiValidate(
       {
@@ -394,10 +358,7 @@ export class UserController {
   )
   async putUserAccessTokens(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
-    joiValidate(
-      { id: [Joi.string().required(), Joi.string().required()] },
-      { id }
-    );
+    joiValidate({ id: Joi.string().required() }, { id });
     await createAccessTokenForUser(
       res.locals.token.id,
       id,
@@ -413,7 +374,7 @@ export class UserController {
     const accessTokenId = req.params.accessTokenId;
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.string().required()],
+        id: Joi.string().required(),
         accessTokenId: Joi.string().required()
       },
       { id, accessTokenId }
@@ -439,7 +400,7 @@ export class UserController {
     const accessTokenId = req.params.accessTokenId;
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.string().required()],
+        id: Joi.string().required(),
         accessTokenId: Joi.string().required()
       },
       { id, accessTokenId }
@@ -461,7 +422,7 @@ export class UserController {
     const accessTokenId = req.params.accessTokenId;
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.string().required()],
+        id: Joi.string().required(),
         accessTokenId: Joi.string().required()
       },
       { id, accessTokenId }
@@ -479,10 +440,7 @@ export class UserController {
   @Get(":id/sessions")
   async getUserSessions(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
-    joiValidate(
-      { id: [Joi.string().required(), Joi.string().required()] },
-      { id }
-    );
+    joiValidate({ id: Joi.string().required() }, { id });
     const sessionParams = { ...req.query };
     joiValidate(
       {
@@ -502,7 +460,7 @@ export class UserController {
     const sessionId = req.params.sessionId;
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.string().required()],
+        id: Joi.string().required(),
         sessionId: Joi.string().required()
       },
       { id, sessionId }
@@ -516,7 +474,7 @@ export class UserController {
     const sessionId = req.params.sessionId;
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.string().required()],
+        id: Joi.string().required(),
         sessionId: Joi.string().required()
       },
       { id, sessionId }
@@ -529,10 +487,7 @@ export class UserController {
   @Get(":id/identities")
   async getUserIdentities(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
-    joiValidate(
-      { id: [Joi.string().required(), Joi.string().required()] },
-      { id }
-    );
+    joiValidate({ id: Joi.string().required() }, { id });
     const identityParams = { ...req.query };
     joiValidate(
       {
@@ -549,10 +504,7 @@ export class UserController {
   @Put(":id/identities")
   async createUserIdentity(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
-    joiValidate(
-      { id: [Joi.string().required(), Joi.string().required()] },
-      { id }
-    );
+    joiValidate({ id: Joi.string().required() }, { id });
     res.json(
       await createUserIdentityForUser(res.locals.token.id, id, req.body)
     );
@@ -561,10 +513,7 @@ export class UserController {
   @Post(":id/identities/:service")
   async connectUserIdentity(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
-    joiValidate(
-      { id: [Joi.string().required(), Joi.string().required()] },
-      { id }
-    );
+    joiValidate({ id: Joi.string().required() }, { id });
     const service = req.params.service;
     const url = req.body.url;
     joiValidate(
@@ -582,7 +531,7 @@ export class UserController {
     const identityId = req.params.identityId;
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.string().required()],
+        id: Joi.string().required(),
         identityId: Joi.string().required()
       },
       { id, identityId }
@@ -596,7 +545,7 @@ export class UserController {
     const identityId = req.params.identityId;
     joiValidate(
       {
-        id: [Joi.string().required(), Joi.string().required()],
+        id: Joi.string().required(),
         identityId: Joi.string().required()
       },
       { id, identityId }
