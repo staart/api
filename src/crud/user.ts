@@ -125,7 +125,7 @@ export const getUserIdFromUsername = async (username: string) => {
       [username]
     )
   ))[0];
-  if (user && user.id) return user.id;
+  if (user && user.id) return parseInt(user.id).toString();
   throw new Error(USER_NOT_FOUND);
 };
 

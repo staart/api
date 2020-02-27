@@ -18,20 +18,20 @@ export const deleteSensitiveInfoUser = (user: User) => {
 };
 
 export const organizationUsernameToId = async (id: string) => {
-  if (isNaN(Number(id))) {
+  if (!id.match(/^-{0,1}\d+$/)) {
     return await getOrganizationIdFromUsername(id);
   } else {
-    return id;
+    return parseInt(id).toString();
   }
 };
 
 export const userUsernameToId = async (id: string, tokenUserId: string) => {
   if (id === "me") {
     return tokenUserId;
-  } else if (isNaN(Number(id))) {
+  } else if (!id.match(/^-{0,1}\d+$/)) {
     return await getUserIdFromUsername(id);
   } else {
-    return id;
+    return parseInt(id).toString();
   }
 };
 
