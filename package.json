@@ -94,7 +94,7 @@
     "@staart/payments": "^2.0.0",
     "@staart/redis": "^1.0.0",
     "@staart/server": "^1.0.0",
-    "@staart/text": "^1.0.0",
+    "@staart/text": "^2.0.0",
     "@staart/validate": "^2.1.0",
     "axios": "^0.19.2",
     "bcryptjs": "^2.4.3",
