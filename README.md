@@ -81,7 +81,7 @@ If you've used the "Use this template" option on GitHub, you might have to force
 
 **[View TypeDoc →](https://staart-typedoc.netlify.com)**
 
-**[View API demo →](https://staart.caprover.oswaldlabs.com)**
+**[View API demo →](http://staart.prod.oswaldlabs.com)**
 
 **[View frontend demo →](https://staart-ui.o15y.now.sh)**
 
