@@ -1,12 +1,9 @@
-import { FRONTEND_URL, TEST_EMAIL } from "../config";
+import { FRONTEND_URL } from "../config";
 import { readFile } from "fs-extra";
 import { join } from "path";
 import i18n from "../i18n";
-import { logError } from "@staart/errors";
 import { sendMail } from "@staart/mail";
 import { render } from "@staart/mustache-markdown";
-import systemInfo from "systeminformation";
-import pkg from "../../package.json";
 
 /**
  * Send a new email using AWS SES or SMTP
@@ -33,24 +30,3 @@ export const mail = async (
     altText
   });
 };
-
-sendMail({
-  to: TEST_EMAIL,
-  subject: "Test from Staart",
-  message: `This is an example email to test your Staart email configuration.\n\n${JSON.stringify(
-    {
-      time: systemInfo.time(),
-      package: {
-        name: pkg.name,
-        version: pkg.version,
-        repository: pkg.repository,
-        author: pkg.author,
-        "staart-version": pkg["staart-version"]
-      }
-    }
-  )}`
-})
-  .then(() => {})
-  .catch(() =>
-    logError("Invalid email config", "Could not send a test email", 1)
-  );

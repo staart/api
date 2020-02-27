@@ -30,7 +30,6 @@ import {
 } from "../../helpers/middleware";
 import asyncHandler from "express-async-handler";
 import { safeRedirect } from "../../helpers/utils";
-import { hashIdToId } from "@staart/text";
 import { FRONTEND_URL, BASE_URL } from "../../config";
 import {
   salesforce,
@@ -232,7 +231,7 @@ export class AuthController {
   )
   async getImpersonate(req: Request, res: Response) {
     const tokenUserId = res.locals.token.id;
-    const impersonateUserId = hashIdToId(req.params.id);
+    const impersonateUserId = req.params.id;
     res.json(await impersonate(tokenUserId, impersonateUserId, res.locals));
   }
 

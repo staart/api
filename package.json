@@ -1,6 +1,6 @@
 {
   "name": "@staart/manager",
-  "version": "1.3.12",
+  "version": "1.3.22",
   "main": "index.js",
   "repository": "git@github.com:staart/api.git",
   "author": "Anand Chowdhary <mail@anandchowdhary.com>",
@@ -26,7 +26,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run increment-package && npm run prettier-all && git add ."
+      "pre-commit": "npm run increment-package && git add ."
     }
   },
   "engines": {
@@ -125,5 +125,5 @@
     "setup"
   ],
   "snyk": true,
-  "staart-version": "1.3.12"
+  "staart-version": "1.3.22"
 }

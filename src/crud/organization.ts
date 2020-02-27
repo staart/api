@@ -93,7 +93,7 @@ export const getOrganizationIdFromUsername = async (username: string) => {
       [username]
     )
   ))[0];
-  if (org && org.id) return org.id;
+  if (org && org.id) return parseInt(org.id).toString();
   throw new Error(ORGANIZATION_NOT_FOUND);
 };
 

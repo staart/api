@@ -16,7 +16,6 @@ import {
 import { authHandler, validator } from "../../helpers/middleware";
 import asyncHandler from "express-async-handler";
 import { Joi } from "@staart/validate";
-import { hashIdToId } from "@staart/text";
 
 @Controller("v1/memberships")
 @ClassWrapper(asyncHandler)
@@ -25,7 +24,7 @@ export class MembershipController {
   @Get(":id")
   @Middleware(validator({ id: Joi.string().required() }, "params"))
   async get(req: Request, res: Response) {
-    const membershipId = hashIdToId(req.params.id);
+    const membershipId = req.params.id;
     const userId = res.locals.token.id;
     res.json(await getMembershipDetailsForUser(userId, membershipId));
   }
@@ -34,7 +33,7 @@ export class MembershipController {
   @Middleware(validator({ id: Joi.string().required() }, "params"))
   async delete(req: Request, res: Response) {
     const userId = res.locals.token.id;
-    const membershipId = hashIdToId(req.params.id);
+    const membershipId = req.params.id;
     await deleteMembershipForUser(userId, membershipId, res.locals);
     res.json({ deleted: true });
   }
@@ -43,7 +42,7 @@ export class MembershipController {
   @Middleware(validator({ id: Joi.string().required() }, "params"))
   async patch(req: Request, res: Response) {
     const userId = res.locals.token.id;
-    const membershipId = hashIdToId(req.params.id);
+    const membershipId = req.params.id;
     const data = req.body;
     delete req.body.id;
     await updateMembershipForUser(userId, membershipId, data, res.locals);
