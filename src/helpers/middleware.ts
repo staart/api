@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-import Brute from "express-brute";
 import RateLimit from "express-rate-limit";
 import slowDown from "express-slow-down";
 import { SchemaMap } from "@staart/validate";
@@ -17,8 +16,9 @@ import {
 import { Tokens } from "../interfaces/enum";
 import { MISSING_TOKEN } from "@staart/errors";
 import {
-  BRUTE_LIFETIME,
-  BRUTE_FREE_RETRIES,
+  BRUTE_FORCE_TIME,
+  BRUTE_FORCE_COUNT,
+  BRUTE_FORCE_DELAY,
   RATE_LIMIT_MAX,
   RATE_LIMIT_TIME,
   SPEED_LIMIT_DELAY,
@@ -32,10 +32,10 @@ import { includesDomainInCommaList } from "./utils";
 import { trackUrl } from "./tracking";
 import { joiValidate } from "@staart/validate";
 
-const store = new Brute.MemoryStore();
-const bruteForce = new Brute(store, {
-  freeRetries: BRUTE_FREE_RETRIES,
-  lifetime: BRUTE_LIFETIME
+const bruteForce = slowDown({
+  windowMs: BRUTE_FORCE_TIME,
+  delayAfter: BRUTE_FORCE_COUNT,
+  delayMs: BRUTE_FORCE_DELAY
 });
 const rateLimiter = RateLimit({
   windowMs: RATE_LIMIT_TIME,
@@ -164,7 +164,7 @@ export const authHandler = async (
 /**
  * Brute force middleware
  */
-export const bruteForceHandler = bruteForce.prevent;
+export const bruteForceHandler = bruteForce;
 
 /**
  * Rate limiting middleware

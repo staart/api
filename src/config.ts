@@ -7,12 +7,15 @@ export const BASE_URL = process.env.BASE_URL || "";
 export const SENTRY_DSN = process.env.SENTRY_DSN || "";
 
 // Rate limiting
-export const BRUTE_FREE_RETRIES = process.env.BRUTE_FREE_RETRIES
-  ? parseInt(process.env.BRUTE_FREE_RETRIES)
-  : 100;
-export const BRUTE_LIFETIME = process.env.BRUTE_LIFETIME
-  ? parseInt(process.env.BRUTE_LIFETIME)
-  : 300000;
+export const BRUTE_FORCE_TIME = process.env.BRUTE_FORCE_TIME
+  ? parseInt(process.env.BRUTE_FORCE_TIME)
+  : 300000; // 5 minutes
+export const BRUTE_FORCE_DELAY = process.env.BRUTE_FORCE_DELAY
+  ? parseInt(process.env.BRUTE_FORCE_DELAY)
+  : 250; // 0.25s per request delay
+export const BRUTE_FORCE_COUNT = process.env.BRUTE_FORCE_COUNT
+  ? parseInt(process.env.BRUTE_FORCE_COUNT)
+  : 5; // Start delaying after 5 requests
 export const RATE_LIMIT_TIME = process.env.RATE_LIMIT_TIME
   ? parseInt(process.env.RATE_LIMIT_TIME)
   : 60000; // 1 minute
