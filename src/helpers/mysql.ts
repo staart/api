@@ -39,7 +39,7 @@ export const pool = createPool({
 export const query = (
   queryString: string,
   values?: (string | number | boolean | Date | undefined)[]
-): InsertResult | any =>
+): Promise<InsertResult | any> =>
   new Promise((resolve, reject) => {
     pool.getConnection((error, connection) => {
       if (error) return reject(error);

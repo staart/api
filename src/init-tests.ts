@@ -4,15 +4,19 @@ import { sendMail, setupTransporter } from "@staart/mail";
 import systemInfo from "systeminformation";
 import pkg from "../package.json";
 import redis from "@staart/redis";
+import { query } from "./helpers/mysql";
 
 redis
   .set(pkg.name, systemInfo.time().current)
   .then(() => redis.del(pkg.name))
-  .then(() => success("Redis is listening"))
+  .then(() => success("Redis is up and listening"))
   .catch(() => logError("Redis", "Unable to connect"));
 
-setupTransporter();
+query("SHOW tables")
+  .then(() => success("Database connection is working"))
+  .catch(() => logError("Database", "Unable to run query `SHOW tables`"));
 
+setupTransporter();
 if (process.env.NODE_ENV === "production")
   sendMail({
     to: TEST_EMAIL,
