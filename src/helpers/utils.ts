@@ -7,7 +7,6 @@ import { ApiKeyResponse } from "./jwt";
 import { isMatch } from "matcher";
 import { getUserIdFromUsername } from "../crud/user";
 import { joiValidate, Joi } from "@staart/validate";
-import { hashIdToId } from "@staart/text";
 
 /**
  * Delete any sensitive information for a user like passwords and tokens
@@ -22,7 +21,7 @@ export const organizationUsernameToId = async (id: string) => {
   if (isNaN(Number(id))) {
     return await getOrganizationIdFromUsername(id);
   } else {
-    return hashIdToId(id);
+    return id;
   }
 };
 
@@ -32,7 +31,7 @@ export const userUsernameToId = async (id: string, tokenUserId: string) => {
   } else if (isNaN(Number(id))) {
     return await getUserIdFromUsername(id);
   } else {
-    return hashIdToId(id);
+    return id;
   }
 };
 

@@ -7,7 +7,6 @@ import {
 } from "../helpers/tracking";
 import { elasticSearch } from "@staart/elasticsearch";
 import { IdValues } from "../helpers/utils";
-import { hashIdToId } from "@staart/text";
 import { ELASTIC_EVENTS_PREFIX, ELASTIC_LOGS_PREFIX } from "../config";
 import { error } from "@staart/errors";
 
@@ -35,12 +34,11 @@ const storeSecurityEvents = async () => {
   for await (let body of data) {
     if (typeof body === "object") {
       Object.keys(body).forEach(key => {
-        if (IdValues.includes(key)) body[key] = hashIdToId(body[key]);
+        if (IdValues.includes(key)) body[key] = body[key];
       });
       if (body.data && typeof body.data === "object") {
         Object.keys(body.data).forEach(key => {
-          if (IdValues.includes(key))
-            body.data[key] = hashIdToId(body.data[key]);
+          if (IdValues.includes(key)) body.data[key] = body.data[key];
         });
       }
     }
@@ -70,12 +68,11 @@ const storeTrackingLogs = async () => {
     try {
       if (typeof body === "object") {
         Object.keys(body).forEach(key => {
-          if (IdValues.includes(key)) body[key] = hashIdToId(body[key]);
+          if (IdValues.includes(key)) body[key] = body[key];
         });
         if (body.data && typeof body.data === "object") {
           Object.keys(body.data).forEach(key => {
-            if (IdValues.includes(key))
-              body.data[key] = hashIdToId(body.data[key]);
+            if (IdValues.includes(key)) body.data[key] = body.data[key];
           });
         }
       }

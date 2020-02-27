@@ -20,7 +20,6 @@ import {
   readOnlyValues,
   IdValues
 } from "./utils";
-import { generateHashId, hashIdToId } from "@staart/text";
 import { getUserPrimaryEmailObject } from "../crud/email";
 import { InsertResult } from "../interfaces/mysql";
 import { emojify, unemojify } from "node-emoji";
@@ -93,7 +92,6 @@ export const uncleanValues = (
             )
           ).toISOString();
         }
-        if (IdValues.includes(key)) item[key] = generateHashId(item[key]);
         if (typeof item[key] === "string") item[key] = emojify(item[key]);
       });
       return item;
@@ -113,7 +111,7 @@ export const cleanValues = (
     if (typeof value === "string") {
       value = unemojify(value.trim());
       if (value.startsWith(HASH_ID_PREFIX)) {
-        value = hashIdToId(value);
+        value = value;
       }
     }
     // Convert true to 1, false to 0
