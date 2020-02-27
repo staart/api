@@ -100,7 +100,7 @@ export const newOrganizationForUser = async (
 ) => {
   if (!organization.name) {
     const user = await getUser(userId);
-    organization.name = `${user.name}'s Team`;
+    organization.name = user.name;
   }
   const org = <InsertResult>await createOrganization(organization);
   const organizationId = org.insertId;
