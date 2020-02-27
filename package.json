@@ -86,7 +86,7 @@
   "dependencies": {
     "@sentry/node": "^5.12.5",
     "@staart/disposable-email": "^2.0.0",
-    "@staart/elasticsearch": "^1.0.0",
+    "@staart/elasticsearch": "^2.0.0",
     "@staart/errors": "^1.2.1",
     "@staart/mail": "^1.1.1",
     "@staart/messages": "^2.0.0",
