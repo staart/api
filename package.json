@@ -91,7 +91,7 @@
     "@staart/mail": "^2.0.0",
     "@staart/messages": "^2.0.0",
     "@staart/mustache-markdown": "^2.0.1",
-    "@staart/payments": "^2.0.0",
+    "@staart/payments": "^3.0.0",
     "@staart/redis": "^2.0.0",
     "@staart/server": "^2.0.0",
     "@staart/text": "^2.0.0",
