@@ -3,7 +3,7 @@ import { readFile } from "fs-extra";
 import { join } from "path";
 import i18n from "../i18n";
 import { logError } from "@staart/errors";
-import { sendMail } from "@staart/mail";
+import { sendMail, setupTransporter } from "@staart/mail";
 import { render } from "@staart/mustache-markdown";
 import systemInfo from "systeminformation";
 import pkg from "../../package.json";
@@ -34,6 +34,7 @@ export const mail = async (
   });
 };
 
+setupTransporter();
 sendMail({
   to: TEST_EMAIL,
   subject: "Test from Staart",
