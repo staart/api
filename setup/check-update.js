@@ -11,13 +11,15 @@ dotenv.config();
 const packageUrl =
   "https://raw.githubusercontent.com/staart/api/master/package.json";
 
+const versionToNum = version => parseInt(version.replace(/\./g, ""));
+
 const checkUpdate = async () => {
   const pkg = (await axios.get(packageUrl)).data;
   const v = yourPkg["staart-version"];
-  info("Most recent version is", pkg.version);
-  info("Your version is", v);
-  if (v !== pkg.version) {
-    warn("🚨  Staart update required");
+  if (versionToNum(v) < versionToNum(pkg.version)) {
+    info("Most recent version is", pkg.version);
+    info("Your version is", v);
+    warn(`🚨  Staart update required (v)"`);
   }
   const i = JSON.parse(
     (await fs.readFile(path.join(__dirname, "..", "package.json"))).toString()
