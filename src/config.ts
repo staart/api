@@ -106,6 +106,7 @@ export const SALESFORCE_CLIENT_SECRET =
 
 // Payments and billing
 export const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || "";
+export const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || "";
 export const STRIPE_PRODUCT_ID = process.env.STRIPE_PRODUCT_ID || "";
 
 // Tracking

@@ -9,7 +9,8 @@ import {
   getUserBackupCode,
   updateBackupCode,
   checkUsernameAvailability,
-  deleteSessionByJwt
+  deleteSessionByJwt,
+  getBestUsernameForUser
 } from "../crud/user";
 import { InsertResult } from "../interfaces/mysql";
 import {
@@ -125,9 +126,9 @@ export const register = async (
     await checkIfNewEmail(email);
     if (!ALLOW_DISPOSABLE_EMAILS) checkIfDisposableEmail(email);
   }
-  if (!user.username) user.username = createSlug(user.name);
-  if (!(await checkUsernameAvailability(user.username)))
+  if (user.username && !(await checkUsernameAvailability(user.username)))
     throw new Error(USERNAME_EXISTS);
+  user.username = user.username || (await getBestUsernameForUser(user.name));
   const result = <InsertResult>await createUser(user);
   const userId = result.insertId;
   // Set email

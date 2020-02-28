@@ -14,7 +14,8 @@ import ms from "ms";
 import {
   capitalizeFirstAndLastLetter,
   createSlug,
-  randomString
+  randomString,
+  slugify
 } from "@staart/text";
 import { KeyValue } from "../interfaces/general";
 import { cachedQuery, deleteItemFromCache } from "../helpers/cache";
@@ -43,6 +44,30 @@ import {
 import randomColor from "randomcolor";
 import axios from "axios";
 
+/**
+ * Check if an organization username is available
+ */
+export const checkOrganizationUsernameAvailability = async (
+  username: string
+) => {
+  try {
+    const organizationId = await getOrganizationIdFromUsername(username);
+    if (organizationId) return false;
+  } catch (error) {}
+  return true;
+};
+
+const getBestUsernameForOrganization = async (name: string) => {
+  let available = false;
+  let result = slugify(name);
+  if (checkOrganizationUsernameAvailability(result)) available = true;
+  while (!available) {
+    result = createSlug(name);
+    if (checkOrganizationUsernameAvailability(result)) available = true;
+  }
+  return result;
+};
+
 /*
  * Create a new organization for a user
  */
@@ -51,7 +76,9 @@ export const createOrganization = async (organization: Organization) => {
   organization.name = capitalizeFirstAndLastLetter(organization.name);
   organization.createdAt = new Date();
   organization.updatedAt = organization.createdAt;
-  organization.username = createSlug(organization.name);
+  organization.username = await getBestUsernameForOrganization(
+    organization.name
+  );
   const backgroundColor = randomColor({
     luminosity: "dark",
     format: "hex"
@@ -59,10 +86,16 @@ export const createOrganization = async (organization: Organization) => {
   organization.profilePicture = `https://ui-avatars.com/api/?name=${encodeURIComponent(
     (organization.name || "XX").substring(0, 2).toUpperCase()
   )}&background=${backgroundColor}&color=fff`;
-  return await query(
+  deleteItemFromCache(
+    CacheCategories.ORGANIZATION_USERNAME,
+    organization.username
+  );
+  const result = (await query(
     `INSERT INTO ${tableName("organizations")} ${tableValues(organization)}`,
     Object.values(organization)
-  );
+  )) as InsertResult;
+  deleteItemFromCache(CacheCategories.ORGANIZATION, result.insertId);
+  return result;
 };
 
 /*

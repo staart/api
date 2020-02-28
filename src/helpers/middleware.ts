@@ -31,6 +31,8 @@ import { ApiKey } from "../interfaces/tables/organization";
 import { includesDomainInCommaList } from "./utils";
 import { trackUrl } from "./tracking";
 import { joiValidate } from "@staart/validate";
+import { constructWebhookEvent } from "@staart/payments";
+import { StripeLocals } from "../interfaces/general.js";
 
 const bruteForce = slowDown({
   windowMs: BRUTE_FORCE_TIME,
@@ -249,4 +251,29 @@ export const validator = (
     joiValidate(schemaMap, data);
     next();
   };
+};
+
+/**
+ * Handle Stripe's webhook authentication
+ */
+export const stripeWebhookAuthHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const signature = req.get("stripe-signature");
+  if (!signature) {
+    const error = safeError(MISSING_TOKEN);
+    res.status(error.status);
+    return res.json(error);
+  }
+  try {
+    const event = constructWebhookEvent(req.body, signature);
+    (res.locals as StripeLocals).stripeEvent = event;
+    next();
+  } catch (error) {
+    const webhookError = safeError(MISSING_TOKEN);
+    res.status(webhookError.status);
+    return res.json(webhookError);
+  }
 };
