@@ -14,7 +14,11 @@ import {
   checkReferrerRestrictions
 } from "./jwt";
 import { Tokens } from "../interfaces/enum";
-import { MISSING_TOKEN } from "@staart/errors";
+import {
+  MISSING_TOKEN,
+  INVALID_SIGNATURE,
+  MISSING_SIGNATURE
+} from "@staart/errors";
 import {
   BRUTE_FORCE_TIME,
   BRUTE_FORCE_COUNT,
@@ -263,16 +267,17 @@ export const stripeWebhookAuthHandler = async (
 ) => {
   const signature = req.get("stripe-signature");
   if (!signature) {
-    const error = safeError(MISSING_TOKEN);
+    const error = safeError(MISSING_SIGNATURE);
     res.status(error.status);
     return res.json(error);
   }
   try {
-    const event = constructWebhookEvent(req.body, signature);
+    const event = constructWebhookEvent(Buffer.from(req.body), signature);
     (res.locals as StripeLocals).stripeEvent = event;
     next();
   } catch (error) {
-    const webhookError = safeError(MISSING_TOKEN);
+    console.log("Webhook error", error);
+    const webhookError = safeError(INVALID_SIGNATURE);
     res.status(webhookError.status);
     return res.json(webhookError);
   }
