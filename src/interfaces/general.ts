@@ -1,3 +1,5 @@
+import Stripe from "stripe";
+
 export interface KeyValue {
   [index: string]: any;
 }
@@ -12,6 +14,10 @@ export interface Locals {
   userAgent: string;
   ipAddress: string;
   referrer?: string;
+}
+
+export interface StripeLocals extends Locals {
+  stripeEvent: Stripe.Event;
 }
 
 export interface Row {
