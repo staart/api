@@ -86,10 +86,16 @@ export const createOrganization = async (organization: Organization) => {
   organization.profilePicture = `https://ui-avatars.com/api/?name=${encodeURIComponent(
     (organization.name || "XX").substring(0, 2).toUpperCase()
   )}&background=${backgroundColor}&color=fff`;
-  return await query(
+  deleteItemFromCache(
+    CacheCategories.ORGANIZATION_USERNAME,
+    organization.username
+  );
+  const result = (await query(
     `INSERT INTO ${tableName("organizations")} ${tableValues(organization)}`,
     Object.values(organization)
-  );
+  )) as InsertResult;
+  deleteItemFromCache(CacheCategories.ORGANIZATION, result.insertId);
+  return result;
 };
 
 /*
