@@ -15,7 +15,12 @@ import {
 } from "../interfaces/tables/user";
 import { decode } from "jsonwebtoken";
 import { deleteSensitiveInfoUser } from "../helpers/utils";
-import { capitalizeFirstAndLastLetter, anonymizeIpAddress } from "@staart/text";
+import {
+  capitalizeFirstAndLastLetter,
+  anonymizeIpAddress,
+  slugify,
+  createSlug
+} from "@staart/text";
 import { hash } from "bcryptjs";
 import { KeyValue } from "../interfaces/general";
 import { NotificationEmails, CacheCategories } from "../interfaces/enum";
@@ -48,6 +53,23 @@ import {
 import ClientOAuth2 from "client-oauth2";
 import Axios from "axios";
 import { createHash } from "crypto";
+
+export const getBestUsernameForUser = async (name: string) => {
+  let result: string;
+  if (name.split(" ")[0].length) {
+    result = slugify(name.split(" ")[0]);
+    if (checkUsernameAvailability(result)) return result;
+  }
+  result = slugify(name);
+  if (checkUsernameAvailability(result)) return result;
+
+  let available = false;
+  while (!available) {
+    result = createSlug(name);
+    if (checkUsernameAvailability(result)) available = true;
+  }
+  return result;
+};
 
 /**
  * Get a list of all ${tableName("users")}
