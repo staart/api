@@ -272,7 +272,7 @@ export const stripeWebhookAuthHandler = async (
     return res.json(error);
   }
   try {
-    const event = constructWebhookEvent(Buffer.from(req.body), signature);
+    const event = constructWebhookEvent(req.body, signature);
     (res.locals as StripeLocals).stripeEvent = event;
     next();
   } catch (error) {
