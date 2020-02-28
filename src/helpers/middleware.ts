@@ -250,3 +250,25 @@ export const validator = (
     next();
   };
 };
+
+/**
+ * Handle Stripe's webhook authentication
+ */
+export const stripeWebhookAuthHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const signature = req.get("stripe-signature");
+  if (!signature) {
+    const error = safeError(MISSING_TOKEN);
+    res.status(error.status);
+    return res.json(error);
+  }
+  try {
+  } catch (error) {
+    const webhookError = safeError(MISSING_TOKEN);
+    res.status(webhookError.status);
+    return res.json(webhookError);
+  }
+};
