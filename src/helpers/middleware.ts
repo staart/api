@@ -262,7 +262,7 @@ export const validator = (
  * Handle Stripe's webhook authentication
  */
 export const stripeWebhookAuthHandler = async (
-  req: RawRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
@@ -273,7 +273,7 @@ export const stripeWebhookAuthHandler = async (
     return res.json(error);
   }
   try {
-    const event = constructWebhookEvent(req.rawBody, signature);
+    const event = constructWebhookEvent((req as RawRequest).rawBody, signature);
     (res.locals as StripeLocals).stripeEvent = event;
     next();
   } catch (error) {
