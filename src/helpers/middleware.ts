@@ -37,6 +37,7 @@ import { trackUrl } from "./tracking";
 import { joiValidate } from "@staart/validate";
 import { constructWebhookEvent } from "@staart/payments";
 import { StripeLocals } from "../interfaces/general.js";
+import { RawRequest } from "@staart/server";
 
 const bruteForce = slowDown({
   windowMs: BRUTE_FORCE_TIME,
@@ -261,7 +262,7 @@ export const validator = (
  * Handle Stripe's webhook authentication
  */
 export const stripeWebhookAuthHandler = async (
-  req: Request,
+  req: RawRequest,
   res: Response,
   next: NextFunction
 ) => {
@@ -272,7 +273,7 @@ export const stripeWebhookAuthHandler = async (
     return res.json(error);
   }
   try {
-    const event = constructWebhookEvent(req.body, signature);
+    const event = constructWebhookEvent(req.rawBody, signature);
     (res.locals as StripeLocals).stripeEvent = event;
     next();
   } catch (error) {
