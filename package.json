@@ -95,7 +95,7 @@
     "@staart/redis": "^2.0.1",
     "@staart/server": "^2.0.1",
     "@staart/text": "^2.0.1",
-    "@staart/validate": "^3.0.0",
+    "@staart/validate": "^3.0.1",
     "axios": "^0.19.2",
     "bcryptjs": "^2.4.3",
     "client-oauth2": "^4.2.5",
