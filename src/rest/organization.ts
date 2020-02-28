@@ -687,13 +687,11 @@ export const inviteMemberToOrganization = async (
       const inviter =
         typeof userId !== "object" ? (await getUser(userId)).name : "Someone";
       const userDetails = await getUser(createdUserId);
-      const email = await getUserPrimaryEmail(createdUserId);
-      if (email)
-        await mail(email, Templates.INVITED_TO_TEAM, {
-          ...userDetails,
-          team: organization.name,
-          inviter
-        });
+      await mail(newMemberEmail, Templates.INVITED_TO_TEAM, {
+        ...userDetails,
+        team: organization.name,
+        inviter
+      });
     }
     return;
   }

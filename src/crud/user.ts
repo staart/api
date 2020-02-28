@@ -53,6 +53,7 @@ import {
 import ClientOAuth2 from "client-oauth2";
 import Axios from "axios";
 import { createHash } from "crypto";
+import { InsertResult } from "../interfaces/mysql";
 
 export const getBestUsernameForUser = async (name: string) => {
   let result: string;
@@ -102,10 +103,14 @@ export const createUser = async (user: User) => {
   user.createdAt = new Date();
   user.updatedAt = user.createdAt;
   // Create user
-  return await query(
+  const result = (await query(
     `INSERT INTO ${tableName("users")} ${tableValues(user)}`,
     Object.values(user)
-  );
+  )) as InsertResult;
+  if (user.username)
+    deleteItemFromCache(CacheCategories.USER_USERNAME, user.username);
+  deleteItemFromCache(CacheCategories.USER, result.insertId);
+  return result;
 };
 
 /**
