@@ -71,7 +71,7 @@ export const uncleanValues = (
   data: (User | BackupCode | Email | Membership | Organization)[]
 ) => {
   if (typeof data.map === "function") {
-    data.map((item: KeyValue) => {
+    data = data.map((item: KeyValue) => {
       Object.keys(item).forEach(key => {
         try {
           if (jsonValues.includes(key)) item[key] = JSON.parse(item[key]);
@@ -92,6 +92,7 @@ export const uncleanValues = (
             )
           ).toISOString();
         }
+        if (typeof item[key] === "number") item[key] = String(item[key]);
         if (typeof item[key] === "string") item[key] = emojify(item[key]);
       });
       return item;
@@ -157,7 +158,7 @@ export const addIsPrimaryToEmails = async (emails: Email[]) => {
     const userPrimaryEmailObject = await getUserPrimaryEmailObject(
       emails[0].userId
     );
-    emails.map(email => {
+    emails = emails.map(email => {
       email.isPrimary = email.id === userPrimaryEmailObject.id;
       return email;
     });
