@@ -17,7 +17,7 @@ const setupQueue = async () => {
   if (queueSetup) return true;
   const queues = redisQueue.listQueuesAsync();
   if ((await queues).includes(WEBHOOK_QUEUE)) return (queueSetup = true);
-  redisQueue.createQueueAsync({ qname: WEBHOOK_QUEUE });
+  await redisQueue.createQueueAsync({ qname: WEBHOOK_QUEUE });
   return (queueSetup = true);
 };
 

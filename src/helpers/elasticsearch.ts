@@ -10,7 +10,7 @@ const setupQueue = async () => {
   if (queueSetup) return true;
   const queues = redisQueue.listQueuesAsync();
   if ((await queues).includes(ELASTIC_QUEUE)) return (queueSetup = true);
-  redisQueue.createQueueAsync({ qname: ELASTIC_QUEUE });
+  await redisQueue.createQueueAsync({ qname: ELASTIC_QUEUE });
   return (queueSetup = true);
 };
 

@@ -14,7 +14,7 @@ const setupQueue = async () => {
   if (queueSetup) return true;
   const queues = redisQueue.listQueuesAsync();
   if ((await queues).includes(MAIL_QUEUE)) return (queueSetup = true);
-  redisQueue.createQueueAsync({ qname: MAIL_QUEUE });
+  await redisQueue.createQueueAsync({ qname: MAIL_QUEUE });
   return (queueSetup = true);
 };
 
