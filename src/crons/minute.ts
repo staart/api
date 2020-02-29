@@ -13,6 +13,7 @@ import {
   elasticSearchIndex,
   receiveElasticSearchMessage
 } from "../helpers/elasticsearch";
+import { receiveWebhookMessage } from "../helpers/webhooks";
 
 export default () => {
   new CronJob(
@@ -20,6 +21,7 @@ export default () => {
     async () => {
       await receiveEmailMessage();
       await receiveElasticSearchMessage();
+      await receiveWebhookMessage();
       await storeTrackingLogs();
       await storeSecurityEvents();
     },
