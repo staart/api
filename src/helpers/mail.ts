@@ -7,39 +7,58 @@ import { render } from "@staart/mustache-markdown";
 import { redisQueue } from "@staart/redis";
 import { logError } from "@staart/errors";
 
+const MAIL_QUEUE = "outbound-emails";
+
 let queueSetup = false;
 const setupQueue = async () => {
-  if (queueSetup) return;
+  if (queueSetup) return true;
   const queues = redisQueue.listQueuesAsync();
-  if ((await queues).includes("outbound-emails")) return (queueSetup = true);
-  redisQueue.createQueueAsync({ qname: "outbound-emails" });
-  queueSetup = true;
+  if ((await queues).includes(MAIL_QUEUE)) return (queueSetup = true);
+  redisQueue.createQueueAsync({ qname: MAIL_QUEUE });
+  return (queueSetup = true);
 };
 
 export const receiveEmailMessage = async () => {
   await setupQueue();
   const result = await redisQueue.receiveMessageAsync({
-    qname: "outbound-emails"
+    qname: MAIL_QUEUE
   });
   if ("id" in result) {
     const {
       to,
       template,
-      data
+      data,
+      tryNumber
     }: {
-      to: number | string;
+      to: string;
       template: string;
+      tryNumber: number;
       data: any;
     } = JSON.parse(result.message);
-    try {
-      await safeSendEmail(to, template, data);
-      redisQueue.deleteMessageAsync({
-        qname: "outbound-emails",
+    if (tryNumber && tryNumber > 3) {
+      logError("Email", `Unable to send email: ${to}`);
+      return await redisQueue.deleteMessageAsync({
+        qname: MAIL_QUEUE,
         id: result.id
       });
-    } catch (error) {
-      logError("Mail", "Unable to send email");
     }
+    try {
+      await safeSendEmail(to, template, data);
+    } catch (error) {
+      await redisQueue.sendMessageAsync({
+        qname: MAIL_QUEUE,
+        message: JSON.stringify({
+          to,
+          template,
+          data,
+          tryNumber: tryNumber + 1
+        })
+      });
+    }
+    await redisQueue.deleteMessageAsync({
+      qname: MAIL_QUEUE,
+      id: result.id
+    });
     receiveEmailMessage();
   }
 };
@@ -47,23 +66,15 @@ export const receiveEmailMessage = async () => {
 /**
  * Send a new email using AWS SES or SMTP
  */
-export const mail = async (
-  to: number | string,
-  template: string,
-  data: any = {}
-) => {
+export const mail = async (to: string, template: string, data: any = {}) => {
   await setupQueue();
-  const result = await redisQueue.sendMessageAsync({
-    qname: "outbound-emails",
-    message: JSON.stringify({ to, template, data })
+  await redisQueue.sendMessageAsync({
+    qname: MAIL_QUEUE,
+    message: JSON.stringify({ to, template, data, tryNumber: 1 })
   });
 };
 
-const safeSendEmail = async (
-  to: number | string,
-  template: string,
-  data: any = {}
-) => {
+const safeSendEmail = async (to: string, template: string, data: any = {}) => {
   const result = render(
     (
       await readFile(
