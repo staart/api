@@ -9,11 +9,13 @@ import { elasticSearch } from "@staart/elasticsearch";
 import { IdValues } from "../helpers/utils";
 import { ELASTIC_EVENTS_PREFIX, ELASTIC_LOGS_PREFIX } from "../config";
 import { error } from "@staart/errors";
+import { receiveEmailMessage } from "../helpers/mail";
 
 export default () => {
   new CronJob(
     "* * * * *",
     async () => {
+      await receiveEmailMessage();
       await storeTrackingLogs();
       await storeSecurityEvents();
     },

@@ -5,12 +5,17 @@ import systemInfo from "systeminformation";
 import pkg from "../package.json";
 import redis from "@staart/redis";
 import { query } from "./helpers/mysql";
+import { receiveEmailMessage } from "./helpers/mail";
 
 redis
   .set(pkg.name, systemInfo.time().current)
   .then(() => redis.del(pkg.name))
-  .then(() => success("Redis is up and listening"))
+  .then(() => success("Redis is working"))
   .catch(() => logError("Redis", "Unable to connect"));
+
+receiveEmailMessage()
+  .then(() => success("Redis message queue is working"))
+  .catch(e => console.log(e, "Redis queue", "Unable to receive message"));
 
 query("SHOW tables")
   .then(() => success("Database connection is working"))
