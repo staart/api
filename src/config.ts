@@ -48,6 +48,10 @@ export const DB_PASSWORD = process.env.DB_PASSWORD || "";
 export const DB_DATABASE = process.env.DB_DATABASE || "database";
 export const DB_TABLE_PREFIX = process.env.DB_TABLE_PREFIX || "";
 
+// Redis
+export const REDIS_URL = process.env.REDIS_URL || "";
+export const REDIS_QUEUE_PREFIX = process.env.REDIS_QUEUE_PREFIX || "staart-";
+
 // Caching
 export const CACHE_TTL = process.env.CACHE_TTL
   ? parseInt(process.env.CACHE_TTL)

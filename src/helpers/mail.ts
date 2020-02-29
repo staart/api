@@ -1,4 +1,4 @@
-import { FRONTEND_URL } from "../config";
+import { FRONTEND_URL, REDIS_QUEUE_PREFIX } from "../config";
 import { readFile } from "fs-extra";
 import { join } from "path";
 import i18n from "../i18n";
@@ -7,7 +7,7 @@ import { render } from "@staart/mustache-markdown";
 import { redisQueue } from "@staart/redis";
 import { logError } from "@staart/errors";
 
-const MAIL_QUEUE = "outbound-emails";
+const MAIL_QUEUE = `${REDIS_QUEUE_PREFIX}outbound-emails`;
 
 let queueSetup = false;
 const setupQueue = async () => {

@@ -6,11 +6,11 @@ import {
 import { Webhook } from "../interfaces/tables/organization";
 import { createHmac } from "crypto";
 import axios from "axios";
-import { JWT_ISSUER } from "../config";
+import { JWT_ISSUER, REDIS_QUEUE_PREFIX } from "../config";
 import { redisQueue } from "@staart/redis";
 import { logError } from "@staart/errors";
 
-const WEBHOOK_QUEUE = "webhooks";
+const WEBHOOK_QUEUE = `${REDIS_QUEUE_PREFIX}webhooks`;
 
 let queueSetup = false;
 const setupQueue = async () => {
