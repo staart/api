@@ -22,7 +22,6 @@ export const receiveEmailMessage = async () => {
     qname: "outbound-emails"
   });
   if ("id" in result) {
-    console.log("Got message", result.id);
     const {
       to,
       template,
@@ -58,7 +57,6 @@ export const mail = async (
     qname: "outbound-emails",
     message: JSON.stringify({ to, template, data })
   });
-  console.log("Queued email", result);
 };
 
 const safeSendEmail = async (
