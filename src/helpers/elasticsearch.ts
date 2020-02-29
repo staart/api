@@ -1,34 +1,68 @@
-import { ELASTIC_INSTANCES_INDEX } from "../config";
-import { logError } from "@staart/errors";
 import { elasticSearch } from "@staart/elasticsearch";
-import systemInfo from "systeminformation";
-import pkg from "../../package.json";
+import { redisQueue } from "@staart/redis";
+import { logError } from "@staart/errors";
 
-const getSystemInformation = async () => {
-  return {
-    system: await systemInfo.system(),
-    time: systemInfo.time(),
-    cpu: await systemInfo.cpu(),
-    osInfo: await systemInfo.osInfo(),
-    package: {
-      name: pkg.name,
-      version: pkg.version,
-      repository: pkg.repository,
-      author: pkg.author,
-      "staart-version": pkg["staart-version"]
-    }
-  };
+const ELASTIC_QUEUE = "es-records";
+
+let queueSetup = false;
+const setupQueue = async () => {
+  if (queueSetup) return true;
+  const queues = redisQueue.listQueuesAsync();
+  if ((await queues).includes(ELASTIC_QUEUE)) return (queueSetup = true);
+  redisQueue.createQueueAsync({ qname: ELASTIC_QUEUE });
+  return (queueSetup = true);
 };
 
-getSystemInformation()
-  .then(body =>
-    elasticSearch.index({
-      index: ELASTIC_INSTANCES_INDEX,
-      body,
-      type: "log"
-    })
-  )
-  .then(() => {})
-  .catch(() =>
-    logError("ElasticSearch configuration error", "Unable to log event", 1)
-  );
+export const elasticSearchIndex = async (indexParams: {
+  index: string;
+  body: any;
+}) => {
+  await setupQueue();
+  await redisQueue.sendMessageAsync({
+    qname: ELASTIC_QUEUE,
+    message: JSON.stringify({ indexParams, tryNumber: 1 })
+  });
+};
+
+export const receiveElasticSearchMessage = async () => {
+  await setupQueue();
+  const result = await redisQueue.receiveMessageAsync({
+    qname: ELASTIC_QUEUE
+  });
+  if ("id" in result) {
+    const {
+      indexParams,
+      tryNumber
+    }: {
+      tryNumber: number;
+      indexParams: {
+        index: string;
+        body: string;
+        type: string;
+      };
+    } = JSON.parse(result.message);
+    if (tryNumber && tryNumber > 3) {
+      logError("ElasticSearch", `Unable to save record: ${indexParams}`);
+      return await redisQueue.deleteMessageAsync({
+        qname: ELASTIC_QUEUE,
+        id: result.id
+      });
+    }
+    try {
+      await elasticSearch.index(indexParams);
+    } catch (error) {
+      await redisQueue.sendMessageAsync({
+        qname: ELASTIC_QUEUE,
+        message: JSON.stringify({
+          indexParams,
+          tryNumber: tryNumber + 1
+        })
+      });
+    }
+    await redisQueue.deleteMessageAsync({
+      qname: ELASTIC_QUEUE,
+      id: result.id
+    });
+    receiveElasticSearchMessage();
+  }
+};

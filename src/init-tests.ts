@@ -1,4 +1,4 @@
-import { TEST_EMAIL } from "./config";
+import { TEST_EMAIL, ELASTIC_INSTANCES_INDEX } from "./config";
 import { logError, success } from "@staart/errors";
 import { sendMail, setupTransporter } from "@staart/mail";
 import systemInfo from "systeminformation";
@@ -6,6 +6,7 @@ import pkg from "../package.json";
 import redis from "@staart/redis";
 import { query } from "./helpers/mysql";
 import { receiveEmailMessage } from "./helpers/mail";
+import { elasticSearchIndex } from "./helpers/elasticsearch";
 
 redis
   .set(pkg.name, systemInfo.time().current)
@@ -43,3 +44,23 @@ if (process.env.NODE_ENV === "production")
     .catch(() =>
       logError("Invalid email config", "Could not send a test email", 1)
     );
+
+const getSystemInformation = async () => {
+  return {
+    name: pkg.name,
+    version: pkg.version,
+    repository: pkg.repository,
+    author: pkg.author,
+    "staart-version": pkg["staart-version"]
+  };
+};
+
+getSystemInformation()
+  .then(body =>
+    elasticSearchIndex({
+      index: ELASTIC_INSTANCES_INDEX,
+      body
+    })
+  )
+  .then(() => {})
+  .catch(() => {});

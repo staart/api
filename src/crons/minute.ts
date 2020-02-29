@@ -5,17 +5,21 @@ import {
   getSecurityEvents,
   clearSecurityEventsData
 } from "../helpers/tracking";
-import { elasticSearch } from "@staart/elasticsearch";
 import { IdValues } from "../helpers/utils";
 import { ELASTIC_EVENTS_PREFIX, ELASTIC_LOGS_PREFIX } from "../config";
 import { error } from "@staart/errors";
 import { receiveEmailMessage } from "../helpers/mail";
+import {
+  elasticSearchIndex,
+  receiveElasticSearchMessage
+} from "../helpers/elasticsearch";
 
 export default () => {
   new CronJob(
     "* * * * *",
     async () => {
       await receiveEmailMessage();
+      await receiveElasticSearchMessage();
       await storeTrackingLogs();
       await storeSecurityEvents();
     },
@@ -45,10 +49,9 @@ const storeSecurityEvents = async () => {
       }
     }
     try {
-      await elasticSearch.index({
+      await elasticSearchIndex({
         index: `${ELASTIC_EVENTS_PREFIX}${year}-${month}-${day}`,
-        body,
-        type: "log"
+        body
       });
     } catch (err) {
       error("Got error in saving to ElasticSearch", err);
@@ -78,10 +81,9 @@ const storeTrackingLogs = async () => {
           });
         }
       }
-      await elasticSearch.index({
+      await elasticSearchIndex({
         index: `${ELASTIC_LOGS_PREFIX}${year}-${month}-${day}`,
-        body,
-        type: "log"
+        body
       });
     } catch (err) {
       error("Got error in saving to ElasticSearch", err);
