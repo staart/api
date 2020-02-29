@@ -13,7 +13,7 @@ export const getPaginatedData = async ({
   table,
   conditions,
   start = 0,
-  itemsPerPage = 5,
+  itemsPerPage = 10,
   primaryKey = "id",
   q,
   search,
