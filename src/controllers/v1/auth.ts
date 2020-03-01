@@ -22,7 +22,7 @@ import {
   Middleware,
   ClassWrapper,
   Wrapper
-} from "@overnightjs/core";
+} from "@staart/server";
 import {
   authHandler,
   bruteForceHandler,

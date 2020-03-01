@@ -36,7 +36,7 @@ import {
   ClassMiddleware,
   ClassWrapper,
   Middleware
-} from "@overnightjs/core";
+} from "@staart/server";
 import { authHandler, validator } from "../../helpers/middleware";
 import { RESOURCE_CREATED, respond } from "@staart/messages";
 import {

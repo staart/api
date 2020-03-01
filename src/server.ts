@@ -1,5 +1,5 @@
 import "@babel/polyfill";
-import { Server } from "@overnightjs/core";
+import { Server } from "@staart/server";
 import { success } from "@staart/errors";
 import { setupMiddleware } from "@staart/server";
 

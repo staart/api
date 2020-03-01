@@ -5,12 +5,7 @@ import {
   getAllUsersForUser,
   getServerLogsForUser
 } from "../../rest/admin";
-import {
-  Get,
-  Controller,
-  ClassMiddleware,
-  ClassWrapper
-} from "@overnightjs/core";
+import { Get, Controller, ClassMiddleware, ClassWrapper } from "@staart/server";
 import { authHandler } from "../../helpers/middleware";
 import asyncHandler from "express-async-handler";
 

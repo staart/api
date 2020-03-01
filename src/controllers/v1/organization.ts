@@ -53,7 +53,7 @@ import {
   ClassWrapper,
   Middleware,
   Post
-} from "@overnightjs/core";
+} from "@staart/server";
 import { authHandler, validator } from "../../helpers/middleware";
 import { MembershipRole } from "../../interfaces/enum";
 import asyncHandler from "express-async-handler";

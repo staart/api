@@ -1,10 +1,5 @@
 import { Request, Response } from "express";
-import {
-  Get,
-  Controller,
-  ClassWrapper,
-  ClassMiddleware
-} from "@overnightjs/core";
+import { Get, Controller, ClassWrapper, ClassMiddleware } from "@staart/server";
 import asyncHandler from "express-async-handler";
 import { stripeWebhookAuthHandler } from "../../helpers/middleware";
 import { StripeLocals } from "../../interfaces/general";

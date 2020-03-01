@@ -12,7 +12,7 @@ import {
   ClassMiddleware,
   ClassWrapper,
   Middleware
-} from "@overnightjs/core";
+} from "@staart/server";
 import { authHandler, validator } from "../../helpers/middleware";
 import asyncHandler from "express-async-handler";
 import { Joi } from "@staart/validate";
