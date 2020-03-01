@@ -21,7 +21,6 @@ import { emailVerificationToken } from "../helpers/jwt";
 import { mail } from "../helpers/mail";
 import { InsertResult } from "../interfaces/mysql";
 import { sendNewPassword } from "../rest/auth";
-import { hash } from "bcryptjs";
 
 /**
  * Create a new email for a user

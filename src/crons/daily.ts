@@ -1,7 +1,7 @@
 import { CronJob } from "cron";
 import { elasticSearch } from "@staart/elasticsearch";
 import { ELASTIC_LOGS_PREFIX } from "../config";
-import ms from "ms";
+import { ms } from "@staart/text";
 
 export default () => {
   new CronJob(

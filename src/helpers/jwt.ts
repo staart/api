@@ -39,9 +39,8 @@ import { mail } from "./mail";
 import { getGeolocationFromIp } from "./location";
 import i18n from "../i18n";
 import { ApiKey } from "../interfaces/tables/organization";
-import ipRangeCheck from "ip-range-check";
 import redis from "@staart/redis";
-import { randomString } from "@staart/text";
+import { randomString, ipRangeCheck } from "@staart/text";
 
 /**
  * Generate a new JWT

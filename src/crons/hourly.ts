@@ -1,6 +1,6 @@
 import { CronJob } from "cron";
 import { query, tableName } from "../helpers/mysql";
-import ms from "ms";
+import { ms } from "@staart/text";
 import { TOKEN_EXPIRY_REFRESH } from "../config";
 import { Session } from "../interfaces/tables/user";
 

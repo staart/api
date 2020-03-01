@@ -3,7 +3,7 @@ import RateLimit from "express-rate-limit";
 import slowDown from "express-slow-down";
 import { SchemaMap } from "@staart/validate";
 import pkg from "../../package.json";
-import ms from "ms";
+import { ms } from "@staart/text";
 import { safeError } from "./errors";
 import {
   verifyToken,

@@ -19,9 +19,9 @@ import {
   capitalizeFirstAndLastLetter,
   anonymizeIpAddress,
   slugify,
-  createSlug
+  createSlug,
+  hash
 } from "@staart/text";
-import { hash } from "bcryptjs";
 import { KeyValue } from "../interfaces/general";
 import { NotificationEmails, CacheCategories } from "../interfaces/enum";
 import {
