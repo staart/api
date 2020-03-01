@@ -93,7 +93,7 @@
     "@staart/mustache-markdown": "^3.0.1",
     "@staart/payments": "^3.1.0",
     "@staart/redis": "^2.2.0",
-    "@staart/server": "^2.2.0",
+    "@staart/server": "^2.3.0",
     "@staart/text": "^2.1.0",
     "@staart/validate": "^3.0.1",
     "axios": "^0.19.2",
