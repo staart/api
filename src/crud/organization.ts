@@ -10,7 +10,7 @@ import {
   Domain,
   Webhook
 } from "../interfaces/tables/organization";
-import ms from "ms";
+import { ms } from "@staart/text";
 import {
   capitalizeFirstAndLastLetter,
   createSlug,

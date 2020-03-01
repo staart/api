@@ -37,7 +37,6 @@ import {
   Tokens,
   Authorizations
 } from "../interfaces/enum";
-import { compare } from "bcryptjs";
 import {
   USER_NOT_FOUND,
   MISSING_PASSWORD,
@@ -66,7 +65,7 @@ import {
 } from "../config";
 import axios from "axios";
 import { GitHubEmail } from "../interfaces/oauth";
-import { createSlug } from "@staart/text";
+import { compare } from "@staart/text";
 import { trackEvent } from "../helpers/tracking";
 import { getDomainByDomainName } from "../crud/organization";
 

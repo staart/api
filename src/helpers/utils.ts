@@ -4,7 +4,7 @@ import { getOrganizationIdFromUsername } from "../crud/organization";
 import { Request, Response } from "express";
 import { Tokens } from "../interfaces/enum";
 import { ApiKeyResponse } from "./jwt";
-import { isMatch } from "matcher";
+import { isMatch } from "@staart/text";
 import { getUserIdFromUsername } from "../crud/user";
 import { joiValidate, Joi } from "@staart/validate";
 

@@ -41,7 +41,7 @@ import { can } from "../helpers/authorization";
 import { authenticator } from "otplib";
 import { toDataURL } from "qrcode";
 import { SERVICE_2FA } from "../config";
-import { compare } from "bcryptjs";
+import { compare } from "@staart/text";
 import { getPaginatedData } from "../crud/data";
 import { addLocationToEvents } from "../helpers/location";
 import { trackEvent } from "../helpers/tracking";

@@ -7,7 +7,7 @@ import {
   cleanElasticSearchQueryResponse,
   elasticSearch
 } from "@staart/elasticsearch";
-import ms from "ms";
+import { ms } from "@staart/text";
 import { ELASTIC_LOGS_PREFIX } from "../config";
 
 export const getAllOrganizationForUser = async (
