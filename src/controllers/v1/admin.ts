@@ -5,13 +5,11 @@ import {
   getAllUsersForUser,
   getServerLogsForUser
 } from "../../rest/admin";
-import { Get, Controller, ClassMiddleware, ClassWrapper } from "@staart/server";
+import { Get, Controller, ClassMiddleware } from "@staart/server";
 import { authHandler } from "../../helpers/middleware";
-import asyncHandler from "express-async-handler";
 
 @Controller("v1/admin")
 @ClassMiddleware(authHandler)
-@ClassWrapper(asyncHandler)
 export class AdminController {
   @Get("organizations")
   async getOrganizations(req: Request, res: Response) {

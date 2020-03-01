@@ -56,7 +56,6 @@ import {
 } from "@staart/server";
 import { authHandler, validator } from "../../helpers/middleware";
 import { MembershipRole } from "../../interfaces/enum";
-import asyncHandler from "express-async-handler";
 import {
   organizationUsernameToId,
   localsToTokenOrKey
@@ -64,7 +63,6 @@ import {
 import { joiValidate, Joi } from "@staart/validate";
 
 @Controller("v1/organizations")
-@ClassWrapper(asyncHandler)
 @ClassMiddleware(authHandler)
 export class OrganizationController {
   @Put()

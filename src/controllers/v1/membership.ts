@@ -14,11 +14,9 @@ import {
   Middleware
 } from "@staart/server";
 import { authHandler, validator } from "../../helpers/middleware";
-import asyncHandler from "express-async-handler";
 import { Joi } from "@staart/validate";
 
 @Controller("v1/memberships")
-@ClassWrapper(asyncHandler)
 @ClassMiddleware(authHandler)
 export class MembershipController {
   @Get(":id")

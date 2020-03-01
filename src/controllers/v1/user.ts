@@ -46,7 +46,6 @@ import {
   getEmailForUser,
   resendEmailVerificationForUser
 } from "../../rest/email";
-import asyncHandler from "express-async-handler";
 import { userUsernameToId } from "../../helpers/utils";
 import { joiValidate, Joi } from "@staart/validate";
 import {
@@ -57,7 +56,6 @@ import {
 
 @Controller("v1/users")
 @ClassMiddleware(authHandler)
-@ClassWrapper(asyncHandler)
 export class UserController {
   @Get(":id")
   async get(req: Request, res: Response) {

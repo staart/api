@@ -15,20 +15,12 @@ import {
 } from "../../rest/auth";
 import { verifyToken, LoginResponse } from "../../helpers/jwt";
 import { RESOURCE_CREATED, respond } from "@staart/messages";
-import {
-  Get,
-  Post,
-  Controller,
-  Middleware,
-  ClassWrapper,
-  Wrapper
-} from "@staart/server";
+import { Get, Post, Controller, Middleware, Wrapper } from "@staart/server";
 import {
   authHandler,
   bruteForceHandler,
   validator
 } from "../../helpers/middleware";
-import asyncHandler from "express-async-handler";
 import { safeRedirect } from "../../helpers/utils";
 import { FRONTEND_URL, BASE_URL } from "../../config";
 import {
@@ -72,7 +64,6 @@ const OAuthRedirect = (
 };
 
 @Controller("v1/auth")
-@ClassWrapper(asyncHandler)
 export class AuthController {
   @Post("register")
   @Middleware(bruteForceHandler)

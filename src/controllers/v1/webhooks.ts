@@ -1,12 +1,10 @@
 import { Request, Response } from "express";
 import { Get, Controller, ClassWrapper, ClassMiddleware } from "@staart/server";
-import asyncHandler from "express-async-handler";
 import { stripeWebhookAuthHandler } from "../../helpers/middleware";
 import { StripeLocals } from "../../interfaces/general";
 
 @Controller("v1/webhooks")
 @ClassMiddleware(stripeWebhookAuthHandler)
-@ClassWrapper(asyncHandler)
 export class AdminController {
   @Get("stripe")
   async stripeWebhook(req: Request, res: Response) {

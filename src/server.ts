@@ -1,9 +1,10 @@
 import "@babel/polyfill";
 import { Server } from "@staart/server";
 import { success } from "@staart/errors";
-import { setupMiddleware } from "@staart/server";
 
-// This `join` is required for static files in app.ts
+// `asyncHandler` and `join` are required
+
+import { setupMiddleware, asyncHandler } from "@staart/server";
 import { join } from "path";
 
 import {
