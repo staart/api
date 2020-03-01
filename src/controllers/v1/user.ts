@@ -1,4 +1,3 @@
-import { Request, Response } from "express";
 import {
   getUserFromId,
   updateUserForUser,
@@ -34,7 +33,8 @@ import {
   Delete,
   Controller,
   ClassMiddleware,
-  ClassWrapper,
+  Request,
+  Response,
   Middleware
 } from "@staart/server";
 import { authHandler, validator } from "../../helpers/middleware";

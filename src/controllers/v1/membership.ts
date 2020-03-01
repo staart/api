@@ -1,4 +1,3 @@
-import { Request, Response } from "express";
 import {
   getMembershipDetailsForUser,
   deleteMembershipForUser,
@@ -10,8 +9,9 @@ import {
   Delete,
   Controller,
   ClassMiddleware,
-  ClassWrapper,
-  Middleware
+  Middleware,
+  Request,
+  Response
 } from "@staart/server";
 import { authHandler, validator } from "../../helpers/middleware";
 import { Joi } from "@staart/validate";

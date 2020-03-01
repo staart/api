@@ -1,4 +1,3 @@
-import { Request, Response, NextFunction, RequestHandler } from "express";
 import { UserRole, Tokens } from "../../interfaces/enum";
 import { INVALID_TOKEN } from "@staart/errors";
 import {
@@ -15,7 +14,17 @@ import {
 } from "../../rest/auth";
 import { verifyToken, LoginResponse } from "../../helpers/jwt";
 import { RESOURCE_CREATED, respond } from "@staart/messages";
-import { Get, Post, Controller, Middleware, Wrapper } from "@staart/server";
+import {
+  Get,
+  Post,
+  Controller,
+  Middleware,
+  Wrapper,
+  Request,
+  Response,
+  NextFunction,
+  RequestHandler
+} from "@staart/server";
 import {
   authHandler,
   bruteForceHandler,

@@ -1,5 +1,10 @@
-import { Request, Response } from "express";
-import { Get, Controller, ClassWrapper, ClassMiddleware } from "@staart/server";
+import {
+  Get,
+  Controller,
+  ClassMiddleware,
+  Request,
+  Response
+} from "@staart/server";
 import { stripeWebhookAuthHandler } from "../../helpers/middleware";
 import { StripeLocals } from "../../interfaces/general";
 

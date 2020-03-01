@@ -1,4 +1,3 @@
-import { Request, Response } from "express";
 import {
   newOrganizationForUser,
   updateOrganizationForUser,
@@ -50,7 +49,8 @@ import {
   Delete,
   Controller,
   ClassMiddleware,
-  ClassWrapper,
+  Request,
+  Response,
   Middleware,
   Post
 } from "@staart/server";

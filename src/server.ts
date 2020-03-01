@@ -4,7 +4,7 @@ import { success } from "@staart/errors";
 
 // `asyncHandler` and `join` are required
 
-import { setupMiddleware, asyncHandler } from "@staart/server";
+import { setupMiddleware, Request, Response, asyncHandler } from "@staart/server";
 import { join } from "path";
 
 import {
@@ -13,7 +13,6 @@ import {
   rateLimitHandler,
   speedLimitHandler
 } from "./helpers/middleware";
-import { Request, Response } from "express";
 
 export class Staart extends Server {
   constructor() {

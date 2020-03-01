@@ -1,7 +1,7 @@
 import { User } from "../interfaces/tables/user";
 import dns from "dns";
 import { getOrganizationIdFromUsername } from "../crud/organization";
-import { Request, Response } from "express";
+import { Request, Response } from "@staart/server";
 import { Tokens } from "../interfaces/enum";
 import { ApiKeyResponse } from "./jwt";
 import { isMatch } from "@staart/text";

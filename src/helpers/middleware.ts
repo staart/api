@@ -1,6 +1,10 @@
-import { Request, Response, NextFunction } from "express";
-import RateLimit from "express-rate-limit";
-import slowDown from "express-slow-down";
+import {
+  Request,
+  Response,
+  NextFunction,
+  RateLimit,
+  slowDown
+} from "@staart/server";
 import { SchemaMap } from "@staart/validate";
 import pkg from "../../package.json";
 import { ms } from "@staart/text";

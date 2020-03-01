@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response } from "@staart/server";
 import { verifyToken } from "./jwt";
 import { Tokens } from "../interfaces/enum";
 import { Event } from "../interfaces/tables/events";
