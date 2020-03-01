@@ -1,6 +1,6 @@
 {
   "name": "@staart/manager",
-  "version": "1.3.55",
+  "version": "1.3.56",
   "main": "index.js",
   "repository": "git@github.com:staart/api.git",
   "author": "Anand Chowdhary <mail@anandchowdhary.com>",
@@ -8,15 +8,14 @@
   "scripts": {
     "test": "jest --forceExit",
     "build": "touch .env && mkdir -p dist && cp .env dist/.env && npm run generate-routes && tsc",
-    "start": "npm run build && npm run launch",
+    "launch": "staart launch",
+    "start": "npm run build && staart launch",
     "dev": "concurrently 'npm run watch-build' 'nodemon dist/src/index.js'",
     "prettier-all": "prettier '{src,examples,setup}/**/*.{ts,js,json}' --write",
     "watch-build": "onchange '{src,examples}/**/*.ts' -- npm run build",
     "watch-prettier": "onchange '{src,examples}/**/*.{ts,json}' -- prettier --write {{changed}}",
     "generate-docs": "npm run generate-routes && typedoc --out docs ./src",
-    "launch": "node dist/src/index.js",
     "generate-routes": "node setup/controllers.js",
-    "increment-package": "node setup/increment.js",
     "check-update": "node setup/check-update.js",
     "update": "git pull git@github.com:staart/api",
     "postinstall": "npm run check-update",
@@ -25,7 +24,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run increment-package && git add ."
+      "pre-commit": "staart increment && git add ."
     }
   },
   "engines": {
@@ -117,5 +116,5 @@
     "setup"
   ],
   "snyk": true,
-  "staart-version": "1.3.55"
+  "staart-version": "1.3.56"
 }
