@@ -2,11 +2,11 @@
 
 Staart is a Node.js backend starter for SaaS startups written in TypeScript. It has built-in user management and authentication, billing, organizations, GDPR tools, and more.
 
-|  | Status |
-| - | - |
-| Build | [![GitHub Actions](https://github.com/staart/api/workflows/Node%20CI/badge.svg)](https://github.com/staart/api/actions) [![Travis CI](https://img.shields.io/travis/staart/api?label=Travis%20CI)](https://travis-ci.org/staart/api) [![Circle CI](https://img.shields.io/circleci/build/github/staart/api?label=Circle%20CI)](https://circleci.com/gh/staart/api) [![Azure Pipelines](https://dev.azure.com/staart/api/_apis/build/status/staart.api?branchName=master)](https://dev.azure.com/staart/api/_build/latest?definitionId=1&branchName=master) |
-| Dependencies | [![Dependencies](https://img.shields.io/david/staart/api.svg)](https://david-dm.org/staart/api) [![Dev dependencies](https://img.shields.io/david/dev/staart/api.svg)](https://david-dm.org/staart/api) ![Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/github/staart/api.svg) |
-| Community | [![Contributors](https://img.shields.io/github/contributors/staart/api.svg)](https://github.com/staart/api/graphs/contributors) [![GitHub](https://img.shields.io/github/license/staart/api.svg)](https://github.com/staart/api/blob/master/LICENSE) ![Type definitions](https://img.shields.io/badge/types-TypeScript-blue.svg) [![npm package version](https://img.shields.io/npm/v/@staart/manager)](https://www.npmjs.com/package/@staart/manager) |
+|              | Status                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Build        | [![GitHub Actions](https://github.com/staart/api/workflows/Node%20CI/badge.svg)](https://github.com/staart/api/actions) [![Travis CI](https://img.shields.io/travis/staart/api?label=Travis%20CI)](https://travis-ci.org/staart/api) [![Circle CI](https://img.shields.io/circleci/build/github/staart/api?label=Circle%20CI)](https://circleci.com/gh/staart/api) [![Azure Pipelines](https://dev.azure.com/staart/api/_apis/build/status/staart.api?branchName=master)](https://dev.azure.com/staart/api/_build/latest?definitionId=1&branchName=master) |
+| Dependencies | [![Dependencies](https://img.shields.io/david/staart/api.svg)](https://david-dm.org/staart/api) [![Dev dependencies](https://img.shields.io/david/dev/staart/api.svg)](https://david-dm.org/staart/api) ![Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/github/staart/api.svg)                                                                                                                                                                                                                                                              |
+| Community    | [![Contributors](https://img.shields.io/github/contributors/staart/api.svg)](https://github.com/staart/api/graphs/contributors) [![GitHub](https://img.shields.io/github/license/staart/api.svg)](https://github.com/staart/api/blob/master/LICENSE) ![Type definitions](https://img.shields.io/badge/types-TypeScript-blue.svg) [![npm package version](https://img.shields.io/npm/v/@staart/manager)](https://www.npmjs.com/package/@staart/manager)                                                                                                     |
 
 Staart is build to work with [Staart UI](https://github.com/staart/ui), the frontend starter for SaaS.
 
@@ -47,19 +47,19 @@ Staart is build to work with [Staart UI](https://github.com/staart/ui), the fron
 ## 🛠 Usage
 
 1. Use this template or fork this repository
-1. Install dependencies with `yarn` or `npm i`
+1. Install dependencies with `npm install`
 1. Add a `.env` file based on [config.ts](https://github.com/staart/api/blob/master/src/config.ts).
 1. Create MariaDB/MySQL tables based on [schema.sql](https://github.com/staart/api/blob/master/schema.sql)
 1. Add your controllers in the `./src/controllers` directory
-1. Generate your `app.ts` file using `yarn generate-routes`
-1. Build with `yarn build` and deploy with `yarn start`
+1. Generate your `app.ts` file using `staart controllers`
+1. Build with `staart build` and deploy with `staart launch`
 
 ### Updating Staart
 
 To update your installation of Staart, run the following:
 
 ```bash
-node setup/update.js
+staart update
 ```
 
 If you've used the "Use this template" option on GitHub, you might have to force pull from `staart/api` the first time since the histories wouldn't match. You can use the flag `--allow-unrelated-histories` in this case.
@@ -115,14 +115,14 @@ This project follows the [all-contributors](https://github.com/all-contributors/
 
 The Staart ecosystem consists of open-source projects to build your SaaS startup, written in TypeScript.
 
-| Package |  |  |
-| - | - | - |
-| [🛠️ Staart API](https://github.com/staart/api) | Node.js backend with RESTful APIs | [![Build status](https://img.shields.io/circleci/build/github/staart/api)](https://circleci.com/gh/staart/api) [![Docs](https://img.shields.io/endpoint?url=https%3A%2F%2Fstaart.js.org%2Fshield-schema%2Fapi.json)](https://staart.js.org/api) [![npm package version](https://img.shields.io/npm/v/@staart/manager)](https://www.npmjs.com/package/@staart/manager) |
-| [🌐 Staart UI](https://github.com/staart/ui) | Frontend Vue.js Progressive Web App | [![Build status](https://img.shields.io/circleci/build/github/staart/ui)](https://circleci.com/gh/staart/ui) [![Docs](https://img.shields.io/endpoint?url=https%3A%2F%2Fstaart.js.org%2Fshield-schema%2Fui.json)](https://staart.js.org/ui) [![npm package version](https://img.shields.io/npm/v/@staart/ui)](https://www.npmjs.com/package/@staart/ui) |
-| [📑 Staart Site](https://github.com/staart/site) | Static site generator for docs/helpdesk | [![Build status](https://img.shields.io/circleci/build/github/staart/site)](https://circleci.com/gh/staart/site) [![Docs](https://img.shields.io/endpoint?url=https%3A%2F%2Fstaart.js.org%2Fshield-schema%2Fsite.json)](https://staart.js.org/site) [![npm package version](https://img.shields.io/npm/v/@staart/site)](https://www.npmjs.com/package/@staart/site) |
-| [📱 Staart Native](https://github.com/staart/native) | React Native app for Android and iOS | [![Build status](https://img.shields.io/circleci/build/github/staart/native)](https://circleci.com/gh/staart/native) [![Docs](https://img.shields.io/endpoint?url=https%3A%2F%2Fstaart.js.org%2Fshield-schema%2Fnative.json)](https://staart.js.org/native) [![npm package version](https://img.shields.io/npm/v/@staart/native)](https://www.npmjs.com/package/@staart/native) |
-| [🎨 Staart.css](https://github.com/staart/css) | Sass/CSS framework and utilities | [![Build status](https://img.shields.io/circleci/build/github/staart/css)](https://circleci.com/gh/staart/css) [![Docs](https://img.shields.io/endpoint?url=https%3A%2F%2Fstaart.js.org%2Fshield-schema%2Fcss.json)](https://staart.js.org/css) [![npm package version](https://img.shields.io/npm/v/@staart/css)](https://www.npmjs.com/package/@staart/css) |
-| [📦 Staart Packages](https://github.com/staart/packages) | Helper functions and utility packages | [![Build status](https://img.shields.io/circleci/build/github/staart/packages)](https://circleci.com/gh/staart/packages) [![Custom badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fservices.anandchowdhary.now.sh%2Fapi%2Fgithub-files%3Frepo%3Dstaart%2Fpackages%26path%3Dpackages%26label%3Dstaart%26message%3D%25241%2524%2520package%2524S%2524%26color%3Dblueviolet)](https://www.npmjs.com/org/staart) |
+| Package                                                  |                                         |                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| -------------------------------------------------------- | --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [🛠️ Staart API](https://github.com/staart/api)           | Node.js backend with RESTful APIs       | [![Build status](https://img.shields.io/circleci/build/github/staart/api)](https://circleci.com/gh/staart/api) [![Docs](https://img.shields.io/endpoint?url=https%3A%2F%2Fstaart.js.org%2Fshield-schema%2Fapi.json)](https://staart.js.org/api) [![npm package version](https://img.shields.io/npm/v/@staart/manager)](https://www.npmjs.com/package/@staart/manager)                                                 |
+| [🌐 Staart UI](https://github.com/staart/ui)             | Frontend Vue.js Progressive Web App     | [![Build status](https://img.shields.io/circleci/build/github/staart/ui)](https://circleci.com/gh/staart/ui) [![Docs](https://img.shields.io/endpoint?url=https%3A%2F%2Fstaart.js.org%2Fshield-schema%2Fui.json)](https://staart.js.org/ui) [![npm package version](https://img.shields.io/npm/v/@staart/ui)](https://www.npmjs.com/package/@staart/ui)                                                               |
+| [📑 Staart Site](https://github.com/staart/site)         | Static site generator for docs/helpdesk | [![Build status](https://img.shields.io/circleci/build/github/staart/site)](https://circleci.com/gh/staart/site) [![Docs](https://img.shields.io/endpoint?url=https%3A%2F%2Fstaart.js.org%2Fshield-schema%2Fsite.json)](https://staart.js.org/site) [![npm package version](https://img.shields.io/npm/v/@staart/site)](https://www.npmjs.com/package/@staart/site)                                                   |
+| [📱 Staart Native](https://github.com/staart/native)     | React Native app for Android and iOS    | [![Build status](https://img.shields.io/circleci/build/github/staart/native)](https://circleci.com/gh/staart/native) [![Docs](https://img.shields.io/endpoint?url=https%3A%2F%2Fstaart.js.org%2Fshield-schema%2Fnative.json)](https://staart.js.org/native) [![npm package version](https://img.shields.io/npm/v/@staart/native)](https://www.npmjs.com/package/@staart/native)                                       |
+| [🎨 Staart.css](https://github.com/staart/css)           | Sass/CSS framework and utilities        | [![Build status](https://img.shields.io/circleci/build/github/staart/css)](https://circleci.com/gh/staart/css) [![Docs](https://img.shields.io/endpoint?url=https%3A%2F%2Fstaart.js.org%2Fshield-schema%2Fcss.json)](https://staart.js.org/css) [![npm package version](https://img.shields.io/npm/v/@staart/css)](https://www.npmjs.com/package/@staart/css)                                                         |
+| [📦 Staart Packages](https://github.com/staart/packages) | Helper functions and utility packages   | [![Build status](https://img.shields.io/circleci/build/github/staart/packages)](https://circleci.com/gh/staart/packages) [![Custom badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fservices.anandchowdhary.now.sh%2Fapi%2Fgithub-files%3Frepo%3Dstaart%2Fpackages%26path%3Dpackages%26label%3Dstaart%26message%3D%25241%2524%2520package%2524S%2524%26color%3Dblueviolet)](https://www.npmjs.com/org/staart) |
 
 ## 💝 Sponsors
 
