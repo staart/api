@@ -1,6 +1,6 @@
 {
   "name": "@staart/manager",
-  "version": "1.3.57",
+  "version": "1.3.58",
   "main": "index.js",
   "repository": "git@github.com:staart/api.git",
   "author": "Anand Chowdhary <mail@anandchowdhary.com>",
@@ -11,12 +11,8 @@
     "build": "touch .env && mkdir -p dist && cp .env dist/.env && staart controllers && tsc",
     "postinstall": "staart check",
     "start": "npm run build && staart launch",
-    "test": "jest --forceExit",
-    "dev": "concurrently 'npm run watch-build' 'nodemon dist/src/index.js'",
-    "prettier-all": "prettier '{src,examples,setup}/**/*.{ts,js,json}' --write",
-    "watch-build": "onchange '{src,examples}/**/*.ts' -- npm run build",
-    "watch-prettier": "onchange '{src,examples}/**/*.{ts,json}' -- prettier --write {{changed}}",
     "generate-docs": "staart controllers && typedoc --out docs ./src",
+    "test": "jest --forceExit",
     "snyk-protect": "snyk protect"
   },
   "husky": {
@@ -62,8 +58,6 @@
     "has-yarn": "^2.1.0",
     "husky": "^4.2.3",
     "jest": "^25.1.0",
-    "onchange": "^6.1.0",
-    "prettier": "^1.19.1",
     "recursive-readdir": "^2.2.2",
     "shelljs": "^0.8.3",
     "ts-jest": "^25.2.1",
@@ -113,5 +107,5 @@
     "setup"
   ],
   "snyk": true,
-  "staart-version": "1.3.57"
+  "staart-version": "1.3.58"
 }
