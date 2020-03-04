@@ -226,7 +226,7 @@ export class UserController {
       { id, email }
     );
     await addEmailToUserForUser(res.locals.token.id, id, email, res.locals);
-    return respond(req, res, RESOURCE_CREATED);
+    return respond(RESOURCE_CREATED);
   }
 
   @Get(":id/emails/:emailId")
@@ -361,7 +361,7 @@ export class UserController {
       req.body,
       res.locals
     );
-    return respond(req, res, RESOURCE_CREATED);
+    return respond(RESOURCE_CREATED);
   }
 
   @Get(":id/access-tokens/:accessTokenId")

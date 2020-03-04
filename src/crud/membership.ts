@@ -5,10 +5,7 @@ import {
   removeReadOnlyValues,
   tableName
 } from "../helpers/mysql";
-import {
-  Membership,
-  MembershipDetailed
-} from "../interfaces/tables/memberships";
+import { Membership } from "../interfaces/tables/memberships";
 import { KeyValue } from "../interfaces/general";
 import { User } from "../interfaces/tables/user";
 import { getOrganization } from "./organization";

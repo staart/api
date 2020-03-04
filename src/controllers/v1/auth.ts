@@ -111,7 +111,7 @@ export class AuthController {
       req.body.organizationId,
       req.body.membershipRole
     );
-    return respond(req, res, RESOURCE_CREATED);
+    return respond(RESOURCE_CREATED);
   }
 
   @Post("login")

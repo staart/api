@@ -76,7 +76,7 @@ export class OrganizationController {
   )
   async put(req: Request, res: Response) {
     await newOrganizationForUser(res.locals.token.id, req.body, res.locals);
-    return respond(req, res, RESOURCE_CREATED);
+    return respond(RESOURCE_CREATED);
   }
 
   @Get(":id")
@@ -114,7 +114,7 @@ export class OrganizationController {
       req.body,
       res.locals
     );
-    return respond(req, res, RESOURCE_UPDATED, { resource: "Team" });
+    return respond(RESOURCE_UPDATED, { resource: "Team" });
   }
 
   @Delete(":id")
@@ -370,7 +370,7 @@ export class OrganizationController {
       req.body,
       res.locals
     );
-    return respond(req, res, RESOURCE_CREATED);
+    return respond(RESOURCE_CREATED);
   }
 
   @Delete(":id/sources/:sourceId")
@@ -471,7 +471,7 @@ export class OrganizationController {
       role || MembershipRole.MEMBER,
       res.locals
     );
-    return respond(req, res, RESOURCE_CREATED);
+    return respond(RESOURCE_CREATED);
   }
 
   @Get(":id/memberships/:membershipId")
@@ -580,7 +580,7 @@ export class OrganizationController {
       req.body,
       res.locals
     );
-    return respond(req, res, RESOURCE_CREATED);
+    return respond(RESOURCE_CREATED);
   }
 
   @Get(":id/api-keys/:apiKeyId")
@@ -708,7 +708,7 @@ export class OrganizationController {
       req.body,
       res.locals
     );
-    return respond(req, res, RESOURCE_CREATED);
+    return respond(RESOURCE_CREATED);
   }
 
   @Get(":id/domains/:domainId")
@@ -841,7 +841,7 @@ export class OrganizationController {
       req.body,
       res.locals
     );
-    return respond(req, res, RESOURCE_CREATED);
+    return respond(RESOURCE_CREATED);
   }
 
   @Get(":id/webhooks/:webhookId")
