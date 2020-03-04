@@ -1,17 +1,17 @@
 import { MISSING_FIELD } from "@staart/errors";
 import {
-  getAllOrganizationForUser,
-  getAllUsersForUser,
-  getServerLogsForUser
-} from "../../../rest/admin";
-import {
-  Get,
-  Controller,
   ClassMiddleware,
+  Controller,
+  Get,
   Request,
   Response
 } from "@staart/server";
 import { authHandler } from "../../../helpers/middleware";
+import {
+  getAllOrganizationForUser,
+  getAllUsersForUser,
+  getServerLogsForUser
+} from "../../../rest/admin";
 
 @Controller("admin")
 @ClassMiddleware(authHandler)
@@ -20,21 +20,21 @@ export class AdminController {
   async getOrganizations(req: Request, res: Response) {
     const userId = res.locals.token.id;
     if (!userId) throw new Error(MISSING_FIELD);
-    return await getAllOrganizationForUser(userId, req.query);
+    return getAllOrganizationForUser(userId, req.query);
   }
 
   @Get("users")
   async getUsers(req: Request, res: Response) {
     const userId = res.locals.token.id;
     if (!userId) throw new Error(MISSING_FIELD);
-    return await getAllUsersForUser(userId, req.query);
+    return getAllUsersForUser(userId, req.query);
   }
 
   @Get("server-logs")
   async getServerLogs(req: Request, res: Response) {
     const userId = res.locals.token.id;
     if (!userId) throw new Error(MISSING_FIELD);
-    return await getServerLogsForUser(userId, req.query);
+    return getServerLogsForUser(userId, req.query);
   }
 
   @Get("info")

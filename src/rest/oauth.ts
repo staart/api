@@ -1,23 +1,23 @@
-import ClientOAuth2 from "client-oauth2";
+import { OAUTH_NO_EMAIL, OAUTH_NO_NAME } from "@staart/errors";
 import axios from "axios";
+import ClientOAuth2 from "client-oauth2";
 import {
-  SALESFORCE_CLIENT_ID,
-  SALESFORCE_CLIENT_SECRET,
   BASE_URL,
+  FACEBOOK_CLIENT_ID,
+  FACEBOOK_CLIENT_SECRET,
   GITHUB_CLIENT_ID,
   GITHUB_CLIENT_SECRET,
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
   MICROSOFT_CLIENT_ID,
   MICROSOFT_CLIENT_SECRET,
-  FACEBOOK_CLIENT_ID,
-  FACEBOOK_CLIENT_SECRET
+  SALESFORCE_CLIENT_ID,
+  SALESFORCE_CLIENT_SECRET
 } from "../config";
-import { Locals } from "../interfaces/general";
-import { EventType } from "../interfaces/enum";
-import { OAUTH_NO_NAME, OAUTH_NO_EMAIL } from "@staart/errors";
-import { getUserByEmail, getUser } from "../crud/user";
+import { getUser, getUserByEmail } from "../crud/user";
 import { getLoginResponse } from "../helpers/jwt";
+import { EventType } from "../interfaces/enum";
+import { Locals } from "../interfaces/general";
 import { User } from "../interfaces/tables/user";
 import { register } from "./auth";
 
@@ -37,12 +37,7 @@ export const loginWithOAuth2Service = async (
     user = await getUserByEmail(email);
   } catch (error) {}
   if (user)
-    return await getLoginResponse(
-      user,
-      EventType.AUTH_LOGIN_OAUTH,
-      service,
-      locals
-    );
+    return getLoginResponse(user, EventType.AUTH_LOGIN_OAUTH, service, locals);
   const newUser = await register(
     { name },
     locals,
@@ -51,7 +46,7 @@ export const loginWithOAuth2Service = async (
     undefined,
     true
   );
-  return await getLoginResponse(
+  return getLoginResponse(
     await getUser(newUser.userId),
     EventType.AUTH_LOGIN_OAUTH,
     service,

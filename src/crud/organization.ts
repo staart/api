@@ -1,15 +1,13 @@
 import {
-  query,
-  tableValues,
-  setValues,
-  removeReadOnlyValues,
-  tableName
-} from "../helpers/mysql";
+  cleanElasticSearchQueryResponse,
+  elasticSearch
+} from "@staart/elasticsearch";
 import {
-  Organization,
-  Domain,
-  Webhook
-} from "../interfaces/tables/organization";
+  INVALID_INPUT,
+  MEMBERSHIP_NOT_FOUND,
+  ORGANIZATION_NOT_FOUND,
+  USERNAME_EXISTS
+} from "@staart/errors";
 import { ms } from "@staart/text";
 import {
   capitalizeFirstAndLastLetter,
@@ -17,35 +15,37 @@ import {
   randomString,
   slugify
 } from "@staart/text";
-import { KeyValue } from "../interfaces/general";
-import { cachedQuery, deleteItemFromCache } from "../helpers/cache";
-import { CacheCategories, Webhooks } from "../interfaces/enum";
+import axios from "axios";
+import randomColor from "randomcolor";
 import {
-  INVALID_INPUT,
-  ORGANIZATION_NOT_FOUND,
-  USERNAME_EXISTS,
-  MEMBERSHIP_NOT_FOUND
-} from "@staart/errors";
-import { ApiKey } from "../interfaces/tables/organization";
-import { getPaginatedData } from "./data";
+  ELASTIC_LOGS_PREFIX,
+  JWT_ISSUER,
+  TOKEN_EXPIRY_API_KEY_MAX
+} from "../config";
+import { cachedQuery, deleteItemFromCache } from "../helpers/cache";
 import { apiKeyToken, invalidateToken } from "../helpers/jwt";
 import {
-  TOKEN_EXPIRY_API_KEY_MAX,
-  JWT_ISSUER,
-  ELASTIC_LOGS_PREFIX
-} from "../config";
+  query,
+  removeReadOnlyValues,
+  setValues,
+  tableName,
+  tableValues
+} from "../helpers/mysql";
+import { CacheCategories, Webhooks } from "../interfaces/enum";
+import { KeyValue } from "../interfaces/general";
 import { InsertResult } from "../interfaces/mysql";
 import {
   Membership,
   MembershipWithUser
 } from "../interfaces/tables/memberships";
-import { getUser } from "./user";
 import {
-  elasticSearch,
-  cleanElasticSearchQueryResponse
-} from "@staart/elasticsearch";
-import randomColor from "randomcolor";
-import axios from "axios";
+  Domain,
+  Organization,
+  Webhook
+} from "../interfaces/tables/organization";
+import { ApiKey } from "../interfaces/tables/organization";
+import { getPaginatedData } from "./data";
+import { getUser } from "./user";
 
 /**
  * Check if an organization username is available
@@ -105,14 +105,12 @@ export const createOrganization = async (organization: Organization) => {
  * Get the details of a specific organization
  */
 export const getOrganization = async (id: string) => {
-  const org = (<Organization[]>(
-    await cachedQuery(
-      CacheCategories.ORGANIZATION,
-      id,
-      `SELECT * FROM ${tableName("organizations")} WHERE id = ? LIMIT 1`,
-      [id]
-    )
-  ))[0];
+  const org = ((await cachedQuery(
+    CacheCategories.ORGANIZATION,
+    id,
+    `SELECT * FROM ${tableName("organizations")} WHERE id = ? LIMIT 1`,
+    [id]
+  )) as Array<Organization>)[0];
   if (org) return org;
   throw new Error(ORGANIZATION_NOT_FOUND);
 };
@@ -121,14 +119,12 @@ export const getOrganization = async (id: string) => {
  * Get the details of a specific organization
  */
 export const getOrganizationIdFromUsername = async (username: string) => {
-  const org = (<Organization[]>(
-    await cachedQuery(
-      CacheCategories.ORGANIZATION_USERNAME,
-      username,
-      `SELECT id FROM ${tableName("organizations")} WHERE username = ? LIMIT 1`,
-      [username]
-    )
-  ))[0];
+  const org = ((await cachedQuery(
+    CacheCategories.ORGANIZATION_USERNAME,
+    username,
+    `SELECT id FROM ${tableName("organizations")} WHERE username = ? LIMIT 1`,
+    [username]
+  )) as Array<Organization>)[0];
   if (org && org.id) return parseInt(org.id).toString();
   throw new Error(ORGANIZATION_NOT_FOUND);
 };
@@ -158,7 +154,7 @@ export const updateOrganization = async (
     );
   }
   deleteItemFromCache(CacheCategories.ORGANIZATION, id);
-  return await query(
+  return query(
     `UPDATE ${tableName("organizations")} SET ${setValues(
       organization
     )} WHERE id = ?`,
@@ -171,18 +167,16 @@ export const updateOrganization = async (
  */
 export const deleteOrganization = async (id: string) => {
   deleteItemFromCache(CacheCategories.ORGANIZATION, id);
-  return await query(`DELETE FROM ${tableName("organizations")} WHERE id = ?`, [
-    id
-  ]);
+  return query(`DELETE FROM ${tableName("organizations")} WHERE id = ?`, [id]);
 };
 
 /*
  * Get all ${tableName("organizations")}
  */
 export const getAllOrganizations = async () => {
-  return <Organization[]>(
-    await query(`SELECT * FROM ${tableName("organizations")}`)
-  );
+  return (await query(`SELECT * FROM ${tableName("organizations")}`)) as Array<
+    Organization
+  >;
 };
 
 /**
@@ -192,7 +186,7 @@ export const getOrganizationApiKeys = async (
   organizationId: string,
   query: KeyValue
 ) => {
-  return await getPaginatedData<ApiKey>({
+  return getPaginatedData<ApiKey>({
     table: "api-keys",
     conditions: {
       organizationId
@@ -205,14 +199,12 @@ export const getOrganizationApiKeys = async (
  * Get an API key
  */
 export const getApiKey = async (organizationId: string, apiKeyId: string) => {
-  return (<ApiKey[]>(
-    await query(
-      `SELECT * FROM ${tableName(
-        "api-keys"
-      )} WHERE id = ? AND organizationId = ? LIMIT 1`,
-      [apiKeyId, organizationId]
-    )
-  ))[0];
+  return ((await query(
+    `SELECT * FROM ${tableName(
+      "api-keys"
+    )} WHERE id = ? AND organizationId = ? LIMIT 1`,
+    [apiKeyId, organizationId]
+  )) as Array<ApiKey>)[0];
 };
 
 /**
@@ -267,7 +259,7 @@ export const createApiKey = async (apiKey: ApiKey) => {
   apiKey.createdAt = new Date();
   apiKey.updatedAt = apiKey.createdAt;
   apiKey.jwtApiKey = await apiKeyToken(apiKey);
-  return await query(
+  return query(
     `INSERT INTO ${tableName("api-keys")} ${tableValues(apiKey)}`,
     Object.values(apiKey)
   );
@@ -286,7 +278,7 @@ export const updateApiKey = async (
   const apiKey = await getApiKey(organizationId, apiKeyId);
   if (apiKey.jwtApiKey) await invalidateToken(apiKey.jwtApiKey);
   data.jwtApiKey = await apiKeyToken({ ...apiKey, ...data });
-  return await query(
+  return query(
     `UPDATE ${tableName("api-keys")} SET ${setValues(
       data
     )} WHERE id = ? AND organizationId = ?`,
@@ -303,7 +295,7 @@ export const deleteApiKey = async (
 ) => {
   const currentApiKey = await getApiKey(organizationId, apiKeyId);
   if (currentApiKey.jwtApiKey) await invalidateToken(currentApiKey.jwtApiKey);
-  return await query(
+  return query(
     `DELETE FROM ${tableName(
       "api-keys"
     )} WHERE id = ? AND organizationId = ? LIMIT 1`,
@@ -318,7 +310,7 @@ export const getOrganizationDomains = async (
   organizationId: string,
   query: KeyValue
 ) => {
-  return await getPaginatedData<Domain>({
+  return getPaginatedData<Domain>({
     table: "domains",
     conditions: {
       organizationId
@@ -331,28 +323,24 @@ export const getOrganizationDomains = async (
  * Get a domain
  */
 export const getDomain = async (organizationId: string, domainId: string) => {
-  return (<Domain[]>(
-    await query(
-      `SELECT * FROM ${tableName(
-        "domains"
-      )} WHERE id = ? AND organizationId = ? LIMIT 1`,
-      [domainId, organizationId]
-    )
-  ))[0];
+  return ((await query(
+    `SELECT * FROM ${tableName(
+      "domains"
+    )} WHERE id = ? AND organizationId = ? LIMIT 1`,
+    [domainId, organizationId]
+  )) as Array<Domain>)[0];
 };
 
 /**
  * Get a domain
  */
 export const getDomainByDomainName = async (domain: string) => {
-  return (<Domain[]>(
-    await query(
-      `SELECT * FROM ${tableName(
-        "domains"
-      )} WHERE domain = ? AND isVerified = ? LIMIT 1`,
-      [domain, true]
-    )
-  ))[0];
+  return ((await query(
+    `SELECT * FROM ${tableName(
+      "domains"
+    )} WHERE domain = ? AND isVerified = ? LIMIT 1`,
+    [domain, true]
+  )) as Array<Domain>)[0];
 };
 
 export const updateOrganizationProfilePicture = async (
@@ -369,7 +357,7 @@ export const updateOrganizationProfilePicture = async (
       domainIcons.data.url &&
       domainIcons.data.url !== "http://unavatar.now.sh/fallback.png"
     )
-      return await updateOrganization(organizationId, {
+      return updateOrganization(organizationId, {
         profilePicture: domainIcons.data.url
       });
   }
@@ -415,7 +403,7 @@ export const updateDomain = async (
   data.updatedAt = new Date();
   data = removeReadOnlyValues(data);
   const domain = await getDomain(organizationId, domainId);
-  return await query(
+  return query(
     `UPDATE ${tableName("domains")} SET ${setValues(
       data
     )} WHERE id = ? AND organizationId = ?`,
@@ -459,7 +447,7 @@ export const getOrganizationWebhooks = async (
   organizationId: string,
   query: KeyValue
 ) => {
-  return await getPaginatedData<Webhook>({
+  return getPaginatedData<Webhook>({
     table: "webhooks",
     conditions: {
       organizationId
@@ -475,28 +463,24 @@ export const getOrganizationEventWebhooks = async (
   organizationId: string,
   event: Webhooks
 ) => {
-  return <Webhook[]>(
-    await query(
-      `SELECT * FROM ${tableName(
-        "webhooks"
-      )} WHERE organizationId = ? AND (event = ? OR event = "*")`,
-      [organizationId, event]
-    )
-  );
+  return (await query(
+    `SELECT * FROM ${tableName(
+      "webhooks"
+    )} WHERE organizationId = ? AND (event = ? OR event = "*")`,
+    [organizationId, event]
+  )) as Array<Webhook>;
 };
 
 /**
  * Get a webhook
  */
 export const getWebhook = async (organizationId: string, webhookId: string) => {
-  return (<Webhook[]>(
-    await query(
-      `SELECT * FROM ${tableName(
-        "webhooks"
-      )} WHERE id = ? AND organizationId = ? LIMIT 1`,
-      [webhookId, organizationId]
-    )
-  ))[0];
+  return ((await query(
+    `SELECT * FROM ${tableName(
+      "webhooks"
+    )} WHERE id = ? AND organizationId = ? LIMIT 1`,
+    [webhookId, organizationId]
+  )) as Array<Webhook>)[0];
 };
 
 /**
@@ -509,7 +493,7 @@ export const createWebhook = async (
   webhook.isActive = webhook.isActive !== false;
   webhook.createdAt = new Date();
   webhook.updatedAt = webhook.createdAt;
-  return await query(
+  return query(
     `INSERT INTO ${tableName("webhooks")} ${tableValues(webhook)}`,
     Object.values(webhook)
   );
@@ -525,8 +509,8 @@ export const updateWebhook = async (
 ) => {
   data.updatedAt = new Date();
   data = removeReadOnlyValues(data);
-  const webhook = await getWebhook(organizationId, webhookId);
-  return await query(
+  await getWebhook(organizationId, webhookId);
+  return query(
     `UPDATE ${tableName("webhooks")} SET ${setValues(
       data
     )} WHERE id = ? AND organizationId = ?`,
@@ -541,8 +525,8 @@ export const deleteWebhook = async (
   organizationId: string,
   webhookId: string
 ) => {
-  const currentWebhook = await getWebhook(organizationId, webhookId);
-  return await query(
+  await getWebhook(organizationId, webhookId);
+  return query(
     `DELETE FROM ${tableName(
       "webhooks"
     )} WHERE id = ? AND organizationId = ? LIMIT 1`,
@@ -563,7 +547,7 @@ export const getOrganizationMemberships = async (
     ...query
   });
   const detailedMemberships: {
-    data: MembershipWithUser[];
+    data: Array<MembershipWithUser>;
     hasMore: boolean;
     next?: string;
   } = { ...members, data: [] };
@@ -583,16 +567,14 @@ export const getOrganizationMembership = async (
   organizationId: string,
   id: string
 ) => {
-  return (<Membership[]>(
-    await cachedQuery(
-      CacheCategories.MEMBERSHIP,
-      id,
-      `SELECT * FROM ${tableName(
-        "memberships"
-      )} WHERE id = ? AND organizationId = ? LIMIT 1`,
-      [id, organizationId]
-    )
-  ))[0];
+  return ((await cachedQuery(
+    CacheCategories.MEMBERSHIP,
+    id,
+    `SELECT * FROM ${tableName(
+      "memberships"
+    )} WHERE id = ? AND organizationId = ? LIMIT 1`,
+    [id, organizationId]
+  )) as Array<Membership>)[0];
 };
 
 /*
@@ -629,7 +611,7 @@ export const updateOrganizationMembership = async (
       membershipDetails.userId
     );
   deleteItemFromCache(CacheCategories.MEMBERSHIP, id);
-  return await query(
+  return query(
     `UPDATE ${tableName("memberships")} SET ${setValues(
       membership
     )} WHERE id = ? AND organizationId = ?`,
@@ -651,7 +633,7 @@ export const deleteOrganizationMembership = async (
       membershipDetails.userId
     );
   deleteItemFromCache(CacheCategories.MEMBERSHIP, id);
-  return await query(
+  return query(
     `DELETE FROM ${tableName(
       "memberships"
     )} WHERE id = ? AND organizationId = ?`,
@@ -671,7 +653,7 @@ export const deleteAllOrganizationMemberships = async (
       deleteItemFromCache(CacheCategories.USER_MEMBERSHIPS, membership.userId);
     }
   }
-  return await query(
+  return query(
     `DELETE FROM ${tableName("memberships")} WHERE organizationId = ?`,
     [organizationId]
   );

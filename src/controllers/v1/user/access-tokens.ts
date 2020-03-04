@@ -1,30 +1,30 @@
 import {
-  deleteAccessTokenForUser,
-  updateAccessTokenForUser,
-  getUserAccessTokenForUser,
-  createAccessTokenForUser,
-  getUserAccessTokensForUser
-} from "../../../rest/user";
+  RESOURCE_CREATED,
+  RESOURCE_DELETED,
+  RESOURCE_UPDATED,
+  respond
+} from "@staart/messages";
 import {
+  ClassMiddleware,
+  Controller,
+  Delete,
   Get,
+  Middleware,
   Patch,
   Put,
-  Delete,
-  Controller,
-  ClassMiddleware,
   Request,
-  Response,
-  Middleware
+  Response
 } from "@staart/server";
+import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../../helpers/middleware";
-import {
-  RESOURCE_CREATED,
-  respond,
-  RESOURCE_UPDATED,
-  RESOURCE_DELETED
-} from "@staart/messages";
 import { userUsernameToId } from "../../../helpers/utils";
-import { joiValidate, Joi } from "@staart/validate";
+import {
+  createAccessTokenForUser,
+  deleteAccessTokenForUser,
+  getUserAccessTokenForUser,
+  getUserAccessTokensForUser,
+  updateAccessTokenForUser
+} from "../../../rest/user";
 
 @Controller(":id/access-tokens")
 @ClassMiddleware(authHandler)
@@ -41,7 +41,7 @@ export class UserAccessTokensController {
       },
       accessTokenParams
     );
-    return await getUserAccessTokensForUser(
+    return getUserAccessTokensForUser(
       res.locals.token.id,
       id,
       accessTokenParams
@@ -82,11 +82,7 @@ export class UserAccessTokensController {
       },
       { id, accessTokenId }
     );
-    return await getUserAccessTokenForUser(
-      res.locals.token.id,
-      id,
-      accessTokenId
-    );
+    return getUserAccessTokenForUser(res.locals.token.id, id, accessTokenId);
   }
 
   @Patch(":accessTokenId")

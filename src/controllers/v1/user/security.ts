@@ -1,28 +1,28 @@
+import { RESOURCE_SUCCESS, RESOURCE_UPDATED, respond } from "@staart/messages";
 import {
-  getAllDataForUser,
-  getRecentEventsForUser,
-  enable2FAForUser,
-  disable2FAForUser,
-  verify2FAForUser,
-  getBackupCodesForUser,
-  regenerateBackupCodesForUser,
-  updatePasswordForUser
-} from "../../../rest/user";
-import {
+  ClassMiddleware,
+  Controller,
+  Delete,
   Get,
+  Middleware,
   Post,
   Put,
-  Delete,
-  Controller,
-  ClassMiddleware,
   Request,
-  Response,
-  Middleware
+  Response
 } from "@staart/server";
+import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../../helpers/middleware";
-import { respond, RESOURCE_UPDATED, RESOURCE_SUCCESS } from "@staart/messages";
 import { userUsernameToId } from "../../../helpers/utils";
-import { joiValidate, Joi } from "@staart/validate";
+import {
+  disable2FAForUser,
+  enable2FAForUser,
+  getAllDataForUser,
+  getBackupCodesForUser,
+  getRecentEventsForUser,
+  regenerateBackupCodesForUser,
+  updatePasswordForUser,
+  verify2FAForUser
+} from "../../../rest/user";
 
 @Controller(":id")
 @ClassMiddleware(authHandler)
@@ -65,21 +65,21 @@ export class UserSecurityController {
   async getRecentEvents(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    return await getRecentEventsForUser(res.locals.token.id, id, req.query);
+    return getRecentEventsForUser(res.locals.token.id, id, req.query);
   }
 
   @Get("data")
   async getUserData(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    return await getAllDataForUser(res.locals.token.id, id);
+    return getAllDataForUser(res.locals.token.id, id);
   }
 
   @Get("2fa/enable")
   async getEnable2FA(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    return await enable2FAForUser(res.locals.token.id, id);
+    return enable2FAForUser(res.locals.token.id, id);
   }
 
   @Post("2fa/verify")
@@ -111,13 +111,13 @@ export class UserSecurityController {
   async getBackupCodes(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    return await getBackupCodesForUser(res.locals.token.id, id);
+    return getBackupCodesForUser(res.locals.token.id, id);
   }
 
   @Get("backup-codes/regenerate")
   async getRegenerateBackupCodes(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    return await regenerateBackupCodesForUser(res.locals.token.id, id);
+    return regenerateBackupCodesForUser(res.locals.token.id, id);
   }
 }

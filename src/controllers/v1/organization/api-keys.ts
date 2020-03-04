@@ -1,34 +1,34 @@
 import {
-  getOrganizationApiKeysForUser,
-  createApiKeyForUser,
-  getOrganizationApiKeyForUser,
-  updateApiKeyForUser,
-  deleteApiKeyForUser,
-  getOrganizationApiKeyLogsForUser
-} from "../../../rest/organization";
-import {
   RESOURCE_CREATED,
-  respond,
+  RESOURCE_DELETED,
   RESOURCE_UPDATED,
-  RESOURCE_DELETED
+  respond
 } from "@staart/messages";
 import {
-  Get,
-  Put,
-  Patch,
-  Delete,
-  Controller,
   ClassMiddleware,
+  Controller,
+  Delete,
+  Get,
+  Middleware,
+  Patch,
+  Put,
   Request,
-  Response,
-  Middleware
+  Response
 } from "@staart/server";
+import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../../helpers/middleware";
 import {
-  organizationUsernameToId,
-  localsToTokenOrKey
+  localsToTokenOrKey,
+  organizationUsernameToId
 } from "../../../helpers/utils";
-import { joiValidate, Joi } from "@staart/validate";
+import {
+  createApiKeyForUser,
+  deleteApiKeyForUser,
+  getOrganizationApiKeyForUser,
+  getOrganizationApiKeyLogsForUser,
+  getOrganizationApiKeysForUser,
+  updateApiKeyForUser
+} from "../../../rest/organization";
 
 @Controller(":id/api-keys")
 @ClassMiddleware(authHandler)
@@ -45,7 +45,7 @@ export class OrganizationApiKeysController {
       },
       apiKeyParams
     );
-    return await getOrganizationApiKeysForUser(
+    return getOrganizationApiKeysForUser(
       localsToTokenOrKey(res),
       id,
       apiKeyParams
@@ -88,11 +88,7 @@ export class OrganizationApiKeysController {
       },
       { id, apiKeyId }
     );
-    return await getOrganizationApiKeyForUser(
-      localsToTokenOrKey(res),
-      id,
-      apiKeyId
-    );
+    return getOrganizationApiKeyForUser(localsToTokenOrKey(res), id, apiKeyId);
   }
 
   @Patch(":apiKeyId")
@@ -159,7 +155,7 @@ export class OrganizationApiKeysController {
       },
       { id, apiKeyId }
     );
-    return await getOrganizationApiKeyLogsForUser(
+    return getOrganizationApiKeyLogsForUser(
       localsToTokenOrKey(res),
       id,
       apiKeyId,

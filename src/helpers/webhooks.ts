@@ -1,14 +1,14 @@
-import { Webhooks } from "../interfaces/enum";
+import { logError } from "@staart/errors";
+import { redisQueue } from "@staart/redis";
+import axios from "axios";
+import { createHmac } from "crypto";
+import { JWT_ISSUER, REDIS_QUEUE_PREFIX } from "../config";
 import {
   getOrganizationEventWebhooks,
   updateWebhook
 } from "../crud/organization";
+import { Webhooks } from "../interfaces/enum";
 import { Webhook } from "../interfaces/tables/organization";
-import { createHmac } from "crypto";
-import axios from "axios";
-import { JWT_ISSUER, REDIS_QUEUE_PREFIX } from "../config";
-import { redisQueue } from "@staart/redis";
-import { logError } from "@staart/errors";
 
 const WEBHOOK_QUEUE = `${REDIS_QUEUE_PREFIX}webhooks`;
 
@@ -56,7 +56,7 @@ export const receiveWebhookMessage = async () => {
     } = JSON.parse(result.message);
     if (tryNumber && tryNumber > 3) {
       logError("Webhook", `Unable to fire: ${organizationId} ${webhook}`);
-      return await redisQueue.deleteMessageAsync({
+      return redisQueue.deleteMessageAsync({
         qname: WEBHOOK_QUEUE,
         id: result.id
       });

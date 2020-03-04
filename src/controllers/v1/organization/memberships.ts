@@ -1,34 +1,34 @@
 import {
-  getOrganizationMembershipsForUser,
-  inviteMemberToOrganization,
-  getOrganizationMembershipForUser,
-  deleteOrganizationMembershipForUser,
-  updateOrganizationMembershipForUser
-} from "../../../rest/organization";
-import {
   RESOURCE_CREATED,
-  respond,
+  RESOURCE_DELETED,
   RESOURCE_UPDATED,
-  RESOURCE_DELETED
+  respond
 } from "@staart/messages";
 import {
-  Get,
-  Put,
-  Patch,
-  Delete,
-  Controller,
   ClassMiddleware,
+  Controller,
+  Delete,
+  Get,
+  Middleware,
+  Patch,
+  Put,
   Request,
-  Response,
-  Middleware
+  Response
 } from "@staart/server";
+import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../../helpers/middleware";
+import {
+  localsToTokenOrKey,
+  organizationUsernameToId
+} from "../../../helpers/utils";
 import { MembershipRole } from "../../../interfaces/enum";
 import {
-  organizationUsernameToId,
-  localsToTokenOrKey
-} from "../../../helpers/utils";
-import { joiValidate, Joi } from "@staart/validate";
+  deleteOrganizationMembershipForUser,
+  getOrganizationMembershipForUser,
+  getOrganizationMembershipsForUser,
+  inviteMemberToOrganization,
+  updateOrganizationMembershipForUser
+} from "../../../rest/organization";
 
 @Controller(":id/memberships")
 @ClassMiddleware(authHandler)
@@ -40,7 +40,7 @@ export class OrganizationMembershipsController {
       { organizationId: Joi.string().required() },
       { organizationId }
     );
-    return await getOrganizationMembershipsForUser(
+    return getOrganizationMembershipsForUser(
       localsToTokenOrKey(res),
       organizationId,
       req.query
@@ -93,7 +93,7 @@ export class OrganizationMembershipsController {
       },
       { organizationId, membershipId }
     );
-    return await getOrganizationMembershipForUser(
+    return getOrganizationMembershipForUser(
       localsToTokenOrKey(res),
       organizationId,
       membershipId

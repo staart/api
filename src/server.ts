@@ -1,13 +1,13 @@
 import "@babel/polyfill";
-import { Server, Get, Controller } from "@staart/server";
 import { success } from "@staart/errors";
+import { Controller, Get, Server } from "@staart/server";
 import { setupMiddleware } from "@staart/server";
 
 import {
   errorHandler,
-  trackingHandler,
   rateLimitHandler,
-  speedLimitHandler
+  speedLimitHandler,
+  trackingHandler
 } from "./helpers/middleware";
 
 @Controller("/v1")
@@ -30,14 +30,14 @@ export class Staart extends Server {
     this.app.use(errorHandler);
   }
 
+  public start(port: number): void {
+    this.app.listen(port, () => success(`Listening on ${port}`));
+  }
+
   private setupHandlers() {
     setupMiddleware(this.app);
     this.app.use(trackingHandler);
     this.app.use(rateLimitHandler);
     this.app.use(speedLimitHandler);
-  }
-
-  public start(port: number): void {
-    this.app.listen(port, () => success(`Listening on ${port}`));
   }
 }

@@ -1,5 +1,5 @@
-import { EventType, Webhooks } from "../enum";
 import { GeoLocation } from "../../helpers/location";
+import { EventType, Webhooks } from "../enum";
 
 export interface Event {
   id?: string;

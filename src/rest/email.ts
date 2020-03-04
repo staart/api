@@ -1,20 +1,20 @@
-import { Locals, KeyValue } from "../interfaces/general";
+import { EMAIL_CANNOT_DELETE, INSUFFICIENT_PERMISSION } from "@staart/errors";
+import { getPaginatedData } from "../crud/data";
 import {
-  createEmail,
-  getEmail,
-  getUserVerifiedEmails,
-  getUserPrimaryEmailObject,
-  deleteEmail,
   checkIfNewEmail,
+  createEmail,
+  deleteEmail,
+  getEmail,
+  getUserPrimaryEmailObject,
+  getUserVerifiedEmails,
   resendEmailVerification
 } from "../crud/email";
-import { EventType, UserScopes } from "../interfaces/enum";
-import { INSUFFICIENT_PERMISSION, EMAIL_CANNOT_DELETE } from "@staart/errors";
 import { updateUser } from "../crud/user";
 import { can } from "../helpers/authorization";
-import { getPaginatedData } from "../crud/data";
 import { addIsPrimaryToEmails } from "../helpers/mysql";
 import { trackEvent } from "../helpers/tracking";
+import { EventType, UserScopes } from "../interfaces/enum";
+import { KeyValue, Locals } from "../interfaces/general";
 import { Email } from "../interfaces/tables/emails";
 
 export const getAllEmailsForUser = async (
@@ -40,7 +40,7 @@ export const getEmailForUser = async (
   emailId: string
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER_EMAILS, "user", userId))
-    return await getEmail(emailId);
+    return getEmail(emailId);
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -57,7 +57,7 @@ export const resendEmailVerificationForUser = async (
       userId
     )
   )
-    return await resendEmailVerification(emailId);
+    return resendEmailVerification(emailId);
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 

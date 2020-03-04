@@ -1,47 +1,47 @@
 import {
-  Request,
-  Response,
+  INVALID_SIGNATURE,
+  MISSING_SIGNATURE,
+  MISSING_TOKEN
+} from "@staart/errors";
+import { constructWebhookEvent } from "@staart/payments";
+import {
   NextFunction,
   RateLimit,
+  Request,
+  Response,
   slowDown
 } from "@staart/server";
-import { SchemaMap } from "@staart/validate";
-import pkg from "../../package.json";
+import { RawRequest } from "@staart/server";
 import { ms } from "@staart/text";
-import { safeError } from "./errors";
+import { SchemaMap } from "@staart/validate";
+import { joiValidate } from "@staart/validate";
+import pkg from "../../package.json";
 import {
-  verifyToken,
-  TokenResponse,
-  checkInvalidatedToken,
-  ApiKeyResponse,
-  checkIpRestrictions,
-  checkReferrerRestrictions
-} from "./jwt";
-import { Tokens } from "../interfaces/enum";
-import {
-  MISSING_TOKEN,
-  INVALID_SIGNATURE,
-  MISSING_SIGNATURE
-} from "@staart/errors";
-import {
-  BRUTE_FORCE_TIME,
   BRUTE_FORCE_COUNT,
   BRUTE_FORCE_DELAY,
+  BRUTE_FORCE_TIME,
+  PUBLIC_RATE_LIMIT_MAX,
+  PUBLIC_RATE_LIMIT_TIME,
   RATE_LIMIT_MAX,
   RATE_LIMIT_TIME,
-  SPEED_LIMIT_DELAY,
   SPEED_LIMIT_COUNT,
-  SPEED_LIMIT_TIME,
-  PUBLIC_RATE_LIMIT_TIME,
-  PUBLIC_RATE_LIMIT_MAX
+  SPEED_LIMIT_DELAY,
+  SPEED_LIMIT_TIME
 } from "../config";
-import { ApiKey } from "../interfaces/tables/organization";
-import { includesDomainInCommaList } from "./utils";
-import { trackUrl } from "./tracking";
-import { joiValidate } from "@staart/validate";
-import { constructWebhookEvent } from "@staart/payments";
+import { Tokens } from "../interfaces/enum";
 import { StripeLocals } from "../interfaces/general.js";
-import { RawRequest } from "@staart/server";
+import { ApiKey } from "../interfaces/tables/organization";
+import { safeError } from "./errors";
+import {
+  ApiKeyResponse,
+  checkInvalidatedToken,
+  checkIpRestrictions,
+  checkReferrerRestrictions,
+  TokenResponse,
+  verifyToken
+} from "./jwt";
+import { trackUrl } from "./tracking";
+import { includesDomainInCommaList } from "./utils";
 
 const bruteForce = slowDown({
   windowMs: BRUTE_FORCE_TIME,
@@ -255,7 +255,6 @@ export const validator = (
         break;
       default:
         data = req.body;
-        break;
     }
     joiValidate(schemaMap, data);
     next();

@@ -1,38 +1,38 @@
-import { UserRole } from "../../../interfaces/enum";
 import { INVALID_TOKEN } from "@staart/errors";
 import {
-  sendPasswordReset,
-  login,
-  updatePassword,
-  validateRefreshToken,
-  impersonate,
-  approveLocation,
-  verifyEmail,
-  register,
-  login2FA,
-  invalidateRefreshToken
-} from "../../../rest/auth";
-import { verifyToken } from "../../../helpers/jwt";
-import {
   RESOURCE_CREATED,
-  respond,
   RESOURCE_SUCCESS,
-  RESOURCE_UPDATED
+  RESOURCE_UPDATED,
+  respond
 } from "@staart/messages";
 import {
-  Post,
+  ChildControllers,
   Controller,
   Middleware,
+  Post,
   Request,
-  Response,
-  ChildControllers
+  Response
 } from "@staart/server";
+import { Joi, joiValidate } from "@staart/validate";
+import { verifyToken } from "../../../helpers/jwt";
 import {
   authHandler,
   bruteForceHandler,
   validator
 } from "../../../helpers/middleware";
-import { joiValidate, Joi } from "@staart/validate";
+import { UserRole } from "../../../interfaces/enum";
+import {
+  approveLocation,
+  impersonate,
+  invalidateRefreshToken,
+  login,
+  login2FA,
+  register,
+  sendPasswordReset,
+  updatePassword,
+  validateRefreshToken,
+  verifyEmail
+} from "../../../rest/auth";
 import { AuthOAuthController } from "./oauth";
 
 @Controller("auth")
@@ -94,7 +94,7 @@ export class AuthController {
     )
   )
   async login(req: Request, res: Response) {
-    return await login(req.body.email, req.body.password, res.locals);
+    return login(req.body.email, req.body.password, res.locals);
   }
 
   @Post("2fa")
@@ -112,7 +112,7 @@ export class AuthController {
   async twoFactor(req: Request, res: Response) {
     const code = req.body.code;
     const token = req.body.token;
-    return await login2FA(code, token, res.locals);
+    return login2FA(code, token, res.locals);
   }
 
   @Post("verify-token")
@@ -142,7 +142,7 @@ export class AuthController {
     const token =
       req.body.token || (req.get("Authorization") || "").replace("Bearer ", "");
     joiValidate({ token: Joi.string().required() }, { token });
-    return await validateRefreshToken(token, res.locals);
+    return validateRefreshToken(token, res.locals);
   }
 
   @Post("logout")
@@ -197,14 +197,14 @@ export class AuthController {
   async getImpersonate(req: Request, res: Response) {
     const tokenUserId = res.locals.token.id;
     const impersonateUserId = req.params.id;
-    return await impersonate(tokenUserId, impersonateUserId, res.locals);
+    return impersonate(tokenUserId, impersonateUserId, res.locals);
   }
 
   @Post("approve-location")
   async getApproveLocation(req: Request, res: Response) {
     const token = req.body.token || req.params.token;
     joiValidate({ token: Joi.string().required() }, { token });
-    return await approveLocation(token, res.locals);
+    return approveLocation(token, res.locals);
   }
 
   @Post("verify-email")

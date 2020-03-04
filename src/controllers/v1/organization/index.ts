@@ -1,34 +1,34 @@
 import {
-  newOrganizationForUser,
-  updateOrganizationForUser,
-  deleteOrganizationForUser,
-  getOrganizationForUser,
-  getAllOrganizationDataForUser
-} from "../../../rest/organization";
-import {
   RESOURCE_CREATED,
-  respond,
+  RESOURCE_DELETED,
   RESOURCE_UPDATED,
-  RESOURCE_DELETED
+  respond
 } from "@staart/messages";
 import {
-  Get,
-  Put,
-  Patch,
-  Delete,
-  Controller,
+  ChildControllers,
   ClassMiddleware,
-  Request,
-  Response,
+  Controller,
+  Delete,
+  Get,
   Middleware,
-  ChildControllers
+  Patch,
+  Put,
+  Request,
+  Response
 } from "@staart/server";
+import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../../helpers/middleware";
 import {
-  organizationUsernameToId,
-  localsToTokenOrKey
+  localsToTokenOrKey,
+  organizationUsernameToId
 } from "../../../helpers/utils";
-import { joiValidate, Joi } from "@staart/validate";
+import {
+  deleteOrganizationForUser,
+  getAllOrganizationDataForUser,
+  getOrganizationForUser,
+  newOrganizationForUser,
+  updateOrganizationForUser
+} from "../../../rest/organization";
 import { OrganizationApiKeysController } from "./api-keys";
 import { OrganizationBillingController } from "./billing";
 import { OrganizationDomainsController } from "./domains";
@@ -125,7 +125,7 @@ export class OrganizationController {
       { organizationId: Joi.string().required() },
       { organizationId }
     );
-    return await getAllOrganizationDataForUser(
+    return getAllOrganizationDataForUser(
       localsToTokenOrKey(res),
       organizationId
     );

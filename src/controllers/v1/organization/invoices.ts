@@ -1,20 +1,20 @@
 import {
-  getOrganizationInvoicesForUser,
-  getOrganizationInvoiceForUser
-} from "../../../rest/organization";
-import {
-  Get,
-  Controller,
   ClassMiddleware,
+  Controller,
+  Get,
   Request,
   Response
 } from "@staart/server";
+import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../../helpers/middleware";
 import {
-  organizationUsernameToId,
-  localsToTokenOrKey
+  localsToTokenOrKey,
+  organizationUsernameToId
 } from "../../../helpers/utils";
-import { joiValidate, Joi } from "@staart/validate";
+import {
+  getOrganizationInvoiceForUser,
+  getOrganizationInvoicesForUser
+} from "../../../rest/organization";
 
 @Controller(":id/invoices")
 @ClassMiddleware(authHandler)
@@ -37,7 +37,7 @@ export class OrganizationInvoicesController {
       },
       subscriptionParams
     );
-    return await getOrganizationInvoicesForUser(
+    return getOrganizationInvoicesForUser(
       localsToTokenOrKey(res),
       organizationId,
       subscriptionParams
@@ -55,7 +55,7 @@ export class OrganizationInvoicesController {
       },
       { organizationId, invoiceId }
     );
-    return await getOrganizationInvoiceForUser(
+    return getOrganizationInvoiceForUser(
       localsToTokenOrKey(res),
       organizationId,
       invoiceId

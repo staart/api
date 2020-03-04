@@ -1,7 +1,7 @@
 import {
   query,
-  setValues,
   removeReadOnlyValues,
+  setValues,
   tableName
 } from "../helpers/mysql";
 import { KeyValue } from "../interfaces/general";
@@ -45,7 +45,7 @@ export const getPaginatedData = async <T>({
       ...(conditions ? Object.values(conditions) : []),
       q
     ]
-  )) as T[];
+  )) as Array<T>;
   return {
     data,
     hasMore: data.length == itemsPerPage,
@@ -66,7 +66,7 @@ export const updateData = async (
 ) => {
   data.updatedAt = new Date();
   data = removeReadOnlyValues(data);
-  return await query(
+  return query(
     `UPDATE ${tableName(table)} SET ${setValues(data)} WHERE ${Object.keys(
       conditions
     )
@@ -80,7 +80,7 @@ export const updateData = async (
  * Update general data
  */
 export const deleteData = async (table: string, conditions: KeyValue) => {
-  return await query(
+  return query(
     `DELETE FROM ${tableName(table)} WHERE ${Object.keys(conditions)
       .map(condition => `${condition} = ?`)
       .join(" AND ")}`,

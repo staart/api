@@ -1,22 +1,22 @@
-import { getMembershipsForUser } from "../../../rest/user";
+import { RESOURCE_DELETED, RESOURCE_UPDATED, respond } from "@staart/messages";
 import {
+  ClassMiddleware,
+  Controller,
+  Delete,
   Get,
   Patch,
-  Delete,
-  Controller,
-  ClassMiddleware,
   Request,
   Response
 } from "@staart/server";
+import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../../helpers/middleware";
-import { respond, RESOURCE_UPDATED, RESOURCE_DELETED } from "@staart/messages";
 import { userUsernameToId } from "../../../helpers/utils";
-import { joiValidate, Joi } from "@staart/validate";
 import {
   deleteMembershipForUser,
   getMembershipDetailsForUser,
   updateMembershipForUser
 } from "../../../rest/membership";
+import { getMembershipsForUser } from "../../../rest/user";
 
 @Controller(":id/memberships")
 @ClassMiddleware(authHandler)
@@ -25,7 +25,7 @@ export class UserMembershipsController {
   async getMemberships(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    return await getMembershipsForUser(res.locals.token.id, id, req.query);
+    return getMembershipsForUser(res.locals.token.id, id, req.query);
   }
 
   @Get(":membershipId")
@@ -39,7 +39,7 @@ export class UserMembershipsController {
       },
       { id, membershipId }
     );
-    return await getMembershipDetailsForUser(id, membershipId);
+    return getMembershipDetailsForUser(id, membershipId);
   }
 
   @Delete(":membershipId")

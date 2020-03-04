@@ -1,6 +1,6 @@
 import { elasticSearch } from "@staart/elasticsearch";
-import { redisQueue } from "@staart/redis";
 import { logError } from "@staart/errors";
+import { redisQueue } from "@staart/redis";
 import { REDIS_QUEUE_PREFIX } from "../config";
 
 const ELASTIC_QUEUE = `${REDIS_QUEUE_PREFIX}es-records`;
@@ -44,7 +44,7 @@ export const receiveElasticSearchMessage = async () => {
     } = JSON.parse(result.message);
     if (tryNumber && tryNumber > 3) {
       logError("ElasticSearch", `Unable to save record: ${indexParams}`);
-      return await redisQueue.deleteMessageAsync({
+      return redisQueue.deleteMessageAsync({
         qname: ELASTIC_QUEUE,
         id: result.id
       });

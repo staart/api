@@ -1,95 +1,95 @@
-import { Organization, Webhook } from "../interfaces/tables/organization";
 import {
-  createOrganization,
-  updateOrganization,
-  deleteOrganization,
-  getOrganization,
-  getOrganizationApiKeys,
-  getApiKey,
-  updateApiKey,
-  createApiKey,
-  deleteApiKey,
-  getOrganizationDomains,
-  getDomain,
-  updateDomain,
-  createDomain,
-  deleteDomain,
-  checkDomainAvailability,
-  getOrganizationWebhooks,
-  getWebhook,
-  updateWebhook,
-  createWebhook,
-  deleteWebhook,
-  getOrganizationMemberships,
-  deleteAllOrganizationMemberships,
-  updateOrganizationMembership,
-  deleteOrganizationMembership,
-  getDomainByDomainName,
-  getOrganizationMembershipDetailed,
-  getApiKeyLogs
-} from "../crud/organization";
-import { InsertResult } from "../interfaces/mysql";
+  CANNOT_DELETE_SOLE_MEMBER,
+  CANNOT_INVITE_DOMAIN,
+  DOMAIN_ALREADY_VERIFIED,
+  DOMAIN_MISSING_DNS,
+  DOMAIN_MISSING_FILE,
+  DOMAIN_UNABLE_TO_VERIFY,
+  INSUFFICIENT_PERMISSION,
+  STRIPE_NO_CUSTOMER,
+  USER_IS_MEMBER_ALREADY,
+  USER_NOT_FOUND
+} from "@staart/errors";
+import {
+  createCustomer,
+  createSource,
+  createSubscription,
+  deleteCustomer,
+  deleteSource,
+  getCustomer,
+  getInvoice,
+  getInvoices,
+  getProductPricing,
+  getSource,
+  getSources,
+  getSubscription,
+  getSubscriptions,
+  updateCustomer,
+  updateSource,
+  updateSubscription
+} from "@staart/payments";
+import axios from "axios";
+import { JWT_ISSUER } from "../config";
+import { getUserPrimaryEmail } from "../crud/email";
 import {
   createMembership,
   getUserOrganizationMembership
 } from "../crud/membership";
 import {
-  MembershipRole,
-  Webhooks,
-  OrgScopes,
-  Authorizations,
-  Templates
-} from "../interfaces/enum";
-import { Locals, KeyValue } from "../interfaces/general";
-import { can } from "../helpers/authorization";
-import {
-  getCustomer,
-  createCustomer,
-  updateCustomer,
-  getInvoices,
-  getSubscriptions,
-  getProductPricing,
-  getSources,
-  getSource,
-  createSource,
-  updateSource,
-  deleteSource,
-  deleteCustomer,
-  getSubscription,
-  updateSubscription,
-  getInvoice,
-  createSubscription
-} from "@staart/payments";
-import {
-  CANNOT_DELETE_SOLE_MEMBER,
-  CANNOT_INVITE_DOMAIN,
-  STRIPE_NO_CUSTOMER,
-  USER_NOT_FOUND,
-  USER_IS_MEMBER_ALREADY,
-  DOMAIN_ALREADY_VERIFIED,
-  DOMAIN_MISSING_FILE,
-  DOMAIN_MISSING_DNS,
-  DOMAIN_UNABLE_TO_VERIFY,
-  INSUFFICIENT_PERMISSION
-} from "@staart/errors";
+  checkDomainAvailability,
+  createApiKey,
+  createDomain,
+  createOrganization,
+  createWebhook,
+  deleteAllOrganizationMemberships,
+  deleteApiKey,
+  deleteDomain,
+  deleteOrganization,
+  deleteOrganizationMembership,
+  deleteWebhook,
+  getApiKey,
+  getApiKeyLogs,
+  getDomain,
+  getDomainByDomainName,
+  getOrganization,
+  getOrganizationApiKeys,
+  getOrganizationDomains,
+  getOrganizationMembershipDetailed,
+  getOrganizationMemberships,
+  getOrganizationWebhooks,
+  getWebhook,
+  updateApiKey,
+  updateDomain,
+  updateOrganization,
+  updateOrganizationMembership,
+  updateWebhook
+} from "../crud/organization";
 import { getUser, getUserByEmail } from "../crud/user";
-import { getUserPrimaryEmail } from "../crud/email";
+import { can } from "../helpers/authorization";
 import { ApiKeyResponse } from "../helpers/jwt";
-import axios from "axios";
+import { mail } from "../helpers/mail";
+import { trackEvent } from "../helpers/tracking";
 import { dnsResolve } from "../helpers/utils";
-import { JWT_ISSUER } from "../config";
 import { queueWebhook } from "../helpers/webhooks";
+import {
+  Authorizations,
+  MembershipRole,
+  OrgScopes,
+  Templates,
+  Webhooks
+} from "../interfaces/enum";
+import { KeyValue, Locals } from "../interfaces/general";
+import { InsertResult } from "../interfaces/mysql";
+import { Organization, Webhook } from "../interfaces/tables/organization";
 import { User } from "../interfaces/tables/user";
 import { register } from "./auth";
-import { trackEvent } from "../helpers/tracking";
-import { mail } from "../helpers/mail";
 
 export const getOrganizationForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string
 ) => {
   if (await can(userId, OrgScopes.READ_ORG, "organization", organizationId))
-    return await getOrganization(organizationId);
+    return getOrganization(organizationId);
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -102,7 +102,7 @@ export const newOrganizationForUser = async (
     const user = await getUser(userId);
     organization.name = user.name;
   }
-  const org = <InsertResult>await createOrganization(organization);
+  const org = (await createOrganization(organization)) as InsertResult;
   const organizationId = org.insertId;
   await createMembership({
     organizationId,
@@ -159,7 +159,7 @@ export const getOrganizationBillingForUser = async (
   ) {
     const organization = await getOrganization(organizationId);
     if (organization.stripeCustomerId)
-      return await getCustomer(organization.stripeCustomerId);
+      return getCustomer(organization.stripeCustomerId);
     throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -211,7 +211,7 @@ export const getOrganizationInvoicesForUser = async (
   ) {
     const organization = await getOrganization(organizationId);
     if (organization.stripeCustomerId)
-      return await getInvoices(organization.stripeCustomerId, params);
+      return getInvoices(organization.stripeCustomerId, params);
     throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -232,7 +232,7 @@ export const getOrganizationInvoiceForUser = async (
   ) {
     const organization = await getOrganization(organizationId);
     if (organization.stripeCustomerId)
-      return await getInvoice(organization.stripeCustomerId, invoiceId);
+      return getInvoice(organization.stripeCustomerId, invoiceId);
     throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -253,7 +253,7 @@ export const getOrganizationSourcesForUser = async (
   ) {
     const organization = await getOrganization(organizationId);
     if (organization.stripeCustomerId)
-      return await getSources(organization.stripeCustomerId, params);
+      return getSources(organization.stripeCustomerId, params);
     throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -274,7 +274,7 @@ export const getOrganizationSourceForUser = async (
   ) {
     const organization = await getOrganization(organizationId);
     if (organization.stripeCustomerId)
-      return await getSource(organization.stripeCustomerId, sourceId);
+      return getSource(organization.stripeCustomerId, sourceId);
     throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -295,7 +295,7 @@ export const getOrganizationSubscriptionsForUser = async (
   ) {
     const organization = await getOrganization(organizationId);
     if (organization.stripeCustomerId)
-      return await getSubscriptions(organization.stripeCustomerId, params);
+      return getSubscriptions(organization.stripeCustomerId, params);
     throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -316,10 +316,7 @@ export const getOrganizationSubscriptionForUser = async (
   ) {
     const organization = await getOrganization(organizationId);
     if (organization.stripeCustomerId)
-      return await getSubscription(
-        organization.stripeCustomerId,
-        subscriptionId
-      );
+      return getSubscription(organization.stripeCustomerId, subscriptionId);
     throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -406,7 +403,7 @@ export const getOrganizationPricingPlansForUser = async (
   if (
     await can(userId, OrgScopes.READ_ORG_PLANS, "organization", organizationId)
   )
-    return await getProductPricing();
+    return getProductPricing();
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -558,7 +555,7 @@ export const getOrganizationMembershipsForUser = async (
       organizationId
     )
   )
-    return await getOrganizationMemberships(organizationId, query);
+    return getOrganizationMemberships(organizationId, query);
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -575,10 +572,7 @@ export const getOrganizationMembershipForUser = async (
       organizationId
     )
   )
-    return await getOrganizationMembershipDetailed(
-      organizationId,
-      membershipId
-    );
+    return getOrganizationMembershipDetailed(organizationId, membershipId);
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -596,11 +590,7 @@ export const updateOrganizationMembershipForUser = async (
       organizationId
     )
   )
-    return await updateOrganizationMembership(
-      organizationId,
-      membershipId,
-      data
-    );
+    return updateOrganizationMembership(organizationId, membershipId, data);
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -621,7 +611,7 @@ export const deleteOrganizationMembershipForUser = async (
     const members = await getOrganizationMemberships(organizationId);
     if (members && members.data && members.data.length === 1)
       throw new Error(CANNOT_DELETE_SOLE_MEMBER);
-    return await deleteOrganizationMembership(organizationId, membershipId);
+    return deleteOrganizationMembership(organizationId, membershipId);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -711,7 +701,7 @@ export const getOrganizationApiKeysForUser = async (
       organizationId
     )
   )
-    return await getOrganizationApiKeys(organizationId, query);
+    return getOrganizationApiKeys(organizationId, query);
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -728,7 +718,7 @@ export const getOrganizationApiKeyForUser = async (
       organizationId
     )
   )
-    return await getApiKey(organizationId, apiKeyId);
+    return getApiKey(organizationId, apiKeyId);
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -746,7 +736,7 @@ export const getOrganizationApiKeyLogsForUser = async (
       organizationId
     )
   )
-    return await getApiKeyLogs(organizationId, apiKeyId, query);
+    return getApiKeyLogs(organizationId, apiKeyId, query);
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -830,7 +820,7 @@ export const getOrganizationDomainsForUser = async (
       organizationId
     )
   )
-    return await getOrganizationDomains(organizationId, query);
+    return getOrganizationDomains(organizationId, query);
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -847,7 +837,7 @@ export const getOrganizationDomainForUser = async (
       organizationId
     )
   )
-    return await getDomain(organizationId, domainId);
+    return getDomain(organizationId, domainId);
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -997,7 +987,7 @@ export const getOrganizationWebhooksForUser = async (
       organizationId
     )
   )
-    return await getOrganizationWebhooks(organizationId, query);
+    return getOrganizationWebhooks(organizationId, query);
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -1014,7 +1004,7 @@ export const getOrganizationWebhookForUser = async (
       organizationId
     )
   )
-    return await getWebhook(organizationId, webhookId);
+    return getWebhook(organizationId, webhookId);
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 

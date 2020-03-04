@@ -1,23 +1,23 @@
 import {
+  MEMBERSHIP_NOT_FOUND,
+  ORGANIZATION_NOT_FOUND,
+  USER_NOT_FOUND
+} from "@staart/errors";
+import { cachedQuery, deleteItemFromCache } from "../helpers/cache";
+import {
   query,
-  tableValues,
-  setValues,
   removeReadOnlyValues,
-  tableName
+  setValues,
+  tableName,
+  tableValues
 } from "../helpers/mysql";
-import { Membership } from "../interfaces/tables/memberships";
+import { CacheCategories } from "../interfaces/enum";
 import { KeyValue } from "../interfaces/general";
+import { Membership } from "../interfaces/tables/memberships";
+import { Organization } from "../interfaces/tables/organization";
 import { User } from "../interfaces/tables/user";
 import { getOrganization } from "./organization";
-import { CacheCategories } from "../interfaces/enum";
-import { deleteItemFromCache, cachedQuery } from "../helpers/cache";
 import { getUser } from "./user";
-import { Organization } from "../interfaces/tables/organization";
-import {
-  MEMBERSHIP_NOT_FOUND,
-  USER_NOT_FOUND,
-  ORGANIZATION_NOT_FOUND
-} from "@staart/errors";
 
 /*
  * Create a new organization membership for a user
@@ -26,7 +26,7 @@ export const createMembership = async (membership: Membership) => {
   membership.createdAt = new Date();
   membership.updatedAt = membership.createdAt;
   deleteItemFromCache(CacheCategories.USER_MEMBERSHIPS, membership.userId);
-  return await query(
+  return query(
     `INSERT INTO ${tableName("memberships")} ${tableValues(membership)}`,
     Object.values(membership)
   );
@@ -45,7 +45,7 @@ export const updateMembership = async (id: string, membership: KeyValue) => {
       membershipDetails.userId
     );
   deleteItemFromCache(CacheCategories.MEMBERSHIP, id);
-  return await query(
+  return query(
     `UPDATE ${tableName("memberships")} SET ${setValues(
       membership
     )} WHERE id = ?`,
@@ -64,9 +64,7 @@ export const deleteMembership = async (id: string) => {
       membershipDetails.userId
     );
   deleteItemFromCache(CacheCategories.MEMBERSHIP, id);
-  return await query(`DELETE FROM ${tableName("memberships")} WHERE id = ?`, [
-    id
-  ]);
+  return query(`DELETE FROM ${tableName("memberships")} WHERE id = ?`, [id]);
 };
 
 /*
@@ -79,24 +77,21 @@ export const deleteAllUserMemberships = async (userId: string) => {
       deleteItemFromCache(CacheCategories.USER_MEMBERSHIPS, membership.userId);
     }
   }
-  return await query(
-    `DELETE FROM ${tableName("memberships")} WHERE userId = ?`,
-    [userId]
-  );
+  return query(`DELETE FROM ${tableName("memberships")} WHERE userId = ?`, [
+    userId
+  ]);
 };
 
 /*
  * Get details about a specific organization membership
  */
 export const getMembership = async (id: string) => {
-  return (<Membership[]>(
-    await cachedQuery(
-      CacheCategories.MEMBERSHIP,
-      id,
-      `SELECT * FROM ${tableName("memberships")} WHERE id = ? LIMIT 1`,
-      [id]
-    )
-  ))[0];
+  return ((await cachedQuery(
+    CacheCategories.MEMBERSHIP,
+    id,
+    `SELECT * FROM ${tableName("memberships")} WHERE id = ? LIMIT 1`,
+    [id]
+  )) as Array<Membership>)[0];
 };
 
 /*
@@ -117,12 +112,10 @@ export const getMembershipDetailed = async (id: string) => {
  * Get a list of all members in an organization
  */
 export const getOrganizationMembers = async (organizationId: string) => {
-  return <Membership[]>(
-    await query(
-      `SELECT * FROM ${tableName("memberships")} WHERE organizationId = ?`,
-      [organizationId]
-    )
-  );
+  return (await query(
+    `SELECT * FROM ${tableName("memberships")} WHERE organizationId = ?`,
+    [organizationId]
+  )) as Array<Membership>;
 };
 
 export const getUserMemberships = async (user: User | string) => {
@@ -130,14 +123,12 @@ export const getUserMemberships = async (user: User | string) => {
     if (user.id) user = user.id;
     else throw new Error(USER_NOT_FOUND);
   }
-  return <Membership[]>(
-    await cachedQuery(
-      CacheCategories.USER_MEMBERSHIPS,
-      user,
-      `SELECT * FROM ${tableName("memberships")} WHERE userId = ?`,
-      [user]
-    )
-  );
+  return (await cachedQuery(
+    CacheCategories.USER_MEMBERSHIPS,
+    user,
+    `SELECT * FROM ${tableName("memberships")} WHERE userId = ?`,
+    [user]
+  )) as Array<Membership>;
 };
 
 /**
@@ -154,7 +145,7 @@ export const addOrganizationToMembership = async (membership: Membership) => {
  * Add organization details to memberships
  */
 export const addOrganizationToMemberships = async (
-  memberships: Membership[]
+  memberships: Array<Membership>
 ) => {
   for await (const membership of memberships) {
     (membership as any).organization = await getOrganization(
@@ -190,12 +181,10 @@ export const getUserOrganizationMembership = async (
     if (organization.id) organization = organization.id;
     else throw new Error(ORGANIZATION_NOT_FOUND);
   }
-  return (<Membership[]>(
-    await query(
-      `SELECT * FROM ${tableName(
-        "memberships"
-      )} WHERE userId = ? AND organizationId = ?`,
-      [user, organization]
-    )
-  ))[0];
+  return ((await query(
+    `SELECT * FROM ${tableName(
+      "memberships"
+    )} WHERE userId = ? AND organizationId = ?`,
+    [user, organization]
+  )) as Array<Membership>)[0];
 };

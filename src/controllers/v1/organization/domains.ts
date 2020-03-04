@@ -1,36 +1,36 @@
 import {
-  getOrganizationDomainsForUser,
-  createDomainForUser,
-  getOrganizationDomainForUser,
-  updateDomainForUser,
-  deleteDomainForUser,
-  verifyDomainForUser
-} from "../../../rest/organization";
-import {
   RESOURCE_CREATED,
-  respond,
-  RESOURCE_UPDATED,
   RESOURCE_DELETED,
-  RESOURCE_SUCCESS
+  RESOURCE_SUCCESS,
+  RESOURCE_UPDATED,
+  respond
 } from "@staart/messages";
 import {
-  Get,
-  Put,
-  Patch,
-  Delete,
-  Controller,
   ClassMiddleware,
-  Request,
-  Response,
+  Controller,
+  Delete,
+  Get,
   Middleware,
-  Post
+  Patch,
+  Post,
+  Put,
+  Request,
+  Response
 } from "@staart/server";
+import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../../helpers/middleware";
 import {
-  organizationUsernameToId,
-  localsToTokenOrKey
+  localsToTokenOrKey,
+  organizationUsernameToId
 } from "../../../helpers/utils";
-import { joiValidate, Joi } from "@staart/validate";
+import {
+  createDomainForUser,
+  deleteDomainForUser,
+  getOrganizationDomainForUser,
+  getOrganizationDomainsForUser,
+  updateDomainForUser,
+  verifyDomainForUser
+} from "../../../rest/organization";
 
 @Controller(":id/domains")
 @ClassMiddleware(authHandler)
@@ -47,7 +47,7 @@ export class OrganizationDomainsController {
       },
       domainParams
     );
-    return await getOrganizationDomainsForUser(
+    return getOrganizationDomainsForUser(
       localsToTokenOrKey(res),
       id,
       domainParams
@@ -86,11 +86,7 @@ export class OrganizationDomainsController {
       },
       { id, domainId }
     );
-    return await getOrganizationDomainForUser(
-      localsToTokenOrKey(res),
-      id,
-      domainId
-    );
+    return getOrganizationDomainForUser(localsToTokenOrKey(res), id, domainId);
   }
 
   @Patch(":domainId")

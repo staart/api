@@ -1,32 +1,32 @@
 import {
-  getOrganizationSourcesForUser,
-  getOrganizationSourceForUser,
-  createOrganizationSourceForUser,
-  updateOrganizationSourceForUser,
-  deleteOrganizationSourceForUser
-} from "../../../rest/organization";
-import {
   RESOURCE_CREATED,
-  respond,
+  RESOURCE_DELETED,
   RESOURCE_UPDATED,
-  RESOURCE_DELETED
+  respond
 } from "@staart/messages";
 import {
-  Get,
-  Put,
-  Patch,
-  Delete,
-  Controller,
   ClassMiddleware,
+  Controller,
+  Delete,
+  Get,
+  Patch,
+  Put,
   Request,
   Response
 } from "@staart/server";
+import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../../helpers/middleware";
 import {
-  organizationUsernameToId,
-  localsToTokenOrKey
+  localsToTokenOrKey,
+  organizationUsernameToId
 } from "../../../helpers/utils";
-import { joiValidate, Joi } from "@staart/validate";
+import {
+  createOrganizationSourceForUser,
+  deleteOrganizationSourceForUser,
+  getOrganizationSourceForUser,
+  getOrganizationSourcesForUser,
+  updateOrganizationSourceForUser
+} from "../../../rest/organization";
 
 @Controller(":id/sources")
 @ClassMiddleware(authHandler)
@@ -46,7 +46,7 @@ export class OrganizationSourcesController {
       },
       subscriptionParams
     );
-    return await getOrganizationSourcesForUser(
+    return getOrganizationSourcesForUser(
       localsToTokenOrKey(res),
       organizationId,
       subscriptionParams
@@ -80,7 +80,7 @@ export class OrganizationSourcesController {
       },
       { organizationId, sourceId }
     );
-    return await getOrganizationSourceForUser(
+    return getOrganizationSourceForUser(
       localsToTokenOrKey(res),
       organizationId,
       sourceId

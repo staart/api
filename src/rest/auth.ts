@@ -1,84 +1,84 @@
 import { checkIfDisposableEmail } from "@staart/disposable-email";
-import { User } from "../interfaces/tables/user";
 import {
-  createUser,
-  updateUser,
-  getUserByEmail,
-  getUser,
-  addApprovedLocation,
-  getUserBackupCode,
-  updateBackupCode,
-  checkUsernameAvailability,
-  deleteSessionByJwt,
-  getBestUsernameForUser
-} from "../crud/user";
-import { InsertResult } from "../interfaces/mysql";
+  INSUFFICIENT_PERMISSION,
+  INVALID_2FA_TOKEN,
+  INVALID_LOGIN,
+  MISSING_PASSWORD,
+  NOT_ENABLED_2FA,
+  OAUTH_NO_EMAIL,
+  OAUTH_NO_NAME,
+  RESOURCE_NOT_FOUND,
+  USERNAME_EXISTS,
+  USER_NOT_FOUND
+} from "@staart/errors";
+import { compare } from "@staart/text";
+import axios from "axios";
+import ClientOAuth2 from "client-oauth2";
+import { authenticator } from "otplib";
 import {
-  createEmail,
-  updateEmail,
-  getEmail,
+  ALLOW_DISPOSABLE_EMAILS,
+  BASE_URL,
+  FACEBOOK_CLIENT_ID,
+  FACEBOOK_CLIENT_SECRET,
+  GITHUB_CLIENT_ID,
+  GITHUB_CLIENT_SECRET,
+  SALESFORCE_CLIENT_ID,
+  SALESFORCE_CLIENT_SECRET
+} from "../config";
+import {
   checkIfNewEmail,
-  getUserEmails
+  createEmail,
+  getEmail,
+  getUserEmails,
+  updateEmail
 } from "../crud/email";
-import { mail } from "../helpers/mail";
+import { createMembership } from "../crud/membership";
+import { getDomainByDomainName } from "../crud/organization";
 import {
-  verifyToken,
-  passwordResetToken,
+  addApprovedLocation,
+  checkUsernameAvailability,
+  createUser,
+  deleteSessionByJwt,
+  getBestUsernameForUser,
+  getUser,
+  getUserBackupCode,
+  getUserByEmail,
+  updateBackupCode,
+  updateUser
+} from "../crud/user";
+import { can } from "../helpers/authorization";
+import {
+  checkInvalidatedToken,
   getLoginResponse,
+  passwordResetToken,
   postLoginTokens,
   TokenResponse,
-  checkInvalidatedToken
+  verifyToken
 } from "../helpers/jwt";
-import { KeyValue, Locals } from "../interfaces/general";
+import { mail } from "../helpers/mail";
+import { trackEvent } from "../helpers/tracking";
 import {
+  Authorizations,
   EventType,
   MembershipRole,
   Templates,
-  Tokens,
-  Authorizations
+  Tokens
 } from "../interfaces/enum";
-import {
-  USER_NOT_FOUND,
-  MISSING_PASSWORD,
-  INVALID_LOGIN,
-  NOT_ENABLED_2FA,
-  INVALID_2FA_TOKEN,
-  USERNAME_EXISTS,
-  RESOURCE_NOT_FOUND,
-  INSUFFICIENT_PERMISSION,
-  OAUTH_NO_NAME,
-  OAUTH_NO_EMAIL
-} from "@staart/errors";
-import { createMembership } from "../crud/membership";
-import { can } from "../helpers/authorization";
-import { authenticator } from "otplib";
-import ClientOAuth2 from "client-oauth2";
-import {
-  BASE_URL,
-  GITHUB_CLIENT_ID,
-  GITHUB_CLIENT_SECRET,
-  FACEBOOK_CLIENT_ID,
-  FACEBOOK_CLIENT_SECRET,
-  SALESFORCE_CLIENT_ID,
-  SALESFORCE_CLIENT_SECRET,
-  ALLOW_DISPOSABLE_EMAILS
-} from "../config";
-import axios from "axios";
+import { KeyValue, Locals } from "../interfaces/general";
+import { InsertResult } from "../interfaces/mysql";
 import { GitHubEmail } from "../interfaces/oauth";
-import { compare } from "@staart/text";
-import { trackEvent } from "../helpers/tracking";
-import { getDomainByDomainName } from "../crud/organization";
+import { User } from "../interfaces/tables/user";
 
 export const validateRefreshToken = async (token: string, locals: Locals) => {
   await checkInvalidatedToken(token);
-  const data = <User>await verifyToken(token, Tokens.REFRESH);
+  const data = (await verifyToken(token, Tokens.REFRESH)) as User;
   if (!data.id) throw new Error(USER_NOT_FOUND);
   const user = await getUser(data.id);
-  return await postLoginTokens(user, locals, token);
+  return postLoginTokens(user, locals, token);
 };
 
 export const invalidateRefreshToken = async (token: string, locals: Locals) => {
-  const data = <User>await verifyToken(token, Tokens.REFRESH);
+  const data = (await verifyToken(token, Tokens.REFRESH)) as User;
   if (!data.id) throw new Error(USER_NOT_FOUND);
   await deleteSessionByJwt(data.id, token);
 };
@@ -93,7 +93,7 @@ export const login = async (
   if (!user.id) throw new Error(USER_NOT_FOUND);
   const correctPassword = await compare(password, user.password);
   if (correctPassword)
-    return await getLoginResponse(user, EventType.AUTH_LOGIN, "local", locals);
+    return getLoginResponse(user, EventType.AUTH_LOGIN, "local", locals);
   throw new Error(INVALID_LOGIN);
 };
 
@@ -104,11 +104,11 @@ export const login2FA = async (code: number, token: string, locals: Locals) => {
   if (!secret) throw new Error(NOT_ENABLED_2FA);
   if (!user.id) throw new Error(USER_NOT_FOUND);
   if (authenticator.check(code.toString(), secret))
-    return await postLoginTokens(user, locals);
+    return postLoginTokens(user, locals);
   const backupCode = await getUserBackupCode(data.id, code);
   if (backupCode && !backupCode.used) {
     await updateBackupCode(backupCode.code, { used: true });
-    return await postLoginTokens(user, locals);
+    return postLoginTokens(user, locals);
   }
   throw new Error(INVALID_2FA_TOKEN);
 };
@@ -128,11 +128,11 @@ export const register = async (
   if (user.username && !(await checkUsernameAvailability(user.username)))
     throw new Error(USERNAME_EXISTS);
   user.username = user.username || (await getBestUsernameForUser(user.name));
-  const result = <InsertResult>await createUser(user);
+  const result = (await createUser(user)) as InsertResult;
   const userId = result.insertId;
   // Set email
   if (email) {
-    const newEmail = <InsertResult>await createEmail(
+    const newEmail = (await createEmail(
       {
         userId,
         email,
@@ -140,7 +140,7 @@ export const register = async (
       },
       !emailVerified,
       !user.password
-    );
+    )) as InsertResult;
     const emailId = newEmail.insertId;
     await updateUser(userId, { primaryEmail: emailId });
   }
@@ -199,7 +199,8 @@ export const sendNewPassword = async (userId: string, email: string) => {
 };
 
 export const verifyEmail = async (token: string, locals: Locals) => {
-  const emailId = (<KeyValue>await verifyToken(token, Tokens.EMAIL_VERIFY)).id;
+  const emailId = ((await verifyToken(token, Tokens.EMAIL_VERIFY)) as KeyValue)
+    .id;
   const email = await getEmail(emailId);
   trackEvent(
     {
@@ -209,7 +210,7 @@ export const verifyEmail = async (token: string, locals: Locals) => {
     },
     locals
   );
-  return await updateEmail(emailId, { isVerified: true });
+  return updateEmail(emailId, { isVerified: true });
 };
 
 export const updatePassword = async (
@@ -217,7 +218,8 @@ export const updatePassword = async (
   password: string,
   locals: Locals
 ) => {
-  const userId = (<KeyValue>await verifyToken(token, Tokens.PASSWORD_RESET)).id;
+  const userId = ((await verifyToken(token, Tokens.PASSWORD_RESET)) as KeyValue)
+    .id;
   await updateUser(userId, { password });
   trackEvent(
     {
@@ -242,7 +244,7 @@ export const impersonate = async (
       impersonateUserId
     )
   )
-    return await getLoginResponse(
+    return getLoginResponse(
       await getUser(impersonateUserId),
       EventType.AUTH_LOGIN,
       "impersonate",
@@ -268,7 +270,7 @@ export const approveLocation = async (token: string, locals: Locals) => {
     },
     locals
   );
-  return await getLoginResponse(
+  return getLoginResponse(
     user,
     EventType.AUTH_APPROVE_LOCATION,
     ipAddress,
@@ -294,12 +296,7 @@ const loginOrRegisterWithEmail = async (
     user = await getUserByEmail(email);
   } catch (error) {}
   if (user) {
-    return await getLoginResponse(
-      user,
-      EventType.AUTH_LOGIN_OAUTH,
-      "github",
-      locals
-    );
+    return getLoginResponse(user, EventType.AUTH_LOGIN_OAUTH, "github", locals);
   } else {
     const user = await register(
       {
@@ -311,7 +308,7 @@ const loginOrRegisterWithEmail = async (
       undefined,
       true
     );
-    return await getLoginResponse(
+    return getLoginResponse(
       await getUser(user.userId),
       EventType.AUTH_LOGIN_OAUTH,
       service,
@@ -338,7 +335,7 @@ export const githubCallback = async (url: string, locals: Locals) => {
         Authorization: `token ${response.accessToken}`
       }
     })
-  ).data as GitHubEmail[]).filter(emails => (emails.verified = true));
+  ).data as Array<GitHubEmail>).filter(emails => (emails.verified = true));
   for await (const email of emails) {
     try {
       const user = await getUserByEmail(email.email);
@@ -362,7 +359,7 @@ export const githubCallback = async (url: string, locals: Locals) => {
     name = me.name;
   } catch (error) {}
   if (email && name) {
-    return await loginOrRegisterWithEmail("facebook", email, name, locals);
+    return loginOrRegisterWithEmail("facebook", email, name, locals);
   }
   if (!name) throw new Error(OAUTH_NO_NAME);
   throw new Error(OAUTH_NO_EMAIL);
@@ -390,7 +387,7 @@ export const facebookCallback = async (url: string, locals: Locals) => {
     name = data.name;
   } catch (error) {}
   if (email && name) {
-    return await loginOrRegisterWithEmail("facebook", email, name, locals);
+    return loginOrRegisterWithEmail("facebook", email, name, locals);
   }
   if (!name) throw new Error(OAUTH_NO_NAME);
   throw new Error(OAUTH_NO_EMAIL);
@@ -421,7 +418,7 @@ export const salesforceCallback = async (url: string, locals: Locals) => {
     name = data.name;
   } catch (error) {}
   if (email && name) {
-    return await loginOrRegisterWithEmail("salesforce", email, name, locals);
+    return loginOrRegisterWithEmail("salesforce", email, name, locals);
   }
   if (!name) throw new Error(OAUTH_NO_NAME);
   throw new Error(OAUTH_NO_EMAIL);

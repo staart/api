@@ -1,9 +1,9 @@
+import geolite2 from "geolite2-redist";
 import maxmind, { CityResponse } from "maxmind";
+import { CacheCategories } from "../interfaces/enum";
 import { Event } from "../interfaces/tables/events";
 import { Session } from "../interfaces/tables/user";
 import { getItemFromCache, storeItemInCache } from "./cache";
-import { CacheCategories } from "../interfaces/enum";
-import geolite2 from "geolite2-redist";
 
 export interface GeoLocation {
   city?: string;
@@ -46,7 +46,7 @@ export const getGeolocationFromIp = async (
   } catch (error) {}
 };
 
-export const addLocationToEvents = async (events: Event[]) => {
+export const addLocationToEvents = async (events: Array<Event>) => {
   for await (let event of events) {
     event = await addLocationToEvent(event);
   }
@@ -60,7 +60,7 @@ export const addLocationToEvent = async (event: Event) => {
   return event;
 };
 
-export const addLocationToSessions = async (sessions: Session[]) => {
+export const addLocationToSessions = async (sessions: Array<Session>) => {
   for await (let session of sessions) {
     session = await addLocationToSession(session);
   }

@@ -1,29 +1,29 @@
-import { MembershipRole, Authorizations, EventType } from "../interfaces/enum";
 import {
-  INSUFFICIENT_PERMISSION,
-  MEMBERSHIP_NOT_FOUND,
-  CANNOT_DELETE_SOLE_OWNER,
   CANNOT_DELETE_SOLE_MEMBER,
-  CANNOT_UPDATE_SOLE_OWNER
+  CANNOT_DELETE_SOLE_OWNER,
+  CANNOT_UPDATE_SOLE_OWNER,
+  INSUFFICIENT_PERMISSION,
+  MEMBERSHIP_NOT_FOUND
 } from "@staart/errors";
 import {
-  getMembership,
   deleteMembership,
-  getOrganizationMembers,
+  getMembership,
   getMembershipDetailed,
+  getOrganizationMembers,
   updateMembership
 } from "../crud/membership";
 import { can } from "../helpers/authorization";
-import { Locals, KeyValue } from "../interfaces/general";
 import { ApiKeyResponse } from "../helpers/jwt";
 import { trackEvent } from "../helpers/tracking";
+import { Authorizations, EventType, MembershipRole } from "../interfaces/enum";
+import { KeyValue, Locals } from "../interfaces/general";
 
 export const getMembershipDetailsForUser = async (
   userId: string,
   membershipId: string
 ) => {
   if (await can(userId, Authorizations.READ, "membership", membershipId))
-    return await getMembershipDetailed(membershipId);
+    return getMembershipDetailed(membershipId);
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 

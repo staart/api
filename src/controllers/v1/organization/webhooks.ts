@@ -1,33 +1,33 @@
 import {
-  getOrganizationWebhooksForUser,
-  createWebhookForUser,
-  getOrganizationWebhookForUser,
-  updateWebhookForUser,
-  deleteWebhookForUser
-} from "../../../rest/organization";
-import {
   RESOURCE_CREATED,
-  respond,
+  RESOURCE_DELETED,
   RESOURCE_UPDATED,
-  RESOURCE_DELETED
+  respond
 } from "@staart/messages";
 import {
-  Get,
-  Put,
-  Patch,
-  Delete,
-  Controller,
   ClassMiddleware,
+  Controller,
+  Delete,
+  Get,
+  Middleware,
+  Patch,
+  Put,
   Request,
-  Response,
-  Middleware
+  Response
 } from "@staart/server";
+import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../../helpers/middleware";
 import {
-  organizationUsernameToId,
-  localsToTokenOrKey
+  localsToTokenOrKey,
+  organizationUsernameToId
 } from "../../../helpers/utils";
-import { joiValidate, Joi } from "@staart/validate";
+import {
+  createWebhookForUser,
+  deleteWebhookForUser,
+  getOrganizationWebhookForUser,
+  getOrganizationWebhooksForUser,
+  updateWebhookForUser
+} from "../../../rest/organization";
 
 @Controller(":id/webhooks")
 @ClassMiddleware(authHandler)
@@ -44,7 +44,7 @@ export class OrganizationWebhooksController {
       },
       webhookParams
     );
-    return await getOrganizationWebhooksForUser(
+    return getOrganizationWebhooksForUser(
       localsToTokenOrKey(res),
       id,
       webhookParams
@@ -87,7 +87,7 @@ export class OrganizationWebhooksController {
       },
       { id, webhookId }
     );
-    return await getOrganizationWebhookForUser(
+    return getOrganizationWebhookForUser(
       localsToTokenOrKey(res),
       id,
       webhookId

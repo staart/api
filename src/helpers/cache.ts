@@ -1,8 +1,8 @@
-import NodeCache from "node-cache";
-import { CACHE_TTL, CACHE_CHECK_PERIOD } from "../config";
-import { query } from "./mysql";
-import { CacheCategories } from "../interfaces/enum";
 import { RESOURCE_NOT_FOUND } from "@staart/errors";
+import NodeCache from "node-cache";
+import { CACHE_CHECK_PERIOD, CACHE_TTL } from "../config";
+import { CacheCategories } from "../interfaces/enum";
+import { query } from "./mysql";
 
 const cache = new NodeCache({
   stdTTL: CACHE_TTL,
@@ -53,7 +53,7 @@ export const cachedQuery = async (
   category: CacheCategories,
   item: number | string,
   queryString: string,
-  values?: (string | number | boolean | Date | undefined)[]
+  values?: Array<string | number | boolean | Date | undefined>
 ) => {
   const cachedItem = getItemFromCache(category, item);
   if (cachedItem && cachedItem !== "undefined") return cachedItem;

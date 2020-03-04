@@ -1,25 +1,25 @@
+import { RESOURCE_CREATED, RESOURCE_UPDATED, respond } from "@staart/messages";
 import {
-  getOrganizationSubscriptionsForUser,
-  createOrganizationSubscriptionForUser,
-  getOrganizationSubscriptionForUser,
-  updateOrganizationSubscriptionForUser
-} from "../../../rest/organization";
-import { RESOURCE_CREATED, respond, RESOURCE_UPDATED } from "@staart/messages";
-import {
-  Get,
-  Put,
-  Patch,
-  Controller,
   ClassMiddleware,
+  Controller,
+  Get,
+  Patch,
+  Put,
   Request,
   Response
 } from "@staart/server";
+import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../../helpers/middleware";
 import {
-  organizationUsernameToId,
-  localsToTokenOrKey
+  localsToTokenOrKey,
+  organizationUsernameToId
 } from "../../../helpers/utils";
-import { joiValidate, Joi } from "@staart/validate";
+import {
+  createOrganizationSubscriptionForUser,
+  getOrganizationSubscriptionForUser,
+  getOrganizationSubscriptionsForUser,
+  updateOrganizationSubscriptionForUser
+} from "../../../rest/organization";
 
 @Controller(":id/subscriptions")
 @ClassMiddleware(authHandler)
@@ -42,7 +42,7 @@ export class OrganizationSubscriptionsController {
       },
       subscriptionParams
     );
-    return await getOrganizationSubscriptionsForUser(
+    return getOrganizationSubscriptionsForUser(
       localsToTokenOrKey(res),
       organizationId,
       subscriptionParams
@@ -86,7 +86,7 @@ export class OrganizationSubscriptionsController {
       },
       { organizationId, subscriptionId }
     );
-    return await getOrganizationSubscriptionForUser(
+    return getOrganizationSubscriptionForUser(
       localsToTokenOrKey(res),
       organizationId,
       subscriptionId

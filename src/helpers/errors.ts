@@ -1,7 +1,7 @@
 import { EXPIRED_TOKEN, INVALID_TOKEN } from "@staart/errors";
-import { HTTPError } from "../interfaces/general";
-import { ValidationError } from "@staart/validate";
 import { warn } from "@staart/errors";
+import { ValidationError } from "@staart/validate";
+import { HTTPError } from "../interfaces/general";
 
 /**
  * Parse default errors and send a safe string

@@ -1,18 +1,18 @@
-import { CronJob } from "cron";
-import {
-  getTrackingData,
-  clearTrackingData,
-  getSecurityEvents,
-  clearSecurityEventsData
-} from "../helpers/tracking";
-import { IdValues } from "../helpers/utils";
-import { ELASTIC_EVENTS_PREFIX, ELASTIC_LOGS_PREFIX } from "../config";
 import { error } from "@staart/errors";
-import { receiveEmailMessage } from "../helpers/mail";
+import { CronJob } from "cron";
+import { ELASTIC_EVENTS_PREFIX, ELASTIC_LOGS_PREFIX } from "../config";
 import {
   elasticSearchIndex,
   receiveElasticSearchMessage
 } from "../helpers/elasticsearch";
+import { receiveEmailMessage } from "../helpers/mail";
+import {
+  clearSecurityEventsData,
+  clearTrackingData,
+  getSecurityEvents,
+  getTrackingData
+} from "../helpers/tracking";
+import { IdValues } from "../helpers/utils";
 import { receiveWebhookMessage } from "../helpers/webhooks";
 
 export default () => {
@@ -39,7 +39,7 @@ const storeSecurityEvents = async () => {
   month = parseInt(month) < 10 ? `0${month}` : month;
   let day = (date.getUTCDate() + 1).toString();
   day = parseInt(day) < 10 ? `0${day}` : day;
-  for await (let body of data) {
+  for await (const body of data) {
     if (typeof body === "object") {
       Object.keys(body).forEach(key => {
         if (IdValues.includes(key)) body[key] = body[key];

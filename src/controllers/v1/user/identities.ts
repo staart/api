@@ -1,24 +1,24 @@
+import { RESOURCE_DELETED, RESOURCE_SUCCESS, respond } from "@staart/messages";
 import {
-  getUserIdentitiesForUser,
-  deleteIdentityForUser,
-  getUserIdentityForUser,
-  createUserIdentityForUser,
-  connectUserIdentityForUser
-} from "../../../rest/user";
-import {
+  ClassMiddleware,
+  Controller,
+  Delete,
   Get,
   Post,
   Put,
-  Delete,
-  Controller,
-  ClassMiddleware,
   Request,
   Response
 } from "@staart/server";
+import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../../helpers/middleware";
-import { respond, RESOURCE_DELETED, RESOURCE_SUCCESS } from "@staart/messages";
 import { userUsernameToId } from "../../../helpers/utils";
-import { joiValidate, Joi } from "@staart/validate";
+import {
+  connectUserIdentityForUser,
+  createUserIdentityForUser,
+  deleteIdentityForUser,
+  getUserIdentitiesForUser,
+  getUserIdentityForUser
+} from "../../../rest/user";
 
 @Controller(":id/identities")
 @ClassMiddleware(authHandler)
@@ -35,18 +35,14 @@ export class UserIdentitiesController {
       },
       identityParams
     );
-    return await getUserIdentitiesForUser(
-      res.locals.token.id,
-      id,
-      identityParams
-    );
+    return getUserIdentitiesForUser(res.locals.token.id, id, identityParams);
   }
 
   @Put()
   async createUserIdentity(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    return await createUserIdentityForUser(res.locals.token.id, id, req.body);
+    return createUserIdentityForUser(res.locals.token.id, id, req.body);
   }
 
   @Post(":service")
@@ -74,7 +70,7 @@ export class UserIdentitiesController {
       },
       { id, identityId }
     );
-    return await getUserIdentityForUser(res.locals.token.id, id, identityId);
+    return getUserIdentityForUser(res.locals.token.id, id, identityId);
   }
 
   @Delete(":identityId")

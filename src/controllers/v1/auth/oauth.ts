@@ -1,24 +1,24 @@
-import { Tokens } from "../../../interfaces/enum";
-import { LoginResponse } from "../../../helpers/jwt";
 import {
-  Get,
   Controller,
-  Wrapper,
-  Request,
-  Response,
+  Get,
   NextFunction,
-  RequestHandler
+  Request,
+  RequestHandler,
+  Response,
+  Wrapper
 } from "@staart/server";
-import { safeRedirect } from "../../../helpers/utils";
-import { FRONTEND_URL, BASE_URL } from "../../../config";
-import {
-  salesforce,
-  github,
-  microsoft,
-  google,
-  facebook
-} from "../../../rest/oauth";
 import { stringify } from "querystring";
+import { BASE_URL, FRONTEND_URL } from "../../../config";
+import { LoginResponse } from "../../../helpers/jwt";
+import { safeRedirect } from "../../../helpers/utils";
+import { Tokens } from "../../../interfaces/enum";
+import {
+  facebook,
+  github,
+  google,
+  microsoft,
+  salesforce
+} from "../../../rest/oauth";
 
 const OAuthRedirector = (action: RequestHandler) => (
   ...args: [Request, Response, NextFunction]

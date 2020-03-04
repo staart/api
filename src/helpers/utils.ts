@@ -1,12 +1,12 @@
-import { User } from "../interfaces/tables/user";
+import { Request, Response } from "@staart/server";
+import { isMatch } from "@staart/text";
+import { Joi, joiValidate } from "@staart/validate";
 import dns from "dns";
 import { getOrganizationIdFromUsername } from "../crud/organization";
-import { Request, Response } from "@staart/server";
-import { Tokens } from "../interfaces/enum";
-import { ApiKeyResponse } from "./jwt";
-import { isMatch } from "@staart/text";
 import { getUserIdFromUsername } from "../crud/user";
-import { joiValidate, Joi } from "@staart/validate";
+import { Tokens } from "../interfaces/enum";
+import { User } from "../interfaces/tables/user";
+import { ApiKeyResponse } from "./jwt";
 
 /**
  * Delete any sensitive information for a user like passwords and tokens
@@ -19,7 +19,7 @@ export const deleteSensitiveInfoUser = (user: User) => {
 
 export const organizationUsernameToId = async (id: string) => {
   if (!id.match(/^-{0,1}\d+$/)) {
-    return await getOrganizationIdFromUsername(id);
+    return getOrganizationIdFromUsername(id);
   } else {
     return parseInt(id).toString();
   }
@@ -29,7 +29,7 @@ export const userUsernameToId = async (id: string, tokenUserId: string) => {
   if (id === "me") {
     return String(tokenUserId);
   } else if (!id.match(/^-{0,1}\d+$/)) {
-    return await getUserIdFromUsername(id);
+    return getUserIdFromUsername(id);
   } else {
     return parseInt(id).toString();
   }
@@ -142,13 +142,13 @@ export const dnsResolve = (
     | "SRV"
     | "TXT"
 ): Promise<
-  | string[]
-  | dns.MxRecord[]
-  | dns.NaptrRecord[]
+  | Array<string>
+  | Array<dns.MxRecord>
+  | Array<dns.NaptrRecord>
   | dns.SoaRecord
-  | dns.SrvRecord[]
-  | string[][]
-  | dns.AnyRecord[]
+  | Array<dns.SrvRecord>
+  | Array<Array<string>>
+  | Array<dns.AnyRecord>
 > =>
   new Promise((resolve, reject) => {
     dns.resolve(hostname, recordType, (error, records) => {

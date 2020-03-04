@@ -1,29 +1,29 @@
 import {
+  RESOURCE_CREATED,
+  RESOURCE_DELETED,
+  RESOURCE_SUCCESS,
+  respond
+} from "@staart/messages";
+import {
+  ClassMiddleware,
+  Controller,
+  Delete,
   Get,
   Post,
   Put,
-  Delete,
-  Controller,
-  ClassMiddleware,
   Request,
   Response
 } from "@staart/server";
+import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../../helpers/middleware";
+import { userUsernameToId } from "../../../helpers/utils";
 import {
-  RESOURCE_CREATED,
-  respond,
-  RESOURCE_DELETED,
-  RESOURCE_SUCCESS
-} from "@staart/messages";
-import {
-  getAllEmailsForUser,
   addEmailToUserForUser,
   deleteEmailFromUserForUser,
+  getAllEmailsForUser,
   getEmailForUser,
   resendEmailVerificationForUser
 } from "../../../rest/email";
-import { userUsernameToId } from "../../../helpers/utils";
-import { joiValidate, Joi } from "@staart/validate";
 
 @Controller(":id/emails")
 @ClassMiddleware(authHandler)
@@ -32,7 +32,7 @@ export class UserEmailsController {
   async getEmails(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    return await getAllEmailsForUser(res.locals.token.id, id, req.query);
+    return getAllEmailsForUser(res.locals.token.id, id, req.query);
   }
 
   @Put()
@@ -63,7 +63,7 @@ export class UserEmailsController {
       },
       { id, emailId }
     );
-    return await getEmailForUser(res.locals.token.id, id, emailId);
+    return getEmailForUser(res.locals.token.id, id, emailId);
   }
 
   @Post(":emailId/resend")

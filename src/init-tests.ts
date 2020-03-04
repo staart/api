@@ -1,12 +1,12 @@
-import { TEST_EMAIL, ELASTIC_INSTANCES_INDEX } from "./config";
 import { logError, success } from "@staart/errors";
 import { sendMail, setupTransporter } from "@staart/mail";
+import redis from "@staart/redis";
 import systemInfo from "systeminformation";
 import pkg from "../package.json";
-import redis from "@staart/redis";
-import { query } from "./helpers/mysql";
-import { receiveEmailMessage } from "./helpers/mail";
+import { ELASTIC_INSTANCES_INDEX, TEST_EMAIL } from "./config";
 import { elasticSearchIndex } from "./helpers/elasticsearch";
+import { receiveEmailMessage } from "./helpers/mail";
+import { query } from "./helpers/mysql";
 
 redis
   .set(pkg.name, systemInfo.time().current)

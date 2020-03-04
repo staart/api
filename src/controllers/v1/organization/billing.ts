@@ -1,22 +1,22 @@
 import {
-  getOrganizationBillingForUser,
-  updateOrganizationBillingForUser,
-  getOrganizationPricingPlansForUser
-} from "../../../rest/organization";
-import {
+  ClassMiddleware,
+  Controller,
   Get,
   Patch,
-  Controller,
-  ClassMiddleware,
   Request,
   Response
 } from "@staart/server";
+import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../../helpers/middleware";
 import {
-  organizationUsernameToId,
-  localsToTokenOrKey
+  localsToTokenOrKey,
+  organizationUsernameToId
 } from "../../../helpers/utils";
-import { joiValidate, Joi } from "@staart/validate";
+import {
+  getOrganizationBillingForUser,
+  getOrganizationPricingPlansForUser,
+  updateOrganizationBillingForUser
+} from "../../../rest/organization";
 
 @Controller(":id")
 @ClassMiddleware(authHandler)
@@ -28,7 +28,7 @@ export class OrganizationBillingController {
       { organizationId: Joi.string().required() },
       { organizationId }
     );
-    return await getOrganizationBillingForUser(
+    return getOrganizationBillingForUser(
       localsToTokenOrKey(res),
       organizationId
     );
@@ -59,7 +59,7 @@ export class OrganizationBillingController {
       },
       { organizationId }
     );
-    return await getOrganizationPricingPlansForUser(
+    return getOrganizationPricingPlansForUser(
       localsToTokenOrKey(res),
       organizationId
     );

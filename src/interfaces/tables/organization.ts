@@ -1,5 +1,5 @@
-import { IdRow } from "../general";
 import { Webhooks } from "../enum";
+import { IdRow } from "../general";
 
 export interface Organization extends IdRow {
   name?: string;

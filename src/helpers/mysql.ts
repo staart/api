@@ -1,28 +1,28 @@
 import { createPool } from "mysql";
+import { emojify, unemojify } from "node-emoji";
 import {
-  DB_HOST,
-  DB_USERNAME,
-  DB_PORT,
-  DB_PASSWORD,
   DB_DATABASE,
+  DB_HOST,
+  DB_PASSWORD,
+  DB_PORT,
   DB_TABLE_PREFIX,
+  DB_USERNAME,
   HASH_ID_PREFIX
 } from "../config";
-import { User, BackupCode } from "../interfaces/tables/user";
+import { getUserPrimaryEmailObject } from "../crud/email";
+import { KeyValue } from "../interfaces/general";
+import { InsertResult } from "../interfaces/mysql";
 import { Email } from "../interfaces/tables/emails";
 import { Membership } from "../interfaces/tables/memberships";
 import { Organization } from "../interfaces/tables/organization";
-import { KeyValue } from "../interfaces/general";
+import { BackupCode, User } from "../interfaces/tables/user";
 import {
   boolValues,
-  jsonValues,
   dateValues,
-  readOnlyValues,
-  IdValues
+  IdValues,
+  jsonValues,
+  readOnlyValues
 } from "./utils";
-import { getUserPrimaryEmailObject } from "../crud/email";
-import { InsertResult } from "../interfaces/mysql";
-import { emojify, unemojify } from "node-emoji";
 
 export const pool = createPool({
   host: DB_HOST,
@@ -37,7 +37,7 @@ export const pool = createPool({
  */
 export const query = (
   queryString: string,
-  values?: (string | number | boolean | Date | undefined)[]
+  values?: Array<string | number | boolean | Date | undefined>
 ): Promise<InsertResult | any> =>
   new Promise((resolve, reject) => {
     pool.getConnection((error, connection) => {
@@ -68,7 +68,7 @@ export const tableValues = (
  * Convert MySQL output to stronger types, like binary to boolean and datetime to JS Date
  */
 export const uncleanValues = (
-  data: (User | BackupCode | Email | Membership | Organization)[]
+  data: Array<User | BackupCode | Email | Membership | Organization>
 ) => {
   if (typeof data.map === "function") {
     data = data.map((item: KeyValue) => {
@@ -105,7 +105,7 @@ export const uncleanValues = (
  * Convert object values to MySQL-compatible types
  */
 export const cleanValues = (
-  values: (string | number | boolean | Date | undefined)[]
+  values: Array<string | number | boolean | Date | undefined>
 ) => {
   values = values.map(value => {
     // Clean up strings
@@ -153,13 +153,13 @@ export const removeReadOnlyValues = (object: KeyValue) => {
   return object;
 };
 
-export const addIsPrimaryToEmails = async (emails: Email[]) => {
+export const addIsPrimaryToEmails = async (emails: Array<Email>) => {
   try {
     const userPrimaryEmailObject = await getUserPrimaryEmailObject(
       emails[0].userId
     );
     emails = emails.map(email => {
-      email.isPrimary = email.id === userPrimaryEmailObject.id;
+      email.isPrimary = Number(email.id) === Number(userPrimaryEmailObject.id);
       return email;
     });
   } catch (error) {}
@@ -171,7 +171,7 @@ export const addIsPrimaryToEmail = async (email: Email) => {
     const userPrimaryEmailObject = await getUserPrimaryEmailObject(
       email.userId
     );
-    email.isPrimary = email.id === userPrimaryEmailObject.id;
+    email.isPrimary = Number(email.id) === Number(userPrimaryEmailObject.id);
     return email;
   } catch (error) {
     return email;

@@ -1,11 +1,11 @@
 import { Request, Response } from "@staart/server";
-import { verifyToken } from "./jwt";
 import { Tokens } from "../interfaces/enum";
-import { Event } from "../interfaces/tables/events";
 import { Locals } from "../interfaces/general";
+import { Event } from "../interfaces/tables/events";
+import { verifyToken } from "./jwt";
 
-let trackingData: any[] = [];
-let securityEventsData: any[] = [];
+let trackingData: Array<any> = [];
+let securityEventsData: Array<any> = [];
 
 export const getTrackingData = () => trackingData;
 export const getSecurityEvents = () => securityEventsData;

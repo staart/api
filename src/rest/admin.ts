@@ -1,14 +1,14 @@
-import { can } from "../helpers/authorization";
-import { Authorizations } from "../interfaces/enum";
-import { getPaginatedData } from "../crud/data";
-import { INSUFFICIENT_PERMISSION } from "@staart/errors";
-import { KeyValue } from "../interfaces/general";
 import {
   cleanElasticSearchQueryResponse,
   elasticSearch
 } from "@staart/elasticsearch";
+import { INSUFFICIENT_PERMISSION } from "@staart/errors";
 import { ms } from "@staart/text";
 import { ELASTIC_LOGS_PREFIX } from "../config";
+import { getPaginatedData } from "../crud/data";
+import { can } from "../helpers/authorization";
+import { Authorizations } from "../interfaces/enum";
+import { KeyValue } from "../interfaces/general";
 import { Organization } from "../interfaces/tables/organization";
 import { User } from "../interfaces/tables/user";
 
@@ -17,7 +17,7 @@ export const getAllOrganizationForUser = async (
   query: KeyValue
 ) => {
   if (await can(tokenUserId, Authorizations.READ, "general"))
-    return await getPaginatedData<Organization>({
+    return getPaginatedData<Organization>({
       table: "organizations",
       ...query
     });
@@ -29,7 +29,7 @@ export const getAllUsersForUser = async (
   query: KeyValue
 ) => {
   if (await can(tokenUserId, Authorizations.READ, "general"))
-    return await getPaginatedData<User>({
+    return getPaginatedData<User>({
       table: "users",
       ...query
     });

@@ -1,46 +1,46 @@
-import { sign, verify, decode } from "jsonwebtoken";
+import {
+  IP_RANGE_CHECK_FAIL,
+  REFERRER_CHECK_FAIL,
+  REVOKED_TOKEN,
+  UNAPPROVED_LOCATION,
+  UNVERIFIED_EMAIL,
+  USER_NOT_FOUND
+} from "@staart/errors";
+import redis from "@staart/redis";
+import { ipRangeCheck, randomString } from "@staart/text";
+import { decode, sign, verify } from "jsonwebtoken";
 import {
   JWT_ISSUER,
   JWT_SECRET,
-  TOKEN_EXPIRY_EMAIL_VERIFICATION,
-  TOKEN_EXPIRY_PASSWORD_RESET,
-  TOKEN_EXPIRY_LOGIN,
-  TOKEN_EXPIRY_REFRESH,
+  TOKEN_EXPIRY_API_KEY_MAX,
   TOKEN_EXPIRY_APPROVE_LOCATION,
-  TOKEN_EXPIRY_API_KEY_MAX
+  TOKEN_EXPIRY_EMAIL_VERIFICATION,
+  TOKEN_EXPIRY_LOGIN,
+  TOKEN_EXPIRY_PASSWORD_RESET,
+  TOKEN_EXPIRY_REFRESH
 } from "../config";
-import { User, AccessToken } from "../interfaces/tables/user";
-import { Tokens, EventType, Templates } from "../interfaces/enum";
 import {
-  USER_NOT_FOUND,
-  UNVERIFIED_EMAIL,
-  UNAPPROVED_LOCATION,
-  REVOKED_TOKEN,
-  IP_RANGE_CHECK_FAIL,
-  REFERRER_CHECK_FAIL
-} from "@staart/errors";
-import {
-  deleteSensitiveInfoUser,
-  removeFalsyValues,
-  includesDomainInCommaList
-} from "./utils";
+  getUserBestEmail,
+  getUserPrimaryEmail,
+  getUserVerifiedEmails
+} from "../crud/email";
 import {
   checkApprovedLocation,
   createSession,
   updateSessionByJwt
 } from "../crud/user";
-import { Locals } from "../interfaces/general";
-import {
-  getUserVerifiedEmails,
-  getUserPrimaryEmail,
-  getUserBestEmail
-} from "../crud/email";
-import { mail } from "./mail";
-import { getGeolocationFromIp } from "./location";
 import i18n from "../i18n";
+import { EventType, Templates, Tokens } from "../interfaces/enum";
+import { Locals } from "../interfaces/general";
 import { ApiKey } from "../interfaces/tables/organization";
-import redis from "@staart/redis";
-import { randomString, ipRangeCheck } from "@staart/text";
+import { AccessToken, User } from "../interfaces/tables/user";
+import { getGeolocationFromIp } from "./location";
+import { mail } from "./mail";
+import {
+  deleteSensitiveInfoUser,
+  includesDomainInCommaList,
+  removeFalsyValues
+} from "./utils";
 
 /**
  * Generate a new JWT
@@ -242,7 +242,7 @@ export const getLoginResponse = async (
     return {
       twoFactorToken: await twoFactorToken(user)
     };
-  return await postLoginTokens(user, locals);
+  return postLoginTokens(user, locals);
 };
 
 /**

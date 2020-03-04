@@ -1,29 +1,29 @@
+import { RESOURCE_DELETED, RESOURCE_UPDATED, respond } from "@staart/messages";
 import {
-  getUserFromId,
-  updateUserForUser,
-  deleteUserForUser
-} from "../../../rest/user";
-import {
-  Get,
-  Patch,
-  Delete,
-  Controller,
+  ChildControllers,
   ClassMiddleware,
-  Request,
-  Response,
+  Controller,
+  Delete,
+  Get,
   Middleware,
-  ChildControllers
+  Patch,
+  Request,
+  Response
 } from "@staart/server";
+import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../../helpers/middleware";
-import { respond, RESOURCE_UPDATED, RESOURCE_DELETED } from "@staart/messages";
 import { userUsernameToId } from "../../../helpers/utils";
-import { joiValidate, Joi } from "@staart/validate";
-import { UserMembershipsController } from "./memberships";
-import { UserEmailsController } from "./emails";
-import { UserSecurityController } from "./security";
+import {
+  deleteUserForUser,
+  getUserFromId,
+  updateUserForUser
+} from "../../../rest/user";
 import { UserAccessTokensController } from "./access-tokens";
-import { UserSessionsController } from "./sessions";
+import { UserEmailsController } from "./emails";
 import { UserIdentitiesController } from "./identities";
+import { UserMembershipsController } from "./memberships";
+import { UserSecurityController } from "./security";
+import { UserSessionsController } from "./sessions";
 
 @Controller("users")
 @ChildControllers([
@@ -40,7 +40,7 @@ export class UserController {
   async get(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    return await getUserFromId(id, res.locals.token.id);
+    return getUserFromId(id, res.locals.token.id);
   }
 
   @Patch(":id")

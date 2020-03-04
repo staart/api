@@ -1,26 +1,26 @@
 import {
-  query,
-  tableValues,
-  setValues,
-  removeReadOnlyValues,
-  addIsPrimaryToEmails,
-  addIsPrimaryToEmail,
-  tableName
-} from "../helpers/mysql";
-import { Email } from "../interfaces/tables/emails";
-import { KeyValue } from "../interfaces/general";
-import { User } from "../interfaces/tables/user";
-import { getUser } from "./user";
-import { Templates } from "../interfaces/enum";
-import {
+  EMAIL_EXISTS,
   MISSING_PRIMARY_EMAIL,
-  USER_NOT_FOUND,
-  EMAIL_EXISTS
+  USER_NOT_FOUND
 } from "@staart/errors";
 import { emailVerificationToken } from "../helpers/jwt";
 import { mail } from "../helpers/mail";
+import {
+  addIsPrimaryToEmail,
+  addIsPrimaryToEmails,
+  query,
+  removeReadOnlyValues,
+  setValues,
+  tableName,
+  tableValues
+} from "../helpers/mysql";
+import { Templates } from "../interfaces/enum";
+import { KeyValue } from "../interfaces/general";
 import { InsertResult } from "../interfaces/mysql";
+import { Email } from "../interfaces/tables/emails";
+import { User } from "../interfaces/tables/user";
 import { sendNewPassword } from "../rest/auth";
+import { getUser } from "./user";
 
 /**
  * Create a new email for a user
@@ -34,12 +34,10 @@ export const createEmail = async (
 ) => {
   email.createdAt = new Date();
   email.updatedAt = email.createdAt;
-  const result = <InsertResult>(
-    await query(
-      `INSERT INTO ${tableName("emails")} ${tableValues(email)}`,
-      Object.values(email)
-    )
-  );
+  const result = (await query(
+    `INSERT INTO ${tableName("emails")} ${tableValues(email)}`,
+    Object.values(email)
+  )) as InsertResult;
   if (sendVerification) {
     await sendEmailVerification(
       result.insertId,
@@ -84,7 +82,7 @@ export const resendEmailVerification = async (id: string) => {
 export const updateEmail = async (id: string, email: KeyValue) => {
   email.updatedAt = new Date();
   email = removeReadOnlyValues(email);
-  return await query(
+  return query(
     `UPDATE ${tableName("emails")} SET ${setValues(email)} WHERE id = ?`,
     [...Object.values(email), id]
   );
@@ -94,7 +92,7 @@ export const updateEmail = async (id: string, email: KeyValue) => {
  * Delete a user's email
  */
 export const deleteEmail = async (id: string) => {
-  return await query(`DELETE FROM ${tableName("emails")} WHERE id = ?`, [id]);
+  return query(`DELETE FROM ${tableName("emails")} WHERE id = ?`, [id]);
 };
 
 /**
@@ -106,20 +104,17 @@ export const deleteAllUserEmails = async (userId: string) => {
     if (email.id && email.email) {
     }
   });
-  return await query(`DELETE FROM ${tableName("emails")} WHERE userId = ?`, [
-    userId
-  ]);
+  return query(`DELETE FROM ${tableName("emails")} WHERE userId = ?`, [userId]);
 };
 
 /**
  * Get details about a user's email
  */
 export const getEmail = async (id: string) => {
-  return (<Email[]>(
-    await query(`SELECT * FROM ${tableName("emails")} WHERE id = ? LIMIT 1`, [
-      id
-    ])
-  ))[0];
+  return ((await query(
+    `SELECT * FROM ${tableName("emails")} WHERE id = ? LIMIT 1`,
+    [id]
+  )) as Array<Email>)[0];
 };
 
 /**
@@ -150,12 +145,10 @@ export const getUserPrimaryEmail = async (user: User | string) => {
  * Get a list of all emails added by a user
  */
 export const getUserEmails = async (userId: string) => {
-  return await addIsPrimaryToEmails(
-    <Email[]>(
-      await query(`SELECT * FROM ${tableName("emails")} WHERE userId = ?`, [
-        userId
-      ])
-    )
+  return addIsPrimaryToEmails(
+    (await query(`SELECT * FROM ${tableName("emails")} WHERE userId = ?`, [
+      userId
+    ])) as Array<Email>
   );
 };
 
@@ -166,27 +159,23 @@ export const getUserBestEmail = async (userId: string) => {
   try {
     return await getUserPrimaryEmail(userId);
   } catch (error) {}
-  return await (<Email[]>(
-    await query(
-      `SELECT * FROM ${tableName(
-        "emails"
-      )} WHERE userId = ? ORDER BY isVerified DESC LIMIT 1`,
-      [userId]
-    )
-  ))[0].email;
+  return ((await query(
+    `SELECT * FROM ${tableName(
+      "emails"
+    )} WHERE userId = ? ORDER BY isVerified DESC LIMIT 1`,
+    [userId]
+  )) as Array<Email>)[0].email;
 };
 
 /**
  * Get the detailed email object from an email
  */
 export const getEmailObject = async (email: string) => {
-  return await addIsPrimaryToEmail(
-    (<Email[]>(
-      await query(
-        `SELECT * FROM ${tableName("emails")} WHERE email = ? LIMIT 1`,
-        [email]
-      )
-    ))[0]
+  return addIsPrimaryToEmail(
+    ((await query(
+      `SELECT * FROM ${tableName("emails")} WHERE email = ? LIMIT 1`,
+      [email]
+    )) as Array<Email>)[0]
   );
 };
 
@@ -194,14 +183,12 @@ export const getEmailObject = async (email: string) => {
  * Get the detailed email object from a verified email
  */
 export const getVerifiedEmailObject = async (email: string) => {
-  return (<Email[]>(
-    await query(
-      `SELECT * FROM ${tableName(
-        "emails"
-      )} WHERE email = ? AND isVerified = 1 LIMIT 1`,
-      [email]
-    )
-  ))[0];
+  return ((await query(
+    `SELECT * FROM ${tableName(
+      "emails"
+    )} WHERE email = ? AND isVerified = 1 LIMIT 1`,
+    [email]
+  )) as Array<Email>)[0];
 };
 
 /**
@@ -215,15 +202,13 @@ export const getUserVerifiedEmails = async (user: User | string) => {
     userId = user;
   }
   if (!userId) throw new Error(USER_NOT_FOUND);
-  return await addIsPrimaryToEmails(
-    <Email[]>(
-      await query(
-        `SELECT * FROM ${tableName(
-          "emails"
-        )} WHERE userId = ? AND isVerified = 1`,
-        [userId]
-      )
-    )
+  return addIsPrimaryToEmails(
+    (await query(
+      `SELECT * FROM ${tableName(
+        "emails"
+      )} WHERE userId = ? AND isVerified = 1`,
+      [userId]
+    )) as Array<Email>
   );
 };
 

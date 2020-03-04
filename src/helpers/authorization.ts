@@ -1,19 +1,19 @@
-import { User, AccessTokenResponse } from "../interfaces/tables/user";
-import { Organization } from "../interfaces/tables/organization";
+import { ORGANIZATION_NOT_FOUND, USER_NOT_FOUND } from "@staart/errors";
+import { getMembership, getUserMemberships } from "../crud/membership";
+import { getOrganization } from "../crud/organization";
+import { getUser } from "../crud/user";
 import {
   Authorizations,
-  UserRole,
   MembershipRole,
   OrgScopes,
   Tokens,
+  UserRole,
   UserScopes
 } from "../interfaces/enum";
-import { getUser } from "../crud/user";
-import { getUserMemberships, getMembership } from "../crud/membership";
-import { getOrganization } from "../crud/organization";
 import { Membership } from "../interfaces/tables/memberships";
+import { Organization } from "../interfaces/tables/organization";
+import { AccessTokenResponse, User } from "../interfaces/tables/user";
 import { ApiKeyResponse } from "./jwt";
-import { ORGANIZATION_NOT_FOUND, USER_NOT_FOUND } from "@staart/errors";
 
 /**
  * Whether a user can perform an action on another user
@@ -32,7 +32,7 @@ const canUserUser = async (
   const userMemberships = await getUserMemberships(user);
   const targetMemberships = await getUserMemberships(target);
 
-  const similarMemberships: number[] = [];
+  const similarMemberships: Array<number> = [];
   userMemberships.forEach((userMembership, index) => {
     targetMemberships.forEach(targetMembership => {
       if (userMembership.id && userMembership.id == targetMembership.id)
@@ -236,7 +236,7 @@ export const can = async (
   targetType: "user" | "organization" | "membership" | "general",
   target?: User | Organization | Membership | string
 ) => {
-  let userObject: User | ApiKeyResponse | undefined = undefined;
+  let userObject: User | ApiKeyResponse | undefined;
   let isApiKey = false;
   let isAccessToken = false;
 
@@ -254,14 +254,14 @@ export const can = async (
 
   if (isApiKey) {
     if (target && typeof target === "object") {
-      return await canApiKeyOrganization(
+      return canApiKeyOrganization(
         user as ApiKeyResponse,
         action as Authorizations | OrgScopes,
         target
       );
     } else if (target) {
       target = await getOrganization(target);
-      return await canApiKeyOrganization(
+      return canApiKeyOrganization(
         user as ApiKeyResponse,
         action as Authorizations | OrgScopes,
         target
@@ -271,14 +271,14 @@ export const can = async (
     }
   } else if (isAccessToken) {
     if (target && typeof target === "object") {
-      return await canAccessTokenUser(
+      return canAccessTokenUser(
         user as AccessTokenResponse,
         action as Authorizations | UserScopes,
         target
       );
     } else if (target) {
       target = await getUser(target);
-      return await canAccessTokenUser(
+      return canAccessTokenUser(
         user as AccessTokenResponse,
         action as Authorizations | UserScopes,
         target
@@ -295,7 +295,7 @@ export const can = async (
     if (typeof target === "string" || typeof target === "string")
       targetObject = await getUser(target);
     else targetObject = target as User;
-    return await canUserUser(
+    return canUserUser(
       userObject,
       action as Authorizations | UserScopes,
       targetObject as User
@@ -304,7 +304,7 @@ export const can = async (
     if (typeof target === "string" || typeof target === "string")
       targetObject = await getOrganization(target);
     else targetObject = target as Organization;
-    return await canUserOrganization(
+    return canUserOrganization(
       userObject,
       action as Authorizations | OrgScopes,
       targetObject as Organization
@@ -313,12 +313,12 @@ export const can = async (
     if (typeof target === "string" || typeof target === "string")
       targetObject = await getMembership(target);
     else targetObject = target as Membership;
-    return await canUserMembership(
+    return canUserMembership(
       userObject,
       action as Authorizations | OrgScopes,
       targetObject as Membership
     );
   }
 
-  return await canUserGeneral(userObject, action as Authorizations | OrgScopes);
+  return canUserGeneral(userObject, action as Authorizations | OrgScopes);
 };

@@ -1,20 +1,20 @@
+import { RESOURCE_DELETED, respond } from "@staart/messages";
+import {
+  ClassMiddleware,
+  Controller,
+  Delete,
+  Get,
+  Request,
+  Response
+} from "@staart/server";
+import { Joi, joiValidate } from "@staart/validate";
+import { authHandler } from "../../../helpers/middleware";
+import { userUsernameToId } from "../../../helpers/utils";
 import {
   deleteSessionForUser,
   getUserSessionForUser,
   getUserSessionsForUser
 } from "../../../rest/user";
-import {
-  Get,
-  Delete,
-  Controller,
-  ClassMiddleware,
-  Request,
-  Response
-} from "@staart/server";
-import { authHandler } from "../../../helpers/middleware";
-import { respond, RESOURCE_DELETED } from "@staart/messages";
-import { userUsernameToId } from "../../../helpers/utils";
-import { joiValidate, Joi } from "@staart/validate";
 
 @Controller(":id/sessions")
 @ClassMiddleware(authHandler)
@@ -31,7 +31,7 @@ export class UserSessionsController {
       },
       sessionParams
     );
-    return await getUserSessionsForUser(res.locals.token.id, id, sessionParams);
+    return getUserSessionsForUser(res.locals.token.id, id, sessionParams);
   }
 
   @Get(":sessionId")
@@ -45,7 +45,7 @@ export class UserSessionsController {
       },
       { id, sessionId }
     );
-    return await getUserSessionForUser(res.locals.token.id, id, sessionId);
+    return getUserSessionForUser(res.locals.token.id, id, sessionId);
   }
 
   @Delete(":sessionId")

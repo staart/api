@@ -1,6 +1,6 @@
-import { UserRole, NotificationEmails, Genders, Tokens } from "../enum";
-import { IdRow, Row } from "../general";
 import { GeoLocation } from "../../helpers/location";
+import { Genders, NotificationEmails, Tokens, UserRole } from "../enum";
+import { IdRow, Row } from "../general";
 
 export interface User extends IdRow {
   name: string;
