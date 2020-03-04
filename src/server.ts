@@ -1,10 +1,7 @@
 import "@babel/polyfill";
-import { Server } from "@staart/server";
+import { Server, Get, Controller } from "@staart/server";
 import { success } from "@staart/errors";
-import { setupMiddleware, Request, Response } from "@staart/server";
-
-// `join` is required
-import { join } from "path";
+import { setupMiddleware } from "@staart/server";
 
 import {
   errorHandler,
@@ -13,11 +10,23 @@ import {
   speedLimitHandler
 } from "./helpers/middleware";
 
+@Controller("/")
+class RootController {
+  @Get()
+  async info() {
+    return {
+      repository: "https://github.com/staart/api",
+      docs: "https://staart.js.org",
+      madeBy: ["https://o15y.com", "https://anandchowdhary.com"]
+    };
+  }
+}
+
 export class Staart extends Server {
   constructor() {
     super();
     this.setupHandlers();
-    this.setupControllers();
+    this.addControllers([new RootController()]);
     this.app.use(errorHandler);
   }
 
@@ -26,16 +35,6 @@ export class Staart extends Server {
     this.app.use(trackingHandler);
     this.app.use(rateLimitHandler);
     this.app.use(speedLimitHandler);
-  }
-
-  private setupControllers() {
-    this.app.get("/", (req: Request, res: Response) =>
-      res.json({
-        repository: "https://github.com/staart/api",
-        docs: "https://staart.js.org"
-      })
-    );
-    // staart:setup/controllers
   }
 
   public start(port: number): void {
