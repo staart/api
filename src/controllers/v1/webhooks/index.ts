@@ -3,7 +3,7 @@ import { stripeWebhookAuthHandler } from "../../../helpers/middleware";
 import { StripeLocals } from "../../../interfaces/general";
 
 @Controller("v1/webhooks")
-export class AdminController {
+export class WebhooksController {
   @Get("stripe")
   @Middleware(stripeWebhookAuthHandler)
   async stripeWebhook(req: Request, res: Response) {
