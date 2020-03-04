@@ -3,7 +3,7 @@ import {
   getAllOrganizationForUser,
   getAllUsersForUser,
   getServerLogsForUser
-} from "../../rest/admin";
+} from "../../../rest/admin";
 import {
   Get,
   Controller,
@@ -11,7 +11,7 @@ import {
   Request,
   Response
 } from "@staart/server";
-import { authHandler } from "../../helpers/middleware";
+import { authHandler } from "../../../helpers/middleware";
 
 @Controller("v1/admin")
 @ClassMiddleware(authHandler)

@@ -1,4 +1,4 @@
-import { UserRole, Tokens } from "../../interfaces/enum";
+import { UserRole, Tokens } from "../../../interfaces/enum";
 import { INVALID_TOKEN } from "@staart/errors";
 import {
   sendPasswordReset,
@@ -11,8 +11,8 @@ import {
   register,
   login2FA,
   invalidateRefreshToken
-} from "../../rest/auth";
-import { verifyToken, LoginResponse } from "../../helpers/jwt";
+} from "../../../rest/auth";
+import { verifyToken, LoginResponse } from "../../../helpers/jwt";
 import {
   RESOURCE_CREATED,
   respond,
@@ -34,16 +34,16 @@ import {
   authHandler,
   bruteForceHandler,
   validator
-} from "../../helpers/middleware";
-import { safeRedirect } from "../../helpers/utils";
-import { FRONTEND_URL, BASE_URL } from "../../config";
+} from "../../../helpers/middleware";
+import { safeRedirect } from "../../../helpers/utils";
+import { FRONTEND_URL, BASE_URL } from "../../../config";
 import {
   salesforce,
   github,
   microsoft,
   google,
   facebook
-} from "../../rest/oauth";
+} from "../../../rest/oauth";
 import { stringify } from "querystring";
 import { joiValidate, Joi } from "@staart/validate";
 
