@@ -9,7 +9,7 @@ import { KeyValue } from "../interfaces/general";
 /*
  * Get pagination data
  */
-export const getPaginatedData = async ({
+export const getPaginatedData = async <T>({
   table,
   conditions,
   start = 0,
@@ -45,11 +45,12 @@ export const getPaginatedData = async ({
       ...(conditions ? Object.values(conditions) : []),
       q
     ]
-  )) as any[];
+  )) as T[];
   return {
     data,
     hasMore: data.length == itemsPerPage,
-    next: data.length == itemsPerPage && data[data.length - 1][primaryKey]
+    next:
+      data.length == itemsPerPage && (data as any)[data.length - 1][primaryKey]
   };
 };
 

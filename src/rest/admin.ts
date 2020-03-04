@@ -9,13 +9,15 @@ import {
 } from "@staart/elasticsearch";
 import { ms } from "@staart/text";
 import { ELASTIC_LOGS_PREFIX } from "../config";
+import { Organization } from "../interfaces/tables/organization";
+import { User } from "../interfaces/tables/user";
 
 export const getAllOrganizationForUser = async (
   tokenUserId: string,
   query: KeyValue
 ) => {
   if (await can(tokenUserId, Authorizations.READ, "general"))
-    return await getPaginatedData({
+    return await getPaginatedData<Organization>({
       table: "organizations",
       ...query
     });
@@ -27,7 +29,7 @@ export const getAllUsersForUser = async (
   query: KeyValue
 ) => {
   if (await can(tokenUserId, Authorizations.READ, "general"))
-    return await getPaginatedData({
+    return await getPaginatedData<User>({
       table: "users",
       ...query
     });

@@ -370,7 +370,7 @@ export const getUserBackupCode = async (userId: string, backupCode: number) => {
  * Get a list of all approved locations of a user
  */
 export const getUserAccessTokens = async (userId: string, query: KeyValue) => {
-  return await getPaginatedData({
+  return await getPaginatedData<AccessToken>({
     table: "access-tokens",
     conditions: {
       userId
@@ -452,7 +452,7 @@ export const deleteAccessToken = async (
  * Get a list of all valid sessions of a user
  */
 export const getUserSessions = async (userId: string, query: KeyValue) => {
-  const data = await getPaginatedData({
+  const data = await getPaginatedData<Session>({
     table: "sessions",
     conditions: {
       userId
@@ -562,7 +562,7 @@ export const deleteSession = async (userId: string, sessionId: string) => {
  * Get a list of all identities of a user
  */
 export const getUserIdentities = async (userId: string, query: KeyValue) => {
-  const data = await getPaginatedData({
+  const data = await getPaginatedData<Identity>({
     table: "identities",
     conditions: {
       userId

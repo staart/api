@@ -45,6 +45,8 @@ import { compare } from "@staart/text";
 import { getPaginatedData } from "../crud/data";
 import { addLocationToEvents } from "../helpers/location";
 import { trackEvent } from "../helpers/tracking";
+import { Event } from "../interfaces/tables/events";
+import { Membership } from "../interfaces/tables/memberships";
 
 export const getUserFromId = async (userId: string, tokenUserId: string) => {
   if (await can(tokenUserId, UserScopes.READ_USER, "user", userId))
@@ -131,7 +133,7 @@ export const getRecentEventsForUser = async (
   query: KeyValue
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER, "user", dataUserId)) {
-    const events = await getPaginatedData({
+    const events = await getPaginatedData<Event>({
       table: "events",
       conditions: { userId: dataUserId },
       ...query
@@ -150,7 +152,7 @@ export const getMembershipsForUser = async (
   if (
     await can(tokenUserId, UserScopes.READ_USER_MEMBERSHIPS, "user", dataUserId)
   ) {
-    const memberships = await getPaginatedData({
+    const memberships = await getPaginatedData<Membership>({
       table: "memberships",
       conditions: { userId: dataUserId },
       ...query

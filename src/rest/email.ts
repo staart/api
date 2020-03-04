@@ -15,6 +15,7 @@ import { can } from "../helpers/authorization";
 import { getPaginatedData } from "../crud/data";
 import { addIsPrimaryToEmails } from "../helpers/mysql";
 import { trackEvent } from "../helpers/tracking";
+import { Email } from "../interfaces/tables/emails";
 
 export const getAllEmailsForUser = async (
   tokenUserId: string,
@@ -22,7 +23,7 @@ export const getAllEmailsForUser = async (
   query: KeyValue
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER_EMAILS, "user", userId)) {
-    const emails = await getPaginatedData({
+    const emails = await getPaginatedData<Email>({
       table: "emails",
       conditions: { userId },
       ...query

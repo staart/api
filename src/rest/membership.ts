@@ -13,12 +13,9 @@ import {
   getMembershipDetailed,
   updateMembership
 } from "../crud/membership";
-import { User } from "../interfaces/tables/user";
-import { register } from "./auth";
 import { can } from "../helpers/authorization";
 import { Locals, KeyValue } from "../interfaces/general";
 import { ApiKeyResponse } from "../helpers/jwt";
-import { getOrganization, getDomainByDomainName } from "../crud/organization";
 import { trackEvent } from "../helpers/tracking";
 
 export const getMembershipDetailsForUser = async (

@@ -189,7 +189,7 @@ export const getOrganizationApiKeys = async (
   organizationId: string,
   query: KeyValue
 ) => {
-  return await getPaginatedData({
+  return await getPaginatedData<ApiKey>({
     table: "api-keys",
     conditions: {
       organizationId
@@ -315,7 +315,7 @@ export const getOrganizationDomains = async (
   organizationId: string,
   query: KeyValue
 ) => {
-  return await getPaginatedData({
+  return await getPaginatedData<Domain>({
     table: "domains",
     conditions: {
       organizationId
@@ -456,7 +456,7 @@ export const getOrganizationWebhooks = async (
   organizationId: string,
   query: KeyValue
 ) => {
-  return await getPaginatedData({
+  return await getPaginatedData<Webhook>({
     table: "webhooks",
     conditions: {
       organizationId
@@ -554,7 +554,7 @@ export const getOrganizationMemberships = async (
   organizationId: string,
   query?: KeyValue
 ) => {
-  const members: any = await getPaginatedData({
+  const members: any = await getPaginatedData<Membership>({
     table: "memberships",
     conditions: { organizationId },
     ...query
