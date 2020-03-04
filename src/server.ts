@@ -1,10 +1,9 @@
 import "@babel/polyfill";
 import { Server } from "@staart/server";
 import { success } from "@staart/errors";
+import { setupMiddleware, Request, Response } from "@staart/server";
 
-// `asyncHandler` and `join` are required
-
-import { setupMiddleware, Request, Response, asyncHandler } from "@staart/server";
+// `join` is required
 import { join } from "path";
 
 import {

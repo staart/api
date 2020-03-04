@@ -135,6 +135,7 @@ typings/
 dist/
 docs/
 src/app.ts
+.staart/
 
 # Environment variables
 *.env
