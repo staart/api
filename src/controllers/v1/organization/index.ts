@@ -38,7 +38,7 @@ import { OrganizationSourcesController } from "./sources";
 import { OrganizationSubscriptionsController } from "./subscriptions";
 import { OrganizationWebhooksController } from "./webhooks";
 
-@Controller("v1/organizations")
+@Controller("organizations")
 @ChildControllers([
   new OrganizationApiKeysController(),
   new OrganizationBillingController(),

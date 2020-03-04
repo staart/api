@@ -25,7 +25,7 @@ import { UserAccessTokensController } from "./access-tokens";
 import { UserSessionsController } from "./sessions";
 import { UserIdentitiesController } from "./identities";
 
-@Controller("v1/users")
+@Controller("users")
 @ChildControllers([
   new UserMembershipsController(),
   new UserEmailsController(),

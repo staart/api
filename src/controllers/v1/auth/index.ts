@@ -35,7 +35,7 @@ import {
 import { joiValidate, Joi } from "@staart/validate";
 import { AuthOAuthController } from "./oauth";
 
-@Controller("v1/auth")
+@Controller("auth")
 @ChildControllers([new AuthOAuthController()])
 export class AuthController {
   @Post("register")

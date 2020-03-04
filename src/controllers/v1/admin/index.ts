@@ -13,7 +13,7 @@ import {
 } from "@staart/server";
 import { authHandler } from "../../../helpers/middleware";
 
-@Controller("v1/admin")
+@Controller("admin")
 @ClassMiddleware(authHandler)
 export class AdminController {
   @Get("organizations")
