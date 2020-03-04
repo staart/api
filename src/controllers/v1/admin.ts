@@ -20,28 +20,28 @@ export class AdminController {
   async getOrganizations(req: Request, res: Response) {
     const userId = res.locals.token.id;
     if (!userId) throw new Error(MISSING_FIELD);
-    res.json(await getAllOrganizationForUser(userId, req.query));
+    return await getAllOrganizationForUser(userId, req.query);
   }
 
   @Get("users")
   async getUsers(req: Request, res: Response) {
     const userId = res.locals.token.id;
     if (!userId) throw new Error(MISSING_FIELD);
-    res.json(await getAllUsersForUser(userId, req.query));
+    return await getAllUsersForUser(userId, req.query);
   }
 
   @Get("server-logs")
   async getServerLogs(req: Request, res: Response) {
     const userId = res.locals.token.id;
     if (!userId) throw new Error(MISSING_FIELD);
-    res.json(await getServerLogsForUser(userId, req.query));
+    return await getServerLogsForUser(userId, req.query);
   }
 
   @Get("info")
   async info(req: Request, res: Response) {
-    res.json({
+    return {
       success: true,
       message: "admin-info-success"
-    });
+    };
   }
 }

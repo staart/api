@@ -24,7 +24,7 @@ export class MembershipController {
   async get(req: Request, res: Response) {
     const membershipId = req.params.id;
     const userId = res.locals.token.id;
-    res.json(await getMembershipDetailsForUser(userId, membershipId));
+    return await getMembershipDetailsForUser(userId, membershipId);
   }
 
   @Delete(":id")
@@ -33,7 +33,7 @@ export class MembershipController {
     const userId = res.locals.token.id;
     const membershipId = req.params.id;
     await deleteMembershipForUser(userId, membershipId, res.locals);
-    res.json({ deleted: true });
+    return { deleted: true };
   }
 
   @Patch(":id")
@@ -44,6 +44,6 @@ export class MembershipController {
     const data = req.body;
     delete req.body.id;
     await updateMembershipForUser(userId, membershipId, data, res.locals);
-    res.json({ success: true, message: "membership-updated" });
+    return { success: true, message: "membership-updated" };
   }
 }

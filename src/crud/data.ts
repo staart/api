@@ -50,7 +50,9 @@ export const getPaginatedData = async <T>({
     data,
     hasMore: data.length == itemsPerPage,
     next:
-      data.length == itemsPerPage && (data as any)[data.length - 1][primaryKey]
+      data.length == itemsPerPage
+        ? ((data as any)[data.length - 1][primaryKey] as string)
+        : undefined
   };
 };
 

@@ -5,7 +5,10 @@ import {
   removeReadOnlyValues,
   tableName
 } from "../helpers/mysql";
-import { Membership } from "../interfaces/tables/memberships";
+import {
+  Membership,
+  MembershipDetailed
+} from "../interfaces/tables/memberships";
 import { KeyValue } from "../interfaces/general";
 import { User } from "../interfaces/tables/user";
 import { getOrganization } from "./organization";
@@ -103,11 +106,14 @@ export const getMembership = async (id: string) => {
  * Get a detailed version of a membership
  */
 export const getMembershipDetailed = async (id: string) => {
-  const membership = (await getMembership(id)) as any;
+  const membership = await getMembership(id);
   if (!membership || !membership.id) throw new Error(MEMBERSHIP_NOT_FOUND);
-  membership.organization = await getOrganization(membership.organizationId);
-  membership.user = await getUser(membership.userId);
-  return membership;
+  const membershipDetailed = {
+    ...membership,
+    organization: await getOrganization(membership.organizationId),
+    user: await getUser(membership.userId)
+  };
+  return membershipDetailed;
 };
 
 /*

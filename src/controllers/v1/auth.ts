@@ -130,7 +130,7 @@ export class AuthController {
     )
   )
   async login(req: Request, res: Response) {
-    res.json(await login(req.body.email, req.body.password, res.locals));
+    return await login(req.body.email, req.body.password, res.locals);
   }
 
   @Post("2fa")
@@ -148,7 +148,7 @@ export class AuthController {
   async twoFactor(req: Request, res: Response) {
     const code = req.body.code;
     const token = req.body.token;
-    res.json(await login2FA(code, token, res.locals));
+    return await login2FA(code, token, res.locals);
   }
 
   @Post("verify-token")
@@ -167,7 +167,7 @@ export class AuthController {
     const subject = req.body.subject;
     try {
       const data = await verifyToken(token, subject);
-      res.json({ verified: true, data });
+      return { verified: true, data };
     } catch (error) {
       throw new Error(INVALID_TOKEN);
     }
@@ -178,7 +178,7 @@ export class AuthController {
     const token =
       req.body.token || (req.get("Authorization") || "").replace("Bearer ", "");
     joiValidate({ token: Joi.string().required() }, { token });
-    res.json(await validateRefreshToken(token, res.locals));
+    return await validateRefreshToken(token, res.locals);
   }
 
   @Post("logout")
@@ -186,7 +186,7 @@ export class AuthController {
     const token =
       req.body.token || (req.get("Authorization") || "").replace("Bearer ", "");
     joiValidate({ token: Joi.string().required() }, { token });
-    res.json(await invalidateRefreshToken(token, res.locals));
+    return await invalidateRefreshToken(token, res.locals);
   }
 
   @Post("reset-password/request")
@@ -203,7 +203,7 @@ export class AuthController {
   async postResetPasswordRequest(req: Request, res: Response) {
     const email = req.body.email;
     await sendPasswordReset(email, res.locals);
-    res.json({ queued: true });
+    return { queued: true };
   }
 
   @Post("reset-password/recover")
@@ -221,7 +221,7 @@ export class AuthController {
       { token, password }
     );
     await updatePassword(token, password, res.locals);
-    res.json({ success: true, message: "auth-recover-success" });
+    return { success: true, message: "auth-recover-success" };
   }
 
   @Post("impersonate/:id")
@@ -232,14 +232,14 @@ export class AuthController {
   async getImpersonate(req: Request, res: Response) {
     const tokenUserId = res.locals.token.id;
     const impersonateUserId = req.params.id;
-    res.json(await impersonate(tokenUserId, impersonateUserId, res.locals));
+    return await impersonate(tokenUserId, impersonateUserId, res.locals);
   }
 
   @Post("approve-location")
   async getApproveLocation(req: Request, res: Response) {
     const token = req.body.token || req.params.token;
     joiValidate({ token: Joi.string().required() }, { token });
-    res.json(await approveLocation(token, res.locals));
+    return await approveLocation(token, res.locals);
   }
 
   @Post("verify-email")
@@ -247,7 +247,7 @@ export class AuthController {
     const token = req.body.token || req.params.token;
     joiValidate({ token: Joi.string().required() }, { token });
     await verifyEmail(token, res.locals);
-    res.json({ success: true, message: "auth-verify-email-success" });
+    return { success: true, message: "auth-verify-email-success" };
   }
 
   @Get("oauth/salesforce")
