@@ -236,7 +236,7 @@ export const can = async (
   targetType: "user" | "organization" | "membership" | "general",
   target?: User | Organization | Membership | string
 ) => {
-  let userObject: User | ApiKeyResponse | undefined;
+  let userObject: User | ApiKeyResponse | undefined = undefined;
   let isApiKey = false;
   let isAccessToken = false;
 
