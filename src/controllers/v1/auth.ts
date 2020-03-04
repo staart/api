@@ -13,7 +13,12 @@ import {
   invalidateRefreshToken
 } from "../../rest/auth";
 import { verifyToken, LoginResponse } from "../../helpers/jwt";
-import { RESOURCE_CREATED, respond } from "@staart/messages";
+import {
+  RESOURCE_CREATED,
+  respond,
+  RESOURCE_SUCCESS,
+  RESOURCE_UPDATED
+} from "@staart/messages";
 import {
   Get,
   Post,
@@ -161,7 +166,7 @@ export class AuthController {
       "body"
     )
   )
-  async postVerifyToken(req: Request, res: Response) {
+  async postVerifyToken(req: Request) {
     const token =
       req.body.token || (req.get("Authorization") || "").replace("Bearer ", "");
     const subject = req.body.subject;
@@ -186,7 +191,8 @@ export class AuthController {
     const token =
       req.body.token || (req.get("Authorization") || "").replace("Bearer ", "");
     joiValidate({ token: Joi.string().required() }, { token });
-    return await invalidateRefreshToken(token, res.locals);
+    await invalidateRefreshToken(token, res.locals);
+    return respond(RESOURCE_SUCCESS);
   }
 
   @Post("reset-password/request")
@@ -203,7 +209,7 @@ export class AuthController {
   async postResetPasswordRequest(req: Request, res: Response) {
     const email = req.body.email;
     await sendPasswordReset(email, res.locals);
-    return { queued: true };
+    return respond(RESOURCE_SUCCESS);
   }
 
   @Post("reset-password/recover")
@@ -221,7 +227,7 @@ export class AuthController {
       { token, password }
     );
     await updatePassword(token, password, res.locals);
-    return { success: true, message: "auth-recover-success" };
+    return respond(RESOURCE_UPDATED);
   }
 
   @Post("impersonate/:id")
@@ -247,7 +253,7 @@ export class AuthController {
     const token = req.body.token || req.params.token;
     joiValidate({ token: Joi.string().required() }, { token });
     await verifyEmail(token, res.locals);
-    return { success: true, message: "auth-verify-email-success" };
+    return respond(RESOURCE_SUCCESS);
   }
 
   @Get("oauth/salesforce")

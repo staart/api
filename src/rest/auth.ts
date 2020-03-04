@@ -167,7 +167,7 @@ export const register = async (
     }
   }
   if (locals) await addApprovedLocation(userId, locals.ipAddress);
-  return { created: true, userId };
+  return { userId };
 };
 
 export const sendPasswordReset = async (email: string, locals?: Locals) => {

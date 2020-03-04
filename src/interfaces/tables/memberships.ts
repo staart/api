@@ -1,4 +1,5 @@
 import { MembershipRole } from "../enum";
+import { User } from "./user";
 
 export interface Membership {
   id?: string;
@@ -7,4 +8,8 @@ export interface Membership {
   role: MembershipRole;
   createdAt?: Date;
   updatedAt?: Date;
+}
+
+export interface MembershipWithUser extends Membership {
+  user: User;
 }

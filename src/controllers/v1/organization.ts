@@ -41,7 +41,13 @@ import {
   updateOrganizationMembershipForUser,
   getOrganizationApiKeyLogsForUser
 } from "../../rest/organization";
-import { RESOURCE_CREATED, respond, RESOURCE_UPDATED } from "@staart/messages";
+import {
+  RESOURCE_CREATED,
+  respond,
+  RESOURCE_UPDATED,
+  RESOURCE_DELETED,
+  RESOURCE_SUCCESS
+} from "@staart/messages";
 import {
   Get,
   Put,
@@ -129,7 +135,7 @@ export class OrganizationController {
       organizationId,
       res.locals
     );
-    return { success: true, message: "organization-deleted" };
+    return respond(RESOURCE_DELETED);
   }
 
   @Get(":id/billing")
@@ -308,13 +314,14 @@ export class OrganizationController {
       },
       data
     );
-    return await updateOrganizationSubscriptionForUser(
+    await updateOrganizationSubscriptionForUser(
       localsToTokenOrKey(res),
       organizationId,
       subscriptionId,
       data,
       res.locals
     );
+    return respond(RESOURCE_UPDATED);
   }
 
   @Put(":id/subscriptions")
@@ -334,12 +341,13 @@ export class OrganizationController {
       },
       subscriptionParams
     );
-    return await createOrganizationSubscriptionForUser(
+    await createOrganizationSubscriptionForUser(
       localsToTokenOrKey(res),
       organizationId,
       subscriptionParams,
       res.locals
     );
+    return respond(RESOURCE_CREATED);
   }
 
   @Get(":id/pricing")
@@ -384,12 +392,13 @@ export class OrganizationController {
       },
       { organizationId, sourceId }
     );
-    return await deleteOrganizationSourceForUser(
+    await deleteOrganizationSourceForUser(
       localsToTokenOrKey(res),
       organizationId,
       sourceId,
       res.locals
     );
+    return respond(RESOURCE_DELETED);
   }
 
   @Patch(":id/sources/:sourceId")
@@ -403,13 +412,14 @@ export class OrganizationController {
       },
       { organizationId, sourceId }
     );
-    return await updateOrganizationSourceForUser(
+    await updateOrganizationSourceForUser(
       localsToTokenOrKey(res),
       organizationId,
       sourceId,
       req.body,
       res.locals
     );
+    return respond(RESOURCE_UPDATED);
   }
 
   @Get(":id/data")
@@ -513,12 +523,13 @@ export class OrganizationController {
       },
       { organizationId, membershipId }
     );
-    return await updateOrganizationMembershipForUser(
+    await updateOrganizationMembershipForUser(
       localsToTokenOrKey(res),
       organizationId,
       membershipId,
       req.body
     );
+    return respond(RESOURCE_UPDATED);
   }
 
   @Delete(":id/memberships/:membershipId")
@@ -532,11 +543,12 @@ export class OrganizationController {
       },
       { organizationId, membershipId }
     );
-    return await deleteOrganizationMembershipForUser(
+    await deleteOrganizationMembershipForUser(
       localsToTokenOrKey(res),
       organizationId,
       membershipId
     );
+    return respond(RESOURCE_DELETED);
   }
 
   @Get(":id/api-keys")
@@ -624,13 +636,14 @@ export class OrganizationController {
       },
       { id, apiKeyId }
     );
-    return await updateApiKeyForUser(
+    await updateApiKeyForUser(
       localsToTokenOrKey(res),
       id,
       apiKeyId,
       req.body,
       res.locals
     );
+    return respond(RESOURCE_UPDATED);
   }
 
   @Delete(":id/api-keys/:apiKeyId")
@@ -644,12 +657,13 @@ export class OrganizationController {
       },
       { id, apiKeyId }
     );
-    return await deleteApiKeyForUser(
+    await deleteApiKeyForUser(
       localsToTokenOrKey(res),
       id,
       apiKeyId,
       res.locals
     );
+    return respond(RESOURCE_DELETED);
   }
 
   @Get(":id/api-keys/:apiKeyId/logs")
@@ -748,13 +762,14 @@ export class OrganizationController {
       },
       { id, domainId }
     );
-    return await updateDomainForUser(
+    await updateDomainForUser(
       localsToTokenOrKey(res),
       id,
       domainId,
       req.body,
       res.locals
     );
+    return respond(RESOURCE_UPDATED);
   }
 
   @Delete(":id/domains/:domainId")
@@ -768,12 +783,13 @@ export class OrganizationController {
       },
       { id, domainId }
     );
-    return await deleteDomainForUser(
+    await deleteDomainForUser(
       localsToTokenOrKey(res),
       id,
       domainId,
       res.locals
     );
+    return respond(RESOURCE_DELETED);
   }
 
   @Post(":id/domains/:domainId/verify")
@@ -791,17 +807,18 @@ export class OrganizationController {
       },
       { id, domainId, method }
     );
-    return await verifyDomainForUser(
+    await verifyDomainForUser(
       localsToTokenOrKey(res),
       id,
       domainId,
       method,
       res.locals
     );
+    return respond(RESOURCE_SUCCESS);
   }
 
   @Get(":id/webhooks")
-  async getUserWebhooks(req: Request, res: Response) {
+  async getOrganizationWebhooks(req: Request, res: Response) {
     const id = await organizationUsernameToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
     const webhookParams = { ...req.query };
@@ -832,7 +849,7 @@ export class OrganizationController {
       "body"
     )
   )
-  async putUserWebhooks(req: Request, res: Response) {
+  async putOrganizationWebhooks(req: Request, res: Response) {
     const id = await organizationUsernameToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
     await createWebhookForUser(
@@ -845,7 +862,7 @@ export class OrganizationController {
   }
 
   @Get(":id/webhooks/:webhookId")
-  async getUserWebhook(req: Request, res: Response) {
+  async getOrganizationWebhook(req: Request, res: Response) {
     const id = await organizationUsernameToId(req.params.id);
     const webhookId = req.params.webhookId;
     joiValidate(
@@ -875,7 +892,7 @@ export class OrganizationController {
       "body"
     )
   )
-  async patchUserWebhook(req: Request, res: Response) {
+  async patchOrganizationWebhook(req: Request, res: Response) {
     const id = await organizationUsernameToId(req.params.id);
     const webhookId = req.params.webhookId;
     joiValidate(
@@ -885,17 +902,18 @@ export class OrganizationController {
       },
       { id, webhookId }
     );
-    return await updateWebhookForUser(
+    await updateWebhookForUser(
       localsToTokenOrKey(res),
       id,
       webhookId,
       req.body,
       res.locals
     );
+    return respond(RESOURCE_UPDATED);
   }
 
   @Delete(":id/webhooks/:webhookId")
-  async deleteUserWebhook(req: Request, res: Response) {
+  async deleteOrganizationWebhook(req: Request, res: Response) {
     const id = await organizationUsernameToId(req.params.id);
     const webhookId = req.params.webhookId;
     joiValidate(
@@ -905,11 +923,12 @@ export class OrganizationController {
       },
       { id, webhookId }
     );
-    return await deleteWebhookForUser(
+    await deleteWebhookForUser(
       localsToTokenOrKey(res),
       id,
       webhookId,
       res.locals
     );
+    return respond(RESOURCE_DELETED);
   }
 }

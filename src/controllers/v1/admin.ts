@@ -38,7 +38,7 @@ export class AdminController {
   }
 
   @Get("info")
-  async info(req: Request, res: Response) {
+  async info() {
     return {
       success: true,
       message: "admin-info-success"

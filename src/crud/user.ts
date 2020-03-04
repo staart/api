@@ -345,7 +345,9 @@ export const deleteUserBackupCodes = async (userId: string) => {
 /**
  * Get all backup codes of a user
  */
-export const getUserBackupCodes = async (userId: string) => {
+export const getUserBackupCodes = async (
+  userId: string
+): Promise<BackupCode[]> => {
   return await query(
     `SELECT * FROM ${tableName("backup-codes")} WHERE userId = ?`,
     [userId]

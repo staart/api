@@ -35,7 +35,10 @@ import {
   ELASTIC_LOGS_PREFIX
 } from "../config";
 import { InsertResult } from "../interfaces/mysql";
-import { Membership } from "../interfaces/tables/memberships";
+import {
+  Membership,
+  MembershipWithUser
+} from "../interfaces/tables/memberships";
 import { getUser } from "./user";
 import {
   elasticSearch,
@@ -554,15 +557,23 @@ export const getOrganizationMemberships = async (
   organizationId: string,
   query?: KeyValue
 ) => {
-  const members: any = await getPaginatedData<Membership>({
+  const members = await getPaginatedData<Membership>({
     table: "memberships",
     conditions: { organizationId },
     ...query
   });
+  const detailedMemberships: {
+    data: MembershipWithUser[];
+    hasMore: boolean;
+    next?: string;
+  } = { ...members, data: [] };
   for await (const member of members.data) {
-    member.user = await getUser(member.userId);
+    detailedMemberships.data.push({
+      ...member,
+      user: await getUser(member.userId)
+    });
   }
-  return members;
+  return detailedMemberships;
 };
 
 /*
@@ -591,14 +602,14 @@ export const getOrganizationMembershipDetailed = async (
   organizationId: string,
   id: string
 ) => {
-  const membership = (await getOrganizationMembership(
-    organizationId,
-    id
-  )) as any;
+  const membership = await getOrganizationMembership(organizationId, id);
   if (!membership || !membership.id) throw new Error(MEMBERSHIP_NOT_FOUND);
-  membership.organization = await getOrganization(membership.organizationId);
-  membership.user = await getUser(membership.userId);
-  return membership;
+  const membershipDetailed = {
+    ...membership,
+    organization: await getOrganization(membership.organizationId),
+    user: await getUser(membership.userId)
+  };
+  return membershipDetailed;
 };
 
 /*

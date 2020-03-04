@@ -38,7 +38,13 @@ import {
   Middleware
 } from "@staart/server";
 import { authHandler, validator } from "../../helpers/middleware";
-import { RESOURCE_CREATED, respond } from "@staart/messages";
+import {
+  RESOURCE_CREATED,
+  respond,
+  RESOURCE_UPDATED,
+  RESOURCE_DELETED,
+  RESOURCE_SUCCESS
+} from "@staart/messages";
 import {
   getAllEmailsForUser,
   addEmailToUserForUser,
@@ -94,14 +100,15 @@ export class UserController {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
     await updateUserForUser(res.locals.token.id, id, req.body, res.locals);
-    return { success: true, message: "user-updated" };
+    return respond(RESOURCE_UPDATED);
   }
 
   @Delete(":id")
   async delete(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    return await deleteUserForUser(res.locals.token.id, id, res.locals);
+    await deleteUserForUser(res.locals.token.id, id, res.locals);
+    return respond(RESOURCE_DELETED);
   }
 
   @Put(":id/password")
@@ -135,7 +142,7 @@ export class UserController {
       newPassword,
       res.locals
     );
-    return { success: true, message: "user-password-updated" };
+    return respond(RESOURCE_UPDATED);
   }
 
   @Get(":id/events")
@@ -178,7 +185,7 @@ export class UserController {
       { id, membershipId }
     );
     await deleteMembershipForUser(id, membershipId, res.locals);
-    return { deleted: true };
+    return respond(RESOURCE_DELETED);
   }
 
   @Patch(":id/memberships/:membershipId")
@@ -195,7 +202,7 @@ export class UserController {
     const data = req.body;
     delete req.body.id;
     await updateMembershipForUser(id, membershipId, data, res.locals);
-    return { success: true, message: "membership-updated" };
+    return respond(RESOURCE_UPDATED);
   }
 
   @Get(":id/data")
@@ -255,7 +262,7 @@ export class UserController {
       { id, emailId }
     );
     await resendEmailVerificationForUser(res.locals.token.id, id, emailId);
-    return { success: true, message: "user-email-verify-resent" };
+    return respond(RESOURCE_SUCCESS);
   }
 
   @Delete(":id/emails/:emailId")
@@ -275,7 +282,7 @@ export class UserController {
       emailId,
       res.locals
     );
-    return { success: true, message: "user-email-deleted" };
+    return respond(RESOURCE_DELETED);
   }
 
   @Get(":id/2fa/enable")
@@ -298,14 +305,16 @@ export class UserController {
       },
       { id, code }
     );
-    return await verify2FAForUser(res.locals.token.id, id, code);
+    await verify2FAForUser(res.locals.token.id, id, code);
+    return respond(RESOURCE_SUCCESS);
   }
 
   @Delete(":id/2fa")
   async delete2FA(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    return await disable2FAForUser(res.locals.token.id, id);
+    await disable2FAForUser(res.locals.token.id, id);
+    return respond(RESOURCE_SUCCESS);
   }
 
   @Get(":id/backup-codes")
@@ -403,13 +412,14 @@ export class UserController {
       },
       { id, accessTokenId }
     );
-    return await updateAccessTokenForUser(
+    await updateAccessTokenForUser(
       res.locals.token.id,
       id,
       accessTokenId,
       req.body,
       res.locals
     );
+    return respond(RESOURCE_UPDATED);
   }
 
   @Delete(":id/access-tokens/:accessTokenId")
@@ -423,12 +433,13 @@ export class UserController {
       },
       { id, accessTokenId }
     );
-    return await deleteAccessTokenForUser(
+    await deleteAccessTokenForUser(
       res.locals.token.id,
       id,
       accessTokenId,
       res.locals
     );
+    return respond(RESOURCE_DELETED);
   }
 
   @Get(":id/sessions")
@@ -471,12 +482,8 @@ export class UserController {
       },
       { id, sessionId }
     );
-    return await deleteSessionForUser(
-      res.locals.token.id,
-      id,
-      sessionId,
-      res.locals
-    );
+    await deleteSessionForUser(res.locals.token.id, id, sessionId, res.locals);
+    return respond(RESOURCE_DELETED);
   }
 
   @Get(":id/identities")
@@ -515,12 +522,8 @@ export class UserController {
       { service: Joi.string().required(), url: Joi.string().required() },
       { service, url }
     );
-    return await connectUserIdentityForUser(
-      res.locals.token.id,
-      id,
-      service,
-      url
-    );
+    await connectUserIdentityForUser(res.locals.token.id, id, service, url);
+    return respond(RESOURCE_SUCCESS);
   }
 
   @Get(":id/identities/:identityId")
@@ -548,11 +551,12 @@ export class UserController {
       },
       { id, identityId }
     );
-    return await deleteIdentityForUser(
+    await deleteIdentityForUser(
       res.locals.token.id,
       id,
       identityId,
       res.locals
     );
+    return respond(RESOURCE_DELETED);
   }
 }
