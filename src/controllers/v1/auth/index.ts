@@ -1,4 +1,4 @@
-import { UserRole, Tokens } from "../../../interfaces/enum";
+import { UserRole } from "../../../interfaces/enum";
 import { INVALID_TOKEN } from "@staart/errors";
 import {
   sendPasswordReset,
@@ -12,7 +12,7 @@ import {
   login2FA,
   invalidateRefreshToken
 } from "../../../rest/auth";
-import { verifyToken, LoginResponse } from "../../../helpers/jwt";
+import { verifyToken } from "../../../helpers/jwt";
 import {
   RESOURCE_CREATED,
   respond,
@@ -20,64 +20,23 @@ import {
   RESOURCE_UPDATED
 } from "@staart/messages";
 import {
-  Get,
   Post,
   Controller,
   Middleware,
-  Wrapper,
   Request,
   Response,
-  NextFunction,
-  RequestHandler
+  ChildControllers
 } from "@staart/server";
 import {
   authHandler,
   bruteForceHandler,
   validator
 } from "../../../helpers/middleware";
-import { safeRedirect } from "../../../helpers/utils";
-import { FRONTEND_URL, BASE_URL } from "../../../config";
-import {
-  salesforce,
-  github,
-  microsoft,
-  google,
-  facebook
-} from "../../../rest/oauth";
-import { stringify } from "querystring";
 import { joiValidate, Joi } from "@staart/validate";
-
-const OAuthRedirector = (action: RequestHandler) => (
-  ...args: [Request, Response, NextFunction]
-) => {
-  return action(args[0], args[1], (error: Error) => {
-    safeRedirect(
-      args[0],
-      args[1],
-      `${FRONTEND_URL}/errors/oauth?${stringify({
-        ...args[0].params,
-        ...args[0].query,
-        error: error.toString().replace("Error: ", "")
-      })}`
-    );
-  });
-};
-const OAuthRedirect = (
-  req: Request,
-  res: Response,
-  response: LoginResponse
-) => {
-  return safeRedirect(
-    req,
-    res,
-    `${FRONTEND_URL}/auth/token?${stringify({
-      ...response,
-      subject: Tokens.LOGIN
-    })}`
-  );
-};
+import { AuthOAuthController } from "./oauth";
 
 @Controller("v1/auth")
+@ChildControllers([new AuthOAuthController()])
 export class AuthController {
   @Post("register")
   @Middleware(bruteForceHandler)
@@ -254,95 +213,5 @@ export class AuthController {
     joiValidate({ token: Joi.string().required() }, { token });
     await verifyEmail(token, res.locals);
     return respond(RESOURCE_SUCCESS);
-  }
-
-  @Get("oauth/salesforce")
-  @Wrapper(OAuthRedirector)
-  async getOAuthUrlSalesforce(req: Request, res: Response) {
-    safeRedirect(req, res, salesforce.client.code.getUri());
-  }
-  @Get("oauth/salesforce/callback")
-  @Wrapper(OAuthRedirector)
-  async getOAuthCallbackSalesforce(req: Request, res: Response) {
-    return OAuthRedirect(
-      req,
-      res,
-      await salesforce.callback(
-        `${BASE_URL}/auth${req.path}?${stringify(req.query)}`,
-        res.locals
-      )
-    );
-  }
-
-  @Get("oauth/github")
-  @Wrapper(OAuthRedirector)
-  async getOAuthUrlGitHub(req: Request, res: Response) {
-    safeRedirect(req, res, github.client.code.getUri());
-  }
-  @Get("oauth/github/callback")
-  @Wrapper(OAuthRedirector)
-  async getOAuthCallbackGitHub(req: Request, res: Response) {
-    return OAuthRedirect(
-      req,
-      res,
-      await github.callback(
-        `${BASE_URL}/auth${req.path}?${stringify(req.query)}`,
-        res.locals
-      )
-    );
-  }
-
-  @Get("oauth/microsoft")
-  @Wrapper(OAuthRedirector)
-  async getOAuthUrlMicrosoft(req: Request, res: Response) {
-    safeRedirect(req, res, microsoft.client.code.getUri());
-  }
-  @Get("oauth/microsoft/callback")
-  @Wrapper(OAuthRedirector)
-  async getOAuthCallbackMicrosoft(req: Request, res: Response) {
-    return OAuthRedirect(
-      req,
-      res,
-      await microsoft.callback(
-        `${BASE_URL}/auth${req.path}?${stringify(req.query)}`,
-        res.locals
-      )
-    );
-  }
-
-  @Get("oauth/google")
-  @Wrapper(OAuthRedirector)
-  async getOAuthUrlGoogle(req: Request, res: Response) {
-    safeRedirect(req, res, google.client.code.getUri());
-  }
-  @Get("oauth/google/callback")
-  @Wrapper(OAuthRedirector)
-  async getOAuthCallbackGoogle(req: Request, res: Response) {
-    return OAuthRedirect(
-      req,
-      res,
-      await google.callback(
-        `${BASE_URL}/auth${req.path}?${stringify(req.query)}`,
-        res.locals
-      )
-    );
-  }
-
-  @Get("oauth/facebook")
-  @Wrapper(OAuthRedirector)
-  async getOAuthUrlFacebook(req: Request, res: Response) {
-    safeRedirect(req, res, facebook.client.code.getUri());
-  }
-  @Get("oauth/facebook/callback")
-  @Wrapper(OAuthRedirector)
-  async getOAuthCallbackFacebook(req: Request, res: Response) {
-    return OAuthRedirect(
-      req,
-      res,
-      await facebook.callback(
-        `${BASE_URL}/auth${req.path}?${stringify(req.query)}`,
-        res.locals
-      )
-    );
   }
 }
