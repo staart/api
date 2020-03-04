@@ -35,9 +35,7 @@ import {
   ClassMiddleware,
   Request,
   Response,
-  Middleware,
-  ClassWrapper,
-  jsonAsyncResponse
+  Middleware
 } from "@staart/server";
 import { authHandler, validator } from "../../helpers/middleware";
 import { RESOURCE_CREATED, respond } from "@staart/messages";
@@ -58,7 +56,6 @@ import {
 
 @Controller("v1/users")
 @ClassMiddleware(authHandler)
-@ClassWrapper(jsonAsyncResponse)
 export class UserController {
   @Get(":id")
   async get(req: Request, res: Response) {

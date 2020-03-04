@@ -23,9 +23,7 @@ import {
   Request,
   Response,
   NextFunction,
-  RequestHandler,
-  ClassWrapper,
-  jsonAsyncResponse
+  RequestHandler
 } from "@staart/server";
 import {
   authHandler,
@@ -75,7 +73,6 @@ const OAuthRedirect = (
 };
 
 @Controller("v1/auth")
-@ClassWrapper(jsonAsyncResponse)
 export class AuthController {
   @Post("register")
   @Middleware(bruteForceHandler)

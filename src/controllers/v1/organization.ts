@@ -52,9 +52,7 @@ import {
   Request,
   Response,
   Middleware,
-  Post,
-  ClassWrapper,
-  jsonAsyncResponse
+  Post
 } from "@staart/server";
 import { authHandler, validator } from "../../helpers/middleware";
 import { MembershipRole } from "../../interfaces/enum";
@@ -66,7 +64,6 @@ import { joiValidate, Joi } from "@staart/validate";
 
 @Controller("v1/organizations")
 @ClassMiddleware(authHandler)
-@ClassWrapper(jsonAsyncResponse)
 export class OrganizationController {
   @Put()
   @Middleware(
