@@ -10,7 +10,7 @@ import {
   speedLimitHandler
 } from "./helpers/middleware";
 
-@Controller("/")
+@Controller("/v1")
 class RootController {
   @Get()
   async info() {
