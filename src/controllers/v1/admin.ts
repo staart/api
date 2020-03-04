@@ -9,11 +9,14 @@ import {
   Controller,
   ClassMiddleware,
   Request,
-  Response
+  Response,
+  ClassWrapper,
+  jsonAsyncResponse
 } from "@staart/server";
 import { authHandler } from "../../helpers/middleware";
 
 @Controller("v1/admin")
+@ClassWrapper(jsonAsyncResponse)
 @ClassMiddleware(authHandler)
 export class AdminController {
   @Get("organizations")

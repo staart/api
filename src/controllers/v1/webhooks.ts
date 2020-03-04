@@ -3,13 +3,16 @@ import {
   Controller,
   ClassMiddleware,
   Request,
-  Response
+  Response,
+  ClassWrapper,
+  jsonAsyncResponse
 } from "@staart/server";
 import { stripeWebhookAuthHandler } from "../../helpers/middleware";
 import { StripeLocals } from "../../interfaces/general";
 
 @Controller("v1/webhooks")
 @ClassMiddleware(stripeWebhookAuthHandler)
+@ClassWrapper(jsonAsyncResponse)
 export class AdminController {
   @Get("stripe")
   async stripeWebhook(req: Request, res: Response) {

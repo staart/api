@@ -11,13 +11,16 @@ import {
   ClassMiddleware,
   Middleware,
   Request,
-  Response
+  Response,
+  ClassWrapper,
+  jsonAsyncResponse
 } from "@staart/server";
 import { authHandler, validator } from "../../helpers/middleware";
 import { Joi } from "@staart/validate";
 
 @Controller("v1/memberships")
 @ClassMiddleware(authHandler)
+@ClassWrapper(jsonAsyncResponse)
 export class MembershipController {
   @Get(":id")
   @Middleware(validator({ id: Joi.string().required() }, "params"))
