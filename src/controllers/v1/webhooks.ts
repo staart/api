@@ -15,6 +15,6 @@ export class AdminController {
   async stripeWebhook(req: Request, res: Response) {
     const locals = res.locals as StripeLocals;
     console.log("Received Stripe event", locals.stripeEvent);
-    return res.json({ hello: "world" });
+    res.json({ hello: "world" });
   }
 }
