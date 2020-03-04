@@ -10,7 +10,7 @@ import {
   trackingHandler
 } from "./helpers/middleware";
 
-@Controller("/v1")
+@Controller("v1")
 class RootController {
   @Get()
   async info() {
