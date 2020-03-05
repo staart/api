@@ -25,8 +25,8 @@ export const organizationUsernameToId = async (id: string) => {
   }
 };
 
-export const userUsernameToId = async (id: string, tokenUserId: string) => {
-  if (id === "me") {
+export const userUsernameToId = async (id: string, tokenUserId?: string) => {
+  if (id === "me" && tokenUserId) {
     return String(tokenUserId);
   } else if (!id.match(/^-{0,1}\d+$/)) {
     return getUserIdFromUsername(id);

@@ -52,7 +52,9 @@ export enum Templates {
   PASSWORD_RESET = "password-reset",
   NEW_PASSWORD = "new-password",
   INVITED_TO_TEAM = "invited",
-  UNAPPROVED_LOCATION = "unapproved-location"
+  UNAPPROVED_LOCATION = "unapproved-location",
+  CREDITS_NEW_USER = "credits-new-user",
+  CREDITS_INVITED_BY = "credits-invited-by"
 }
 
 export enum Tokens {

@@ -34,6 +34,7 @@ import {
   verifyEmail
 } from "../../../rest/auth";
 import { AuthOAuthController } from "./oauth";
+import { addInvitationCredits } from "../../../rest/user";
 
 @Controller("auth")
 @ChildControllers([new AuthOAuthController()])
@@ -56,25 +57,29 @@ export class AuthController {
         preferredLanguage: Joi.string()
           .min(2)
           .max(5),
-        timezone: Joi.string()
+        timezone: Joi.string(),
+        invitedByUser: Joi.string()
       },
       "body"
     )
   )
   async register(req: Request, res: Response) {
-    const email = req.body.email;
     const user = req.body;
+    const email = req.body.email;
+    const invitedByUser = req.body.invitedByUser;
     delete user.organizationId;
     delete user.email;
+    delete user.invitedByUser;
     if (user.role == UserRole.ADMIN) delete user.role;
     delete user.membershipRole;
-    await register(
+    const { userId } = await register(
       user,
       res.locals,
       email,
       req.body.organizationId,
       req.body.membershipRole
     );
+    if (invitedByUser) await addInvitationCredits(invitedByUser, userId);
     return respond(RESOURCE_CREATED);
   }
 

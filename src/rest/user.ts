@@ -10,7 +10,12 @@ import { authenticator } from "otplib";
 import { toDataURL } from "qrcode";
 import { SERVICE_2FA } from "../config";
 import { getPaginatedData } from "../crud/data";
-import { deleteAllUserEmails, getUserEmails } from "../crud/email";
+import {
+  deleteAllUserEmails,
+  getUserEmails,
+  getUserPrimaryEmail,
+  getUserBestEmail
+} from "../crud/email";
 import {
   addOrganizationToMemberships,
   deleteAllUserMemberships,
@@ -41,11 +46,13 @@ import {
 } from "../crud/user";
 import { can } from "../helpers/authorization";
 import { trackEvent } from "../helpers/tracking";
-import { EventType, UserScopes } from "../interfaces/enum";
+import { EventType, UserScopes, Templates } from "../interfaces/enum";
 import { KeyValue, Locals } from "../interfaces/general";
 import { Event } from "../interfaces/tables/events";
 import { Membership } from "../interfaces/tables/memberships";
 import { User } from "../interfaces/tables/user";
+import { userUsernameToId } from "../helpers/utils";
+import { mail } from "../helpers/mail";
 
 export const getUserFromId = async (userId: string, tokenUserId: string) => {
   if (await can(tokenUserId, UserScopes.READ_USER, "user", userId))
@@ -391,4 +398,23 @@ export const deleteIdentityForUser = async (
     return;
   }
   throw new Error(INSUFFICIENT_PERMISSION);
+};
+
+export const addInvitationCredits = async (
+  invitedBy: string,
+  newUserId: string
+) => {
+  const invitedByUserId = await userUsernameToId(invitedBy);
+  const invitedByDetails = await getUser(invitedByUserId);
+  const invitedByEmail = await getUserPrimaryEmail(invitedByUserId);
+  const newUserEmail = await getUserBestEmail(newUserId);
+  const newUserDetails = await getUser(newUserId);
+  const emailData = {
+    invitedByName: invitedByDetails.name,
+    invitedByCode: "",
+    newUserName: newUserDetails.name,
+    newUserCode: ""
+  };
+  await mail(invitedByEmail, Templates.CREDITS_INVITED_BY, emailData);
+  await mail(newUserEmail, Templates.CREDITS_NEW_USER, emailData);
 };
