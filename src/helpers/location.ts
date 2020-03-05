@@ -1,8 +1,6 @@
 import geolite2 from "geolite2-redist";
-import maxmind, { CityResponse } from "maxmind";
+import maxmind, { CityResponse, Reader } from "maxmind";
 import { CacheCategories } from "../interfaces/enum";
-import { Event } from "../interfaces/tables/events";
-import { Session } from "../interfaces/tables/user";
 import { getItemFromCache, storeItemInCache } from "./cache";
 
 export interface GeoLocation {
@@ -16,15 +14,23 @@ export interface GeoLocation {
   zip_code?: string;
   region_name?: string;
 }
+
+let lookup: Reader<CityResponse> | undefined = undefined;
+const getLookup = async () => {
+  if (lookup) return lookup;
+  lookup = await geolite2.open<CityResponse>("GeoLite2-City", path => {
+    return maxmind.open(path);
+  });
+  return lookup;
+};
+
 export const getGeolocationFromIp = async (
   ipAddress: string
 ): Promise<GeoLocation | undefined> => {
   try {
     const cachedLookup = getItemFromCache(CacheCategories.IP_LOOKUP, ipAddress);
     if (cachedLookup) return cachedLookup as GeoLocation;
-    const lookup = await geolite2.open<CityResponse>("GeoLite2-City", path => {
-      return maxmind.open(path);
-    });
+    const lookup = await getLookup();
     const ipLookup = lookup.get(ipAddress);
     if (!ipLookup) return;
     const location: any = {};
