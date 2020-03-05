@@ -29,7 +29,6 @@ import {
   createSession,
   updateSessionByJwt
 } from "../crud/user";
-import i18n from "../i18n";
 import { EventType, Templates, Tokens } from "../interfaces/enum";
 import { Locals } from "../interfaces/general";
 import { ApiKey } from "../interfaces/tables/organization";
@@ -244,7 +243,7 @@ export const getLoginResponse = async (
           ...user,
           location: location
             ? location.city || location.region_name || location.country_code
-            : i18n.en.emails["unknown-location"],
+            : "Unknown location",
           token: await approveLocationToken(user.id, locals.ipAddress)
         }
       );

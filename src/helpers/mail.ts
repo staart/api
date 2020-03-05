@@ -5,7 +5,6 @@ import { redisQueue } from "@staart/redis";
 import { readFile } from "fs-extra";
 import { join } from "path";
 import { FRONTEND_URL, REDIS_QUEUE_PREFIX } from "../config";
-import i18n from "../i18n";
 
 const MAIL_QUEUE = `${REDIS_QUEUE_PREFIX}outbound-emails`;
 
@@ -87,7 +86,7 @@ const safeSendEmail = async (to: string, template: string, data: any = {}) => {
   const message = result[1];
   return sendMail({
     to: to.toString(),
-    subject: i18n.en.emails[template] || "",
+    subject: result[1].split("\n", 1)[0].replace(/<\/?[^>]+(>|$)/g, ""),
     message,
     altText
   });
