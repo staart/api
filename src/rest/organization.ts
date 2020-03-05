@@ -26,11 +26,11 @@ import {
   getSubscriptions,
   updateCustomer,
   updateSource,
-  updateSubscription
+  updateSubscription,
+  createCustomerBalanceTransaction
 } from "@staart/payments";
 import axios from "axios";
 import { JWT_ISSUER } from "../config";
-import { getUserPrimaryEmail } from "../crud/email";
 import {
   createMembership,
   getUserOrganizationMembership
@@ -66,7 +66,7 @@ import {
 } from "../crud/organization";
 import { getUser, getUserByEmail } from "../crud/user";
 import { can } from "../helpers/authorization";
-import { ApiKeyResponse } from "../helpers/jwt";
+import { ApiKeyResponse, verifyToken, couponCodeJwt } from "../helpers/jwt";
 import { mail } from "../helpers/mail";
 import { trackEvent } from "../helpers/tracking";
 import { dnsResolve } from "../helpers/utils";
@@ -76,7 +76,8 @@ import {
   MembershipRole,
   OrgScopes,
   Templates,
-  Webhooks
+  Webhooks,
+  Tokens
 } from "../interfaces/enum";
 import { KeyValue, Locals } from "../interfaces/general";
 import { InsertResult } from "../interfaces/mysql";
@@ -1074,6 +1075,34 @@ export const deleteWebhookForUser = async (
     queueWebhook(organizationId, Webhooks.DELETE_WEBHOOK, webhookId);
     trackEvent({ organizationId, type: Webhooks.DELETE_WEBHOOK }, locals);
     return result;
+  }
+  throw new Error(INSUFFICIENT_PERMISSION);
+};
+
+export const applyCouponToOrganizationForUser = async (
+  userId: string | ApiKeyResponse,
+  organizationId: string,
+  coupon: string,
+  locals: Locals
+) => {
+  if (
+    await can(
+      userId,
+      OrgScopes.UPDATE_ORG_BILLING,
+      "organization",
+      organizationId
+    )
+  ) {
+    const { amount, currency, description } = await verifyToken<{
+      amount: number;
+      currency: string;
+      description?: string;
+    }>(coupon, Tokens.COUPON);
+    await createCustomerBalanceTransaction(organizationId, {
+      amount,
+      currency,
+      description
+    });
   }
   throw new Error(INSUFFICIENT_PERMISSION);
 };

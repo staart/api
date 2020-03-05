@@ -65,7 +65,8 @@ export enum Tokens {
   REFRESH = "refresh",
   PASSWORD_RESET = "password-reset",
   EMAIL_VERIFY = "email-verify",
-  APPROVE_LOCATION = "approve-location"
+  APPROVE_LOCATION = "approve-location",
+  COUPON = "coupon"
 }
 
 export enum CacheCategories {

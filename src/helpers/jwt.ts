@@ -47,7 +47,7 @@ import {
  */
 export const generateToken = (
   payload: string | object | Buffer,
-  expiresIn: string | number,
+  expiresIn: string | number | undefined,
   subject: Tokens
 ): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -85,16 +85,22 @@ export interface ApiKeyResponse {
   ipRestrictions?: string;
   referrerRestrictions?: string;
 }
-export const verifyToken = (
-  token: string,
-  subject: Tokens
-): Promise<TokenResponse | ApiKeyResponse> =>
+export const verifyToken = <T>(token: string, subject: Tokens): Promise<T> =>
   new Promise((resolve, reject) => {
     verify(token, JWT_SECRET, { subject }, (error, data) => {
       if (error) return reject(error);
-      resolve(data as TokenResponse | ApiKeyResponse);
+      resolve((data as any) as T);
     });
   });
+
+/**
+ * Generate a new coupon JWT
+ */
+export const couponCodeJwt = (
+  amount: number,
+  currency: string,
+  description?: string
+) => generateToken({ amount, currency, description }, undefined, Tokens.COUPON);
 
 /**
  * Generate a new email verification JWT

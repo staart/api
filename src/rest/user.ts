@@ -53,6 +53,7 @@ import { Membership } from "../interfaces/tables/memberships";
 import { User } from "../interfaces/tables/user";
 import { userUsernameToId } from "../helpers/utils";
 import { mail } from "../helpers/mail";
+import { couponCodeJwt } from "../helpers/jwt";
 
 export const getUserFromId = async (userId: string, tokenUserId: string) => {
   if (await can(tokenUserId, UserScopes.READ_USER, "user", userId))
@@ -411,9 +412,17 @@ export const addInvitationCredits = async (
   const newUserDetails = await getUser(newUserId);
   const emailData = {
     invitedByName: invitedByDetails.name,
-    invitedByCode: "",
+    invitedByCode: await couponCodeJwt(
+      500,
+      "usd",
+      `Invite credits from ${newUserDetails.name}`
+    ),
     newUserName: newUserDetails.name,
-    newUserCode: ""
+    newUserCode: await couponCodeJwt(
+      500,
+      "usd",
+      `Invite credits from ${invitedByDetails.name}`
+    )
   };
   await mail(invitedByEmail, Templates.CREDITS_INVITED_BY, emailData);
   await mail(newUserEmail, Templates.CREDITS_NEW_USER, emailData);
