@@ -505,6 +505,12 @@ export const updateSessionByJwt = async (
 ) => {
   data.updatedAt = new Date();
   data = removeReadOnlyValues(data);
+  try {
+    const decoded = decode(sessionJwt);
+    if (decoded && typeof decoded === "object" && decoded.jti) {
+      sessionJwt = decoded.jti;
+    }
+  } catch (error) {}
   return query(
     `UPDATE ${tableName("sessions")} SET ${setValues(
       data

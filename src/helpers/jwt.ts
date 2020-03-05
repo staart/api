@@ -183,9 +183,16 @@ export const postLoginTokens = async (
   if (!user.id) throw new Error(USER_NOT_FOUND);
   const refresh = await refreshToken(user.id);
   if (!refreshTokenString) {
+    let jwtToken = refresh;
+    try {
+      const decoded = decode(refresh);
+      if (decoded && typeof decoded === "object" && decoded.jti) {
+        jwtToken = decoded.jti;
+      }
+    } catch (error) {}
     await createSession({
       userId: user.id,
-      jwtToken: refresh,
+      jwtToken,
       ipAddress: locals.ipAddress || "unknown-ip-address",
       userAgent: locals.userAgent || "unknown-user-agent"
     });
