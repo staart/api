@@ -56,7 +56,7 @@
     "yaml": "^1.7.2"
   },
   "dependencies": {
-    "@sentry/node": "^5.13.1",
+    "@sentry/node": "^5.13.2",
     "@staart/disposable-email": "^2.0.2",
     "@staart/elasticsearch": "^2.0.2",
     "@staart/errors": "^2.1.0",
