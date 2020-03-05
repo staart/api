@@ -100,7 +100,7 @@ export const couponCodeJwt = (
   amount: number,
   currency: string,
   description?: string
-) => generateToken({ amount, currency, description }, "1 year", Tokens.COUPON);
+) => generateToken({ amount, currency, description }, "30d", Tokens.COUPON);
 
 /**
  * Generate a new email verification JWT
