@@ -1,6 +1,6 @@
 # Your \$5 invite credits from {{invitedByName}}
 
-Dear {{newUserNmae}},
+Dear {{newUserName}},
 
 {{invitedByName}} invited you to join Staart, and you just did!
 
