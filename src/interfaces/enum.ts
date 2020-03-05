@@ -132,7 +132,11 @@ export enum OrgScopes {
   READ_ORG_MEMBERSHIPS = "org:membership:read",
   UPDATE_ORG_MEMBERSHIPS = "org:membership:update",
   DELETE_ORG_MEMBERSHIPS = "org:membership:delete",
-  CREATE_ORG_MEMBERSHIPS = "org:membership:create"
+  CREATE_ORG_MEMBERSHIPS = "org:membership:create",
+  READ_ORG_TRANSACTIONS = "org:transactions:read",
+  UPDATE_ORG_TRANSACTIONS = "org:transactions:update",
+  DELETE_ORG_TRANSACTIONS = "org:transactions:delete",
+  CREATE_ORG_TRANSACTIONS = "org:transactions:create"
 }
 
 export enum UserScopes {

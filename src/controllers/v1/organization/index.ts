@@ -37,6 +37,7 @@ import { OrganizationMembershipsController } from "./memberships";
 import { OrganizationSourcesController } from "./sources";
 import { OrganizationSubscriptionsController } from "./subscriptions";
 import { OrganizationWebhooksController } from "./webhooks";
+import { OrganizationTransactionsController } from "./transactions";
 
 @Controller("organizations")
 @ChildControllers([
@@ -47,7 +48,8 @@ import { OrganizationWebhooksController } from "./webhooks";
   new OrganizationMembershipsController(),
   new OrganizationSourcesController(),
   new OrganizationSubscriptionsController(),
-  new OrganizationWebhooksController()
+  new OrganizationWebhooksController(),
+  new OrganizationTransactionsController()
 ])
 @ClassMiddleware(authHandler)
 export class OrganizationController {

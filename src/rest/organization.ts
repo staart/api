@@ -27,7 +27,9 @@ import {
   updateCustomer,
   updateSource,
   updateSubscription,
-  createCustomerBalanceTransaction
+  createCustomerBalanceTransaction,
+  getCustomBalanceTransactions,
+  getCustomBalanceTransaction
 } from "@staart/payments";
 import axios from "axios";
 import { JWT_ISSUER } from "../config";
@@ -1082,13 +1084,12 @@ export const deleteWebhookForUser = async (
 export const applyCouponToOrganizationForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
-  coupon: string,
-  locals: Locals
+  coupon: string
 ) => {
   if (
     await can(
       userId,
-      OrgScopes.UPDATE_ORG_BILLING,
+      OrgScopes.CREATE_ORG_TRANSACTIONS,
       "organization",
       organizationId
     )
@@ -1103,6 +1104,54 @@ export const applyCouponToOrganizationForUser = async (
       currency,
       description
     });
+  }
+  throw new Error(INSUFFICIENT_PERMISSION);
+};
+
+export const getOrganizationTransactionsForUser = async (
+  userId: string | ApiKeyResponse,
+  organizationId: string,
+  params: KeyValue
+) => {
+  if (
+    await can(
+      userId,
+      OrgScopes.READ_ORG_TRANSACTIONS,
+      "organization",
+      organizationId
+    )
+  ) {
+    const organization = await getOrganization(organizationId);
+    if (organization.stripeCustomerId)
+      return getCustomBalanceTransactions(
+        organization.stripeCustomerId,
+        params
+      );
+    throw new Error(STRIPE_NO_CUSTOMER);
+  }
+  throw new Error(INSUFFICIENT_PERMISSION);
+};
+
+export const getOrganizationTransactionForUser = async (
+  userId: string | ApiKeyResponse,
+  organizationId: string,
+  transactionId: string
+) => {
+  if (
+    await can(
+      userId,
+      OrgScopes.READ_ORG_TRANSACTIONS,
+      "organization",
+      organizationId
+    )
+  ) {
+    const organization = await getOrganization(organizationId);
+    if (organization.stripeCustomerId)
+      return getCustomBalanceTransaction(
+        organization.stripeCustomerId,
+        transactionId
+      );
+    throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
 };
