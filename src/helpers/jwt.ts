@@ -47,7 +47,7 @@ import {
  */
 export const generateToken = (
   payload: string | object | Buffer,
-  expiresIn: string | number | undefined,
+  expiresIn: string | number,
   subject: Tokens
 ): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -100,7 +100,7 @@ export const couponCodeJwt = (
   amount: number,
   currency: string,
   description?: string
-) => generateToken({ amount, currency, description }, undefined, Tokens.COUPON);
+) => generateToken({ amount, currency, description }, "1 year", Tokens.COUPON);
 
 /**
  * Generate a new email verification JWT
