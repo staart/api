@@ -269,7 +269,7 @@ export const invalidateToken = async (token: string) => {
   if (!redis) return;
   const details = decode(token);
   if (details && typeof details === "object" && details.jti)
-    redis.set(
+    await redis.set(
       `${JWT_ISSUER}-revoke-${details.sub}-${details.jti}`,
       "1",
       details.exp && [
