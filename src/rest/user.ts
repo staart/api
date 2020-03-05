@@ -40,7 +40,6 @@ import {
   updateUser
 } from "../crud/user";
 import { can } from "../helpers/authorization";
-import { addLocationToEvents } from "../helpers/location";
 import { trackEvent } from "../helpers/tracking";
 import { EventType, UserScopes } from "../interfaces/enum";
 import { KeyValue, Locals } from "../interfaces/general";
@@ -132,15 +131,12 @@ export const getRecentEventsForUser = async (
   dataUserId: string,
   query: KeyValue
 ) => {
-  if (await can(tokenUserId, UserScopes.READ_USER, "user", dataUserId)) {
-    const events = await getPaginatedData<Event>({
+  if (await can(tokenUserId, UserScopes.READ_USER, "user", dataUserId))
+    return await getPaginatedData<Event>({
       table: "events",
       conditions: { userId: dataUserId },
       ...query
     });
-    events.data = await addLocationToEvents(events.data);
-    return events;
-  }
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 

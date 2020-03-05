@@ -45,31 +45,3 @@ export const getGeolocationFromIp = async (
     return location;
   } catch (error) {}
 };
-
-export const addLocationToEvents = async (events: Array<Event>) => {
-  for await (let event of events) {
-    event = await addLocationToEvent(event);
-  }
-  return events;
-};
-
-export const addLocationToEvent = async (event: Event) => {
-  if (event.ipAddress) {
-    event.location = await getGeolocationFromIp(event.ipAddress);
-  }
-  return event;
-};
-
-export const addLocationToSessions = async (sessions: Array<Session>) => {
-  for await (let session of sessions) {
-    session = await addLocationToSession(session);
-  }
-  return sessions;
-};
-
-export const addLocationToSession = async (session: Session) => {
-  if (session.ipAddress) {
-    session.location = await getGeolocationFromIp(session.ipAddress);
-  }
-  return session;
-};

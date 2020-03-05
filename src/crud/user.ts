@@ -30,10 +30,6 @@ import {
 import { cachedQuery, deleteItemFromCache } from "../helpers/cache";
 import { accessToken, invalidateToken } from "../helpers/jwt";
 import {
-  addLocationToSession,
-  addLocationToSessions
-} from "../helpers/location";
-import {
   query,
   removeReadOnlyValues,
   setValues,
@@ -452,7 +448,6 @@ export const getUserSessions = async (userId: string, query: KeyValue) => {
   data.data.forEach((item, index) => {
     delete data.data[index].jwtToken;
   });
-  data.data = await addLocationToSessions(data.data);
   return data;
 };
 
@@ -460,14 +455,12 @@ export const getUserSessions = async (userId: string, query: KeyValue) => {
  * Get a session
  */
 export const getSession = async (userId: string, sessionId: string) => {
-  const data = await addLocationToSession(
-    ((await query(
-      `SELECT * FROM ${tableName(
-        "sessions"
-      )} WHERE id = ? AND userId = ? LIMIT 1`,
-      [sessionId, userId]
-    )) as Array<Session>)[0]
-  );
+  const data = ((await query(
+    `SELECT * FROM ${tableName(
+      "sessions"
+    )} WHERE id = ? AND userId = ? LIMIT 1`,
+    [sessionId, userId]
+  )) as Array<Session>)[0];
   if (data) delete data.jwtToken;
   return data;
 };
