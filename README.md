@@ -12,37 +12,42 @@ Staart is build to work with [Staart UI](https://github.com/staart/ui), the fron
 
 ## ⭐ Features
 
+### 🆕 New in v2 (beta)
+
+- JWT-powered single-use coupon codes
+- Redis-powered queues for outbound emails and logs
+- Cloud agnostic, no longer specific to AWS
+- Staart scripts for building and deploying
+- Async JSON response and smart controller injection
+
 ### 🔐 Security
 
-- [x] Authentication and user management with JWT
-- [x] Two-factor authentication with TOTP
-- [x] Setup multiple emails for each account
-- [x] OAuth2 login with third-party accounts
-- [x] Location-based login verification
-- [x] Security event logging and history
+- JWT-powered authentication and user management
+- TOTP-powered two-factor authentication (2FA)
+- OAuth2 login with third-party accounts
+- Location-based login verification
+- Security event logging and history
 
 ### 💳 SaaS
 
-- [x] Subscriptions management with Stripe
-- [x] Organizations, teams, and user permissions
-- [x] Invoices, billing, credit cards, payments
-- [x] Rich HTML transactional emails with SES
-- [x] GDPR-proof data export and delete
-- [ ] Affiliates and commission management
-- [x] API gateway with API keys and rate limits
-- [x] Auto-join members with domain verification
+- Stripe-powered recurring billing
+- Teams with managed user permissions
+- CRUD invoices, methods, transactions, etc.
+- Rich HTML transactional emails
+- GDPR-compliant data export and delete
+- API gateway with API keys and rate limiting
+- Domain verification with auto-approve members
 
 ### 👩‍💻 Developer utilities
 
-- [x] Decorators and class syntax with OvernightJS
-- [x] Injection-proof helpers for querying databases
-- [x] Data pagination and CRUD utilities for all tables
-- [x] Authorization helpers (can a user do this?)
-- [x] TypeScript interfaces for tables (ORM)
-- [x] Caching and invalidation for common queries
-- [x] User impersonation for super-admin
-- [x] Easy redirect rules in YAML
-- [x] Store server logs in ElasticSearch every minute
+- OvernightJS-powered decorators and class syntax
+- Injection-proof helpers for querying databases
+- Data pagination and CRUD utilities for all tables
+- Authorization helpers
+- Caching and invalidation for common queries
+- User impersonation for super-admin
+- Easy redirect rules in YAML
+- ElasticSearch-powered server and event logs
 
 ## 🛠 Usage
 
