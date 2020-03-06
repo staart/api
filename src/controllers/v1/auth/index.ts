@@ -58,7 +58,7 @@ export class AuthController {
           .min(2)
           .max(5),
         timezone: Joi.string(),
-        invitedByUser: Joi.string()
+        invitedByUser: Joi.string().optional()
       },
       "body"
     )

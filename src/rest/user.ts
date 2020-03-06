@@ -42,7 +42,8 @@ import {
   getUserIdentities,
   getUserSessions,
   updateAccessToken,
-  updateUser
+  updateUser,
+  getUserIdFromUsername
 } from "../crud/user";
 import { can } from "../helpers/authorization";
 import { trackEvent } from "../helpers/tracking";
@@ -51,7 +52,6 @@ import { KeyValue, Locals } from "../interfaces/general";
 import { Event } from "../interfaces/tables/events";
 import { Membership } from "../interfaces/tables/memberships";
 import { User } from "../interfaces/tables/user";
-import { userUsernameToId } from "../helpers/utils";
 import { mail } from "../helpers/mail";
 import { couponCodeJwt } from "../helpers/jwt";
 
@@ -405,7 +405,11 @@ export const addInvitationCredits = async (
   invitedBy: string,
   newUserId: string
 ) => {
-  const invitedByUserId = await userUsernameToId(invitedBy);
+  let invitedByUserId = "";
+  try {
+    invitedByUserId = await getUserIdFromUsername(invitedBy);
+  } catch (error) {}
+  if (!invitedByUserId) return;
   const invitedByDetails = await getUser(invitedByUserId);
   const invitedByEmail = await getUserPrimaryEmail(invitedByUserId);
   const newUserEmail = await getUserBestEmail(newUserId);
