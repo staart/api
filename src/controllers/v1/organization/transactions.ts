@@ -46,7 +46,7 @@ export class OrganizationTransactionsController {
   @Put()
   async applyCoupon(req: Request, res: Response) {
     const organizationId = await organizationUsernameToId(req.params.id);
-    const couponCode = req.params.couponCode;
+    const couponCode = req.body.couponCode;
     joiValidate(
       {
         organizationId: Joi.string().required(),
