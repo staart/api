@@ -15,15 +15,15 @@ import {
   Response
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
-import { authHandler } from "../../../helpers/middleware";
-import { userUsernameToId } from "../../../helpers/utils";
+import { authHandler } from "../../helpers/middleware";
+import { userUsernameToId } from "../../helpers/utils";
 import {
   addEmailToUserForUser,
   deleteEmailFromUserForUser,
   getAllEmailsForUser,
   getEmailForUser,
   resendEmailVerificationForUser
-} from "../../../rest/email";
+} from "../../rest/email";
 
 @Controller(":id/emails")
 @ClassMiddleware(authHandler)

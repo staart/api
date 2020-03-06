@@ -14,13 +14,13 @@ import {
   Response
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
-import { verifyToken } from "../../../helpers/jwt";
+import { verifyToken } from "../../helpers/jwt";
 import {
   authHandler,
   bruteForceHandler,
   validator
-} from "../../../helpers/middleware";
-import { UserRole } from "../../../interfaces/enum";
+} from "../../helpers/middleware";
+import { UserRole } from "../../interfaces/enum";
 import {
   approveLocation,
   impersonate,
@@ -32,9 +32,9 @@ import {
   updatePassword,
   validateRefreshToken,
   verifyEmail
-} from "../../../rest/auth";
+} from "../../rest/auth";
 import { AuthOAuthController } from "./oauth";
-import { addInvitationCredits } from "../../../rest/user";
+import { addInvitationCredits } from "../../rest/user";
 
 @Controller("auth")
 @ChildControllers([new AuthOAuthController()])

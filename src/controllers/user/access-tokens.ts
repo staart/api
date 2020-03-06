@@ -16,15 +16,15 @@ import {
   Response
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
-import { authHandler, validator } from "../../../helpers/middleware";
-import { userUsernameToId } from "../../../helpers/utils";
+import { authHandler, validator } from "../../helpers/middleware";
+import { userUsernameToId } from "../../helpers/utils";
 import {
   createAccessTokenForUser,
   deleteAccessTokenForUser,
   getUserAccessTokenForUser,
   getUserAccessTokensForUser,
   updateAccessTokenForUser
-} from "../../../rest/user";
+} from "../../rest/user";
 
 @Controller(":id/access-tokens")
 @ClassMiddleware(authHandler)

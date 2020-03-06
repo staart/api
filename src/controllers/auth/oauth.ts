@@ -8,17 +8,17 @@ import {
   Wrapper
 } from "@staart/server";
 import { stringify } from "querystring";
-import { BASE_URL, FRONTEND_URL } from "../../../config";
-import { LoginResponse } from "../../../helpers/jwt";
-import { safeRedirect } from "../../../helpers/utils";
-import { Tokens } from "../../../interfaces/enum";
+import { BASE_URL, FRONTEND_URL } from "../../config";
+import { LoginResponse } from "../../helpers/jwt";
+import { safeRedirect } from "../../helpers/utils";
+import { Tokens } from "../../interfaces/enum";
 import {
   facebook,
   github,
   google,
   microsoft,
   salesforce
-} from "../../../rest/oauth";
+} from "../../rest/oauth";
 
 const OAuthRedirector = (action: RequestHandler) => (
   ...args: [Request, Response, NextFunction]

@@ -11,13 +11,13 @@ import {
   Response
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
-import { authHandler, validator } from "../../../helpers/middleware";
-import { userUsernameToId } from "../../../helpers/utils";
+import { authHandler, validator } from "../../helpers/middleware";
+import { userUsernameToId } from "../../helpers/utils";
 import {
   deleteUserForUser,
   getUserFromId,
   updateUserForUser
-} from "../../../rest/user";
+} from "../../rest/user";
 import { UserAccessTokensController } from "./access-tokens";
 import { UserEmailsController } from "./emails";
 import { UserIdentitiesController } from "./identities";

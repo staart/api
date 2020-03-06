@@ -17,18 +17,18 @@ import {
   Response
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
-import { authHandler, validator } from "../../../helpers/middleware";
+import { authHandler, validator } from "../../helpers/middleware";
 import {
   localsToTokenOrKey,
   organizationUsernameToId
-} from "../../../helpers/utils";
+} from "../../helpers/utils";
 import {
   deleteOrganizationForUser,
   getAllOrganizationDataForUser,
   getOrganizationForUser,
   newOrganizationForUser,
   updateOrganizationForUser
-} from "../../../rest/organization";
+} from "../../rest/organization";
 import { OrganizationApiKeysController } from "./api-keys";
 import { OrganizationBillingController } from "./billing";
 import { OrganizationDomainsController } from "./domains";

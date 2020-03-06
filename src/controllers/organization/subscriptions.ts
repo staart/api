@@ -9,17 +9,17 @@ import {
   Response
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
-import { authHandler } from "../../../helpers/middleware";
+import { authHandler } from "../../helpers/middleware";
 import {
   localsToTokenOrKey,
   organizationUsernameToId
-} from "../../../helpers/utils";
+} from "../../helpers/utils";
 import {
   createOrganizationSubscriptionForUser,
   getOrganizationSubscriptionForUser,
   getOrganizationSubscriptionsForUser,
   updateOrganizationSubscriptionForUser
-} from "../../../rest/organization";
+} from "../../rest/organization";
 
 @Controller(":id/subscriptions")
 @ClassMiddleware(authHandler)

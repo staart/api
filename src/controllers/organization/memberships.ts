@@ -16,19 +16,19 @@ import {
   Response
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
-import { authHandler, validator } from "../../../helpers/middleware";
+import { authHandler, validator } from "../../helpers/middleware";
 import {
   localsToTokenOrKey,
   organizationUsernameToId
-} from "../../../helpers/utils";
-import { MembershipRole } from "../../../interfaces/enum";
+} from "../../helpers/utils";
+import { MembershipRole } from "../../interfaces/enum";
 import {
   deleteOrganizationMembershipForUser,
   getOrganizationMembershipForUser,
   getOrganizationMembershipsForUser,
   inviteMemberToOrganization,
   updateOrganizationMembershipForUser
-} from "../../../rest/organization";
+} from "../../rest/organization";
 
 @Controller(":id/memberships")
 @ClassMiddleware(authHandler)
