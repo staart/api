@@ -2,6 +2,7 @@ import {
   CANNOT_DELETE_SOLE_MEMBER,
   CANNOT_INVITE_DOMAIN,
   DOMAIN_ALREADY_VERIFIED,
+  INVALID_INPUT,
   DOMAIN_MISSING_DNS,
   DOMAIN_MISSING_FILE,
   DOMAIN_UNABLE_TO_VERIFY,
@@ -1094,16 +1095,27 @@ export const applyCouponToOrganizationForUser = async (
       organizationId
     )
   ) {
-    const { amount, currency, description } = await verifyToken<{
-      amount: number;
-      currency: string;
-      description?: string;
-    }>(coupon, Tokens.COUPON);
-    await createCustomerBalanceTransaction(organizationId, {
-      amount,
-      currency,
-      description
-    });
+    let amount: number | undefined = undefined;
+    let currency: string | undefined = undefined;
+    let description: string | undefined = undefined;
+    try {
+      const result = await verifyToken<{
+        amount: number;
+        currency: string;
+        description?: string;
+      }>(coupon, Tokens.COUPON);
+      amount = result.amount;
+      currency = result.currency;
+      description = result.description;
+    } catch (error) {
+      throw new Error(INVALID_INPUT);
+    }
+    if (amount && currency)
+      await createCustomerBalanceTransaction(organizationId, {
+        amount,
+        currency,
+        description
+      });
   }
   throw new Error(INSUFFICIENT_PERMISSION);
 };
