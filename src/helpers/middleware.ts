@@ -123,10 +123,7 @@ export const authHandler = async (
     if (userJwt) {
       if (userJwt.startsWith("Bearer "))
         userJwt = userJwt.replace("Bearer ", "");
-      const userToken = (await verifyToken(
-        userJwt,
-        Tokens.LOGIN
-      )) as TokenResponse;
+      const userToken = await verifyToken<TokenResponse>(userJwt, Tokens.LOGIN);
       await checkInvalidatedToken(userJwt);
       if (userToken) res.locals.token = userToken;
     }
@@ -135,10 +132,10 @@ export const authHandler = async (
     if (apiKeyJwt) {
       if (apiKeyJwt.startsWith("Bearer "))
         apiKeyJwt = apiKeyJwt.replace("Bearer ", "");
-      const apiKeyToken = (await verifyToken(
+      const apiKeyToken = await verifyToken<ApiKeyResponse>(
         apiKeyJwt,
         Tokens.API_KEY
-      )) as ApiKeyResponse;
+      );
       await checkInvalidatedToken(apiKeyJwt);
       checkIpRestrictions(apiKeyToken, res.locals);
       const origin = req.get("Origin");
@@ -188,10 +185,7 @@ export const rateLimitHandler = async (
   const apiKey = req.get("X-Api-Key") || req.query.key;
   if (apiKey) {
     try {
-      const details = (await verifyToken(
-        apiKey,
-        Tokens.API_KEY
-      )) as ApiKeyResponse;
+      const details = await verifyToken<ApiKeyResponse>(apiKey, Tokens.API_KEY);
       if (details.organizationId) {
         res.setHeader("X-Rate-Limit-Type", "api-key");
         return rateLimiter(req, res, next);
@@ -213,10 +207,7 @@ export const speedLimitHandler = async (
   const apiKey = req.get("X-Api-Key") || req.query.key;
   if (apiKey) {
     try {
-      const details = (await verifyToken(
-        apiKey,
-        Tokens.API_KEY
-      )) as ApiKeyResponse;
+      const details = await verifyToken<ApiKeyResponse>(apiKey, Tokens.API_KEY);
       if (details.organizationId) {
         res.setHeader("X-Rate-Limit-Type", "api-key");
         return next();

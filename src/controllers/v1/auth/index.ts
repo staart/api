@@ -135,7 +135,7 @@ export class AuthController {
       req.body.token || (req.get("Authorization") || "").replace("Bearer ", "");
     const subject = req.body.subject;
     try {
-      const data = await verifyToken(token, subject);
+      const data = await verifyToken<any>(token, subject);
       return { verified: true, data };
     } catch (error) {
       throw new Error(INVALID_TOKEN);

@@ -43,10 +43,10 @@ export const trackUrl = async (req: Request, res: Response) => {
   };
   if (trackingObject.apiKey) {
     try {
-      const token = (await verifyToken(
+      const token = await verifyToken<any>(
         trackingObject.apiKey,
         Tokens.API_KEY
-      )) as any;
+      );
       trackingObject.apiKeyId = token.id;
       trackingObject.apiKeyOrganizationId = token.organizationId;
       trackingObject.apiKeyJti = token.jti;

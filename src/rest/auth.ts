@@ -71,14 +71,14 @@ import { User } from "../interfaces/tables/user";
 
 export const validateRefreshToken = async (token: string, locals: Locals) => {
   await checkInvalidatedToken(token);
-  const data = (await verifyToken(token, Tokens.REFRESH)) as User;
+  const data = await verifyToken<{ id: string }>(token, Tokens.REFRESH);
   if (!data.id) throw new Error(USER_NOT_FOUND);
   const user = await getUser(data.id);
   return postLoginTokens(user, locals, token);
 };
 
 export const invalidateRefreshToken = async (token: string, locals: Locals) => {
-  const data = (await verifyToken(token, Tokens.REFRESH)) as User;
+  const data = await verifyToken<{ id: string }>(token, Tokens.REFRESH);
   if (!data.id) throw new Error(USER_NOT_FOUND);
   await deleteSessionByJwt(data.id, token);
 };
@@ -98,7 +98,7 @@ export const login = async (
 };
 
 export const login2FA = async (code: number, token: string, locals: Locals) => {
-  const data = (await verifyToken(token, Tokens.TWO_FACTOR)) as any;
+  const data = await verifyToken<{ id: string }>(token, Tokens.TWO_FACTOR);
   const user = await getUser(data.id, true);
   const secret = user.twoFactorSecret;
   if (!secret) throw new Error(NOT_ENABLED_2FA);
@@ -199,8 +199,9 @@ export const sendNewPassword = async (userId: string, email: string) => {
 };
 
 export const verifyEmail = async (token: string, locals: Locals) => {
-  const emailId = ((await verifyToken(token, Tokens.EMAIL_VERIFY)) as KeyValue)
-    .id;
+  const emailId = (
+    await verifyToken<{ id: string }>(token, Tokens.EMAIL_VERIFY)
+  ).id;
   const email = await getEmail(emailId);
   trackEvent(
     {
@@ -218,8 +219,9 @@ export const updatePassword = async (
   password: string,
   locals: Locals
 ) => {
-  const userId = ((await verifyToken(token, Tokens.PASSWORD_RESET)) as KeyValue)
-    .id;
+  const userId = (
+    await verifyToken<{ id: string }>(token, Tokens.PASSWORD_RESET)
+  ).id;
   await updateUser(userId, { password });
   trackEvent(
     {
@@ -254,10 +256,10 @@ export const impersonate = async (
 };
 
 export const approveLocation = async (token: string, locals: Locals) => {
-  const tokenUser = (await verifyToken(
+  const tokenUser = await verifyToken<TokenResponse>(
     token,
     Tokens.APPROVE_LOCATION
-  )) as TokenResponse;
+  );
   if (!tokenUser.id) throw new Error(USER_NOT_FOUND);
   const user = await getUser(tokenUser.id);
   if (!user.id) throw new Error(USER_NOT_FOUND);
