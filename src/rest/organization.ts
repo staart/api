@@ -69,7 +69,12 @@ import {
 } from "../crud/organization";
 import { getUser, getUserByEmail } from "../crud/user";
 import { can } from "../helpers/authorization";
-import { ApiKeyResponse, verifyToken, couponCodeJwt } from "../helpers/jwt";
+import {
+  ApiKeyResponse,
+  verifyToken,
+  checkInvalidatedToken,
+  invalidateToken
+} from "../helpers/jwt";
 import { mail } from "../helpers/mail";
 import { trackEvent } from "../helpers/tracking";
 import { dnsResolve } from "../helpers/utils";
@@ -1104,6 +1109,7 @@ export const applyCouponToOrganizationForUser = async (
         currency: string;
         description?: string;
       }>(coupon, Tokens.COUPON);
+      await checkInvalidatedToken(coupon);
       amount = result.amount;
       currency = result.currency;
       description = result.description;
@@ -1111,8 +1117,8 @@ export const applyCouponToOrganizationForUser = async (
       throw new Error(INVALID_INPUT);
     }
     const organization = await getOrganization(organizationId);
-    if (amount && currency && organization.stripeCustomerId)
-      return await createCustomerBalanceTransaction(
+    if (amount && currency && organization.stripeCustomerId) {
+      const result = await createCustomerBalanceTransaction(
         organization.stripeCustomerId,
         {
           amount,
@@ -1120,6 +1126,9 @@ export const applyCouponToOrganizationForUser = async (
           description
         }
       );
+      await invalidateToken(coupon);
+      return result;
+    }
     throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
