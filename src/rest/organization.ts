@@ -1112,11 +1112,14 @@ export const applyCouponToOrganizationForUser = async (
     }
     const organization = await getOrganization(organizationId);
     if (amount && currency && organization.stripeCustomerId)
-      return await createCustomerBalanceTransaction(organizationId, {
-        amount,
-        currency,
-        description
-      });
+      return await createCustomerBalanceTransaction(
+        organization.stripeCustomerId,
+        {
+          amount,
+          currency,
+          description
+        }
+      );
     throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
