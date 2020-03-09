@@ -1,6 +1,6 @@
 {
   "name": "@staart/api",
-  "version": "1.3.146",
+  "version": "1.3.147",
   "main": "index.js",
   "repository": "git@github.com:staart/api.git",
   "author": "Anand Chowdhary <mail@anandchowdhary.com>",
@@ -11,7 +11,7 @@
     "build": "staart build",
     "build-babel": "staart build-babel",
     "launch": "staart launch",
-    "update": "staart update",
+    "update": "staart update api",
     "postinstall": "staart check",
     "generate-docs": "staart docs",
     "test": "jest --forceExit",
@@ -91,5 +91,5 @@
     "setup"
   ],
   "snyk": true,
-  "staart-version": "1.3.146"
+  "staart-version": "1.3.147"
 }
