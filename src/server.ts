@@ -1,4 +1,3 @@
-import "@babel/polyfill";
 import { success } from "@staart/errors";
 import { Controller, Get, Server } from "@staart/server";
 import { setupMiddleware } from "@staart/server";

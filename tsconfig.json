@@ -13,8 +13,7 @@
     "resolveJsonModule": true,
     "emitDecoratorMetadata": true,
     "declarationDir": "./dist",
-    "outDir": "./dist",
-    "typeRoots": ["src/@types", "node_modules/@types"]
+    "outDir": "./dist"
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
