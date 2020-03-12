@@ -54,7 +54,7 @@
     "jest": "^25.1.0",
     "ts-jest": "^25.2.1",
     "typescript": "^3.8.3",
-    "yaml": "^1.8.0"
+    "yaml": "^1.8.2"
   },
   "dependencies": {
     "@sentry/node": "^5.14.0",
