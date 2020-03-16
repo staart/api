@@ -1,6 +1,6 @@
 [![Staart API](https://raw.githubusercontent.com/staart/staart.js.org/master/assets/svg/api.svg?sanitize=true)](https://staart.js.org/api)
 
-Staart is a Node.js backend starter for SaaS startups written in TypeScript. It has built-in user management and authentication, billing, organizations, GDPR tools, and more.
+Staart API is a Node.js backend starter for SaaS startups written in TypeScript. It has all the features you need to build a SaaS product, like user management and authentication, billing, organizations, GDPR tools, API keys, rate limiting, superadmin impersonation, and more.
 
 |              | Status                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -8,7 +8,7 @@ Staart is a Node.js backend starter for SaaS startups written in TypeScript. It 
 | Dependencies | [![Dependencies](https://img.shields.io/david/staart/api.svg)](https://david-dm.org/staart/api) [![Dev dependencies](https://img.shields.io/david/dev/staart/api.svg)](https://david-dm.org/staart/api) ![Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/github/staart/api.svg)                                                                                                                                                                                                                                                              |
 | Community    | [![Contributors](https://img.shields.io/github/contributors/staart/api.svg)](https://github.com/staart/api/graphs/contributors) [![GitHub](https://img.shields.io/github/license/staart/api.svg)](https://github.com/staart/api/blob/master/LICENSE) ![Type definitions](https://img.shields.io/badge/types-TypeScript-blue.svg) [![npm package version](https://img.shields.io/npm/v/@staart/api)](https://www.npmjs.com/package/@staart/api)                                                                                                             |
 
-Staart is build to work with [Staart UI](https://github.com/staart/ui), the frontend starter for SaaS.
+Staart API is build to work with [Staart UI](https://github.com/staart/ui), the frontend PWA starter for SaaS startups.
 
 ## ⭐ Features
 
@@ -64,7 +64,7 @@ Staart is build to work with [Staart UI](https://github.com/staart/ui), the fron
 To update your installation of Staart, run the following:
 
 ```bash
-staart update
+staart update api
 ```
 
 If you've used the "Use this template" option on GitHub, you might have to force pull from `staart/api` the first time since the histories wouldn't match. You can use the flag `--allow-unrelated-histories` in this case.
