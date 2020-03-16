@@ -88,7 +88,7 @@ If you've used the "Use this template" option on GitHub, you might have to force
 
 **[View API demo →](http://staart.prod.oswaldlabs.com)**
 
-**[View frontend demo →](https://staart-ui.o15y.now.sh)**
+**[View frontend demo →](https://staart-demo.o15y.com)**
 
 ## 👥 Contributors
 
