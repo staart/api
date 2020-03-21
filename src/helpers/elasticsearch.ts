@@ -43,7 +43,10 @@ export const receiveElasticSearchMessage = async () => {
       };
     } = JSON.parse(result.message);
     if (tryNumber && tryNumber > 3) {
-      logError("ElasticSearch", `Unable to save record: ${indexParams}`);
+      logError(
+        "ElasticSearch",
+        `Unable to save record: ${JSON.stringify(indexParams)}`
+      );
       return redisQueue.deleteMessageAsync({
         qname: ELASTIC_QUEUE,
         id: result.id
