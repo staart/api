@@ -1,6 +1,6 @@
 {
   "name": "@staart/api",
-  "version": "1.3.151",
+  "version": "1.3.152",
   "main": "index.js",
   "repository": "git@github.com:staart/api.git",
   "author": "Anand Chowdhary <mail@anandchowdhary.com>",
@@ -91,5 +91,5 @@
     "setup"
   ],
   "snyk": true,
-  "staart-version": "1.3.151"
+  "staart-version": "1.3.152"
 }

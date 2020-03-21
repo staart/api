@@ -23,27 +23,26 @@ query("SHOW tables")
   .catch(() => logError("Database", "Unable to run query `SHOW tables`"));
 
 setupTransporter();
-if (process.env.NODE_ENV === "production")
-  sendMail({
-    to: TEST_EMAIL,
-    subject: "Test from Staart",
-    message: `This is an example email to test your Staart email configuration.\n\n${JSON.stringify(
-      {
-        time: systemInfo.time(),
-        package: {
-          name: pkg.name,
-          version: pkg.version,
-          repository: pkg.repository,
-          author: pkg.author,
-          "staart-version": pkg["staart-version"]
-        }
+sendMail({
+  to: TEST_EMAIL,
+  subject: "Test from Staart",
+  message: `This is an example email to test your Staart email configuration.\n\n${JSON.stringify(
+    {
+      time: systemInfo.time(),
+      package: {
+        name: pkg.name,
+        version: pkg.version,
+        repository: pkg.repository,
+        author: pkg.author,
+        "staart-version": pkg["staart-version"]
       }
-    )}`
-  })
-    .then(() => {})
-    .catch(() =>
-      logError("Invalid email config", "Could not send a test email", 1)
-    );
+    }
+  )}`
+})
+  .then(() => {})
+  .catch(() =>
+    logError("Invalid email config", "Could not send a test email", 1)
+  );
 
 const getSystemInformation = async () => {
   return {
