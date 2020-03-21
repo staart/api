@@ -55,6 +55,10 @@ export const receiveElasticSearchMessage = async () => {
     try {
       await elasticSearch.index(indexParams);
     } catch (error) {
+      logError(
+        "ElasticSearch",
+        `Unable to save record, trying again: ${error}`
+      );
       await redisQueue.sendMessageAsync({
         qname: ELASTIC_QUEUE,
         message: JSON.stringify({
