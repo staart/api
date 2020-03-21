@@ -56,7 +56,7 @@ const storeSecurityEvents = async () => {
         body
       });
     } catch (err) {
-      error("Got error in saving to ElasticSearch", err);
+      error("Got error in saving to ElasticSearch", JSON.stringify(err));
     }
   }
   clearSecurityEventsData();
@@ -88,7 +88,7 @@ const storeTrackingLogs = async () => {
         body
       });
     } catch (err) {
-      error("Got error in saving to ElasticSearch", err);
+      error("Got error in saving to ElasticSearch", JSON.stringify(err));
     }
   }
   clearTrackingData();
