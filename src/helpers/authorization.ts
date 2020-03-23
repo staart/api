@@ -23,10 +23,6 @@ const canUserUser = async (
   action: Authorizations | UserScopes,
   target: User
 ) => {
-  console.log("Checking user authorization", user, action, target);
-  console.log("Is user target?", user.id == target.id);
-  console.log("Is user admin?", user.role == UserRole.ADMIN);
-
   // A super user can do anything
   if (user.role == UserRole.ADMIN) return true;
 
@@ -36,9 +32,6 @@ const canUserUser = async (
   const userMemberships = await getUserMemberships(user);
   const targetMemberships = await getUserMemberships(target);
 
-  console.log("Got user memberships", userMemberships);
-  console.log("Got target memberships", targetMemberships);
-
   const similarMemberships: Array<number> = [];
   userMemberships.forEach((userMembership, index) => {
     targetMemberships.forEach(targetMembership => {
@@ -46,8 +39,6 @@ const canUserUser = async (
         similarMemberships.push(index);
     });
   });
-
-  console.log("Got similar memberships", similarMemberships);
 
   let allowed = false;
   similarMemberships.forEach(similarMembership => {
@@ -66,7 +57,6 @@ const canUserUser = async (
     }
   });
 
-  console.log("Allowed?", allowed);
   return allowed;
 };
 
@@ -246,8 +236,6 @@ export const can = async (
   targetType: "user" | "organization" | "membership" | "general",
   target?: User | Organization | Membership | string
 ) => {
-  console.log("Checking authorization", user, action, target);
-
   let userObject: User | ApiKeyResponse | undefined = undefined;
   let isApiKey = false;
   let isAccessToken = false;
