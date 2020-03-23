@@ -55,15 +55,15 @@ export const getBestUsernameForUser = async (name: string) => {
   let result: string;
   if (name.split(" ")[0].length) {
     result = slugify(name.split(" ")[0]);
-    if (checkUsernameAvailability(result)) return result;
+    if (await checkUsernameAvailability(result)) return result;
   }
   result = slugify(name);
-  if (checkUsernameAvailability(result)) return result;
+  if (await checkUsernameAvailability(result)) return result;
 
   let available = false;
   while (!available) {
     result = createSlug(name);
-    if (checkUsernameAvailability(result)) available = true;
+    if (await checkUsernameAvailability(result)) available = true;
   }
   return result;
 };
