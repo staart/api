@@ -9,6 +9,7 @@
     "dev": "staart dev",
     "start": "staart start",
     "build": "staart build",
+    "eject": "staart eject",
     "build-babel": "staart build-babel",
     "launch": "staart launch",
     "update": "staart update api",
