@@ -1,0 +1,20 @@
+{
+  "tsconfig": {
+    "moduleResolution": "node",
+    "target": "es6"
+  },
+  "env": {
+    "DB_PORT": 3306
+  },
+  "babel": {
+    "presets": [
+      "@babel/env",
+      "@babel/typescript"
+    ]
+  },
+  "robots": [
+    "User-agent: *",
+    "Allow: /$",
+    "Disallow: /"
+  ]
+}
