@@ -82,7 +82,7 @@
     "qrcode": "^1.4.4",
     "random-int": "^2.0.1",
     "randomcolor": "^0.5.4",
-    "snyk": "^1.303.1",
+    "snyk": "^1.304.0",
     "systeminformation": "^4.23.1"
   },
   "files": [
