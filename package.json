@@ -31,6 +31,7 @@
     }
   },
   "devDependencies": {
+    "@prisma/cli": "^2.0.0-beta.1",
     "@semantic-release/git": "^9.0.0",
     "@types/cron": "^1.7.2",
     "@types/fs-extra": "^8.1.0",
@@ -56,6 +57,7 @@
     "yaml": "^1.8.3"
   },
   "dependencies": {
+    "@prisma/client": "^2.0.0-beta.1",
     "@sentry/node": "^5.15.4",
     "@staart/disposable-email": "^2.0.2",
     "@staart/elasticsearch": "^2.1.0",
