@@ -146,9 +146,9 @@ export const setValues = (object: KeyValue) => {
 /**
  * Remove any read-only values like createdAt from an object
  */
-export const removeReadOnlyValues = (object: KeyValue) => {
+export const removeReadOnlyValues = <T>(object: T) => {
   readOnlyValues.forEach(value => {
-    if (object[value]) delete object[value];
+    if ((object as any)[value]) delete (object as any)[value];
   });
   return object;
 };

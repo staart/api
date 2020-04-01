@@ -40,6 +40,7 @@ import {
   includesDomainInCommaList,
   removeFalsyValues
 } from "./utils";
+import { access_tokens } from "@prisma/client";
 
 /**
  * Generate a new JWT
@@ -147,7 +148,7 @@ export const apiKeyToken = (apiKey: ApiKey) => {
 /**
  * Generate an access token
  */
-export const accessToken = (accessToken: AccessToken) => {
+export const accessToken = (accessToken: access_tokens) => {
   const createAccessToken = { ...removeFalsyValues(accessToken) };
   delete createAccessToken.createdAt;
   delete createAccessToken.jwtAccessToken;
