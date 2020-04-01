@@ -5,13 +5,13 @@ import dns from "dns";
 import { getOrganizationIdFromUsername } from "../crud/organization";
 import { getUserIdFromUsername } from "../crud/user";
 import { Tokens } from "../interfaces/enum";
-import { User } from "../interfaces/tables/user";
 import { ApiKeyResponse } from "./jwt";
+import { users } from "@prisma/client";
 
 /**
  * Delete any sensitive information for a user like passwords and tokens
  */
-export const deleteSensitiveInfoUser = (user: User) => {
+export const deleteSensitiveInfoUser = (user: users) => {
   delete user.password;
   delete user.twoFactorSecret;
   return user;
