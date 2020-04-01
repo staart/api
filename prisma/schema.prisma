@@ -1,0 +1,161 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource mysql {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model access_tokens {
+  createdAt      DateTime
+  description    String?
+  expiresAt      DateTime
+  id             Int      @default(autoincrement()) @id
+  jwtAccessToken String
+  name           String?
+  scopes         String?
+  updatedAt      DateTime @default(dbgenerated())
+  userId         Int
+
+  @@map("access-tokens")
+}
+
+model api_keys {
+  createdAt            DateTime
+  description          String?
+  expiresAt            DateTime
+  id                   Int      @default(autoincrement()) @id
+  ipRestrictions       String?
+  jwtApiKey            String
+  name                 String?
+  organizationId       Int
+  referrerRestrictions String?
+  scopes               String?
+  updatedAt            DateTime @default(dbgenerated())
+
+  @@map("api-keys")
+}
+
+model approved_locations {
+  createdAt DateTime?
+  id        Int       @default(autoincrement()) @id
+  subnet    String
+  userId    Int
+
+  @@map("approved-locations")
+}
+
+model backup_codes {
+  code      Int      @id
+  createdAt DateTime
+  updatedAt DateTime @default(dbgenerated())
+  used      Int      @default(0)
+  userId    Int
+
+  @@index([userId], name: "id")
+  @@map("backup-codes")
+}
+
+model domains {
+  createdAt        DateTime
+  domain           String
+  id               Int      @default(autoincrement()) @id
+  isVerified       Int      @default(0)
+  organizationId   Int
+  updatedAt        DateTime @default(dbgenerated())
+  verificationCode String
+}
+
+model emails {
+  createdAt  DateTime
+  email      String
+  id         Int      @default(autoincrement()) @id
+  isVerified Int      @default(0)
+  updatedAt  DateTime @default(dbgenerated())
+  userId     Int
+
+  @@index([userId], name: "userId")
+}
+
+model identities {
+  createdAt  DateTime
+  id         Int      @default(autoincrement()) @id
+  identityId String
+  loginName  String
+  type       String
+  updatedAt  DateTime @default(dbgenerated())
+  userId     Int
+}
+
+model memberships {
+  createdAt      DateTime
+  id             Int      @default(autoincrement()) @id
+  organizationId Int
+  role           String   @default("member")
+  updatedAt      DateTime @default(dbgenerated())
+  userId         Int
+
+  @@index([organizationId], name: "org")
+  @@index([userId], name: "user")
+}
+
+model organizations {
+  autoJoinDomain   Int      @default(0)
+  createdAt        DateTime
+  forceTwoFactor   Int      @default(0)
+  id               Int      @default(autoincrement()) @id
+  ipRestrictions   String?
+  name             String?
+  onlyAllowDomain  Int      @default(0)
+  profilePicture   String   @default("https://unavatar.now.sh/fallback.png")
+  stripeCustomerId String?
+  updatedAt        DateTime @default(dbgenerated())
+  username         String
+}
+
+model sessions {
+  createdAt DateTime
+  id        Int      @default(autoincrement()) @id
+  ipAddress String
+  jwtToken  String
+  updatedAt DateTime @default(dbgenerated())
+  userAgent String
+  userId    Int
+}
+
+model users {
+  checkLocationOnLogin   Int      @default(0)
+  countryCode            String?  @default("us")
+  createdAt              DateTime
+  gender                 String   @default("x")
+  id                     Int      @default(autoincrement()) @id
+  name                   String
+  nickname               String
+  notificationEmails     Int      @default(1)
+  password               String?
+  preferredLanguage      String   @default("en-us")
+  prefersColorSchemeDark Int      @default(0)
+  prefersReducedMotion   Int      @default(0)
+  primaryEmail           Int?
+  profilePicture         String
+  role                   Int      @default(1)
+  timezone               String   @default("Europe/Amsterdam")
+  twoFactorEnabled       Int      @default(0)
+  twoFactorSecret        String?
+  updatedAt              DateTime @default(dbgenerated())
+  username               String
+}
+
+model webhooks {
+  contentType    String
+  createdAt      DateTime
+  event          String
+  id             Int       @default(autoincrement()) @id
+  isActive       Int       @default(0)
+  lastFiredAt    DateTime?
+  organizationId Int
+  secret         String?
+  updatedAt      DateTime  @default(dbgenerated())
+  url            String
+}
