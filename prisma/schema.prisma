@@ -104,7 +104,7 @@ model organizations {
   autoJoinDomain   Int      @default(0)
   createdAt        DateTime
   forceTwoFactor   Int      @default(0)
-  id               Int      @default(autoincrement()) @id
+  id               Int      @default(autoincrement())
   ipRestrictions   String?
   name             String?
   onlyAllowDomain  Int      @default(0)
@@ -112,6 +112,8 @@ model organizations {
   stripeCustomerId String?
   updatedAt        DateTime @default(dbgenerated())
   username         String
+
+  @@id([id, username])
 }
 
 model sessions {
@@ -129,7 +131,7 @@ model users {
   countryCode            String?  @default("us")
   createdAt              DateTime
   gender                 String   @default("x")
-  id                     Int      @default(autoincrement()) @id
+  id                     Int      @default(autoincrement())
   name                   String
   nickname               String
   notificationEmails     Int      @default(1)
@@ -145,6 +147,8 @@ model users {
   twoFactorSecret        String?
   updatedAt              DateTime @default(dbgenerated())
   username               String
+
+  @@id([id, username])
 }
 
 model webhooks {
