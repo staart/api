@@ -16,6 +16,8 @@ import { trackEvent } from "../helpers/tracking";
 import { EventType, UserScopes } from "../interfaces/enum";
 import { KeyValue, Locals } from "../interfaces/general";
 import { Email } from "../interfaces/tables/emails";
+import { ALLOW_DISPOSABLE_EMAILS } from "../config";
+import { checkIfDisposableEmail } from "@staart/disposable-email";
 
 export const getAllEmailsForUser = async (
   tokenUserId: string,
@@ -69,6 +71,7 @@ export const addEmailToUserForUser = async (
 ) => {
   if (!(await can(tokenUserId, UserScopes.CREATE_USER_EMAILS, "user", userId)))
     throw new Error(INSUFFICIENT_PERMISSION);
+  if (!ALLOW_DISPOSABLE_EMAILS) checkIfDisposableEmail(email);
   await checkIfNewEmail(email);
   await createEmail({ email, userId });
   trackEvent(
