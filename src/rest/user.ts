@@ -3,73 +3,46 @@ import {
   INSUFFICIENT_PERMISSION,
   INVALID_2FA_TOKEN,
   MISSING_PASSWORD,
-  NOT_ENABLED_2FA
+  NOT_ENABLED_2FA,
+  USER_NOT_FOUND
 } from "@staart/errors";
 import { compare } from "@staart/text";
 import { authenticator } from "otplib";
 import { toDataURL } from "qrcode";
 import { SERVICE_2FA } from "../config";
 import { getPaginatedData } from "../crud/data";
-import {
-  deleteAllUserEmails,
-  getUserEmails,
-  getUserPrimaryEmail,
-  getUserBestEmail
-} from "../crud/email";
-import {
-  addOrganizationToMemberships,
-  deleteAllUserMemberships,
-  getUserMembershipsDetailed
-} from "../crud/membership";
-import {
-  createAccessToken,
-  createBackupCodes,
-  createIdentityConnect,
-  createIdentityGetOAuthLink,
-  deleteAccessToken,
-  deleteAllUserApprovedLocations,
-  deleteIdentity,
-  deleteSession,
-  deleteUser,
-  deleteUserBackupCodes,
-  getAccessToken,
-  getIdentity,
-  getSession,
-  getUser,
-  getUserAccessTokens,
-  getUserApprovedLocations,
-  getUserBackupCodes,
-  getUserIdentities,
-  getUserSessions,
-  updateAccessToken,
-  updateUser,
-  getUserIdFromUsername
-} from "../crud/user";
 import { can } from "../helpers/authorization";
 import { trackEvent } from "../helpers/tracking";
 import { EventType, UserScopes, Templates } from "../interfaces/enum";
 import { KeyValue, Locals } from "../interfaces/general";
-import { Event } from "../interfaces/tables/events";
-import { Membership } from "../interfaces/tables/memberships";
-import { User } from "../interfaces/tables/user";
 import { mail } from "../helpers/mail";
 import { couponCodeJwt } from "../helpers/jwt";
+import { prisma } from "../helpers/prisma";
+import { users, memberships } from "@prisma/client";
 
 export const getUserFromId = async (userId: string, tokenUserId: string) => {
-  if (await can(tokenUserId, UserScopes.READ_USER, "user", userId))
-    return getUser(userId);
+  if (await can(tokenUserId, UserScopes.READ_USER, "user", userId)) {
+    const user = await prisma.users.findOne({
+      where: { id: parseInt(userId) }
+    });
+    if (user) return user;
+    throw new Error(USER_NOT_FOUND);
+  }
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
 export const updateUserForUser = async (
   tokenUserId: string,
   updateUserId: string,
-  data: User,
+  data: users,
   locals: Locals
 ) => {
   delete data.password;
   if (await can(tokenUserId, UserScopes.UPDATE_USER, "user", updateUserId)) {
-    await updateUser(updateUserId, data);
+    const user = await prisma.users.update({
+      data,
+      where: { id: parseInt(updateUserId) }
+    });
     trackEvent(
       {
         userId: tokenUserId,
@@ -78,7 +51,7 @@ export const updateUserForUser = async (
       },
       locals
     );
-    return;
+    return user;
   }
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -93,11 +66,17 @@ export const updatePasswordForUser = async (
   if (
     await can(tokenUserId, UserScopes.CHANGE_PASSWORD, "user", updateUserId)
   ) {
-    const user = await getUser(updateUserId, true);
+    const user = await prisma.users.findOne({
+      where: { id: parseInt(updateUserId) }
+    });
+    if (!user) throw new Error(USER_NOT_FOUND);
     if (!user.password) throw new Error(MISSING_PASSWORD);
     const correctPassword = await compare(oldPassword, user.password);
     if (!correctPassword) throw new Error(INCORRECT_PASSWORD);
-    await updateUser(updateUserId, { password: newPassword });
+    const result = await prisma.users.update({
+      data: { password: newPassword },
+      where: { id: parseInt(updateUserId) }
+    });
     trackEvent(
       {
         userId: tokenUserId,
@@ -106,7 +85,7 @@ export const updatePasswordForUser = async (
       },
       locals
     );
-    return;
+    return result;
   }
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -117,10 +96,16 @@ export const deleteUserForUser = async (
   locals: Locals
 ) => {
   if (await can(tokenUserId, UserScopes.DELETE_USER, "user", updateUserId)) {
-    await deleteAllUserEmails(updateUserId);
-    await deleteAllUserMemberships(updateUserId);
-    await deleteAllUserApprovedLocations(updateUserId);
-    await deleteUser(updateUserId);
+    await prisma.emails.deleteMany({
+      where: { userId: parseInt(updateUserId) }
+    });
+    await prisma.memberships.deleteMany({
+      where: { userId: parseInt(updateUserId) }
+    });
+    await prisma.approved_locations.deleteMany({
+      where: { userId: parseInt(updateUserId) }
+    });
+    await prisma.users.deleteMany({ where: { id: parseInt(updateUserId) } });
     trackEvent(
       {
         userId: tokenUserId,
@@ -134,20 +119,6 @@ export const deleteUserForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const getRecentEventsForUser = async (
-  tokenUserId: string,
-  dataUserId: string,
-  query: KeyValue
-) => {
-  if (await can(tokenUserId, UserScopes.READ_USER, "user", dataUserId))
-    return await getPaginatedData<Event>({
-      table: "events",
-      conditions: { userId: dataUserId },
-      ...query
-    });
-  throw new Error(INSUFFICIENT_PERMISSION);
-};
-
 export const getMembershipsForUser = async (
   tokenUserId: string,
   dataUserId: string,
@@ -156,7 +127,7 @@ export const getMembershipsForUser = async (
   if (
     await can(tokenUserId, UserScopes.READ_USER_MEMBERSHIPS, "user", dataUserId)
   ) {
-    const memberships = await getPaginatedData<Membership>({
+    const memberships = await getPaginatedData<memberships>({
       table: "memberships",
       conditions: { userId: dataUserId },
       ...query

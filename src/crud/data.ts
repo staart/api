@@ -5,6 +5,8 @@ import {
   tableName
 } from "../helpers/mysql";
 import { KeyValue } from "../interfaces/general";
+import { prisma } from "../helpers/prisma";
+import { usersDelegate } from "@prisma/client";
 
 /*
  * Get pagination data
@@ -19,7 +21,19 @@ export const getPaginatedData = async <T>({
   search,
   sort = "asc"
 }: {
-  table: string;
+  table:
+    | "access_tokens"
+    | "api_keys"
+    | "approved_locations"
+    | "backup_codes"
+    | "domains"
+    | "emails"
+    | "identities"
+    | "memberships"
+    | "organizations"
+    | "sessions"
+    | "users"
+    | "webhooks";
   conditions?: KeyValue;
   start?: number;
   itemsPerPage?: number;
@@ -28,24 +42,10 @@ export const getPaginatedData = async <T>({
   search?: string;
   sort?: string;
 }) => {
-  const data = (await query(
-    `SELECT * FROM ${tableName(table)} WHERE ${primaryKey} ${
-      sort === "asc" ? ">" : "<"
-    } ? ${
-      conditions
-        ? `AND ${Object.keys(conditions)
-            .map(condition => `${condition} = ?`)
-            .join(" AND ")}`
-        : ""
-    }${
-      q && search ? ` AND \`${search}\` LIKE "%?%"` : ""
-    } ORDER BY ${primaryKey} ${sort.toUpperCase()} LIMIT ${itemsPerPage}`,
-    [
-      sort === "desc" && start == 0 ? 99999999999 : start,
-      ...(conditions ? Object.values(conditions) : []),
-      q
-    ]
-  )) as Array<T>;
+  const data = await (prisma[table] as usersDelegate).findMany({
+    where: conditions,
+    after: { id: start }
+  });
   return {
     data,
     hasMore: data.length == itemsPerPage,
