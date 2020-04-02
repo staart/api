@@ -50,7 +50,8 @@ model approved_locations {
 }
 
 model backup_codes {
-  code      Int      @id
+  id        Int      @default(autoincrement()) @id
+  code      String
   createdAt DateTime
   updatedAt DateTime @default(dbgenerated())
   used      Boolean  @default(false)
@@ -121,10 +122,11 @@ model organizations {
   stripeCustomerId String?
   updatedAt        DateTime @default(dbgenerated())
   username         String   @unique
-  apiKeys          api_keys[]
-  domains          domains[]
-  memberships      memberships[]
-  webhooks         webhooks[]
+  apiKeys          api_keys[] @relation(references: [id])
+  domains          domains[] @relation(references: [id])
+  memberships      memberships[] @relation(references: [id])
+  webhooks         webhooks[] @relation(references: [id])
+  backupCodes      backup_codes[] @relation(references: [id])
 
   @@id([id])
 }
@@ -161,13 +163,12 @@ model users {
   twoFactorSecret      String?
   updatedAt            DateTime @default(dbgenerated())
   username             String   @unique
-  accessTokens         access_tokens[]
-  approvedLocations    approved_locations[]
-  backupCodes          backup_codes[]
-  emails               emails[]
-  identities           identities[]
-  memberships          memberships[]
-  sessions             sessions[]
+  accessTokens         access_tokens[] @relation(references: [id])
+  approvedLocations    approved_locations[] @relation(references: [id])
+  emails               emails[] @relation(references: [id])
+  identities           identities[] @relation(references: [id])
+  memberships          memberships[] @relation(references: [id])
+  sessions             sessions[] @relation(references: [id])
 
   @@id([id])
 }
