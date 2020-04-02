@@ -1,7 +1,8 @@
 import {
   USERNAME_EXISTS,
   USER_NOT_FOUND,
-  RESOURCE_NOT_FOUND
+  RESOURCE_NOT_FOUND,
+  MISSING_PRIMARY_EMAIL
 } from "@staart/errors";
 import {
   anonymizeIpAddress,
@@ -56,14 +57,14 @@ export const createUser = async (user: users) => {
   user.name = capitalizeFirstAndLastLetter(user.name);
   // Default values for user
   user.nickname = user.nickname || user.name.split(" ")[0];
-  user.twoFactorEnabled = user.twoFactorEnabled || 0;
+  user.twoFactorEnabled = user.twoFactorEnabled;
   user.timezone = user.timezone || "Europe/Amsterdam";
   user.password = user.password ? await hash(user.password, 8) : null;
   user.notificationEmails =
     user.notificationEmails || NotificationEmails.GENERAL;
-  user.preferredLanguage = user.preferredLanguage || "en-us";
-  user.prefersReducedMotion = user.prefersReducedMotion || 0;
-  user.prefersColorSchemeDark = user.prefersColorSchemeDark || 0;
+  user.prefersLanguage = user.prefersLanguage || "en-us";
+  user.prefersReducedMotion = user.prefersReducedMotion;
+  user.prefersColorScheme = user.prefersColorScheme;
   user.profilePicture =
     user.profilePicture ||
     `https://api.adorable.io/avatars/285/${createHash("md5")
@@ -86,7 +87,7 @@ export const createUser = async (user: users) => {
  */
 export const getUserByEmail = async (email: string, secureOrigin = false) => {
   const emailObject = await prisma.emails.findMany({
-    where: { email, isVerified: 1 }
+    where: { email, isVerified: true }
   });
   if (!emailObject.length) throw new Error(USER_NOT_FOUND);
   const user = await prisma.users.findOne({ where: { id: emailObject[0].id } });
@@ -158,7 +159,7 @@ export const addApprovedLocation = async (
   const subnet = anonymizeIpAddress(ipAddress);
   return prisma.approved_locations.create({
     data: {
-      userId: parseInt(userId),
+      user: { connect: { id: parseInt(userId) } },
       subnet,
       createdAt: new Date()
     }
@@ -195,8 +196,8 @@ export const createBackupCodes = async (userId: string, count = 1) => {
   for await (const _ of Array.from(Array(count).keys())) {
     await prisma.backup_codes.create({
       data: {
-        code: randomInt(100000, 999999),
-        userId: parseInt(userId),
+        code: randomInt(100000, 999999).toString(),
+        user: { connect: { id: parseInt(userId) } },
         createdAt: now,
         updatedAt: now
       }
@@ -251,4 +252,40 @@ export const deleteAccessToken = async (accessTokenId: string) => {
   return prisma.access_tokens.delete({
     where: { id: parseInt(accessTokenId) }
   });
+};
+
+/**
+ * Get the primary email of a user
+ * @param userId - User Id
+ */
+export const getUserPrimaryEmail = async (userId: string) => {
+  const primaryEmailId = (
+    await prisma.users.findOne({
+      select: { primaryEmail: true },
+      where: { id: parseInt(userId) }
+    })
+  )?.primaryEmail;
+  if (!primaryEmailId) throw new Error(MISSING_PRIMARY_EMAIL);
+  const primaryEmail = await prisma.emails.findOne({
+    where: { id: primaryEmailId }
+  });
+  if (!primaryEmail) throw new Error(MISSING_PRIMARY_EMAIL);
+  return primaryEmail;
+};
+
+/**
+ * Get the best email to contact a user
+ * @param userId - User ID
+ */
+export const getUserBestEmail = async (userId: string) => {
+  try {
+    return await getUserPrimaryEmail(userId);
+  } catch (error) {}
+  const emails = await prisma.emails.findMany({
+    where: { userId: parseInt(userId) },
+    orderBy: { isVerified: "desc" },
+    first: 1
+  });
+  if (!emails.length) throw new Error(RESOURCE_NOT_FOUND);
+  return emails[0];
 };
