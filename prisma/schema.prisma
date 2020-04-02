@@ -53,7 +53,7 @@ model backup_codes {
   code      Int      @id
   createdAt DateTime
   updatedAt DateTime @default(dbgenerated())
-  used      Boolean      @default(false)
+  used      Boolean  @default(false)
   user      users    @relation(fields: [userId], references: [id])
   userId    Int
 
@@ -68,7 +68,7 @@ model domains {
   isVerified       Boolean       @default(false)
   organizations    organizations @relation(fields: [organizationId], references: [id])
   organizationId   Int
-  updatedAt        DateTime @default(dbgenerated())
+  updatedAt        DateTime      @default(dbgenerated())
   verificationCode String
 }
 
@@ -110,19 +110,19 @@ model memberships {
 }
 
 model organizations {
-  autoJoinDomain   Boolean      @default(false)
+  autoJoinDomain   Boolean  @default(false)
   createdAt        DateTime
-  forceTwoFactor   Boolean      @default(false)
+  forceTwoFactor   Boolean  @default(false)
   id               Int      @default(autoincrement())
   ipRestrictions   String?
   name             String?
-  onlyAllowDomain  Boolean      @default(false)
+  onlyAllowDomain  Boolean  @default(false)
   profilePicture   String   @default("https://unavatar.now.sh/fallback.png")
   stripeCustomerId String?
   updatedAt        DateTime @default(dbgenerated())
-  username         String
+  username         String   @unique
 
-  @@id([id, username])
+  @@id([id])
 }
 
 model sessions {
@@ -137,40 +137,40 @@ model sessions {
 }
 
 model users {
-  checkLocationOnLogin   Boolean      @default(false)
-  countryCode            String?  @default("us")
-  createdAt              DateTime
-  gender                 String   @default("x")
-  id                     Int      @default(autoincrement())
-  name                   String
-  nickname               String
-  notificationEmails     Int      @default(1)
-  password               String?
-  preferredLanguage      String   @default("en-us")
-  prefersColorSchemeDark Boolean      @default(false)
-  prefersReducedMotion   Boolean      @default(false)
-  primaryEmail           Int?
-  profilePicture         String
-  role                   Int      @default(1)
-  timezone               String   @default("Europe/Amsterdam")
-  twoFactorEnabled       Boolean      @default(false)
-  twoFactorSecret        String?
-  updatedAt              DateTime @default(dbgenerated())
-  username               String
+  checkLocationOnLogin Boolean  @default(false)
+  countryCode          String   @default("us")
+  createdAt            DateTime
+  gender               String   @default("x")
+  id                   Int      @default(autoincrement())
+  name                 String
+  nickname             String
+  notificationEmails   Int      @default(1)
+  password             String?
+  prefersLanguage      String   @default("en-us")
+  prefersColorScheme   String   @default("system")
+  prefersReducedMotion String   @default("no-preference")
+  primaryEmail         Int?
+  profilePicture       String
+  role                 Int      @default(1)
+  timezone             String   @default("Europe/Amsterdam")
+  twoFactorEnabled     Boolean  @default(false)
+  twoFactorSecret      String?
+  updatedAt            DateTime @default(dbgenerated())
+  username             String   @unique
 
-  @@id([id, username])
+  @@id([id])
 }
 
 model webhooks {
   contentType    String
   createdAt      DateTime
   event          String
-  id             Int       @default(autoincrement()) @id
+  id             Int           @default(autoincrement()) @id
   isActive       Boolean       @default(false)
   lastFiredAt    DateTime?
-  organization   organizations    @relation(fields: [organizationId], references: [id])
+  organization   organizations @relation(fields: [organizationId], references: [id])
   organizationId Int
   secret         String?
-  updatedAt      DateTime  @default(dbgenerated())
+  updatedAt      DateTime      @default(dbgenerated())
   url            String
 }
