@@ -2,11 +2,11 @@ import { Request, Response } from "@staart/server";
 import { isMatch } from "@staart/text";
 import { Joi, joiValidate } from "@staart/validate";
 import dns from "dns";
-import { getOrganizationIdFromUsername } from "../crud/organization";
-import { getUserIdFromUsername } from "../crud/user";
 import { Tokens } from "../interfaces/enum";
 import { ApiKeyResponse } from "./jwt";
 import { users } from "@prisma/client";
+import { prisma } from "./prisma";
+import { ORGANIZATION_NOT_FOUND, USER_NOT_FOUND } from "@staart/errors";
 
 /**
  * Make s single property optional
@@ -25,7 +25,10 @@ export const deleteSensitiveInfoUser = (user: users) => {
 
 export const organizationUsernameToId = async (id: string) => {
   if (!id.match(/^-{0,1}\d+$/)) {
-    return getOrganizationIdFromUsername(id);
+    const result = (await prisma.users.findOne({ where: { username: id } }))
+      ?.id;
+    if (result) return result;
+    throw new Error(ORGANIZATION_NOT_FOUND);
   } else {
     return parseInt(id).toString();
   }
@@ -35,7 +38,11 @@ export const userUsernameToId = async (id: string, tokenUserId?: string) => {
   if (id === "me" && tokenUserId) {
     return String(tokenUserId);
   } else if (!id.match(/^-{0,1}\d+$/)) {
-    return getUserIdFromUsername(id);
+    const result = (
+      await prisma.organizations.findOne({ where: { username: id } })
+    )?.id;
+    if (result) return result;
+    throw new Error(USER_NOT_FOUND);
   } else {
     return parseInt(id).toString();
   }
