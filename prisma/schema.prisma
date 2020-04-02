@@ -7,15 +7,72 @@ datasource mysql {
   url      = env("DATABASE_URL")
 }
 
+model users {
+  checkLocationOnLogin Boolean              @default(false)
+  countryCode          String               @default("us")
+  createdAt            DateTime             @default(now())
+  gender               String               @default("x")
+  id                   Int                  @id @default(autoincrement())
+  name                 String
+  nickname             String
+  notificationEmails   Int                  @default(1)
+  password             String?
+  prefersLanguage      String               @default("en-us")
+  prefersColorScheme   String               @default("system")
+  prefersReducedMotion String               @default("no-preference")
+  primaryEmail         Int?
+  profilePicture       String
+  role                 Int                  @default(1)
+  timezone             String               @default("Europe/Amsterdam")
+  twoFactorEnabled     Boolean              @default(false)
+  twoFactorSecret      String?
+  updatedAt            DateTime             @updatedAt
+  username             String               @unique
+  emails               emails[]             @relation(name: "emails")
+  access_tokens        access_tokens[]      @relation(name: "access_tokens")
+  approved_locations   approved_locations[] @relation(name: "approved_locations")
+  backup_codes         backup_codes[]       @relation(name: "backup_codes")
+  identities           identities[]         @relation(name: "identities")
+  memberships          memberships[]        @relation(name: "memberships")
+  sessions             sessions[]           @relation(name: "sessions")
+}
+
+model organizations {
+  autoJoinDomain   Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  forceTwoFactor   Boolean  @default(false)
+  id               Int      @id @default(autoincrement())
+  ipRestrictions   String?
+  name             String?
+  onlyAllowDomain  Boolean  @default(false)
+  profilePicture   String   @default("https://unavatar.now.sh/fallback.png")
+  stripeCustomerId String?
+  updatedAt        DateTime @updatedAt
+  username         String   @unique
+}
+
+model emails {
+  createdAt  DateTime @default(now())
+  email      String
+  id         Int      @id @default(autoincrement())
+  isVerified Boolean  @default(false)
+  updatedAt  DateTime @updatedAt
+  user       users    @relation(fields: [userId], references: [id])
+  userId     Int
+
+  @@index([userId], name: "userId")
+}
+
 model access_tokens {
-  createdAt      DateTime
+  createdAt      DateTime @default(now())
   description    String?
   expiresAt      DateTime
-  id             Int      @default(autoincrement()) @id
+  id             Int      @id @default(autoincrement())
   jwtAccessToken String
   name           String?
   scopes         String?
-  updatedAt      DateTime @default(dbgenerated())
+  updatedAt      DateTime @updatedAt
+  user           users    @relation(fields: [userId], references: [id])
   userId         Int
 
   @@index([userId], name: "userId")
@@ -23,36 +80,38 @@ model access_tokens {
 }
 
 model api_keys {
-  createdAt            DateTime
+  createdAt            DateTime @default(now())
   description          String?
   expiresAt            DateTime
-  id                   Int           @default(autoincrement()) @id
+  id                   Int      @id @default(autoincrement())
   ipRestrictions       String?
   jwtApiKey            String
   name                 String?
   organizationId       Int
   referrerRestrictions String?
   scopes               String?
-  updatedAt            DateTime      @default(dbgenerated())
+  updatedAt            DateTime @updatedAt
 
   @@map("api-keys")
 }
 
 model approved_locations {
-  createdAt DateTime?
-  id        Int       @default(autoincrement()) @id
+  createdAt DateTime? @default(now())
+  id        Int       @id @default(autoincrement())
   subnet    String
+  user      users    @relation(fields: [userId], references: [id])
   userId    Int
 
   @@map("approved-locations")
 }
 
 model backup_codes {
-  id        Int      @default(autoincrement()) @id
+  id        Int      @id @default(autoincrement())
   code      String
-  createdAt DateTime
-  updatedAt DateTime @default(dbgenerated())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   used      Boolean  @default(false)
+  user      users    @relation(fields: [userId], references: [id])
   userId    Int
 
   @@index([userId], name: "idId")
@@ -60,115 +119,66 @@ model backup_codes {
 }
 
 model domains {
-  createdAt        DateTime
+  createdAt        DateTime @default(now())
   domain           String
-  id               Int           @default(autoincrement()) @id
-  isVerified       Boolean       @default(false)
+  id               Int      @id @default(autoincrement())
+  isVerified       Boolean  @default(false)
   organizationId   Int
-  updatedAt        DateTime      @default(dbgenerated())
+  updatedAt        DateTime @updatedAt
   verificationCode String
 
   @@index([organizationId], name: "organizationId")
 }
 
-model emails {
-  createdAt  DateTime
-  email      String
-  id         Int      @default(autoincrement()) @id
-  isVerified Boolean  @default(false)
-  updatedAt  DateTime @default(dbgenerated())
-  userId     Int
-
-  @@index([userId], name: "userIdId")
-}
-
 model identities {
-  createdAt  DateTime
-  id         Int      @default(autoincrement()) @id
+  createdAt  DateTime @default(now())
+  id         Int      @id @default(autoincrement())
   identityId String
   loginName  String
   type       String
-  updatedAt  DateTime @default(dbgenerated())
+  updatedAt  DateTime @updatedAt
+  user       users    @relation(fields: [userId], references: [id])
   userId     Int
 
   @@index([userId], name: "userId")
 }
 
 model memberships {
-  createdAt      DateTime
-  id             Int           @default(autoincrement()) @id
+  createdAt      DateTime @default(now())
+  id             Int      @id @default(autoincrement())
   organizationId Int
-  role           String        @default("member")
-  updatedAt      DateTime      @default(dbgenerated())
+  role           String   @default("member")
+  updatedAt      DateTime @updatedAt
+  user           users    @relation(fields: [userId], references: [id])
   userId         Int
 
   @@index([organizationId], name: "organizationId")
   @@index([userId], name: "userId")
 }
 
-model organizations {
-  autoJoinDomain   Boolean  @default(false)
-  createdAt        DateTime
-  forceTwoFactor   Boolean  @default(false)
-  id               Int      @default(autoincrement())
-  ipRestrictions   String?
-  name             String?
-  onlyAllowDomain  Boolean  @default(false)
-  profilePicture   String   @default("https://unavatar.now.sh/fallback.png")
-  stripeCustomerId String?
-  updatedAt        DateTime @default(dbgenerated())
-  username         String   @unique
-
-  @@id([id])
-}
-
 model sessions {
-  createdAt DateTime
-  id        Int      @default(autoincrement()) @id
+  createdAt DateTime @default(now())
+  id        Int      @id @default(autoincrement())
   ipAddress String
   jwtToken  String
-  updatedAt DateTime @default(dbgenerated())
+  updatedAt DateTime @updatedAt
   userAgent String
+  user      users    @relation(fields: [userId], references: [id])
   userId    Int
 
   @@index([userId], name: "userId")
 }
 
-model users {
-  checkLocationOnLogin Boolean  @default(false)
-  countryCode          String   @default("us")
-  createdAt            DateTime
-  gender               String   @default("x")
-  id                   Int      @default(autoincrement())
-  name                 String
-  nickname             String
-  notificationEmails   Int      @default(1)
-  password             String?
-  prefersLanguage      String   @default("en-us")
-  prefersColorScheme   String   @default("system")
-  prefersReducedMotion String   @default("no-preference")
-  primaryEmail         Int?
-  profilePicture       String
-  role                 Int      @default(1)
-  timezone             String   @default("Europe/Amsterdam")
-  twoFactorEnabled     Boolean  @default(false)
-  twoFactorSecret      String?
-  updatedAt            DateTime @default(dbgenerated())
-  username             String   @unique
-
-  @@id([id])
-}
-
 model webhooks {
   contentType    String
-  createdAt      DateTime
+  createdAt      DateTime  @default(now())
   event          String
-  id             Int           @default(autoincrement()) @id
-  isActive       Boolean       @default(false)
+  id             Int       @id @default(autoincrement())
+  isActive       Boolean   @default(false)
   lastFiredAt    DateTime?
   organizationId Int
   secret         String?
-  updatedAt      DateTime      @default(dbgenerated())
+  updatedAt      DateTime  @updatedAt
   url            String
 
   @@index([organizationId], name: "organizationId")
