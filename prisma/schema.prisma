@@ -16,6 +16,7 @@ model access_tokens {
   name           String?
   scopes         String?
   updatedAt      DateTime @default(dbgenerated())
+  user           users    @relation(fields: [userId], references: [id])
   userId         Int
 
   @@map("access-tokens")
@@ -25,14 +26,15 @@ model api_keys {
   createdAt            DateTime
   description          String?
   expiresAt            DateTime
-  id                   Int      @default(autoincrement()) @id
+  id                   Int           @default(autoincrement()) @id
   ipRestrictions       String?
   jwtApiKey            String
   name                 String?
+  organization         organizations @relation(fields: [organizationId], references: [id])
   organizationId       Int
   referrerRestrictions String?
   scopes               String?
-  updatedAt            DateTime @default(dbgenerated())
+  updatedAt            DateTime      @default(dbgenerated())
 
   @@map("api-keys")
 }
@@ -41,6 +43,7 @@ model approved_locations {
   createdAt DateTime?
   id        Int       @default(autoincrement()) @id
   subnet    String
+  user      users     @relation(fields: [userId], references: [id])
   userId    Int
 
   @@map("approved-locations")
@@ -50,7 +53,8 @@ model backup_codes {
   code      Int      @id
   createdAt DateTime
   updatedAt DateTime @default(dbgenerated())
-  used      Int      @default(0)
+  used      Boolean      @default(false)
+  user      users    @relation(fields: [userId], references: [id])
   userId    Int
 
   @@index([userId], name: "id")
@@ -60,8 +64,9 @@ model backup_codes {
 model domains {
   createdAt        DateTime
   domain           String
-  id               Int      @default(autoincrement()) @id
-  isVerified       Int      @default(0)
+  id               Int           @default(autoincrement()) @id
+  isVerified       Boolean       @default(false)
+  organizations    organizations @relation(fields: [organizationId], references: [id])
   organizationId   Int
   updatedAt        DateTime @default(dbgenerated())
   verificationCode String
@@ -71,8 +76,9 @@ model emails {
   createdAt  DateTime
   email      String
   id         Int      @default(autoincrement()) @id
-  isVerified Int      @default(0)
+  isVerified Boolean  @default(false)
   updatedAt  DateTime @default(dbgenerated())
+  user       users    @relation(fields: [userId], references: [id])
   userId     Int
 
   @@index([userId], name: "userId")
@@ -85,15 +91,18 @@ model identities {
   loginName  String
   type       String
   updatedAt  DateTime @default(dbgenerated())
+  user       users    @relation(fields: [userId], references: [id])
   userId     Int
 }
 
 model memberships {
   createdAt      DateTime
-  id             Int      @default(autoincrement()) @id
+  id             Int           @default(autoincrement()) @id
+  organization   organizations @relation(fields: [organizationId], references: [id])
   organizationId Int
-  role           String   @default("member")
-  updatedAt      DateTime @default(dbgenerated())
+  role           String        @default("member")
+  updatedAt      DateTime      @default(dbgenerated())
+  user           users         @relation(fields: [userId], references: [id])
   userId         Int
 
   @@index([organizationId], name: "org")
@@ -101,13 +110,13 @@ model memberships {
 }
 
 model organizations {
-  autoJoinDomain   Int      @default(0)
+  autoJoinDomain   Boolean      @default(false)
   createdAt        DateTime
-  forceTwoFactor   Int      @default(0)
+  forceTwoFactor   Boolean      @default(false)
   id               Int      @default(autoincrement())
   ipRestrictions   String?
   name             String?
-  onlyAllowDomain  Int      @default(0)
+  onlyAllowDomain  Boolean      @default(false)
   profilePicture   String   @default("https://unavatar.now.sh/fallback.png")
   stripeCustomerId String?
   updatedAt        DateTime @default(dbgenerated())
@@ -123,11 +132,12 @@ model sessions {
   jwtToken  String
   updatedAt DateTime @default(dbgenerated())
   userAgent String
+  user      users    @relation(fields: [userId], references: [id])
   userId    Int
 }
 
 model users {
-  checkLocationOnLogin   Int      @default(0)
+  checkLocationOnLogin   Boolean      @default(false)
   countryCode            String?  @default("us")
   createdAt              DateTime
   gender                 String   @default("x")
@@ -137,13 +147,13 @@ model users {
   notificationEmails     Int      @default(1)
   password               String?
   preferredLanguage      String   @default("en-us")
-  prefersColorSchemeDark Int      @default(0)
-  prefersReducedMotion   Int      @default(0)
+  prefersColorSchemeDark Boolean      @default(false)
+  prefersReducedMotion   Boolean      @default(false)
   primaryEmail           Int?
   profilePicture         String
   role                   Int      @default(1)
   timezone               String   @default("Europe/Amsterdam")
-  twoFactorEnabled       Int      @default(0)
+  twoFactorEnabled       Boolean      @default(false)
   twoFactorSecret        String?
   updatedAt              DateTime @default(dbgenerated())
   username               String
@@ -156,8 +166,9 @@ model webhooks {
   createdAt      DateTime
   event          String
   id             Int       @default(autoincrement()) @id
-  isActive       Int       @default(0)
+  isActive       Boolean       @default(false)
   lastFiredAt    DateTime?
+  organization   organizations    @relation(fields: [organizationId], references: [id])
   organizationId Int
   secret         String?
   updatedAt      DateTime  @default(dbgenerated())
