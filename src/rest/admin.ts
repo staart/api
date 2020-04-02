@@ -7,7 +7,6 @@ import { ms } from "@staart/text";
 import { ELASTIC_LOGS_PREFIX } from "../config";
 import { can } from "../helpers/authorization";
 import { Authorizations } from "../interfaces/enum";
-import { KeyValue } from "../interfaces/general";
 import { prisma } from "../helpers/prisma";
 import {
   organizationsSelect,

@@ -17,7 +17,7 @@ import { TOKEN_EXPIRY_API_KEY_MAX } from "../config";
 import { deleteItemFromCache } from "../helpers/cache";
 import { accessToken, invalidateToken } from "../helpers/jwt";
 import { removeReadOnlyValues } from "../helpers/mysql";
-import { deleteSensitiveInfoUser } from "../helpers/utils";
+import { deleteSensitiveInfoUser, PartialBy } from "../helpers/utils";
 import { CacheCategories } from "../interfaces/enum";
 import { KeyValue } from "../interfaces/general";
 import { prisma } from "../helpers/prisma";
@@ -77,7 +77,10 @@ export const checkUserUsernameAvailability = async (username: string) => {
 /**
  * Create a new user
  */
-export const createUser = async (user: usersCreateInput) => {
+export const createUser = async (
+  _user: PartialBy<usersCreateInput, "nickname">
+) => {
+  const user: usersCreateInput = { nickname: "", ..._user };
   user.name = capitalizeFirstAndLastLetter(user.name);
   user.nickname = user.nickname || user.name.split(" ")[0];
   user.password = user.password ? await hash(user.password, 8) : null;

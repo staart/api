@@ -41,6 +41,7 @@ import {
 } from "../services/user.service";
 import { usersCreateInput, MembershipRole } from "@prisma/client";
 import { getDomainByDomainName } from "../services/organization.service";
+import { PartialBy } from "../helpers/utils";
 
 export const validateRefreshToken = async (token: string, locals: Locals) => {
   await checkInvalidatedToken(token);
@@ -97,13 +98,14 @@ export const login2FA = async (code: number, token: string, locals: Locals) => {
 };
 
 export const register = async (
-  user: usersCreateInput,
+  _user: PartialBy<PartialBy<usersCreateInput, "nickname">, "username">,
   locals?: Locals,
   email?: string,
   organizationId?: string,
   role?: MembershipRole,
   emailVerified = false
 ) => {
+  const user: usersCreateInput = { username: "", nickname: "", ..._user };
   if (email) {
     const isNewEmail =
       (await prisma.emails.findMany({ where: { email, isVerified: true } }))

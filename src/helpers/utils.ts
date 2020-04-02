@@ -9,6 +9,12 @@ import { ApiKeyResponse } from "./jwt";
 import { users } from "@prisma/client";
 
 /**
+ * Make s single property optional
+ * @source https://stackoverflow.com/a/54178819/1656944
+ */
+export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
+/**
  * Delete any sensitive information for a user like passwords and tokens
  */
 export const deleteSensitiveInfoUser = (user: users) => {
