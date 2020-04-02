@@ -24,7 +24,6 @@ import { couponCodeJwt } from "../helpers/jwt";
 import { prisma } from "../helpers/prisma";
 import {
   users,
-  memberships,
   membershipsSelect,
   membershipsInclude,
   membershipsOrderByInput,

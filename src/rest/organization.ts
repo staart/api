@@ -9,7 +9,8 @@ import {
   INSUFFICIENT_PERMISSION,
   STRIPE_NO_CUSTOMER,
   USER_IS_MEMBER_ALREADY,
-  USER_NOT_FOUND
+  USER_NOT_FOUND,
+  ORGANIZATION_NOT_FOUND
 } from "@staart/errors";
 import {
   createCustomer,
@@ -51,57 +52,83 @@ import { dnsResolve } from "../helpers/utils";
 import { queueWebhook } from "../helpers/webhooks";
 import {
   Authorizations,
-  MembershipRole,
   OrgScopes,
   Templates,
   Webhooks,
   Tokens
 } from "../interfaces/enum";
 import { KeyValue, Locals } from "../interfaces/general";
-import { InsertResult } from "../interfaces/mysql";
-import { Organization, Webhook } from "../interfaces/tables/organization";
-import { User } from "../interfaces/tables/user";
 import { register } from "./auth";
+import { prisma } from "../helpers/prisma";
+import {
+  organizationsCreateInput,
+  organizationsUpdateInput,
+  membershipsInclude,
+  membershipsSelect,
+  membershipsOrderByInput,
+  membershipsWhereUniqueInput,
+  membershipsUpdateInput
+} from "@prisma/client";
 
 export const getOrganizationForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string
 ) => {
   if (await can(userId, OrgScopes.READ_ORG, "organization", organizationId))
-    return getOrganization(organizationId);
+    return prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
 export const newOrganizationForUser = async (
   userId: string,
-  organization: Organization,
+  organization: organizationsCreateInput,
   locals: Locals
 ) => {
   if (!organization.name) {
-    const user = await getUser(userId);
+    const user = await prisma.users.findOne({
+      where: { id: parseInt(userId) }
+    });
+    if (!user) throw new Error(USER_NOT_FOUND);
     organization.name = user.name;
   }
-  const org = (await createOrganization(organization)) as InsertResult;
-  const organizationId = org.insertId;
-  await createMembership({
-    organizationId,
-    userId,
-    role: MembershipRole.OWNER
+  return prisma.organizations.create({
+    data: {
+      ...organization,
+      memberships: {
+        create: {
+          organization: {},
+          user: { connect: { id: parseInt(userId) } },
+          role: "OWNER"
+        }
+      }
+    }
   });
-  return;
 };
 
 export const updateOrganizationForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
-  data: Organization,
+  data: organizationsUpdateInput,
   locals: Locals
 ) => {
   if (await can(userId, OrgScopes.UPDATE_ORG, "organization", organizationId)) {
-    await updateOrganization(organizationId, data);
+    const result = await prisma.organizations.update({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      },
+      data: {}
+    });
     queueWebhook(organizationId, Webhooks.UPDATE_ORGANIZATION, data);
     trackEvent({ organizationId, type: Webhooks.UPDATE_ORGANIZATION }, locals);
-    return;
+    return result;
   }
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -112,11 +139,23 @@ export const deleteOrganizationForUser = async (
   locals: Locals
 ) => {
   if (await can(userId, OrgScopes.DELETE_ORG, "organization", organizationId)) {
-    const organizationDetails = await getOrganization(organizationId);
+    const organizationDetails = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organizationDetails) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organizationDetails.stripeCustomerId)
       await deleteCustomer(organizationDetails.stripeCustomerId);
-    await deleteOrganization(organizationId);
-    await deleteAllOrganizationMemberships(organizationId);
+    await prisma.organizations.delete({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
     queueWebhook(organizationId, Webhooks.DELETE_ORGANIZATION);
     trackEvent({ organizationId, type: Webhooks.DELETE_ORGANIZATION }, locals);
     return;
@@ -136,7 +175,14 @@ export const getOrganizationBillingForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
       return getCustomer(organization.stripeCustomerId);
     throw new Error(STRIPE_NO_CUSTOMER);
@@ -158,12 +204,31 @@ export const updateOrganizationBillingForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     let result;
     if (organization.stripeCustomerId) {
       result = await updateCustomer(organization.stripeCustomerId, data);
     } else {
-      result = await createCustomer(organizationId, data, updateOrganization);
+      result = await createCustomer(
+        organizationId,
+        data,
+        (organizationId: string, data: organizationsUpdateInput) =>
+          prisma.organizations.update({
+            where: {
+              id: parseInt(
+                typeof userId === "object" ? userId.organizationId : userId
+              )
+            },
+            data
+          })
+      );
     }
     queueWebhook(organizationId, Webhooks.UPDATE_ORGANIZATION_BILLING, data);
     trackEvent(
@@ -188,7 +253,14 @@ export const getOrganizationInvoicesForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
       return getInvoices(organization.stripeCustomerId, params);
     throw new Error(STRIPE_NO_CUSTOMER);
@@ -209,7 +281,14 @@ export const getOrganizationInvoiceForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
       return getInvoice(organization.stripeCustomerId, invoiceId);
     throw new Error(STRIPE_NO_CUSTOMER);
@@ -230,7 +309,14 @@ export const getOrganizationSourcesForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
       return getSources(organization.stripeCustomerId, params);
     throw new Error(STRIPE_NO_CUSTOMER);
@@ -251,7 +337,14 @@ export const getOrganizationSourceForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
       return getSource(organization.stripeCustomerId, sourceId);
     throw new Error(STRIPE_NO_CUSTOMER);
@@ -272,7 +365,14 @@ export const getOrganizationSubscriptionsForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
       return getSubscriptions(organization.stripeCustomerId, params);
     throw new Error(STRIPE_NO_CUSTOMER);
@@ -293,7 +393,14 @@ export const getOrganizationSubscriptionForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
       return getSubscription(organization.stripeCustomerId, subscriptionId);
     throw new Error(STRIPE_NO_CUSTOMER);
@@ -316,7 +423,14 @@ export const updateOrganizationSubscriptionForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId) {
       const result = await updateSubscription(
         organization.stripeCustomerId,
@@ -353,7 +467,14 @@ export const createOrganizationSubscriptionForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId) {
       const result = await createSubscription(
         organization.stripeCustomerId,
@@ -400,7 +521,14 @@ export const deleteOrganizationSourceForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId) {
       const result = await deleteSource(
         organization.stripeCustomerId,
@@ -437,7 +565,14 @@ export const updateOrganizationSourceForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId) {
       const result = await updateSource(
         organization.stripeCustomerId,
@@ -470,7 +605,14 @@ export const createOrganizationSourceForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId) {
       const result = await createSource(organization.stripeCustomerId, card);
       queueWebhook(organizationId, Webhooks.CREATE_ORGANIZATION_SOURCE, card);
@@ -497,25 +639,33 @@ export const getAllOrganizationDataForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
-    const memberships = await getOrganizationMemberships(organizationId);
-    let billing = {} as any;
-    let subscriptions = {} as any;
-    let invoices = {} as any;
-    let sources = {} as any;
-    if (organization.stripeCustomerId) {
-      billing = await getCustomer(organization.stripeCustomerId);
-      subscriptions = await getSubscriptions(organization.stripeCustomerId, {});
-      invoices = await getInvoices(organization.stripeCustomerId, {});
-      sources = await getSources(organization.stripeCustomerId, {});
-    }
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      },
+      include: {
+        api_keys: true,
+        domains: true,
+        memberships: true,
+        webhooks: true
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     return {
       organization,
-      memberships,
-      billing,
-      subscriptions,
-      invoices,
-      sources
+      ...(organization.stripeCustomerId
+        ? {
+            billing: await getCustomer(organization.stripeCustomerId),
+            subscriptions: await getSubscriptions(
+              organization.stripeCustomerId,
+              {}
+            ),
+            invoices: await getInvoices(organization.stripeCustomerId, {}),
+            sources: await getSources(organization.stripeCustomerId, {})
+          }
+        : {})
     };
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -524,7 +674,25 @@ export const getAllOrganizationDataForUser = async (
 export const getOrganizationMembershipsForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
-  query?: KeyValue
+  {
+    select,
+    include,
+    orderBy,
+    skip,
+    after,
+    before,
+    first,
+    last
+  }: {
+    select?: membershipsSelect;
+    include?: membershipsInclude;
+    orderBy?: membershipsOrderByInput;
+    skip?: number;
+    after?: membershipsWhereUniqueInput;
+    before?: membershipsWhereUniqueInput;
+    first?: number;
+    last?: number;
+  }
 ) => {
   if (
     await can(
@@ -534,7 +702,17 @@ export const getOrganizationMembershipsForUser = async (
       organizationId
     )
   )
-    return getOrganizationMemberships(organizationId, query);
+    return prisma.memberships.findMany({
+      where: { organizationId: parseInt(organizationId) },
+      select,
+      include,
+      orderBy,
+      skip,
+      after,
+      before,
+      first,
+      last
+    });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -551,7 +729,10 @@ export const getOrganizationMembershipForUser = async (
       organizationId
     )
   )
-    return getOrganizationMembershipDetailed(organizationId, membershipId);
+    return prisma.memberships.findOne({
+      where: { id: parseInt(membershipId) },
+      include: { user: true }
+    });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -559,7 +740,7 @@ export const updateOrganizationMembershipForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
   membershipId: string,
-  data: KeyValue
+  data: membershipsUpdateInput
 ) => {
   if (
     await can(
@@ -569,7 +750,10 @@ export const updateOrganizationMembershipForUser = async (
       organizationId
     )
   )
-    return updateOrganizationMembership(organizationId, membershipId, data);
+    return prisma.memberships.update({
+      where: { id: parseInt(membershipId) },
+      data
+    });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -586,11 +770,11 @@ export const deleteOrganizationMembershipForUser = async (
       organizationId
     )
   ) {
-    // Check if there's only one member in this team
-    const members = await getOrganizationMemberships(organizationId);
-    if (members && members.data && members.data.length === 1)
-      throw new Error(CANNOT_DELETE_SOLE_MEMBER);
-    return deleteOrganizationMembership(organizationId, membershipId);
+    const members = await prisma.memberships.findMany({
+      where: { organizationId: parseInt(organizationId) }
+    });
+    if (members.length === 1) throw new Error(CANNOT_DELETE_SOLE_MEMBER);
+    return prisma.memberships.delete({ where: { id: parseInt(membershipId) } });
   }
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -611,7 +795,14 @@ export const inviteMemberToOrganization = async (
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.onlyAllowDomain) {
       const emailDomain = newMemberEmail.split("@")[1];
       try {
@@ -670,7 +861,25 @@ export const inviteMemberToOrganization = async (
 export const getOrganizationApiKeysForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
-  query: KeyValue
+  {
+    select,
+    include,
+    orderBy,
+    skip,
+    after,
+    before,
+    first,
+    last
+  }: {
+    select?: membershipsSelect;
+    include?: membershipsInclude;
+    orderBy?: membershipsOrderByInput;
+    skip?: number;
+    after?: membershipsWhereUniqueInput;
+    before?: membershipsWhereUniqueInput;
+    first?: number;
+    last?: number;
+  }
 ) => {
   if (
     await can(
@@ -705,7 +914,25 @@ export const getOrganizationApiKeyLogsForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
   apiKeyId: string,
-  query: KeyValue
+  {
+    select,
+    include,
+    orderBy,
+    skip,
+    after,
+    before,
+    first,
+    last
+  }: {
+    select?: membershipsSelect;
+    include?: membershipsInclude;
+    orderBy?: membershipsOrderByInput;
+    skip?: number;
+    after?: membershipsWhereUniqueInput;
+    before?: membershipsWhereUniqueInput;
+    first?: number;
+    last?: number;
+  }
 ) => {
   if (
     await can(
@@ -789,7 +1016,25 @@ export const deleteApiKeyForUser = async (
 export const getOrganizationDomainsForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
-  query: KeyValue
+  {
+    select,
+    include,
+    orderBy,
+    skip,
+    after,
+    before,
+    first,
+    last
+  }: {
+    select?: membershipsSelect;
+    include?: membershipsInclude;
+    orderBy?: membershipsOrderByInput;
+    skip?: number;
+    after?: membershipsWhereUniqueInput;
+    before?: membershipsWhereUniqueInput;
+    first?: number;
+    last?: number;
+  }
 ) => {
   if (
     await can(
@@ -956,7 +1201,25 @@ export const verifyDomainForUser = async (
 export const getOrganizationWebhooksForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
-  query: KeyValue
+  {
+    select,
+    include,
+    orderBy,
+    skip,
+    after,
+    before,
+    first,
+    last
+  }: {
+    select?: membershipsSelect;
+    include?: membershipsInclude;
+    orderBy?: membershipsOrderByInput;
+    skip?: number;
+    after?: membershipsWhereUniqueInput;
+    before?: membershipsWhereUniqueInput;
+    first?: number;
+    last?: number;
+  }
 ) => {
   if (
     await can(
@@ -1086,7 +1349,14 @@ export const applyCouponToOrganizationForUser = async (
     } catch (error) {
       throw new Error(INVALID_INPUT);
     }
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (amount && currency && organization.stripeCustomerId) {
       const result = await createCustomerBalanceTransaction(
         organization.stripeCustomerId,
@@ -1117,7 +1387,14 @@ export const getOrganizationTransactionsForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
       return getCustomBalanceTransactions(
         organization.stripeCustomerId,
@@ -1141,7 +1418,14 @@ export const getOrganizationTransactionForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
       return getCustomBalanceTransaction(
         organization.stripeCustomerId,
