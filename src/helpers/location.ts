@@ -1,7 +1,7 @@
 import geolite2 from "geolite2-redist";
 import maxmind, { CityResponse, Reader } from "maxmind";
 import { CacheCategories } from "../interfaces/enum";
-import { getItemFromCache, storeItemInCache } from "./cache";
+import { success } from "@staart/errors";
 
 export interface GeoLocation {
   city?: string;
@@ -21,6 +21,7 @@ const getLookup = async () => {
   lookup = await geolite2.open<CityResponse>("GeoLite2-City", path => {
     return maxmind.open(path);
   });
+  success("Opened GeoIP2 database reader");
   return lookup;
 };
 
@@ -28,8 +29,6 @@ export const getGeolocationFromIp = async (
   ipAddress: string
 ): Promise<GeoLocation | undefined> => {
   try {
-    const cachedLookup = getItemFromCache(CacheCategories.IP_LOOKUP, ipAddress);
-    if (cachedLookup) return cachedLookup as GeoLocation;
     const lookup = await getLookup();
     const ipLookup = lookup.get(ipAddress);
     if (!ipLookup) return;
@@ -47,7 +46,6 @@ export const getGeolocationFromIp = async (
       location.region_name = ipLookup.subdivisions[0].names.en;
     if (ipLookup.subdivisions)
       location.region_code = ipLookup.subdivisions[0].iso_code;
-    storeItemInCache(CacheCategories.IP_LOOKUP, ipAddress, location);
     return location;
   } catch (error) {}
 };
