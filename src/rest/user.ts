@@ -1,10 +1,13 @@
 import {
   INCORRECT_PASSWORD,
+  EMAIL_CANNOT_DELETE,
   INSUFFICIENT_PERMISSION,
   INVALID_2FA_TOKEN,
   MISSING_PASSWORD,
   NOT_ENABLED_2FA,
-  USER_NOT_FOUND
+  USER_NOT_FOUND,
+  EMAIL_EXISTS,
+  RESOURCE_NOT_FOUND
 } from "@staart/errors";
 import { compare } from "@staart/text";
 import { authenticator } from "otplib";
@@ -13,7 +16,8 @@ import { SERVICE_2FA } from "../config";
 import {
   createBackupCodes,
   getUserPrimaryEmail,
-  getUserBestEmail
+  getUserBestEmail,
+  resendEmailVerification
 } from "../services/user.service";
 import { can } from "../helpers/authorization";
 import { trackEvent } from "../helpers/tracking";
@@ -42,8 +46,14 @@ import {
   identitiesInclude,
   identitiesOrderByInput,
   identitiesWhereUniqueInput,
-  identitiesCreateInput
+  identitiesCreateInput,
+  emailsSelect,
+  emailsInclude,
+  emailsOrderByInput,
+  emailsWhereUniqueInput
 } from "@prisma/client";
+import { ALLOW_DISPOSABLE_EMAILS } from "../config";
+import { checkIfDisposableEmail } from "@staart/disposable-email";
 
 export const getUserFromId = async (userId: string, tokenUserId: string) => {
   if (await can(tokenUserId, UserScopes.READ_USER, "user", userId)) {
@@ -566,4 +576,131 @@ export const addInvitationCredits = async (
   };
   await mail(invitedByEmail.email, Templates.CREDITS_INVITED_BY, emailData);
   await mail(newUserEmail.email, Templates.CREDITS_NEW_USER, emailData);
+};
+
+export const getAllEmailsForUser = async (
+  tokenUserId: string,
+  userId: string,
+  {
+    select,
+    include,
+    orderBy,
+    skip,
+    after,
+    before,
+    first,
+    last
+  }: {
+    select?: emailsSelect;
+    include?: emailsInclude;
+    orderBy?: emailsOrderByInput;
+    skip?: number;
+    after?: emailsWhereUniqueInput;
+    before?: emailsWhereUniqueInput;
+    first?: number;
+    last?: number;
+  }
+) => {
+  if (await can(tokenUserId, UserScopes.READ_USER_EMAILS, "user", userId)) {
+    return prisma.emails.findMany({
+      where: { userId: parseInt(userId) },
+      select,
+      include,
+      orderBy,
+      skip,
+      after,
+      before,
+      first,
+      last
+    });
+  }
+  throw new Error(INSUFFICIENT_PERMISSION);
+};
+
+export const getEmailForUser = async (
+  tokenUserId: string,
+  userId: string,
+  emailId: string
+) => {
+  if (await can(tokenUserId, UserScopes.READ_USER_EMAILS, "user", userId))
+    return prisma.emails.findOne({ where: { id: parseInt(emailId) } });
+  throw new Error(INSUFFICIENT_PERMISSION);
+};
+
+export const resendEmailVerificationForUser = async (
+  tokenUserId: string,
+  userId: string,
+  emailId: string
+) => {
+  if (
+    await can(
+      tokenUserId,
+      UserScopes.RESEND_USER_EMAIL_VERIFICATION,
+      "user",
+      userId
+    )
+  )
+    return resendEmailVerification(emailId);
+  throw new Error(INSUFFICIENT_PERMISSION);
+};
+
+export const addEmailToUserForUser = async (
+  tokenUserId: string,
+  userId: string,
+  email: string,
+  locals: Locals
+) => {
+  if (!(await can(tokenUserId, UserScopes.CREATE_USER_EMAILS, "user", userId)))
+    throw new Error(INSUFFICIENT_PERMISSION);
+  if (!ALLOW_DISPOSABLE_EMAILS) checkIfDisposableEmail(email);
+  const emailExistsAlready =
+    (await prisma.emails.findMany({ where: { email } })).length !== 0;
+  if (emailExistsAlready) throw new Error(EMAIL_EXISTS);
+  const result = await prisma.emails.create({
+    data: { email, user: { connect: { id: parseInt(userId) } } }
+  });
+  trackEvent(
+    { userId, type: EventType.EMAIL_CREATED, data: { email } },
+    locals
+  );
+  return result;
+};
+
+export const deleteEmailFromUserForUser = async (
+  tokenUserId: string,
+  userId: string,
+  emailId: string,
+  locals: Locals
+) => {
+  if (!(await can(tokenUserId, UserScopes.DELETE_USER_EMAILS, "user", userId)))
+    throw new Error(INSUFFICIENT_PERMISSION);
+  const email = await prisma.emails.findOne({
+    where: { id: parseInt(userId) }
+  });
+  if (!email) throw new Error(RESOURCE_NOT_FOUND);
+  if (email.userId !== parseInt(userId))
+    throw new Error(INSUFFICIENT_PERMISSION);
+  const verifiedEmails = await prisma.emails.findMany({
+    where: { id: parseInt(userId) }
+  });
+  if (verifiedEmails.length === 1 && email.isVerified)
+    throw new Error(EMAIL_CANNOT_DELETE);
+  const currentPrimaryEmailId = (await getUserPrimaryEmail(userId)).id;
+  if (currentPrimaryEmailId === parseInt(emailId)) {
+    const nextVerifiedEmail = verifiedEmails.filter(
+      emailObject => emailObject.id !== parseInt(emailId)
+    )[0];
+    await prisma.users.update({
+      where: { id: parseInt(userId) },
+      data: { primaryEmail: nextVerifiedEmail.id }
+    });
+  }
+  const result = await prisma.emails.delete({
+    where: { id: parseInt(emailId) }
+  });
+  trackEvent(
+    { userId, type: EventType.EMAIL_DELETED, data: { email: email.email } },
+    locals
+  );
+  return result;
 };

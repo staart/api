@@ -18,16 +18,21 @@ import { deleteItemFromCache } from "../helpers/cache";
 import { accessToken, invalidateToken } from "../helpers/jwt";
 import { removeReadOnlyValues } from "../helpers/mysql";
 import { deleteSensitiveInfoUser } from "../helpers/utils";
-import { CacheCategories, NotificationEmails } from "../interfaces/enum";
+import { CacheCategories } from "../interfaces/enum";
 import { KeyValue } from "../interfaces/general";
 import { prisma } from "../helpers/prisma";
 import {
   users,
   access_tokens,
+  emailsCreateInput,
   access_tokensCreateInput,
   sessionsUpdateInput
 } from "@prisma/client";
 import { decode } from "jsonwebtoken";
+import { emailVerificationToken } from "../helpers/jwt";
+import { mail } from "../helpers/mail";
+import { Templates } from "../interfaces/enum";
+import { sendNewPassword } from "../rest/auth";
 
 /**
  * Get the best available username for a user
@@ -59,18 +64,9 @@ export const getBestUsernameForUser = async (name: string) => {
  * Create a new user
  */
 export const createUser = async (user: users) => {
-  // Clean up values
   user.name = capitalizeFirstAndLastLetter(user.name);
-  // Default values for user
   user.nickname = user.nickname || user.name.split(" ")[0];
-  user.twoFactorEnabled = user.twoFactorEnabled;
-  user.timezone = user.timezone || "Europe/Amsterdam";
   user.password = user.password ? await hash(user.password, 8) : null;
-  user.notificationEmails =
-    user.notificationEmails || NotificationEmails.GENERAL;
-  user.prefersLanguage = user.prefersLanguage || "en-us";
-  user.prefersReducedMotion = user.prefersReducedMotion;
-  user.prefersColorScheme = user.prefersColorScheme;
   user.profilePicture =
     user.profilePicture ||
     `https://api.adorable.io/avatars/285/${createHash("md5")
@@ -318,4 +314,60 @@ export const updateSessionByJwt = async (
   });
   if (!currentSession.length) throw new Error(RESOURCE_NOT_FOUND);
   return prisma.sessions.update({ where: { id: currentSession[0].id }, data });
+};
+
+/**
+ * Create a new email for a user
+ * @param sendVerification  Whether to send an email verification link to new email
+ * @param isVerified  Whether this email is verified by default
+ */
+export const createEmail = async (
+  userId: number,
+  email: emailsCreateInput,
+  sendVerification = true,
+  sendPasswordSet = false
+) => {
+  const result = await prisma.emails.create({
+    data: { ...email, user: { connect: { id: userId } } }
+  });
+  if (sendVerification) {
+    const user = await prisma.users.findOne({ where: { id: userId } });
+    if (!user) throw new Error(USER_NOT_FOUND);
+    await sendEmailVerification(result.id, email.email, user);
+  }
+  if (sendPasswordSet) await sendNewPassword(userId, email.email);
+  return result;
+};
+
+/**
+ * Send an email verification link
+ */
+export const sendEmailVerification = async (
+  id: string | number,
+  email: string,
+  user: users
+) => {
+  if (typeof id === "number") id = id.toString();
+  const token = await emailVerificationToken(id);
+  await mail(email, Templates.EMAIL_VERIFY, { name: user.name, email, token });
+  return;
+};
+
+/**
+ * Resend an email verification link
+ */
+export const resendEmailVerification = async (id: string | number) => {
+  if (typeof id === "number") id = id.toString();
+  const token = await emailVerificationToken(id);
+  const emailObject = await prisma.emails.findOne({
+    where: { id: parseInt(id) }
+  });
+  if (!emailObject) throw new Error(RESOURCE_NOT_FOUND);
+  const email = emailObject.email;
+  const user = await prisma.users.findOne({
+    where: { id: emailObject.userId }
+  });
+  if (!user) throw new Error(USER_NOT_FOUND);
+  await mail(email, Templates.EMAIL_VERIFY, { name: user.name, email, token });
+  return;
 };

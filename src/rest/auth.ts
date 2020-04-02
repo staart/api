@@ -187,7 +187,7 @@ export const sendPasswordReset = async (email: string, locals?: Locals) => {
   return;
 };
 
-export const sendNewPassword = async (userId: string, email: string) => {
+export const sendNewPassword = async (userId: number, email: string) => {
   const user = await getUser(userId);
   const userEmails = await getUserEmails(userId);
   if (!userEmails.filter(userEmail => userEmail.email === email).length)
