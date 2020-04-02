@@ -33,22 +33,26 @@ model users {
   approved_locations   approved_locations[] @relation(name: "approved_locations")
   backup_codes         backup_codes[]       @relation(name: "backup_codes")
   identities           identities[]         @relation(name: "identities")
-  memberships          memberships[]        @relation(name: "memberships")
+  memberships          memberships[]        @relation(name: "userMemberships")
   sessions             sessions[]           @relation(name: "sessions")
 }
 
 model organizations {
-  autoJoinDomain   Boolean  @default(false)
-  createdAt        DateTime @default(now())
-  forceTwoFactor   Boolean  @default(false)
-  id               Int      @id @default(autoincrement())
+  autoJoinDomain   Boolean       @default(false)
+  createdAt        DateTime      @default(now())
+  forceTwoFactor   Boolean       @default(false)
+  id               Int           @id @default(autoincrement())
   ipRestrictions   String?
   name             String?
-  onlyAllowDomain  Boolean  @default(false)
-  profilePicture   String   @default("https://unavatar.now.sh/fallback.png")
+  onlyAllowDomain  Boolean       @default(false)
+  profilePicture   String        @default("https://unavatar.now.sh/fallback.png")
   stripeCustomerId String?
-  updatedAt        DateTime @updatedAt
-  username         String   @unique
+  updatedAt        DateTime      @updatedAt
+  username         String        @unique
+  api_keys         api_keys[]    @relation(name: "api_keys")
+  domains          domains[]     @relation(name: "domains")
+  memberships      memberships[] @relation(name: "organizationMemberships")
+  webhooks         webhooks[]    @relation(name: "webhooks")
 }
 
 model emails {
@@ -80,17 +84,18 @@ model access_tokens {
 }
 
 model api_keys {
-  createdAt            DateTime @default(now())
+  createdAt            DateTime      @default(now())
   description          String?
   expiresAt            DateTime
-  id                   Int      @id @default(autoincrement())
+  id                   Int           @id @default(autoincrement())
   ipRestrictions       String?
   jwtApiKey            String
   name                 String?
+  organization         organizations @relation(fields: [organizationId], references: [id])
   organizationId       Int
   referrerRestrictions String?
   scopes               String?
-  updatedAt            DateTime @updatedAt
+  updatedAt            DateTime      @updatedAt
 
   @@map("api-keys")
 }
@@ -99,7 +104,7 @@ model approved_locations {
   createdAt DateTime? @default(now())
   id        Int       @id @default(autoincrement())
   subnet    String
-  user      users    @relation(fields: [userId], references: [id])
+  user      users     @relation(fields: [userId], references: [id])
   userId    Int
 
   @@map("approved-locations")
@@ -119,12 +124,13 @@ model backup_codes {
 }
 
 model domains {
-  createdAt        DateTime @default(now())
+  createdAt        DateTime      @default(now())
   domain           String
-  id               Int      @id @default(autoincrement())
-  isVerified       Boolean  @default(false)
+  id               Int           @id @default(autoincrement())
+  isVerified       Boolean       @default(false)
+  organization     organizations @relation(fields: [organizationId], references: [id])
   organizationId   Int
-  updatedAt        DateTime @updatedAt
+  updatedAt        DateTime      @updatedAt
   verificationCode String
 
   @@index([organizationId], name: "organizationId")
@@ -144,12 +150,13 @@ model identities {
 }
 
 model memberships {
-  createdAt      DateTime @default(now())
-  id             Int      @id @default(autoincrement())
+  createdAt      DateTime      @default(now())
+  id             Int           @id @default(autoincrement())
+  organization   organizations @relation(fields: [organizationId], references: [id])
   organizationId Int
-  role           String   @default("member")
-  updatedAt      DateTime @updatedAt
-  user           users    @relation(fields: [userId], references: [id])
+  role           String        @default("member")
+  updatedAt      DateTime      @updatedAt
+  user           users         @relation(fields: [userId], references: [id])
   userId         Int
 
   @@index([organizationId], name: "organizationId")
@@ -171,14 +178,15 @@ model sessions {
 
 model webhooks {
   contentType    String
-  createdAt      DateTime  @default(now())
+  createdAt      DateTime      @default(now())
   event          String
-  id             Int       @id @default(autoincrement())
-  isActive       Boolean   @default(false)
+  id             Int           @id @default(autoincrement())
+  isActive       Boolean       @default(false)
   lastFiredAt    DateTime?
+  organization   organizations @relation(fields: [organizationId], references: [id])
   organizationId Int
   secret         String?
-  updatedAt      DateTime  @updatedAt
+  updatedAt      DateTime      @updatedAt
   url            String
 
   @@index([organizationId], name: "organizationId")
