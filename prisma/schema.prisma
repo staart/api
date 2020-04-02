@@ -16,9 +16,9 @@ model access_tokens {
   name           String?
   scopes         String?
   updatedAt      DateTime @default(dbgenerated())
-  user           users    @relation(fields: [userId], references: [id])
   userId         Int
 
+  @@index([userId], name: "userId")
   @@map("access-tokens")
 }
 
@@ -30,7 +30,6 @@ model api_keys {
   ipRestrictions       String?
   jwtApiKey            String
   name                 String?
-  organization         organizations @relation(fields: [organizationId], references: [id])
   organizationId       Int
   referrerRestrictions String?
   scopes               String?
@@ -43,7 +42,6 @@ model approved_locations {
   createdAt DateTime?
   id        Int       @default(autoincrement()) @id
   subnet    String
-  user      users     @relation(fields: [userId], references: [id])
   userId    Int
 
   @@map("approved-locations")
@@ -55,10 +53,9 @@ model backup_codes {
   createdAt DateTime
   updatedAt DateTime @default(dbgenerated())
   used      Boolean  @default(false)
-  user      users    @relation(fields: [userId], references: [id])
   userId    Int
 
-  @@index([userId], name: "id")
+  @@index([userId], name: "idId")
   @@map("backup-codes")
 }
 
@@ -67,10 +64,11 @@ model domains {
   domain           String
   id               Int           @default(autoincrement()) @id
   isVerified       Boolean       @default(false)
-  organization     organizations @relation(fields: [organizationId], references: [id])
   organizationId   Int
   updatedAt        DateTime      @default(dbgenerated())
   verificationCode String
+
+  @@index([organizationId], name: "organizationId")
 }
 
 model emails {
@@ -79,10 +77,9 @@ model emails {
   id         Int      @default(autoincrement()) @id
   isVerified Boolean  @default(false)
   updatedAt  DateTime @default(dbgenerated())
-  user       users    @relation(fields: [userId], references: [id])
   userId     Int
 
-  @@index([userId], name: "userId")
+  @@index([userId], name: "userIdId")
 }
 
 model identities {
@@ -92,22 +89,21 @@ model identities {
   loginName  String
   type       String
   updatedAt  DateTime @default(dbgenerated())
-  user       users    @relation(fields: [userId], references: [id])
   userId     Int
+
+  @@index([userId], name: "userId")
 }
 
 model memberships {
   createdAt      DateTime
   id             Int           @default(autoincrement()) @id
-  organization   organizations @relation(fields: [organizationId], references: [id])
   organizationId Int
   role           String        @default("member")
   updatedAt      DateTime      @default(dbgenerated())
-  user           users         @relation(fields: [userId], references: [id])
   userId         Int
 
-  @@index([organizationId], name: "org")
-  @@index([userId], name: "user")
+  @@index([organizationId], name: "organizationId")
+  @@index([userId], name: "userId")
 }
 
 model organizations {
@@ -122,11 +118,6 @@ model organizations {
   stripeCustomerId String?
   updatedAt        DateTime @default(dbgenerated())
   username         String   @unique
-  apiKeys          api_keys[] @relation(references: [id])
-  domains          domains[] @relation(references: [id])
-  memberships      memberships[] @relation(references: [id])
-  webhooks         webhooks[] @relation(references: [id])
-  backupCodes      backup_codes[] @relation(references: [id])
 
   @@id([id])
 }
@@ -138,8 +129,9 @@ model sessions {
   jwtToken  String
   updatedAt DateTime @default(dbgenerated())
   userAgent String
-  user      users    @relation(fields: [userId], references: [id])
   userId    Int
+
+  @@index([userId], name: "userId")
 }
 
 model users {
@@ -163,12 +155,6 @@ model users {
   twoFactorSecret      String?
   updatedAt            DateTime @default(dbgenerated())
   username             String   @unique
-  accessTokens         access_tokens[] @relation(references: [id])
-  approvedLocations    approved_locations[] @relation(references: [id])
-  emails               emails[] @relation(references: [id])
-  identities           identities[] @relation(references: [id])
-  memberships          memberships[] @relation(references: [id])
-  sessions             sessions[] @relation(references: [id])
 
   @@id([id])
 }
@@ -180,9 +166,10 @@ model webhooks {
   id             Int           @default(autoincrement()) @id
   isActive       Boolean       @default(false)
   lastFiredAt    DateTime?
-  organization   organizations @relation(fields: [organizationId], references: [id])
   organizationId Int
   secret         String?
   updatedAt      DateTime      @default(dbgenerated())
   url            String
+
+  @@index([organizationId], name: "organizationId")
 }
