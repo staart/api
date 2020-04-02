@@ -21,7 +21,13 @@ import { deleteSensitiveInfoUser } from "../helpers/utils";
 import { CacheCategories, NotificationEmails } from "../interfaces/enum";
 import { KeyValue } from "../interfaces/general";
 import { prisma } from "../helpers/prisma";
-import { users, access_tokens } from "@prisma/client";
+import {
+  users,
+  access_tokens,
+  access_tokensCreateInput,
+  sessionsUpdateInput
+} from "@prisma/client";
+import { decode } from "jsonwebtoken";
 
 /**
  * Get the best available username for a user
@@ -153,9 +159,10 @@ export const updateUser = async (id: string, user: KeyValue) => {
  * @param ipAddress - IP address for the new location
  */
 export const addApprovedLocation = async (
-  userId: string,
+  userId: string | number,
   ipAddress: string
 ) => {
+  if (typeof userId === "number") userId = userId.toString();
   const subnet = anonymizeIpAddress(ipAddress);
   return prisma.approved_locations.create({
     data: {
@@ -171,9 +178,10 @@ export const addApprovedLocation = async (
  * @param ipAddress - IP address for checking
  */
 export const checkApprovedLocation = async (
-  userId: string,
+  userId: string | number,
   ipAddress: string
 ) => {
+  if (typeof userId === "number") userId = userId.toString();
   const user = await prisma.users.findOne({ where: { id: parseInt(userId) } });
   if (!user) throw new Error(USER_NOT_FOUND);
   if (!user.checkLocationOnLogin) return true;
@@ -191,7 +199,8 @@ export const checkApprovedLocation = async (
  * Create 2FA backup codes for user
  * @param count - Number of backup codes to create
  */
-export const createBackupCodes = async (userId: string, count = 1) => {
+export const createBackupCodes = async (userId: string | number, count = 1) => {
+  if (typeof userId === "number") userId = userId.toString();
   const now = new Date();
   for await (const _ of Array.from(Array(count).keys())) {
     await prisma.backup_codes.create({
@@ -209,7 +218,7 @@ export const createBackupCodes = async (userId: string, count = 1) => {
 /**
  * Create an API key
  */
-export const createAccessToken = async (data: access_tokens) => {
+export const createAccessToken = async (data: access_tokensCreateInput) => {
   data.expiresAt = data.expiresAt || new Date(TOKEN_EXPIRY_API_KEY_MAX);
   data.createdAt = new Date();
   data.updatedAt = data.createdAt;
@@ -258,7 +267,8 @@ export const deleteAccessToken = async (accessTokenId: string) => {
  * Get the primary email of a user
  * @param userId - User Id
  */
-export const getUserPrimaryEmail = async (userId: string) => {
+export const getUserPrimaryEmail = async (userId: string | number) => {
+  if (typeof userId === "number") userId = userId.toString();
   const primaryEmailId = (
     await prisma.users.findOne({
       select: { primaryEmail: true },
@@ -277,7 +287,8 @@ export const getUserPrimaryEmail = async (userId: string) => {
  * Get the best email to contact a user
  * @param userId - User ID
  */
-export const getUserBestEmail = async (userId: string) => {
+export const getUserBestEmail = async (userId: string | number) => {
+  if (typeof userId === "number") userId = userId.toString();
   try {
     return await getUserPrimaryEmail(userId);
   } catch (error) {}
@@ -288,4 +299,30 @@ export const getUserBestEmail = async (userId: string) => {
   });
   if (!emails.length) throw new Error(RESOURCE_NOT_FOUND);
   return emails[0];
+};
+
+/**
+ * Update a session based on JWT
+ * @param userId - User ID
+ * @param sessionJwt - Provided session JWT
+ * @param data - Session information to update
+ */
+export const updateSessionByJwt = async (
+  userId: number,
+  sessionJwt: string,
+  data: sessionsUpdateInput
+) => {
+  data.updatedAt = new Date();
+  data = removeReadOnlyValues(data);
+  try {
+    const decoded = decode(sessionJwt);
+    if (decoded && typeof decoded === "object" && decoded.jti) {
+      sessionJwt = decoded.jti;
+    }
+  } catch (error) {}
+  const currentSession = await prisma.sessions.findMany({
+    where: { jwtToken: sessionJwt, userId }
+  });
+  if (!currentSession.length) throw new Error(RESOURCE_NOT_FOUND);
+  return prisma.sessions.update({ where: { id: currentSession[0].id }, data });
 };

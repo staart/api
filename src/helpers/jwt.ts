@@ -19,20 +19,9 @@ import {
   TOKEN_EXPIRY_PASSWORD_RESET,
   TOKEN_EXPIRY_REFRESH
 } from "../config";
-import {
-  getUserBestEmail,
-  getUserPrimaryEmail,
-  getUserVerifiedEmails
-} from "../crud/email";
-import {
-  checkApprovedLocation,
-  createSession,
-  updateSessionByJwt
-} from "../crud/user";
 import { EventType, Templates, Tokens } from "../interfaces/enum";
 import { Locals } from "../interfaces/general";
 import { ApiKey } from "../interfaces/tables/organization";
-import { AccessToken, User } from "../interfaces/tables/user";
 import { getGeolocationFromIp } from "./location";
 import { mail } from "./mail";
 import {
@@ -40,7 +29,17 @@ import {
   includesDomainInCommaList,
   removeFalsyValues
 } from "./utils";
-import { access_tokens } from "@prisma/client";
+import {
+  access_tokensCreateInput,
+  access_tokensUpdateInput,
+  users
+} from "@prisma/client";
+import { prisma } from "./prisma";
+import {
+  updateSessionByJwt,
+  checkApprovedLocation,
+  getUserPrimaryEmail
+} from "../services/user.service";
 
 /**
  * Generate a new JWT
@@ -117,13 +116,13 @@ export const passwordResetToken = (id: string) =>
 /**
  * Generate a new login JWT
  */
-export const loginToken = (user: User) =>
+export const loginToken = (user: users) =>
   generateToken(user, TOKEN_EXPIRY_LOGIN, Tokens.LOGIN);
 
 /**
  * Generate a new 2FA JWT
  */
-export const twoFactorToken = (user: User) =>
+export const twoFactorToken = (user: users) =>
   generateToken({ id: user.id }, TOKEN_EXPIRY_LOGIN, Tokens.TWO_FACTOR);
 
 /**
@@ -148,7 +147,9 @@ export const apiKeyToken = (apiKey: ApiKey) => {
 /**
  * Generate an access token
  */
-export const accessToken = (accessToken: access_tokens) => {
+export const accessToken = (
+  accessToken: access_tokensCreateInput | access_tokensUpdateInput
+) => {
   const createAccessToken = { ...removeFalsyValues(accessToken) };
   delete createAccessToken.createdAt;
   delete createAccessToken.jwtAccessToken;
@@ -168,7 +169,7 @@ export const accessToken = (accessToken: access_tokens) => {
 /**
  * Generate a new approve location JWT
  */
-export const approveLocationToken = (id: string, ipAddress: string) =>
+export const approveLocationToken = (id: number, ipAddress: string) =>
   generateToken(
     { id, ipAddress },
     TOKEN_EXPIRY_APPROVE_LOCATION,
@@ -178,11 +179,11 @@ export const approveLocationToken = (id: string, ipAddress: string) =>
 /**
  * Generate a new refresh JWT
  */
-export const refreshToken = (id: string) =>
+export const refreshToken = (id: number) =>
   generateToken({ id }, TOKEN_EXPIRY_REFRESH, Tokens.REFRESH);
 
 export const postLoginTokens = async (
-  user: User,
+  user: users,
   locals: Locals,
   refreshTokenString?: string
 ) => {
@@ -196,22 +197,22 @@ export const postLoginTokens = async (
         jwtToken = decoded.jti;
       }
     } catch (error) {}
-    await createSession({
-      userId: user.id,
-      jwtToken,
-      ipAddress: locals.ipAddress || "unknown-ip-address",
-      userAgent: locals.userAgent || "unknown-user-agent"
+    await prisma.sessions.create({
+      data: {
+        jwtToken,
+        ipAddress: locals.ipAddress || "unknown-ip-address",
+        userAgent: locals.userAgent || "unknown-user-agent",
+        user: { connect: { id: user.id } }
+      }
     });
   } else {
     await updateSessionByJwt(user.id, refreshTokenString, {});
   }
   return {
-    token: await loginToken(
-      deleteSensitiveInfoUser({
-        ...user,
-        email: await getUserBestEmail(user.id)
-      })
-    ),
+    token: await loginToken({
+      ...deleteSensitiveInfoUser(user)
+      // email: (await getUserBestEmail(user.id)).email
+    }),
     refresh: !refreshTokenString ? refresh : undefined
   };
 };
@@ -226,19 +227,21 @@ export interface LoginResponse {
  * Get the token response after logging in a user
  */
 export const getLoginResponse = async (
-  user: User,
+  user: users,
   type: EventType,
   strategy: string,
   locals: Locals
 ): Promise<LoginResponse> => {
   if (!user.id) throw new Error(USER_NOT_FOUND);
-  const verifiedEmails = await getUserVerifiedEmails(user);
+  const verifiedEmails = await prisma.emails.findMany({
+    where: { userId: user.id, isVerified: true }
+  });
   if (!verifiedEmails.length) throw new Error(UNVERIFIED_EMAIL);
   if (locals) {
     if (!(await checkApprovedLocation(user.id, locals.ipAddress))) {
       const location = await getGeolocationFromIp(locals.ipAddress);
       await mail(
-        await getUserPrimaryEmail(user),
+        (await getUserPrimaryEmail(user.id)).email,
         Templates.UNAPPROVED_LOCATION,
         {
           ...user,
