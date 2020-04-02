@@ -26,7 +26,8 @@ import {
   access_tokens,
   emailsCreateInput,
   access_tokensCreateInput,
-  sessionsUpdateInput
+  sessionsUpdateInput,
+  usersCreateInput
 } from "@prisma/client";
 import { decode } from "jsonwebtoken";
 import { emailVerificationToken } from "../helpers/jwt";
@@ -61,9 +62,22 @@ export const getBestUsernameForUser = async (name: string) => {
 };
 
 /**
+ * Check if an organization username is available
+ */
+export const checkUserUsernameAvailability = async (username: string) => {
+  return (
+    (
+      await prisma.users.findMany({
+        where: { username }
+      })
+    ).length === 0
+  );
+};
+
+/**
  * Create a new user
  */
-export const createUser = async (user: users) => {
+export const createUser = async (user: usersCreateInput) => {
   user.name = capitalizeFirstAndLastLetter(user.name);
   user.nickname = user.nickname || user.name.split(" ")[0];
   user.password = user.password ? await hash(user.password, 8) : null;

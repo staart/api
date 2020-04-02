@@ -111,7 +111,7 @@ export const emailVerificationToken = (id: string) =>
 /**
  * Generate a new password reset JWT
  */
-export const passwordResetToken = (id: string) =>
+export const passwordResetToken = (id: number) =>
   generateToken({ id }, TOKEN_EXPIRY_PASSWORD_RESET, Tokens.PASSWORD_RESET);
 
 /**
