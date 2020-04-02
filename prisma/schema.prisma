@@ -66,7 +66,7 @@ model domains {
   domain           String
   id               Int           @default(autoincrement()) @id
   isVerified       Boolean       @default(false)
-  organizations    organizations @relation(fields: [organizationId], references: [id])
+  organization     organizations @relation(fields: [organizationId], references: [id])
   organizationId   Int
   updatedAt        DateTime      @default(dbgenerated())
   verificationCode String
