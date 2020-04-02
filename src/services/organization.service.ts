@@ -70,7 +70,6 @@ export const createOrganization = async (
   if (!organization.name) throw new Error(INVALID_INPUT);
   organization.name = capitalizeFirstAndLastLetter(organization.name);
   organization.createdAt = new Date();
-  organization.updatedAt = organization.createdAt;
   organization.username = await getBestUsernameForOrganization(
     organization.name
   );
@@ -98,7 +97,6 @@ export const updateOrganization = async (
   organization: organizationsUpdateInput
 ) => {
   if (typeof id === "number") id = id.toString();
-  organization.updatedAt = new Date();
   const originalOrganization = await prisma.organizations.findOne({
     where: { id: parseInt(id) }
   });
@@ -172,7 +170,6 @@ export const getApiKeyLogs = async (apiKeyId: string, query: KeyValue) => {
 export const createApiKey = async (apiKey: api_keysCreateInput) => {
   apiKey.expiresAt = apiKey.expiresAt || new Date(TOKEN_EXPIRY_API_KEY_MAX);
   apiKey.createdAt = new Date();
-  apiKey.updatedAt = apiKey.createdAt;
   apiKey.jwtApiKey = await apiKeyToken(apiKey);
   return prisma.api_keys.create({ data: apiKey });
 };
@@ -184,8 +181,6 @@ export const updateApiKey = async (
   apiKeyId: string,
   data: api_keysUpdateInput
 ) => {
-  data.updatedAt = new Date();
-  data = removeReadOnlyValues(data);
   const apiKey = await prisma.api_keys.findOne({
     where: { id: parseInt(apiKeyId) }
   });
@@ -256,7 +251,6 @@ export const refreshOrganizationProfilePicture = async (
  */
 export const createDomain = async (domain: domainsCreateInput) => {
   domain.createdAt = new Date();
-  domain.updatedAt = domain.createdAt;
   domain.verificationCode = `${JWT_ISSUER}=${randomString({
     length: 32
   })}`;

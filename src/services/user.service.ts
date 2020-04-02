@@ -76,8 +76,6 @@ export const createUser = async (user: users) => {
     `https://api.adorable.io/avatars/285/${createHash("md5")
       .update(user.name)
       .digest("hex")}.png`;
-  user.createdAt = new Date();
-  user.updatedAt = user.createdAt;
   // Create user
   const result = await prisma.users.create({
     data: user
@@ -106,7 +104,6 @@ export const getUserByEmail = async (email: string, secureOrigin = false) => {
  * Update a user's details
  */
 export const updateUser = async (id: string, user: KeyValue) => {
-  user.updatedAt = new Date();
   if (user.password) user.password = await hash(user.password, 8);
   user = removeReadOnlyValues(user);
   // If you're updating your primary email, your Gravatar should reflect it
@@ -220,8 +217,6 @@ export const createBackupCodes = async (userId: string | number, count = 1) => {
  */
 export const createAccessToken = async (data: access_tokensCreateInput) => {
   data.expiresAt = data.expiresAt || new Date(TOKEN_EXPIRY_API_KEY_MAX);
-  data.createdAt = new Date();
-  data.updatedAt = data.createdAt;
   data.jwtAccessToken = await accessToken(data);
   return prisma.access_tokens.create({ data });
 };
@@ -233,7 +228,6 @@ export const updateAccessToken = async (
   accessTokenId: string,
   data: access_tokens
 ) => {
-  data.updatedAt = new Date();
   data = removeReadOnlyValues(data);
   const newAccessToken = await prisma.access_tokens.findOne({
     where: { id: parseInt(accessTokenId) }
@@ -312,7 +306,6 @@ export const updateSessionByJwt = async (
   sessionJwt: string,
   data: sessionsUpdateInput
 ) => {
-  data.updatedAt = new Date();
   data = removeReadOnlyValues(data);
   try {
     const decoded = decode(sessionJwt);

@@ -1,24 +1,3 @@
-export enum MembershipRole {
-  OWNER = 1,
-  ADMIN = 2,
-  MANAGER = 3,
-  MEMBER = 4,
-  RESELLER = 5
-}
-
-export enum UserRole {
-  MEMBER = 1,
-  RESELLER = 2,
-  ADMIN = 3
-}
-
-export enum NotificationEmails {
-  SECURITY = 0,
-  ACCOUNT = 1,
-  GENERAL = 2,
-  PROMOTIONS = 3
-}
-
 export enum EventType {
   USER_CREATED = "user.created",
   USER_UPDATED = "user.updated",
@@ -91,13 +70,6 @@ export enum Authorizations {
   DELETE_SECURE = "delete-secure",
   INVITE_MEMBER = "invite-member",
   IMPERSONATE = "impersonate"
-}
-
-export enum Genders {
-  MALE = "m",
-  FEMALE = "f",
-  NON_BINARY = "n",
-  UNKNOWN = "x"
 }
 
 export enum OrgScopes {
@@ -182,6 +154,7 @@ export enum Webhooks {
   CREATE_DOMAIN = "create-domain",
   DELETE_DOMAIN = "delete-domain",
   VERIFY_DOMAIN = "verify-domain",
+  TEST_WEBHOOK = "test-webhook",
   UPDATE_WEBHOOK = "update-webhook",
   CREATE_WEBHOOK = "create-webhook",
   DELETE_WEBHOOK = "delete-webhook"

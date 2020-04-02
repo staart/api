@@ -10,7 +10,8 @@ import {
   STRIPE_NO_CUSTOMER,
   USER_IS_MEMBER_ALREADY,
   USER_NOT_FOUND,
-  ORGANIZATION_NOT_FOUND
+  ORGANIZATION_NOT_FOUND,
+  RESOURCE_NOT_FOUND
 } from "@staart/errors";
 import {
   createCustomer,
@@ -35,10 +36,6 @@ import {
 } from "@staart/payments";
 import axios from "axios";
 import { JWT_ISSUER } from "../config";
-import {
-  createMembership,
-  getUserOrganizationMembership
-} from "../crud/membership";
 import { can } from "../helpers/authorization";
 import {
   ApiKeyResponse,
@@ -67,8 +64,34 @@ import {
   membershipsSelect,
   membershipsOrderByInput,
   membershipsWhereUniqueInput,
-  membershipsUpdateInput
+  membershipsUpdateInput,
+  users,
+  MembershipRole,
+  api_keysSelect,
+  api_keysInclude,
+  api_keysOrderByInput,
+  api_keysWhereUniqueInput,
+  api_keysUpdateInput,
+  api_keysCreateInput,
+  webhooksCreateInput,
+  domainsSelect,
+  domainsInclude,
+  domainsOrderByInput,
+  domainsWhereUniqueInput,
+  domainsUpdateInput,
+  domainsCreateInput,
+  webhooksSelect,
+  webhooksInclude,
+  webhooksOrderByInput,
+  webhooksWhereUniqueInput,
+  webhooksUpdateInput
 } from "@prisma/client";
+import {
+  getDomainByDomainName,
+  getApiKeyLogs,
+  checkDomainAvailability
+} from "../services/organization.service";
+import { fireSingleWebhook } from "../helpers/webhooks";
 
 export const getOrganizationForUser = async (
   userId: string | ApiKeyResponse,
@@ -807,32 +830,44 @@ export const inviteMemberToOrganization = async (
       const emailDomain = newMemberEmail.split("@")[1];
       try {
         const domainDetails = await getDomainByDomainName(emailDomain);
-        if (!domainDetails || domainDetails.organizationId != organizationId)
+        if (domainDetails.organizationId !== parseInt(organizationId))
           throw new Error();
       } catch (error) {
         throw new Error(CANNOT_INVITE_DOMAIN);
       }
     }
-    let newUser: User;
+    let newUser: users | undefined = undefined;
     let userExists = false;
-    let createdUserId: string;
-    try {
-      newUser = await getUserByEmail(newMemberEmail);
+    let createdUserId: number;
+
+    const checkUser = await prisma.users.findMany({
+      where: { emails: { some: { email: newMemberEmail } } },
+      first: 1
+    });
+    if (checkUser.length) {
+      newUser = checkUser[0];
       userExists = true;
-    } catch (error) {}
-    if (userExists) {
-      newUser = await getUserByEmail(newMemberEmail);
-      if (!newUser.id) throw new Error(USER_NOT_FOUND);
-      let isMemberAlready = false;
-      try {
-        isMemberAlready = !!(await getUserOrganizationMembership(
-          newUser.id,
-          organizationId
-        ));
-      } catch (error) {}
+    }
+
+    if (userExists && newUser) {
+      const isMemberAlready =
+        (
+          await prisma.memberships.findMany({
+            where: {
+              userId: newUser.id,
+              organizationId: parseInt(organizationId)
+            }
+          })
+        ).length !== 0;
       createdUserId = newUser.id;
       if (isMemberAlready) throw new Error(USER_IS_MEMBER_ALREADY);
-      await createMembership({ userId: newUser.id, organizationId, role });
+      await prisma.memberships.create({
+        data: {
+          user: { connect: { id: newUser.id } },
+          organization: { connect: { id: parseInt(organizationId) } },
+          role
+        }
+      });
     } else {
       const newAccount = await register(
         { name: newMemberName },
@@ -845,13 +880,20 @@ export const inviteMemberToOrganization = async (
     }
     if (createdUserId) {
       const inviter =
-        typeof userId !== "object" ? (await getUser(userId)).name : "Someone";
-      const userDetails = await getUser(createdUserId);
-      await mail(newMemberEmail, Templates.INVITED_TO_TEAM, {
+        typeof userId !== "object"
+          ? (await prisma.users.findOne({ where: { id: parseInt(userId) } }))
+              ?.name ?? "Someone"
+          : "Someone";
+      const userDetails = prisma.users.findOne({
+        where: { id: createdUserId }
+      });
+      mail(newMemberEmail, Templates.INVITED_TO_TEAM, {
         ...userDetails,
         team: organization.name,
         inviter
-      });
+      })
+        .then(() => {})
+        .catch(() => {});
     }
     return;
   }
@@ -871,12 +913,12 @@ export const getOrganizationApiKeysForUser = async (
     first,
     last
   }: {
-    select?: membershipsSelect;
-    include?: membershipsInclude;
-    orderBy?: membershipsOrderByInput;
+    select?: api_keysSelect;
+    include?: api_keysInclude;
+    orderBy?: api_keysOrderByInput;
     skip?: number;
-    after?: membershipsWhereUniqueInput;
-    before?: membershipsWhereUniqueInput;
+    after?: api_keysWhereUniqueInput;
+    before?: api_keysWhereUniqueInput;
     first?: number;
     last?: number;
   }
@@ -889,7 +931,17 @@ export const getOrganizationApiKeysForUser = async (
       organizationId
     )
   )
-    return getOrganizationApiKeys(organizationId, query);
+    return prisma.api_keys.findMany({
+      where: { organizationId: parseInt(organizationId) },
+      select,
+      include,
+      orderBy,
+      skip,
+      after,
+      before,
+      first,
+      last
+    });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -906,7 +958,7 @@ export const getOrganizationApiKeyForUser = async (
       organizationId
     )
   )
-    return getApiKey(organizationId, apiKeyId);
+    return prisma.api_keys.findOne({ where: { id: parseInt(apiKeyId) } });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -914,24 +966,9 @@ export const getOrganizationApiKeyLogsForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
   apiKeyId: string,
-  {
-    select,
-    include,
-    orderBy,
-    skip,
-    after,
-    before,
-    first,
-    last
-  }: {
-    select?: membershipsSelect;
-    include?: membershipsInclude;
-    orderBy?: membershipsOrderByInput;
-    skip?: number;
-    after?: membershipsWhereUniqueInput;
-    before?: membershipsWhereUniqueInput;
-    first?: number;
-    last?: number;
+  query: {
+    range?: string;
+    from?: string;
   }
 ) => {
   if (
@@ -950,7 +987,7 @@ export const updateApiKeyForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
   apiKeyId: string,
-  data: KeyValue,
+  data: api_keysUpdateInput,
   locals: Locals
 ) => {
   if (
@@ -961,7 +998,10 @@ export const updateApiKeyForUser = async (
       organizationId
     )
   ) {
-    const result = await updateApiKey(organizationId, apiKeyId, data);
+    const result = await prisma.api_keys.update({
+      where: { id: parseInt(apiKeyId) },
+      data
+    });
     queueWebhook(organizationId, Webhooks.UPDATE_API_KEY, data);
     trackEvent({ organizationId, type: Webhooks.UPDATE_API_KEY }, locals);
     return result;
@@ -972,7 +1012,7 @@ export const updateApiKeyForUser = async (
 export const createApiKeyForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
-  apiKey: KeyValue,
+  apiKey: api_keysCreateInput,
   locals: Locals
 ) => {
   if (
@@ -983,7 +1023,18 @@ export const createApiKeyForUser = async (
       organizationId
     )
   ) {
-    const result = await createApiKey({ organizationId, ...apiKey });
+    const result = await prisma.api_keys.create({
+      data: {
+        ...apiKey,
+        organization: {
+          connect: {
+            id: parseInt(
+              typeof userId === "object" ? userId.organizationId : userId
+            )
+          }
+        }
+      }
+    });
     queueWebhook(organizationId, Webhooks.CREATE_API_KEY, apiKey);
     trackEvent({ organizationId, type: Webhooks.CREATE_API_KEY }, locals);
     return result;
@@ -1005,7 +1056,9 @@ export const deleteApiKeyForUser = async (
       organizationId
     )
   ) {
-    const result = await deleteApiKey(organizationId, apiKeyId);
+    const result = await prisma.api_keys.delete({
+      where: { id: parseInt(apiKeyId) }
+    });
     queueWebhook(organizationId, Webhooks.DELETE_API_KEY, apiKeyId);
     trackEvent({ organizationId, type: Webhooks.DELETE_API_KEY }, locals);
     return result;
@@ -1026,12 +1079,12 @@ export const getOrganizationDomainsForUser = async (
     first,
     last
   }: {
-    select?: membershipsSelect;
-    include?: membershipsInclude;
-    orderBy?: membershipsOrderByInput;
+    select?: domainsSelect;
+    include?: domainsInclude;
+    orderBy?: domainsOrderByInput;
     skip?: number;
-    after?: membershipsWhereUniqueInput;
-    before?: membershipsWhereUniqueInput;
+    after?: domainsWhereUniqueInput;
+    before?: domainsWhereUniqueInput;
     first?: number;
     last?: number;
   }
@@ -1044,7 +1097,17 @@ export const getOrganizationDomainsForUser = async (
       organizationId
     )
   )
-    return getOrganizationDomains(organizationId, query);
+    return prisma.domains.findMany({
+      where: { organizationId: parseInt(organizationId) },
+      select,
+      include,
+      orderBy,
+      skip,
+      after,
+      before,
+      first,
+      last
+    });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -1061,7 +1124,7 @@ export const getOrganizationDomainForUser = async (
       organizationId
     )
   )
-    return getDomain(organizationId, domainId);
+    return prisma.domains.findOne({ where: { id: parseInt(domainId) } });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -1069,7 +1132,7 @@ export const updateDomainForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
   domainId: string,
-  data: KeyValue,
+  data: domainsUpdateInput,
   locals: Locals
 ) => {
   if (
@@ -1080,7 +1143,10 @@ export const updateDomainForUser = async (
       organizationId
     )
   ) {
-    const result = await updateDomain(organizationId, domainId, data);
+    const result = await prisma.domains.update({
+      where: { id: parseInt(domainId) },
+      data
+    });
     queueWebhook(organizationId, Webhooks.UPDATE_DOMAIN, data);
     trackEvent({ organizationId, type: Webhooks.UPDATE_DOMAIN }, locals);
     return result;
@@ -1091,7 +1157,7 @@ export const updateDomainForUser = async (
 export const createDomainForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
-  domain: KeyValue,
+  domain: domainsCreateInput,
   locals: Locals
 ) => {
   if (
@@ -1103,11 +1169,18 @@ export const createDomainForUser = async (
     )
   ) {
     await checkDomainAvailability(domain.domain);
-    const result = await createDomain({
-      domain: "",
-      organizationId,
-      ...domain,
-      isVerified: false
+    const result = await prisma.domains.create({
+      data: {
+        ...domain,
+        isVerified: false,
+        organization: {
+          connect: {
+            id: parseInt(
+              typeof userId === "object" ? userId.organizationId : userId
+            )
+          }
+        }
+      }
     });
     queueWebhook(organizationId, Webhooks.CREATE_DOMAIN, domain);
     trackEvent({ organizationId, type: Webhooks.CREATE_DOMAIN }, locals);
@@ -1130,7 +1203,9 @@ export const deleteDomainForUser = async (
       organizationId
     )
   ) {
-    const result = await deleteDomain(organizationId, domainId);
+    const result = await prisma.domains.delete({
+      where: { id: parseInt(domainId) }
+    });
     queueWebhook(organizationId, Webhooks.DELETE_DOMAIN, domainId);
     trackEvent({ organizationId, type: Webhooks.DELETE_DOMAIN }, locals);
     return result;
@@ -1153,7 +1228,10 @@ export const verifyDomainForUser = async (
       organizationId
     )
   ) {
-    const domain = await getDomain(organizationId, domainId);
+    const domain = await prisma.domains.findOne({
+      where: { id: parseInt(domainId) }
+    });
+    if (!domain) throw new Error(RESOURCE_NOT_FOUND);
     if (domain.isVerified) throw new Error(DOMAIN_ALREADY_VERIFIED);
     if (!domain.verificationCode) throw new Error(DOMAIN_UNABLE_TO_VERIFY);
     if (method === "file") {
@@ -1163,9 +1241,10 @@ export const verifyDomainForUser = async (
             `http://${domain.domain}/.well-known/${JWT_ISSUER}-verify.txt`
           )
         ).data;
-        if (file.trim() === domain.verificationCode) {
-          const result = await updateDomain(organizationId, domainId, {
-            isVerified: true
+        if (file.replace(/\r?\n|\r/g, "").trim() === domain.verificationCode) {
+          const result = await prisma.domains.update({
+            where: { id: parseInt(domainId) },
+            data: { isVerified: true }
           });
           queueWebhook(organizationId, Webhooks.VERIFY_DOMAIN, {
             domainId,
@@ -1180,8 +1259,9 @@ export const verifyDomainForUser = async (
     } else {
       const dns = await dnsResolve(domain.domain, "TXT");
       if (JSON.stringify(dns).includes(domain.verificationCode)) {
-        const result = await updateDomain(organizationId, domainId, {
-          isVerified: true
+        const result = await prisma.domains.update({
+          where: { id: parseInt(domainId) },
+          data: { isVerified: true }
         });
         queueWebhook(organizationId, Webhooks.VERIFY_DOMAIN, {
           domainId,
@@ -1211,12 +1291,12 @@ export const getOrganizationWebhooksForUser = async (
     first,
     last
   }: {
-    select?: membershipsSelect;
-    include?: membershipsInclude;
-    orderBy?: membershipsOrderByInput;
+    select?: webhooksSelect;
+    include?: webhooksInclude;
+    orderBy?: webhooksOrderByInput;
     skip?: number;
-    after?: membershipsWhereUniqueInput;
-    before?: membershipsWhereUniqueInput;
+    after?: webhooksWhereUniqueInput;
+    before?: webhooksWhereUniqueInput;
     first?: number;
     last?: number;
   }
@@ -1229,7 +1309,17 @@ export const getOrganizationWebhooksForUser = async (
       organizationId
     )
   )
-    return getOrganizationWebhooks(organizationId, query);
+    return prisma.webhooks.findMany({
+      where: { organizationId: parseInt(organizationId) },
+      select,
+      include,
+      orderBy,
+      skip,
+      after,
+      before,
+      first,
+      last
+    });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -1246,7 +1336,7 @@ export const getOrganizationWebhookForUser = async (
       organizationId
     )
   )
-    return getWebhook(organizationId, webhookId);
+    return prisma.webhooks.findOne({ where: { id: parseInt(webhookId) } });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -1254,7 +1344,7 @@ export const updateWebhookForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
   webhookId: string,
-  data: KeyValue,
+  data: webhooksUpdateInput,
   locals: Locals
 ) => {
   if (
@@ -1265,7 +1355,10 @@ export const updateWebhookForUser = async (
       organizationId
     )
   ) {
-    const result = await updateWebhook(organizationId, webhookId, data);
+    const result = await prisma.webhooks.update({
+      where: { id: parseInt(webhookId) },
+      data
+    });
     queueWebhook(organizationId, Webhooks.UPDATE_WEBHOOK, data);
     trackEvent({ organizationId, type: Webhooks.UPDATE_WEBHOOK }, locals);
     return result;
@@ -1276,7 +1369,7 @@ export const updateWebhookForUser = async (
 export const createWebhookForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
-  webhook: KeyValue,
+  webhook: webhooksCreateInput,
   locals: Locals
 ) => {
   if (
@@ -1287,10 +1380,21 @@ export const createWebhookForUser = async (
       organizationId
     )
   ) {
-    const result = await createWebhook({
-      organizationId,
-      ...webhook
-    } as Webhook);
+    const result = await prisma.webhooks.create({
+      data: {
+        ...webhook,
+        organization: {
+          connect: {
+            id: parseInt(
+              typeof userId === "object" ? userId.organizationId : userId
+            )
+          }
+        }
+      }
+    });
+    fireSingleWebhook(result, Webhooks.TEST_WEBHOOK)
+      .then(() => {})
+      .catch(() => {});
     queueWebhook(organizationId, Webhooks.CREATE_WEBHOOK, webhook);
     trackEvent({ organizationId, type: Webhooks.CREATE_WEBHOOK }, locals);
     return result;
@@ -1312,7 +1416,7 @@ export const deleteWebhookForUser = async (
       organizationId
     )
   ) {
-    const result = await deleteWebhook(organizationId, webhookId);
+    const result = prisma.webhooks.delete({ where: { id: parseInt(webhookId) } })
     queueWebhook(organizationId, Webhooks.DELETE_WEBHOOK, webhookId);
     trackEvent({ organizationId, type: Webhooks.DELETE_WEBHOOK }, locals);
     return result;

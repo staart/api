@@ -3,12 +3,9 @@ import { redisQueue } from "@staart/redis";
 import axios from "axios";
 import { createHmac } from "crypto";
 import { JWT_ISSUER, REDIS_QUEUE_PREFIX } from "../config";
-import {
-  getOrganizationEventWebhooks,
-  updateWebhook
-} from "../crud/organization";
 import { Webhooks } from "../interfaces/enum";
 import { Webhook } from "../interfaces/tables/organization";
+import { webhooks } from "@prisma/client";
 
 const WEBHOOK_QUEUE = `${REDIS_QUEUE_PREFIX}webhooks`;
 
@@ -99,8 +96,8 @@ const safeFireWebhook = async (
   return;
 };
 
-const fireSingleWebhook = async (
-  webhook: Webhook,
+export const fireSingleWebhook = async (
+  webhook: webhooks,
   hookType: Webhooks,
   data?: any
 ) => {

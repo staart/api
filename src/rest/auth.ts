@@ -129,7 +129,7 @@ export const register = async (
     throw new Error(USERNAME_EXISTS);
   user.username = user.username || (await getBestUsernameForUser(user.name));
   const result = (await createUser(user)) as InsertResult;
-  const userId = result.insertId;
+  const userId = result.insertId as number;
   // Set email
   if (email) {
     const newEmail = (await createEmail(
