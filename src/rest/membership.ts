@@ -5,25 +5,23 @@ import {
   INSUFFICIENT_PERMISSION,
   MEMBERSHIP_NOT_FOUND
 } from "@staart/errors";
-import {
-  deleteMembership,
-  getMembership,
-  getMembershipDetailed,
-  getOrganizationMembers,
-  updateMembership
-} from "../crud/membership";
 import { can } from "../helpers/authorization";
 import { ApiKeyResponse } from "../helpers/jwt";
 import { trackEvent } from "../helpers/tracking";
-import { Authorizations, EventType, MembershipRole } from "../interfaces/enum";
-import { KeyValue, Locals } from "../interfaces/general";
+import { Authorizations, EventType } from "../interfaces/enum";
+import { Locals } from "../interfaces/general";
+import { prisma } from "../helpers/prisma";
+import { membershipsUpdateInput } from "@prisma/client";
 
 export const getMembershipDetailsForUser = async (
   userId: string,
   membershipId: string
 ) => {
   if (await can(userId, Authorizations.READ, "membership", membershipId))
-    return getMembershipDetailed(membershipId);
+    return prisma.memberships.findOne({
+      where: { id: parseInt(membershipId) },
+      include: { user: true, organization: true }
+    });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -32,15 +30,17 @@ export const deleteMembershipForUser = async (
   membershipId: string,
   locals: Locals
 ) => {
-  const membership = await getMembership(membershipId);
-  if (!membership || !membership.id) throw new Error(MEMBERSHIP_NOT_FOUND);
+  const membership = await prisma.memberships.findOne({
+    where: { id: parseInt(membershipId) }
+  });
+  if (!membership) throw new Error(MEMBERSHIP_NOT_FOUND);
   if (await can(tokenUserId, Authorizations.DELETE, "membership", membership)) {
-    const organizationMembers = await getOrganizationMembers(
-      membership.organizationId
-    );
-    if (membership.role == MembershipRole.OWNER) {
+    const organizationMembers = await prisma.memberships.findMany({
+      where: { organizationId: membership.organizationId }
+    });
+    if (membership.role === "OWNER") {
       const currentMembers = organizationMembers.filter(
-        member => member.role == MembershipRole.OWNER
+        member => member.role === "OWNER"
       );
       if (currentMembers.length < 2) throw new Error(CANNOT_DELETE_SOLE_OWNER);
     }
@@ -53,8 +53,7 @@ export const deleteMembershipForUser = async (
       },
       locals
     );
-    await deleteMembership(membership.id);
-    return;
+    return await prisma.memberships.delete({ where: { id: membership.id } });
   }
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -62,18 +61,21 @@ export const deleteMembershipForUser = async (
 export const updateMembershipForUser = async (
   userId: string | ApiKeyResponse,
   membershipId: string,
-  data: KeyValue,
+  data: membershipsUpdateInput,
   locals: Locals
 ) => {
   if (await can(userId, Authorizations.UPDATE, "membership", membershipId)) {
-    const membership = await getMembership(membershipId);
-    if (data.role != membership.role) {
-      if (membership.role == MembershipRole.OWNER) {
-        const organizationMembers = await getOrganizationMembers(
-          membership.organizationId
-        );
+    const membership = await prisma.memberships.findOne({
+      where: { id: parseInt(membershipId) }
+    });
+    if (!membership) throw new Error(MEMBERSHIP_NOT_FOUND);
+    if (data.role !== membership.role) {
+      if (membership.role === "OWNER") {
+        const organizationMembers = await prisma.memberships.findMany({
+          where: { organizationId: membership.organizationId }
+        });
         const currentMembers = organizationMembers.filter(
-          member => member.role == MembershipRole.OWNER
+          member => member.role === "OWNER"
         );
         if (currentMembers.length < 2)
           throw new Error(CANNOT_UPDATE_SOLE_OWNER);
@@ -86,8 +88,10 @@ export const updateMembershipForUser = async (
       },
       locals
     );
-    await updateMembership(membershipId, data);
-    return;
+    return prisma.memberships.update({
+      where: { id: parseInt(membershipId) },
+      data
+    });
   }
   throw new Error(INSUFFICIENT_PERMISSION);
 };

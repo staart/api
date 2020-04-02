@@ -14,6 +14,7 @@ import { Membership } from "../interfaces/tables/memberships";
 import { Organization } from "../interfaces/tables/organization";
 import { AccessTokenResponse, User } from "../interfaces/tables/user";
 import { ApiKeyResponse } from "./jwt";
+import { users, organizations, memberships } from "@prisma/client";
 
 /**
  * Whether a user can perform an action on another user
@@ -234,7 +235,7 @@ export const can = async (
   user: User | string | ApiKeyResponse | AccessTokenResponse,
   action: Authorizations | OrgScopes | UserScopes,
   targetType: "user" | "organization" | "membership" | "general",
-  target?: User | Organization | Membership | string
+  target?: users | organizations | memberships | string
 ) => {
   let userObject: User | ApiKeyResponse | undefined = undefined;
   let isApiKey = false;
