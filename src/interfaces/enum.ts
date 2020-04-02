@@ -117,6 +117,8 @@ export enum UserScopes {
   CHANGE_PASSWORD = "user:change-password",
   DELETE_USER = "user:delete",
   READ_USER_MEMBERSHIPS = "user:memberships:read",
+  DELETE_USER_MEMBERSHIPS = "user:memberships:delete",
+  UPDATE_USER_MEMBERSHIPS = "user:memberships:update",
   ENABLE_USER_2FA = "user:2fa:enable",
   DISABLE_USER_2FA = "user:2fa:disable",
   READ_USER_BACKUP_CODES = "user:backup-codes:read",

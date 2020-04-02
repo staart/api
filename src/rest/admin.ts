@@ -5,33 +5,89 @@ import {
 import { INSUFFICIENT_PERMISSION } from "@staart/errors";
 import { ms } from "@staart/text";
 import { ELASTIC_LOGS_PREFIX } from "../config";
-import { getPaginatedData } from "../crud/data";
 import { can } from "../helpers/authorization";
 import { Authorizations } from "../interfaces/enum";
 import { KeyValue } from "../interfaces/general";
-import { Organization } from "../interfaces/tables/organization";
-import { User } from "../interfaces/tables/user";
+import { prisma } from "../helpers/prisma";
+import {
+  organizationsSelect,
+  organizationsInclude,
+  organizationsOrderByInput,
+  organizationsWhereUniqueInput,
+  usersSelect,
+  usersInclude,
+  usersOrderByInput,
+  usersWhereUniqueInput
+} from "@prisma/client";
 
 export const getAllOrganizationForUser = async (
   tokenUserId: string,
-  query: KeyValue
+  {
+    select,
+    include,
+    orderBy,
+    skip,
+    after,
+    before,
+    first,
+    last
+  }: {
+    select?: organizationsSelect;
+    include?: organizationsInclude;
+    orderBy?: organizationsOrderByInput;
+    skip?: number;
+    after?: organizationsWhereUniqueInput;
+    before?: organizationsWhereUniqueInput;
+    first?: number;
+    last?: number;
+  }
 ) => {
   if (await can(tokenUserId, Authorizations.READ, "general"))
-    return getPaginatedData<Organization>({
-      table: "organizations",
-      ...query
+    return prisma.organizations.findMany({
+      select,
+      include,
+      orderBy,
+      skip,
+      after,
+      before,
+      first,
+      last
     });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
 export const getAllUsersForUser = async (
   tokenUserId: string,
-  query: KeyValue
+  {
+    select,
+    include,
+    orderBy,
+    skip,
+    after,
+    before,
+    first,
+    last
+  }: {
+    select?: usersSelect;
+    include?: usersInclude;
+    orderBy?: usersOrderByInput;
+    skip?: number;
+    after?: usersWhereUniqueInput;
+    before?: usersWhereUniqueInput;
+    first?: number;
+    last?: number;
+  }
 ) => {
   if (await can(tokenUserId, Authorizations.READ, "general"))
-    return getPaginatedData<User>({
-      table: "users",
-      ...query
+    return prisma.users.findMany({
+      select,
+      include,
+      orderBy,
+      skip,
+      after,
+      before,
+      first,
+      last
     });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -41,7 +97,10 @@ export const getAllUsersForUser = async (
  */
 export const getServerLogsForUser = async (
   tokenUserId: string,
-  query: KeyValue
+  query: {
+    range?: string;
+    from?: string;
+  }
 ) => {
   if (!(await can(tokenUserId, Authorizations.READ, "general")))
     throw new Error(INSUFFICIENT_PERMISSION);

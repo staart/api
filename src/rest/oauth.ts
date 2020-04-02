@@ -1,4 +1,4 @@
-import { OAUTH_NO_EMAIL, OAUTH_NO_NAME } from "@staart/errors";
+import { OAUTH_NO_EMAIL, OAUTH_NO_NAME, USER_NOT_FOUND } from "@staart/errors";
 import axios from "axios";
 import ClientOAuth2 from "client-oauth2";
 import {
@@ -14,12 +14,11 @@ import {
   SALESFORCE_CLIENT_ID,
   SALESFORCE_CLIENT_SECRET
 } from "../config";
-import { getUser, getUserByEmail } from "../crud/user";
 import { getLoginResponse } from "../helpers/jwt";
 import { EventType } from "../interfaces/enum";
 import { Locals } from "../interfaces/general";
-import { User } from "../interfaces/tables/user";
 import { register } from "./auth";
+import { prisma } from "../helpers/prisma";
 
 const getRedirectUri = (service: string) =>
   `${BASE_URL}/auth/oauth/${service}/callback`;
@@ -32,12 +31,16 @@ export const loginWithOAuth2Service = async (
 ) => {
   if (!name) throw new Error(OAUTH_NO_NAME);
   if (!email) throw new Error(OAUTH_NO_EMAIL);
-  let user: User | undefined;
-  try {
-    user = await getUserByEmail(email);
-  } catch (error) {}
-  if (user)
-    return getLoginResponse(user, EventType.AUTH_LOGIN_OAUTH, service, locals);
+  const allUsers = await prisma.users.findMany({
+    where: { emails: { some: { email } } }
+  });
+  if (allUsers.length)
+    return getLoginResponse(
+      allUsers[0],
+      EventType.AUTH_LOGIN_OAUTH,
+      service,
+      locals
+    );
   const newUser = await register(
     { name },
     locals,
@@ -46,8 +49,12 @@ export const loginWithOAuth2Service = async (
     undefined,
     true
   );
+  const loggedInUser = await prisma.users.findOne({
+    where: { id: newUser.userId }
+  });
+  if (!loggedInUser) throw new Error(USER_NOT_FOUND);
   return getLoginResponse(
-    await getUser(newUser.userId),
+    loggedInUser,
     EventType.AUTH_LOGIN_OAUTH,
     service,
     locals
