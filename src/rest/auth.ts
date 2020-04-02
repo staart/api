@@ -24,12 +24,7 @@ import {
 } from "../helpers/jwt";
 import { mail } from "../helpers/mail";
 import { trackEvent } from "../helpers/tracking";
-import {
-  Authorizations,
-  EventType,
-  Templates,
-  Tokens
-} from "../interfaces/enum";
+import { EventType, Templates, Tokens, UserScopes } from "../interfaces/enum";
 import { Locals } from "../interfaces/general";
 import { prisma } from "../helpers/prisma";
 import {
@@ -236,12 +231,7 @@ export const impersonate = async (
   locals: Locals
 ) => {
   if (
-    !(await can(
-      tokenUserId,
-      Authorizations.IMPERSONATE,
-      "user",
-      impersonateUserId
-    ))
+    !(await can(tokenUserId, UserScopes.IMPERSONATE, "user", impersonateUserId))
   )
     throw new Error(INSUFFICIENT_PERMISSION);
 

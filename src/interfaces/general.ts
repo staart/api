@@ -30,7 +30,10 @@ export interface IdRow extends Row {
 }
 
 export interface Event {
-  date: Date;
-  ipAddress: string;
-  userAgent: string;
+  date?: Date;
+  ipAddress?: string;
+  userAgent?: string;
+  organizationId?: number | string;
+  userId?: number | string;
+  type?: string;
 }

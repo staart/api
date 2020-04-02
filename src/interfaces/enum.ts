@@ -48,19 +48,6 @@ export enum Tokens {
   COUPON = "coupon"
 }
 
-export enum Authorizations {
-  CREATE = "create",
-  READ = "read",
-  CREATE_SECURE = "create-secure",
-  READ_SECURE = "read-secure",
-  UPDATE = "update",
-  UPDATE_SECURE = "update-secure",
-  DELETE = "delete",
-  DELETE_SECURE = "delete-secure",
-  INVITE_MEMBER = "invite-member",
-  IMPERSONATE = "impersonate"
-}
-
 export enum OrgScopes {
   READ_ORG = "org:read",
   UPDATE_ORG = "org:update",
@@ -100,7 +87,12 @@ export enum OrgScopes {
   CREATE_ORG_TRANSACTIONS = "org:transactions:create"
 }
 
+export enum SudoScopes {
+  READ = "read"
+}
+
 export enum UserScopes {
+  IMPERSONATE = "impersonate",
   READ_USER = "user:read",
   UPDATE_USER = "user:update",
   CHANGE_PASSWORD = "user:change-password",

@@ -6,7 +6,7 @@ import { INSUFFICIENT_PERMISSION } from "@staart/errors";
 import { ms } from "@staart/text";
 import { ELASTIC_LOGS_PREFIX } from "../config";
 import { can } from "../helpers/authorization";
-import { Authorizations } from "../interfaces/enum";
+import { SudoScopes } from "../interfaces/enum";
 import { prisma } from "../helpers/prisma";
 import {
   organizationsSelect,
@@ -41,7 +41,7 @@ export const getAllOrganizationForUser = async (
     last?: number;
   }
 ) => {
-  if (await can(tokenUserId, Authorizations.READ, "general"))
+  if (await can(tokenUserId, SudoScopes.READ, "sudo"))
     return prisma.organizations.findMany({
       select,
       include,
@@ -77,7 +77,7 @@ export const getAllUsersForUser = async (
     last?: number;
   }
 ) => {
-  if (await can(tokenUserId, Authorizations.READ, "general"))
+  if (await can(tokenUserId, SudoScopes.READ, "sudo"))
     return prisma.users.findMany({
       select,
       include,
@@ -101,7 +101,7 @@ export const getServerLogsForUser = async (
     from?: string;
   }
 ) => {
-  if (!(await can(tokenUserId, Authorizations.READ, "general")))
+  if (!(await can(tokenUserId, SudoScopes.READ, "sudo")))
     throw new Error(INSUFFICIENT_PERMISSION);
   const range: string = query.range || "7d";
   const from = query.from ? parseInt(query.from) : 0;

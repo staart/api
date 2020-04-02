@@ -68,9 +68,6 @@ export const generateToken = (
     );
   });
 
-/**
- * Verify a JWT
- */
 export interface TokenResponse {
   id: string;
   ipAddress?: string;
@@ -80,11 +77,23 @@ export interface ApiKeyResponse {
   organizationId: string;
   scopes: string;
   jti: string;
-  sub: Tokens;
+  sub: Tokens.API_KEY;
   exp: number;
   ipRestrictions?: string;
   referrerRestrictions?: string;
 }
+export interface AccessTokenResponse {
+  id: string;
+  userId: string;
+  scopes: string;
+  jti: string;
+  sub: Tokens.ACCESS_TOKEN;
+  exp: number;
+}
+
+/**
+ * Verify a JWT
+ */
 export const verifyToken = <T>(token: string, subject: Tokens): Promise<T> =>
   new Promise((resolve, reject) => {
     verify(token, JWT_SECRET, { subject }, (error, data) => {

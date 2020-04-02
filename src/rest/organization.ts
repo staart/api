@@ -47,13 +47,7 @@ import { mail } from "../helpers/mail";
 import { trackEvent } from "../helpers/tracking";
 import { dnsResolve } from "../helpers/utils";
 import { queueWebhook } from "../helpers/webhooks";
-import {
-  Authorizations,
-  OrgScopes,
-  Templates,
-  Webhooks,
-  Tokens
-} from "../interfaces/enum";
+import { OrgScopes, Templates, Webhooks, Tokens } from "../interfaces/enum";
 import { KeyValue, Locals } from "../interfaces/general";
 import { register } from "./auth";
 import { prisma } from "../helpers/prisma";
@@ -657,7 +651,7 @@ export const getAllOrganizationDataForUser = async (
   if (
     await can(
       userId,
-      Authorizations.READ_SECURE,
+      OrgScopes.READ_ORG_TRANSACTIONS,
       "organization",
       organizationId
     )
@@ -1416,7 +1410,9 @@ export const deleteWebhookForUser = async (
       organizationId
     )
   ) {
-    const result = prisma.webhooks.delete({ where: { id: parseInt(webhookId) } })
+    const result = prisma.webhooks.delete({
+      where: { id: parseInt(webhookId) }
+    });
     queueWebhook(organizationId, Webhooks.DELETE_WEBHOOK, webhookId);
     trackEvent({ organizationId, type: Webhooks.DELETE_WEBHOOK }, locals);
     return result;
