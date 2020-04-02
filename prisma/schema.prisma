@@ -7,31 +7,67 @@ datasource mysql {
   url      = env("DATABASE_URL")
 }
 
+enum Gender {
+  MALE
+  FEMALE
+  NONBINARY
+  UNKNOWN
+}
+
+enum NotificationEmails {
+  ACCOUNT
+  UPDATES
+  PROMOTIONS
+}
+
+enum PrefersColorScheme {
+  NO_PREFERENCE
+  LIGHT
+  DARK
+}
+
+enum PrefersReducedMotion {
+  NO_PREFERENCE
+  REDUCE
+}
+
+enum UserRole {
+  SUDO
+  USER
+}
+
+enum MembershipRole {
+  OWNER
+  ADMIN
+  RESELLER
+  MEMBER
+}
+
 model users {
   checkLocationOnLogin Boolean              @default(false)
   countryCode          String               @default("us")
   createdAt            DateTime             @default(now())
-  gender               String               @default("x")
+  gender               Gender               @default(UNKNOWN)
   id                   Int                  @id @default(autoincrement())
   name                 String
   nickname             String
-  notificationEmails   Int                  @default(1)
+  notificationEmails   NotificationEmails   @default(ACCOUNT)
   password             String?
   prefersLanguage      String               @default("en-us")
-  prefersColorScheme   String               @default("system")
-  prefersReducedMotion String               @default("no-preference")
+  prefersColorScheme   PrefersColorScheme   @default(NO_PREFERENCE)
+  prefersReducedMotion PrefersReducedMotion @default(NO_PREFERENCE)
   primaryEmail         Int?
-  profilePicture       String
-  role                 Int                  @default(1)
-  timezone             String               @default("Europe/Amsterdam")
+  profilePicture       String               @default("https://unavatar.now.sh/fallback.png")
+  role                 UserRole             @default(USER)
+  timezone             String               @default("America/Los_Angeles")
   twoFactorEnabled     Boolean              @default(false)
   twoFactorSecret      String?
   updatedAt            DateTime             @updatedAt
   username             String               @unique
   emails               emails[]             @relation(name: "emails")
-  access_tokens        access_tokens[]      @relation(name: "access_tokens")
-  approved_locations   approved_locations[] @relation(name: "approved_locations")
-  backup_codes         backup_codes[]       @relation(name: "backup_codes")
+  access_tokens        access_tokens[]      @relation(name: "accessTokens")
+  approved_locations   approved_locations[] @relation(name: "approvedLocations")
+  backup_codes         backup_codes[]       @relation(name: "backupCodes")
   identities           identities[]         @relation(name: "identities")
   memberships          memberships[]        @relation(name: "userMemberships")
   sessions             sessions[]           @relation(name: "sessions")
@@ -43,13 +79,13 @@ model organizations {
   forceTwoFactor   Boolean       @default(false)
   id               Int           @id @default(autoincrement())
   ipRestrictions   String?
-  name             String?
+  name             String
   onlyAllowDomain  Boolean       @default(false)
   profilePicture   String        @default("https://unavatar.now.sh/fallback.png")
   stripeCustomerId String?
   updatedAt        DateTime      @updatedAt
   username         String        @unique
-  api_keys         api_keys[]    @relation(name: "api_keys")
+  api_keys         api_keys[]    @relation(name: "apiKeys")
   domains          domains[]     @relation(name: "domains")
   memberships      memberships[] @relation(name: "organizationMemberships")
   webhooks         webhooks[]    @relation(name: "webhooks")
@@ -101,10 +137,10 @@ model api_keys {
 }
 
 model approved_locations {
-  createdAt DateTime? @default(now())
-  id        Int       @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  id        Int      @id @default(autoincrement())
   subnet    String
-  user      users     @relation(fields: [userId], references: [id])
+  user      users    @relation(fields: [userId], references: [id])
   userId    Int
 
   @@map("approved-locations")
@@ -115,11 +151,11 @@ model backup_codes {
   code      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  used      Boolean  @default(false)
+  isUsed    Boolean  @default(false)
   user      users    @relation(fields: [userId], references: [id])
   userId    Int
 
-  @@index([userId], name: "idId")
+  @@index([userId], name: "userId")
   @@map("backup-codes")
 }
 
@@ -150,13 +186,13 @@ model identities {
 }
 
 model memberships {
-  createdAt      DateTime      @default(now())
-  id             Int           @id @default(autoincrement())
-  organization   organizations @relation(fields: [organizationId], references: [id])
+  createdAt      DateTime       @default(now())
+  id             Int            @id @default(autoincrement())
+  organization   organizations  @relation(fields: [organizationId], references: [id])
   organizationId Int
-  role           String        @default("member")
-  updatedAt      DateTime      @updatedAt
-  user           users         @relation(fields: [userId], references: [id])
+  role           MembershipRole @default(MEMBER)
+  updatedAt      DateTime       @updatedAt
+  user           users          @relation(fields: [userId], references: [id])
   userId         Int
 
   @@index([organizationId], name: "organizationId")
@@ -164,20 +200,24 @@ model memberships {
 }
 
 model sessions {
-  createdAt DateTime @default(now())
-  id        Int      @id @default(autoincrement())
-  ipAddress String
-  jwtToken  String
-  updatedAt DateTime @updatedAt
-  userAgent String
-  user      users    @relation(fields: [userId], references: [id])
-  userId    Int
+  createdAt   DateTime @default(now())
+  id          Int      @id @default(autoincrement())
+  ipAddress   String
+  jwtToken    String
+  updatedAt   DateTime @updatedAt
+  userAgent   String
+  city        String?
+  region      String?
+  timezone    String?
+  countryCode String?
+  user        users    @relation(fields: [userId], references: [id])
+  userId      Int
 
   @@index([userId], name: "userId")
 }
 
 model webhooks {
-  contentType    String
+  contentType    String        @default("application/json")
   createdAt      DateTime      @default(now())
   event          String
   id             Int           @id @default(autoincrement())
