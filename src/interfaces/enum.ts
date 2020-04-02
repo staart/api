@@ -48,17 +48,6 @@ export enum Tokens {
   COUPON = "coupon"
 }
 
-export enum CacheCategories {
-  USER = "user",
-  ORGANIZATION_RECENT_EVENTS = "organization-recent-events",
-  USER_MEMBERSHIPS = "user-memberships",
-  MEMBERSHIP = "membership",
-  ORGANIZATION = "organization",
-  USER_USERNAME = "user-username",
-  ORGANIZATION_USERNAME = "organization-username",
-  IP_LOOKUP = "ip-lookup"
-}
-
 export enum Authorizations {
   CREATE = "create",
   READ = "read",

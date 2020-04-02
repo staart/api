@@ -1,6 +1,5 @@
 import geolite2 from "geolite2-redist";
 import maxmind, { CityResponse, Reader } from "maxmind";
-import { CacheCategories } from "../interfaces/enum";
 import { success } from "@staart/errors";
 
 export interface GeoLocation {

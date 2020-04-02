@@ -14,11 +14,8 @@ import {
 import { createHash } from "crypto";
 import randomInt from "random-int";
 import { TOKEN_EXPIRY_API_KEY_MAX } from "../config";
-import { deleteItemFromCache } from "../helpers/cache";
 import { accessToken, invalidateToken } from "../helpers/jwt";
-import { removeReadOnlyValues } from "../helpers/mysql";
 import { deleteSensitiveInfoUser, PartialBy } from "../helpers/utils";
-import { CacheCategories } from "../interfaces/enum";
 import { KeyValue } from "../interfaces/general";
 import { prisma } from "../helpers/prisma";
 import {
@@ -93,9 +90,6 @@ export const createUser = async (
   const result = await prisma.users.create({
     data: user
   });
-  if (user.username)
-    deleteItemFromCache(CacheCategories.USER_USERNAME, user.username);
-  deleteItemFromCache(CacheCategories.USER, result.id);
   return result;
 };
 
@@ -118,7 +112,6 @@ export const getUserByEmail = async (email: string, secureOrigin = false) => {
  */
 export const updateUser = async (id: string, user: KeyValue) => {
   if (user.password) user.password = await hash(user.password, 8);
-  user = removeReadOnlyValues(user);
   // If you're updating your primary email, your Gravatar should reflect it
   if (user.primaryEmail) {
     const originalUser = await prisma.users.findOne({
@@ -150,17 +143,12 @@ export const updateUser = async (id: string, user: KeyValue) => {
     const currentOwnerOfUsername = await prisma.users.findMany({
       where: { username: user.username }
     });
-    if (currentOwnerOfUsername.length) {
-      if (currentOwnerOfUsername[0].id !== originalUser.id)
-        throw new Error(USERNAME_EXISTS);
-      if (originalUser.username && user.username !== originalUser.username)
-        deleteItemFromCache(
-          CacheCategories.USER_USERNAME,
-          originalUser.username
-        );
-    }
+    if (
+      currentOwnerOfUsername.length &&
+      currentOwnerOfUsername[0].id !== originalUser.id
+    )
+      throw new Error(USERNAME_EXISTS);
   }
-  deleteItemFromCache(CacheCategories.USER, id);
   return await prisma.users.update({ data: user, where: { id: parseInt(id) } });
 };
 
@@ -241,7 +229,6 @@ export const updateAccessToken = async (
   accessTokenId: string,
   data: access_tokens
 ) => {
-  data = removeReadOnlyValues(data);
   const newAccessToken = await prisma.access_tokens.findOne({
     where: { id: parseInt(accessTokenId) }
   });
@@ -319,7 +306,6 @@ export const updateSessionByJwt = async (
   sessionJwt: string,
   data: sessionsUpdateInput
 ) => {
-  data = removeReadOnlyValues(data);
   try {
     const decoded = decode(sessionJwt);
     if (decoded && typeof decoded === "object" && decoded.jti) {

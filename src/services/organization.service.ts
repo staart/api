@@ -22,9 +22,7 @@ import {
   JWT_ISSUER,
   TOKEN_EXPIRY_API_KEY_MAX
 } from "../config";
-import { deleteItemFromCache } from "../helpers/cache";
 import { apiKeyToken, invalidateToken } from "../helpers/jwt";
-import { CacheCategories } from "../interfaces/enum";
 import { KeyValue } from "../interfaces/general";
 import { prisma } from "../helpers/prisma";
 import {
@@ -80,12 +78,7 @@ export const createOrganization = async (
   organization.profilePicture = `https://ui-avatars.com/api/?name=${encodeURIComponent(
     (organization.name || "XX").substring(0, 2).toUpperCase()
   )}&background=${backgroundColor}&color=fff`;
-  deleteItemFromCache(
-    CacheCategories.ORGANIZATION_USERNAME,
-    organization.username
-  );
   const result = await prisma.organizations.create({ data: organization });
-  deleteItemFromCache(CacheCategories.ORGANIZATION, result.id);
   return result;
 };
 
@@ -112,13 +105,8 @@ export const updateOrganization = async (
     if (currentOwners.length) {
       const currentOwnerId = currentOwners[0].id;
       if (currentOwnerId !== parseInt(id)) throw new Error(USERNAME_EXISTS);
-      deleteItemFromCache(
-        CacheCategories.ORGANIZATION_USERNAME,
-        originalOrganization.username
-      );
     }
   }
-  deleteItemFromCache(CacheCategories.ORGANIZATION, id);
   return prisma.organizations.update({
     data: organization,
     where: { id: parseInt(id) }
