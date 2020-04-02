@@ -121,6 +121,10 @@ model organizations {
   stripeCustomerId String?
   updatedAt        DateTime @default(dbgenerated())
   username         String   @unique
+  apiKeys          api_keys[]
+  domains          domains[]
+  memberships      memberships[]
+  webhooks         webhooks[]
 
   @@id([id])
 }
@@ -157,6 +161,13 @@ model users {
   twoFactorSecret      String?
   updatedAt            DateTime @default(dbgenerated())
   username             String   @unique
+  accessTokens         access_tokens[]
+  approvedLocations    approved_locations[]
+  backupCodes          backup_codes[]
+  emails               emails[]
+  identities           identities[]
+  memberships          memberships[]
+  sessions             sessions[]
 
   @@id([id])
 }
