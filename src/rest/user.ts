@@ -18,7 +18,7 @@ import {
 import { can } from "../helpers/authorization";
 import { trackEvent } from "../helpers/tracking";
 import { EventType, UserScopes, Templates } from "../interfaces/enum";
-import { KeyValue, Locals } from "../interfaces/general";
+import { Locals } from "../interfaces/general";
 import { mail } from "../helpers/mail";
 import { couponCodeJwt } from "../helpers/jwt";
 import { prisma } from "../helpers/prisma";

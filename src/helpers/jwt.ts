@@ -21,7 +21,6 @@ import {
 } from "../config";
 import { EventType, Templates, Tokens } from "../interfaces/enum";
 import { Locals } from "../interfaces/general";
-import { ApiKey } from "../interfaces/tables/organization";
 import { getGeolocationFromIp } from "./location";
 import { mail } from "./mail";
 import {
@@ -32,7 +31,9 @@ import {
 import {
   access_tokensCreateInput,
   access_tokensUpdateInput,
-  users
+  users,
+  api_keysCreateInput,
+  api_keysUpdateInput
 } from "@prisma/client";
 import { prisma } from "./prisma";
 import {
@@ -128,7 +129,9 @@ export const twoFactorToken = (user: users) =>
 /**
  * Generate an API key JWT
  */
-export const apiKeyToken = (apiKey: ApiKey) => {
+export const apiKeyToken = (
+  apiKey: api_keysCreateInput | api_keysUpdateInput
+) => {
   const createApiKey = { ...removeFalsyValues(apiKey) };
   delete createApiKey.createdAt;
   delete createApiKey.jwtApiKey;

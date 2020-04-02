@@ -38,36 +38,6 @@ import {
   createMembership,
   getUserOrganizationMembership
 } from "../crud/membership";
-import {
-  checkDomainAvailability,
-  createApiKey,
-  createDomain,
-  createOrganization,
-  createWebhook,
-  deleteAllOrganizationMemberships,
-  deleteApiKey,
-  deleteDomain,
-  deleteOrganization,
-  deleteOrganizationMembership,
-  deleteWebhook,
-  getApiKey,
-  getApiKeyLogs,
-  getDomain,
-  getDomainByDomainName,
-  getOrganization,
-  getOrganizationApiKeys,
-  getOrganizationDomains,
-  getOrganizationMembershipDetailed,
-  getOrganizationMemberships,
-  getOrganizationWebhooks,
-  getWebhook,
-  updateApiKey,
-  updateDomain,
-  updateOrganization,
-  updateOrganizationMembership,
-  updateWebhook
-} from "../crud/organization";
-import { getUser, getUserByEmail } from "../crud/user";
 import { can } from "../helpers/authorization";
 import {
   ApiKeyResponse,
@@ -745,7 +715,7 @@ export const getOrganizationApiKeyLogsForUser = async (
       organizationId
     )
   )
-    return getApiKeyLogs(organizationId, apiKeyId, query);
+    return getApiKeyLogs(apiKeyId, query);
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
