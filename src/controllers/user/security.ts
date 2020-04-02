@@ -18,7 +18,6 @@ import {
   enable2FAForUser,
   getAllDataForUser,
   getBackupCodesForUser,
-  getRecentEventsForUser,
   regenerateBackupCodesForUser,
   updatePasswordForUser,
   verify2FAForUser
@@ -59,13 +58,6 @@ export class UserSecurityController {
       res.locals
     );
     return respond(RESOURCE_UPDATED);
-  }
-
-  @Get("events")
-  async getRecentEvents(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
-    joiValidate({ id: Joi.string().required() }, { id });
-    return getRecentEventsForUser(res.locals.token.id, id, req.query);
   }
 
   @Get("data")

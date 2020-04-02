@@ -18,12 +18,12 @@ import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../helpers/middleware";
 import { userUsernameToId } from "../../helpers/utils";
 import {
-  addEmailToUserForUser,
-  deleteEmailFromUserForUser,
   getAllEmailsForUser,
+  addEmailToUserForUser,
   getEmailForUser,
-  resendEmailVerificationForUser
-} from "../../rest/email";
+  resendEmailVerificationForUser,
+  deleteEmailFromUserForUser
+} from "../../rest/user";
 
 @Controller(":id/emails")
 @ClassMiddleware(authHandler)

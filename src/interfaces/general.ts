@@ -36,4 +36,5 @@ export interface Event {
   organizationId?: number | string;
   userId?: number | string;
   type?: string;
+  data?: any;
 }

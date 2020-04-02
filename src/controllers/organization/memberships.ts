@@ -21,7 +21,6 @@ import {
   localsToTokenOrKey,
   organizationUsernameToId
 } from "../../helpers/utils";
-import { MembershipRole } from "../../interfaces/enum";
 import {
   deleteOrganizationMembershipForUser,
   getOrganizationMembershipForUser,
@@ -29,6 +28,7 @@ import {
   inviteMemberToOrganization,
   updateOrganizationMembershipForUser
 } from "../../rest/organization";
+import { MembershipRole } from "@prisma/client";
 
 @Controller(":id/memberships")
 @ClassMiddleware(authHandler)

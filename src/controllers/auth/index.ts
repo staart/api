@@ -20,7 +20,6 @@ import {
   bruteForceHandler,
   validator
 } from "../../helpers/middleware";
-import { UserRole } from "../../interfaces/enum";
 import {
   approveLocation,
   impersonate,
@@ -70,7 +69,7 @@ export class AuthController {
     delete user.organizationId;
     delete user.email;
     delete user.invitedByUser;
-    if (user.role == UserRole.ADMIN) delete user.role;
+    if (user.role === "ADMIN") delete user.role;
     delete user.membershipRole;
     const { userId } = await register(
       user,
@@ -79,7 +78,8 @@ export class AuthController {
       req.body.organizationId,
       req.body.membershipRole
     );
-    if (invitedByUser) await addInvitationCredits(invitedByUser, userId);
+    if (invitedByUser)
+      await addInvitationCredits(invitedByUser, userId.toString());
     return respond(RESOURCE_CREATED);
   }
 

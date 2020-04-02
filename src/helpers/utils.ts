@@ -27,7 +27,7 @@ export const organizationUsernameToId = async (id: string) => {
   if (!id.match(/^-{0,1}\d+$/)) {
     const result = (await prisma.users.findOne({ where: { username: id } }))
       ?.id;
-    if (result) return result;
+    if (result) return result.toString();
     throw new Error(ORGANIZATION_NOT_FOUND);
   } else {
     return parseInt(id).toString();
@@ -41,7 +41,7 @@ export const userUsernameToId = async (id: string, tokenUserId?: string) => {
     const result = (
       await prisma.organizations.findOne({ where: { username: id } })
     )?.id;
-    if (result) return result;
+    if (result) return result.toString();
     throw new Error(USER_NOT_FOUND);
   } else {
     return parseInt(id).toString();

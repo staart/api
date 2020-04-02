@@ -12,11 +12,11 @@ import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../helpers/middleware";
 import { userUsernameToId } from "../../helpers/utils";
 import {
-  deleteMembershipForUser,
+  getMembershipsForUser,
   getMembershipDetailsForUser,
+  deleteMembershipForUser,
   updateMembershipForUser
-} from "../../rest/membership";
-import { getMembershipsForUser } from "../../rest/user";
+} from "../../rest/user";
 
 @Controller(":id/memberships")
 @ClassMiddleware(authHandler)
