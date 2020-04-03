@@ -6,7 +6,7 @@ import pkg from "../package.json";
 import { ELASTIC_INSTANCES_INDEX, TEST_EMAIL } from "./config";
 import { elasticSearchIndex } from "./helpers/elasticsearch";
 import { receiveEmailMessage } from "./helpers/mail";
-import { query } from "./helpers/mysql";
+import { prisma } from "./helpers/prisma";
 
 redis
   .set(pkg.name, systemInfo.time().current)
@@ -18,7 +18,8 @@ receiveEmailMessage()
   .then(() => success("Redis message queue is working"))
   .catch(e => console.log(e, "Redis queue", "Unable to receive message"));
 
-query("SHOW tables")
+prisma.users
+  .findMany({ first: 1 })
   .then(() => success("Database connection is working"))
   .catch(() => logError("Database", "Unable to run query `SHOW tables`"));
 
