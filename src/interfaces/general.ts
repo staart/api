@@ -28,3 +28,13 @@ export interface Row {
 export interface IdRow extends Row {
   id?: string;
 }
+
+export interface Event {
+  date?: Date;
+  ipAddress?: string;
+  userAgent?: string;
+  organizationId?: number | string;
+  userId?: number | string;
+  type?: string;
+  data?: any;
+}

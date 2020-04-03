@@ -5,47 +5,14 @@ import {
   INVALID_LOGIN,
   MISSING_PASSWORD,
   NOT_ENABLED_2FA,
-  OAUTH_NO_EMAIL,
-  OAUTH_NO_NAME,
   RESOURCE_NOT_FOUND,
   USERNAME_EXISTS,
-  USER_NOT_FOUND
+  USER_NOT_FOUND,
+  EMAIL_EXISTS
 } from "@staart/errors";
 import { compare } from "@staart/text";
-import axios from "axios";
-import ClientOAuth2 from "client-oauth2";
 import { authenticator } from "otplib";
-import {
-  ALLOW_DISPOSABLE_EMAILS,
-  BASE_URL,
-  FACEBOOK_CLIENT_ID,
-  FACEBOOK_CLIENT_SECRET,
-  GITHUB_CLIENT_ID,
-  GITHUB_CLIENT_SECRET,
-  SALESFORCE_CLIENT_ID,
-  SALESFORCE_CLIENT_SECRET
-} from "../config";
-import {
-  checkIfNewEmail,
-  createEmail,
-  getEmail,
-  getUserEmails,
-  updateEmail
-} from "../crud/email";
-import { createMembership } from "../crud/membership";
-import { getDomainByDomainName } from "../crud/organization";
-import {
-  addApprovedLocation,
-  checkUsernameAvailability,
-  createUser,
-  deleteSessionByJwt,
-  getBestUsernameForUser,
-  getUser,
-  getUserBackupCode,
-  getUserByEmail,
-  updateBackupCode,
-  updateUser
-} from "../crud/user";
+import { ALLOW_DISPOSABLE_EMAILS } from "../config";
 import { can } from "../helpers/authorization";
 import {
   checkInvalidatedToken,
@@ -57,30 +24,36 @@ import {
 } from "../helpers/jwt";
 import { mail } from "../helpers/mail";
 import { trackEvent } from "../helpers/tracking";
+import { EventType, Templates, Tokens, UserScopes } from "../interfaces/enum";
+import { Locals } from "../interfaces/general";
+import { prisma } from "../helpers/prisma";
 import {
-  Authorizations,
-  EventType,
-  MembershipRole,
-  Templates,
-  Tokens
-} from "../interfaces/enum";
-import { KeyValue, Locals } from "../interfaces/general";
-import { InsertResult } from "../interfaces/mysql";
-import { GitHubEmail } from "../interfaces/oauth";
-import { User } from "../interfaces/tables/user";
+  getUserByEmail,
+  checkUserUsernameAvailability,
+  getBestUsernameForUser,
+  createUser,
+  addApprovedLocation
+} from "../services/user.service";
+import { usersCreateInput, MembershipRole } from "@prisma/client";
+import { getDomainByDomainName } from "../services/organization.service";
+import { PartialBy } from "../helpers/utils";
 
 export const validateRefreshToken = async (token: string, locals: Locals) => {
   await checkInvalidatedToken(token);
   const data = await verifyToken<{ id: string }>(token, Tokens.REFRESH);
   if (!data.id) throw new Error(USER_NOT_FOUND);
-  const user = await getUser(data.id);
+  const user = await prisma.users.findOne({ where: { id: parseInt(data.id) } });
+  if (!user) throw new Error(USER_NOT_FOUND);
   return postLoginTokens(user, locals, token);
 };
 
 export const invalidateRefreshToken = async (token: string, locals: Locals) => {
   const data = await verifyToken<{ id: string }>(token, Tokens.REFRESH);
   if (!data.id) throw new Error(USER_NOT_FOUND);
-  await deleteSessionByJwt(data.id, token);
+  await prisma.sessions.deleteMany({
+    where: { jwtToken: token, userId: parseInt(data.id) }
+  });
+  return;
 };
 
 export const login = async (
@@ -99,80 +72,88 @@ export const login = async (
 
 export const login2FA = async (code: number, token: string, locals: Locals) => {
   const data = await verifyToken<{ id: string }>(token, Tokens.TWO_FACTOR);
-  const user = await getUser(data.id, true);
+  const user = await prisma.users.findOne({ where: { id: parseInt(data.id) } });
+  if (!user) throw new Error(USER_NOT_FOUND);
   const secret = user.twoFactorSecret;
   if (!secret) throw new Error(NOT_ENABLED_2FA);
-  if (!user.id) throw new Error(USER_NOT_FOUND);
   if (authenticator.check(code.toString(), secret))
     return postLoginTokens(user, locals);
-  const backupCode = await getUserBackupCode(data.id, code);
-  if (backupCode && !backupCode.used) {
-    await updateBackupCode(backupCode.code, { used: true });
+  const backupCodes = await prisma.backup_codes.findMany({
+    where: { userId: user.id, code: code.toString() },
+    first: 1
+  });
+  if (backupCodes.length && !backupCodes[0].isUsed) {
+    await prisma.backup_codes.update({
+      where: { id: backupCodes[0].id },
+      data: { isUsed: true }
+    });
     return postLoginTokens(user, locals);
   }
   throw new Error(INVALID_2FA_TOKEN);
 };
 
 export const register = async (
-  user: User,
+  _user: PartialBy<PartialBy<usersCreateInput, "nickname">, "username">,
   locals?: Locals,
   email?: string,
   organizationId?: string,
   role?: MembershipRole,
-  emailVerified?: boolean
+  emailVerified = false
 ) => {
+  const user: usersCreateInput = { username: "", nickname: "", ..._user };
   if (email) {
-    await checkIfNewEmail(email);
+    const isNewEmail =
+      (await prisma.emails.findMany({ where: { email, isVerified: true } }))
+        .length === 0;
+    if (!isNewEmail) throw new Error(EMAIL_EXISTS);
     if (!ALLOW_DISPOSABLE_EMAILS) checkIfDisposableEmail(email);
   }
-  if (user.username && !(await checkUsernameAvailability(user.username)))
+  if (user.username && !(await checkUserUsernameAvailability(user.username)))
     throw new Error(USERNAME_EXISTS);
   user.username = user.username || (await getBestUsernameForUser(user.name));
-  const result = (await createUser(user)) as InsertResult;
-  const userId = result.insertId;
-  // Set email
-  if (email) {
-    const newEmail = (await createEmail(
-      {
-        userId,
-        email,
-        isVerified: !!emailVerified
-      },
-      !emailVerified,
-      !user.password
-    )) as InsertResult;
-    const emailId = newEmail.insertId;
-    await updateUser(userId, { primaryEmail: emailId });
-  }
-  if (organizationId) {
-    await createMembership({
-      userId,
-      organizationId,
-      role: role || MembershipRole.MEMBER
-    });
-  } else if (email) {
+  if (!organizationId && email) {
     let domain = "";
     try {
       domain = email.split("@")[1];
-    } catch (error) {}
-    if (domain) {
       const domainDetails = await getDomainByDomainName(domain);
-      if (domainDetails) {
-        await createMembership({
-          userId,
-          organizationId: domainDetails.organizationId,
-          role: MembershipRole.MEMBER
-        });
-      }
-    }
+      organizationId = domainDetails.organizationId.toString();
+    } catch (error) {}
   }
+  const userId = (
+    await createUser({
+      ...user,
+      ...(email
+        ? {
+            emails: {
+              create: {
+                user: {},
+                email,
+                isVerified: emailVerified
+              }
+            }
+          }
+        : {}),
+      ...(organizationId
+        ? {
+            memberships: {
+              create: {
+                user: {},
+                organization: {
+                  connect: { id: parseInt(organizationId) }
+                },
+                role
+              }
+            }
+          }
+        : {})
+    })
+  ).id;
   if (locals) await addApprovedLocation(userId, locals.ipAddress);
   return { userId };
 };
 
 export const sendPasswordReset = async (email: string, locals?: Locals) => {
   const user = await getUserByEmail(email);
-  if (!user.id) throw new Error(USER_NOT_FOUND);
   const token = await passwordResetToken(user.id);
   await mail(email, Templates.PASSWORD_RESET, { name: user.name, token });
   if (locals)
@@ -187,12 +168,14 @@ export const sendPasswordReset = async (email: string, locals?: Locals) => {
   return;
 };
 
-export const sendNewPassword = async (userId: string, email: string) => {
-  const user = await getUser(userId);
-  const userEmails = await getUserEmails(userId);
-  if (!userEmails.filter(userEmail => userEmail.email === email).length)
+export const sendNewPassword = async (userId: number, email: string) => {
+  const user = await prisma.users.findOne({
+    where: { id: userId },
+    include: { emails: true }
+  });
+  if (!user) throw new Error(USER_NOT_FOUND);
+  if (!user.emails.filter(userEmail => userEmail.email === email).length)
     throw new Error(RESOURCE_NOT_FOUND);
-  if (!user.id) throw new Error(USER_NOT_FOUND);
   const token = await passwordResetToken(user.id);
   await mail(email, Templates.NEW_PASSWORD, { name: user.name, token });
   return;
@@ -202,7 +185,10 @@ export const verifyEmail = async (token: string, locals: Locals) => {
   const emailId = (
     await verifyToken<{ id: string }>(token, Tokens.EMAIL_VERIFY)
   ).id;
-  const email = await getEmail(emailId);
+  const email = await prisma.emails.findOne({
+    where: { id: parseInt(emailId) }
+  });
+  if (!email) throw new Error(RESOURCE_NOT_FOUND);
   trackEvent(
     {
       userId: email.userId,
@@ -211,7 +197,10 @@ export const verifyEmail = async (token: string, locals: Locals) => {
     },
     locals
   );
-  return updateEmail(emailId, { isVerified: true });
+  return prisma.emails.update({
+    where: { id: parseInt(emailId) },
+    data: { isVerified: true }
+  });
 };
 
 export const updatePassword = async (
@@ -222,7 +211,10 @@ export const updatePassword = async (
   const userId = (
     await verifyToken<{ id: string }>(token, Tokens.PASSWORD_RESET)
   ).id;
-  await updateUser(userId, { password });
+  await prisma.users.update({
+    where: { id: parseInt(userId) },
+    data: { password }
+  });
   trackEvent(
     {
       userId,
@@ -239,20 +231,16 @@ export const impersonate = async (
   locals: Locals
 ) => {
   if (
-    await can(
-      tokenUserId,
-      Authorizations.IMPERSONATE,
-      "user",
-      impersonateUserId
-    )
+    !(await can(tokenUserId, UserScopes.IMPERSONATE, "user", impersonateUserId))
   )
-    return getLoginResponse(
-      await getUser(impersonateUserId),
-      EventType.AUTH_LOGIN,
-      "impersonate",
-      locals
-    );
-  throw new Error(INSUFFICIENT_PERMISSION);
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  const user = await prisma.users.findOne({
+    where: { id: parseInt(impersonateUserId) }
+  });
+  if (user)
+    return getLoginResponse(user, EventType.AUTH_LOGIN, "impersonate", locals);
+  throw new Error(USER_NOT_FOUND);
 };
 
 export const approveLocation = async (token: string, locals: Locals) => {
@@ -261,8 +249,10 @@ export const approveLocation = async (token: string, locals: Locals) => {
     Tokens.APPROVE_LOCATION
   );
   if (!tokenUser.id) throw new Error(USER_NOT_FOUND);
-  const user = await getUser(tokenUser.id);
-  if (!user.id) throw new Error(USER_NOT_FOUND);
+  const user = await prisma.users.findOne({
+    where: { id: parseInt(tokenUser.id) }
+  });
+  if (!user) throw new Error(USER_NOT_FOUND);
   const ipAddress = tokenUser.ipAddress || locals.ipAddress;
   await addApprovedLocation(user.id, ipAddress);
   trackEvent(
@@ -278,150 +268,4 @@ export const approveLocation = async (token: string, locals: Locals) => {
     ipAddress,
     locals
   );
-};
-
-/*
- OAuth clients
-*/
-
-const redirectUri = (service: string) =>
-  `${BASE_URL}/auth/oauth/callback/${service}`;
-
-const loginOrRegisterWithEmail = async (
-  service: string,
-  email: string,
-  name: string,
-  locals: Locals
-) => {
-  let user: User | undefined;
-  try {
-    user = await getUserByEmail(email);
-  } catch (error) {}
-  if (user) {
-    return getLoginResponse(user, EventType.AUTH_LOGIN_OAUTH, "github", locals);
-  } else {
-    const user = await register(
-      {
-        name
-      },
-      locals,
-      email,
-      undefined,
-      undefined,
-      true
-    );
-    return getLoginResponse(
-      await getUser(user.userId),
-      EventType.AUTH_LOGIN_OAUTH,
-      service,
-      locals
-    );
-  }
-};
-
-export const github = new ClientOAuth2({
-  clientId: GITHUB_CLIENT_ID,
-  clientSecret: GITHUB_CLIENT_SECRET,
-  redirectUri: redirectUri("github"),
-  authorizationUri: "https://github.com/login/oauth/authorize",
-  accessTokenUri: "https://github.com/login/oauth/access_token",
-  scopes: ["user:email", "user:name"]
-});
-export const githubCallback = async (url: string, locals: Locals) => {
-  const response = await github.code.getToken(url);
-  let email: string | undefined;
-  let name: string | undefined;
-  const emails = ((
-    await axios.get("https://api.github.com/user/emails", {
-      headers: {
-        Authorization: `token ${response.accessToken}`
-      }
-    })
-  ).data as Array<GitHubEmail>).filter(emails => (emails.verified = true));
-  for await (const email of emails) {
-    try {
-      const user = await getUserByEmail(email.email);
-      return await getLoginResponse(
-        user,
-        EventType.AUTH_LOGIN_OAUTH,
-        "github",
-        locals
-      );
-    } catch (error) {}
-  }
-  const me = (
-    await axios.get("https://api.github.com/user", {
-      headers: {
-        Authorization: `token ${response.accessToken}`
-      }
-    })
-  ).data;
-  try {
-    email = emails[0].email;
-    name = me.name;
-  } catch (error) {}
-  if (email && name) {
-    return loginOrRegisterWithEmail("facebook", email, name, locals);
-  }
-  if (!name) throw new Error(OAUTH_NO_NAME);
-  throw new Error(OAUTH_NO_EMAIL);
-};
-
-export const facebook = new ClientOAuth2({
-  clientId: FACEBOOK_CLIENT_ID,
-  clientSecret: FACEBOOK_CLIENT_SECRET,
-  redirectUri: redirectUri("facebook"),
-  authorizationUri: "https://www.facebook.com/v3.3/dialog/oauth",
-  accessTokenUri: "https://graph.facebook.com/v3.3/oauth/access_token",
-  scopes: ["email"]
-});
-export const facebookCallback = async (url: string, locals: Locals) => {
-  const response = await facebook.code.getToken(url);
-  let email: string | undefined;
-  let name: string | undefined;
-  try {
-    const data = (
-      await axios.get(
-        `https://graph.facebook.com/me?fields=email name&access_token=${response.data.access_token}`
-      )
-    ).data;
-    email = data.email;
-    name = data.name;
-  } catch (error) {}
-  if (email && name) {
-    return loginOrRegisterWithEmail("facebook", email, name, locals);
-  }
-  if (!name) throw new Error(OAUTH_NO_NAME);
-  throw new Error(OAUTH_NO_EMAIL);
-};
-
-export const salesforce = new ClientOAuth2({
-  clientId: SALESFORCE_CLIENT_ID,
-  clientSecret: SALESFORCE_CLIENT_SECRET,
-  redirectUri: redirectUri("salesforce"),
-  authorizationUri: "https://login.salesforce.com/services/oauth2/authorize",
-  accessTokenUri: "https://login.salesforce.com/services/oauth2/token",
-  scopes: ["email"]
-});
-export const salesforceCallback = async (url: string, locals: Locals) => {
-  const response = await salesforce.code.getToken(url);
-  let email: string | undefined;
-  let name: string | undefined;
-  try {
-    const data = (
-      await axios.get("https://login.salesforce.com/services/oauth2/userinfo", {
-        headers: {
-          Authorization: `Bearer ${response.data.access_token}`
-        }
-      })
-    ).data;
-    if (!data.email_verified) throw new Error(OAUTH_NO_EMAIL);
-    email = data.email;
-    name = data.name;
-  } catch (error) {}
-  if (email && name) {
-    return loginOrRegisterWithEmail("salesforce", email, name, locals);
-  }
-  if (!name) throw new Error(OAUTH_NO_NAME);
-  throw new Error(OAUTH_NO_EMAIL);
 };

@@ -3,12 +3,9 @@ import { redisQueue } from "@staart/redis";
 import axios from "axios";
 import { createHmac } from "crypto";
 import { JWT_ISSUER, REDIS_QUEUE_PREFIX } from "../config";
-import {
-  getOrganizationEventWebhooks,
-  updateWebhook
-} from "../crud/organization";
 import { Webhooks } from "../interfaces/enum";
-import { Webhook } from "../interfaces/tables/organization";
+import { webhooks } from "@prisma/client";
+import { prisma } from "./prisma";
 
 const WEBHOOK_QUEUE = `${REDIS_QUEUE_PREFIX}webhooks`;
 
@@ -87,10 +84,9 @@ const safeFireWebhook = async (
   webhook: Webhooks,
   data?: any
 ) => {
-  const webhooksToFire = await getOrganizationEventWebhooks(
-    organizationId,
-    webhook
-  );
+  const webhooksToFire = await prisma.webhooks.findMany({
+    where: { organizationId: parseInt(organizationId), event: webhook }
+  });
   for await (const hook of webhooksToFire) {
     try {
       await fireSingleWebhook(hook, webhook, data);
@@ -99,8 +95,8 @@ const safeFireWebhook = async (
   return;
 };
 
-const fireSingleWebhook = async (
-  webhook: Webhook,
+export const fireSingleWebhook = async (
+  webhook: webhooks,
   hookType: Webhooks,
   data?: any
 ) => {
@@ -122,8 +118,9 @@ const fireSingleWebhook = async (
   };
   const result = await axios.post(webhook.url, options);
   if (webhook.id)
-    await updateWebhook(webhook.organizationId, webhook.id, {
-      lastFiredAt: new Date()
+    await prisma.webhooks.update({
+      where: { id: webhook.id },
+      data: { lastFiredAt: new Date() }
     });
   return result;
 };

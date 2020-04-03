@@ -29,8 +29,8 @@ import {
   SPEED_LIMIT_TIME
 } from "../config";
 import { Tokens } from "../interfaces/enum";
-import { StripeLocals } from "../interfaces/general.js";
-import { ApiKey } from "../interfaces/tables/organization";
+import { StripeLocals } from "../interfaces/general";
+
 import { safeError } from "./errors";
 import {
   ApiKeyResponse,
@@ -104,11 +104,6 @@ export const trackingHandler = (
     .then(() => {})
     .finally(() => next());
 };
-
-export interface ApiKeyToken {
-  type: string;
-  apiKey: ApiKey;
-}
 
 /**
  * Add locals for a user after verifying their token

@@ -82,7 +82,6 @@
     "jsonwebtoken": "^8.5.1",
     "maxmind": "^4.1.1",
     "mysql": "^2.18.1",
-    "node-cache": "^5.1.0",
     "node-emoji": "^1.10.0",
     "otplib": "^12.0.1",
     "qrcode": "^1.4.4",

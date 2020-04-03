@@ -1,24 +1,3 @@
-export enum MembershipRole {
-  OWNER = 1,
-  ADMIN = 2,
-  MANAGER = 3,
-  MEMBER = 4,
-  RESELLER = 5
-}
-
-export enum UserRole {
-  MEMBER = 1,
-  RESELLER = 2,
-  ADMIN = 3
-}
-
-export enum NotificationEmails {
-  SECURITY = 0,
-  ACCOUNT = 1,
-  GENERAL = 2,
-  PROMOTIONS = 3
-}
-
 export enum EventType {
   USER_CREATED = "user.created",
   USER_UPDATED = "user.updated",
@@ -69,37 +48,6 @@ export enum Tokens {
   COUPON = "coupon"
 }
 
-export enum CacheCategories {
-  USER = "user",
-  ORGANIZATION_RECENT_EVENTS = "organization-recent-events",
-  USER_MEMBERSHIPS = "user-memberships",
-  MEMBERSHIP = "membership",
-  ORGANIZATION = "organization",
-  USER_USERNAME = "user-username",
-  ORGANIZATION_USERNAME = "organization-username",
-  IP_LOOKUP = "ip-lookup"
-}
-
-export enum Authorizations {
-  CREATE = "create",
-  READ = "read",
-  CREATE_SECURE = "create-secure",
-  READ_SECURE = "read-secure",
-  UPDATE = "update",
-  UPDATE_SECURE = "update-secure",
-  DELETE = "delete",
-  DELETE_SECURE = "delete-secure",
-  INVITE_MEMBER = "invite-member",
-  IMPERSONATE = "impersonate"
-}
-
-export enum Genders {
-  MALE = "m",
-  FEMALE = "f",
-  NON_BINARY = "n",
-  UNKNOWN = "x"
-}
-
 export enum OrgScopes {
   READ_ORG = "org:read",
   UPDATE_ORG = "org:update",
@@ -139,12 +87,19 @@ export enum OrgScopes {
   CREATE_ORG_TRANSACTIONS = "org:transactions:create"
 }
 
+export enum SudoScopes {
+  READ = "read"
+}
+
 export enum UserScopes {
+  IMPERSONATE = "impersonate",
   READ_USER = "user:read",
   UPDATE_USER = "user:update",
   CHANGE_PASSWORD = "user:change-password",
   DELETE_USER = "user:delete",
   READ_USER_MEMBERSHIPS = "user:memberships:read",
+  DELETE_USER_MEMBERSHIPS = "user:memberships:delete",
+  UPDATE_USER_MEMBERSHIPS = "user:memberships:update",
   ENABLE_USER_2FA = "user:2fa:enable",
   DISABLE_USER_2FA = "user:2fa:disable",
   READ_USER_BACKUP_CODES = "user:backup-codes:read",
@@ -182,6 +137,7 @@ export enum Webhooks {
   CREATE_DOMAIN = "create-domain",
   DELETE_DOMAIN = "delete-domain",
   VERIFY_DOMAIN = "verify-domain",
+  TEST_WEBHOOK = "test-webhook",
   UPDATE_WEBHOOK = "update-webhook",
   CREATE_WEBHOOK = "create-webhook",
   DELETE_WEBHOOK = "delete-webhook"

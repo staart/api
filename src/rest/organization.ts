@@ -9,7 +9,9 @@ import {
   INSUFFICIENT_PERMISSION,
   STRIPE_NO_CUSTOMER,
   USER_IS_MEMBER_ALREADY,
-  USER_NOT_FOUND
+  USER_NOT_FOUND,
+  ORGANIZATION_NOT_FOUND,
+  RESOURCE_NOT_FOUND
 } from "@staart/errors";
 import {
   createCustomer,
@@ -34,40 +36,6 @@ import {
 } from "@staart/payments";
 import axios from "axios";
 import { JWT_ISSUER } from "../config";
-import {
-  createMembership,
-  getUserOrganizationMembership
-} from "../crud/membership";
-import {
-  checkDomainAvailability,
-  createApiKey,
-  createDomain,
-  createOrganization,
-  createWebhook,
-  deleteAllOrganizationMemberships,
-  deleteApiKey,
-  deleteDomain,
-  deleteOrganization,
-  deleteOrganizationMembership,
-  deleteWebhook,
-  getApiKey,
-  getApiKeyLogs,
-  getDomain,
-  getDomainByDomainName,
-  getOrganization,
-  getOrganizationApiKeys,
-  getOrganizationDomains,
-  getOrganizationMembershipDetailed,
-  getOrganizationMemberships,
-  getOrganizationWebhooks,
-  getWebhook,
-  updateApiKey,
-  updateDomain,
-  updateOrganization,
-  updateOrganizationMembership,
-  updateWebhook
-} from "../crud/organization";
-import { getUser, getUserByEmail } from "../crud/user";
 import { can } from "../helpers/authorization";
 import {
   ApiKeyResponse,
@@ -79,59 +47,105 @@ import { mail } from "../helpers/mail";
 import { trackEvent } from "../helpers/tracking";
 import { dnsResolve } from "../helpers/utils";
 import { queueWebhook } from "../helpers/webhooks";
-import {
-  Authorizations,
-  MembershipRole,
-  OrgScopes,
-  Templates,
-  Webhooks,
-  Tokens
-} from "../interfaces/enum";
+import { OrgScopes, Templates, Webhooks, Tokens } from "../interfaces/enum";
 import { KeyValue, Locals } from "../interfaces/general";
-import { InsertResult } from "../interfaces/mysql";
-import { Organization, Webhook } from "../interfaces/tables/organization";
-import { User } from "../interfaces/tables/user";
 import { register } from "./auth";
+import { prisma } from "../helpers/prisma";
+import {
+  organizationsCreateInput,
+  organizationsUpdateInput,
+  membershipsInclude,
+  membershipsSelect,
+  membershipsOrderByInput,
+  membershipsWhereUniqueInput,
+  membershipsUpdateInput,
+  users,
+  MembershipRole,
+  api_keysSelect,
+  api_keysInclude,
+  api_keysOrderByInput,
+  api_keysWhereUniqueInput,
+  api_keysUpdateInput,
+  api_keysCreateInput,
+  webhooksCreateInput,
+  domainsSelect,
+  domainsInclude,
+  domainsOrderByInput,
+  domainsWhereUniqueInput,
+  domainsUpdateInput,
+  domainsCreateInput,
+  webhooksSelect,
+  webhooksInclude,
+  webhooksOrderByInput,
+  webhooksWhereUniqueInput,
+  webhooksUpdateInput
+} from "@prisma/client";
+import {
+  getDomainByDomainName,
+  getApiKeyLogs,
+  checkDomainAvailability
+} from "../services/organization.service";
+import { fireSingleWebhook } from "../helpers/webhooks";
 
 export const getOrganizationForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string
 ) => {
   if (await can(userId, OrgScopes.READ_ORG, "organization", organizationId))
-    return getOrganization(organizationId);
+    return prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
 export const newOrganizationForUser = async (
   userId: string,
-  organization: Organization,
+  organization: organizationsCreateInput,
   locals: Locals
 ) => {
   if (!organization.name) {
-    const user = await getUser(userId);
+    const user = await prisma.users.findOne({
+      where: { id: parseInt(userId) }
+    });
+    if (!user) throw new Error(USER_NOT_FOUND);
     organization.name = user.name;
   }
-  const org = (await createOrganization(organization)) as InsertResult;
-  const organizationId = org.insertId;
-  await createMembership({
-    organizationId,
-    userId,
-    role: MembershipRole.OWNER
+  return prisma.organizations.create({
+    data: {
+      ...organization,
+      memberships: {
+        create: {
+          organization: {},
+          user: { connect: { id: parseInt(userId) } },
+          role: "OWNER"
+        }
+      }
+    }
   });
-  return;
 };
 
 export const updateOrganizationForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
-  data: Organization,
+  data: organizationsUpdateInput,
   locals: Locals
 ) => {
   if (await can(userId, OrgScopes.UPDATE_ORG, "organization", organizationId)) {
-    await updateOrganization(organizationId, data);
+    const result = await prisma.organizations.update({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      },
+      data: {}
+    });
     queueWebhook(organizationId, Webhooks.UPDATE_ORGANIZATION, data);
     trackEvent({ organizationId, type: Webhooks.UPDATE_ORGANIZATION }, locals);
-    return;
+    return result;
   }
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -142,11 +156,23 @@ export const deleteOrganizationForUser = async (
   locals: Locals
 ) => {
   if (await can(userId, OrgScopes.DELETE_ORG, "organization", organizationId)) {
-    const organizationDetails = await getOrganization(organizationId);
+    const organizationDetails = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organizationDetails) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organizationDetails.stripeCustomerId)
       await deleteCustomer(organizationDetails.stripeCustomerId);
-    await deleteOrganization(organizationId);
-    await deleteAllOrganizationMemberships(organizationId);
+    await prisma.organizations.delete({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
     queueWebhook(organizationId, Webhooks.DELETE_ORGANIZATION);
     trackEvent({ organizationId, type: Webhooks.DELETE_ORGANIZATION }, locals);
     return;
@@ -166,7 +192,14 @@ export const getOrganizationBillingForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
       return getCustomer(organization.stripeCustomerId);
     throw new Error(STRIPE_NO_CUSTOMER);
@@ -188,12 +221,31 @@ export const updateOrganizationBillingForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     let result;
     if (organization.stripeCustomerId) {
       result = await updateCustomer(organization.stripeCustomerId, data);
     } else {
-      result = await createCustomer(organizationId, data, updateOrganization);
+      result = await createCustomer(
+        organizationId,
+        data,
+        (organizationId: string, data: organizationsUpdateInput) =>
+          prisma.organizations.update({
+            where: {
+              id: parseInt(
+                typeof userId === "object" ? userId.organizationId : userId
+              )
+            },
+            data
+          })
+      );
     }
     queueWebhook(organizationId, Webhooks.UPDATE_ORGANIZATION_BILLING, data);
     trackEvent(
@@ -218,7 +270,14 @@ export const getOrganizationInvoicesForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
       return getInvoices(organization.stripeCustomerId, params);
     throw new Error(STRIPE_NO_CUSTOMER);
@@ -239,7 +298,14 @@ export const getOrganizationInvoiceForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
       return getInvoice(organization.stripeCustomerId, invoiceId);
     throw new Error(STRIPE_NO_CUSTOMER);
@@ -260,7 +326,14 @@ export const getOrganizationSourcesForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
       return getSources(organization.stripeCustomerId, params);
     throw new Error(STRIPE_NO_CUSTOMER);
@@ -281,7 +354,14 @@ export const getOrganizationSourceForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
       return getSource(organization.stripeCustomerId, sourceId);
     throw new Error(STRIPE_NO_CUSTOMER);
@@ -302,7 +382,14 @@ export const getOrganizationSubscriptionsForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
       return getSubscriptions(organization.stripeCustomerId, params);
     throw new Error(STRIPE_NO_CUSTOMER);
@@ -323,7 +410,14 @@ export const getOrganizationSubscriptionForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
       return getSubscription(organization.stripeCustomerId, subscriptionId);
     throw new Error(STRIPE_NO_CUSTOMER);
@@ -346,7 +440,14 @@ export const updateOrganizationSubscriptionForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId) {
       const result = await updateSubscription(
         organization.stripeCustomerId,
@@ -383,7 +484,14 @@ export const createOrganizationSubscriptionForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId) {
       const result = await createSubscription(
         organization.stripeCustomerId,
@@ -430,7 +538,14 @@ export const deleteOrganizationSourceForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId) {
       const result = await deleteSource(
         organization.stripeCustomerId,
@@ -467,7 +582,14 @@ export const updateOrganizationSourceForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId) {
       const result = await updateSource(
         organization.stripeCustomerId,
@@ -500,7 +622,14 @@ export const createOrganizationSourceForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId) {
       const result = await createSource(organization.stripeCustomerId, card);
       queueWebhook(organizationId, Webhooks.CREATE_ORGANIZATION_SOURCE, card);
@@ -522,30 +651,38 @@ export const getAllOrganizationDataForUser = async (
   if (
     await can(
       userId,
-      Authorizations.READ_SECURE,
+      OrgScopes.READ_ORG_TRANSACTIONS,
       "organization",
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
-    const memberships = await getOrganizationMemberships(organizationId);
-    let billing = {} as any;
-    let subscriptions = {} as any;
-    let invoices = {} as any;
-    let sources = {} as any;
-    if (organization.stripeCustomerId) {
-      billing = await getCustomer(organization.stripeCustomerId);
-      subscriptions = await getSubscriptions(organization.stripeCustomerId, {});
-      invoices = await getInvoices(organization.stripeCustomerId, {});
-      sources = await getSources(organization.stripeCustomerId, {});
-    }
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      },
+      include: {
+        api_keys: true,
+        domains: true,
+        memberships: true,
+        webhooks: true
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     return {
       organization,
-      memberships,
-      billing,
-      subscriptions,
-      invoices,
-      sources
+      ...(organization.stripeCustomerId
+        ? {
+            billing: await getCustomer(organization.stripeCustomerId),
+            subscriptions: await getSubscriptions(
+              organization.stripeCustomerId,
+              {}
+            ),
+            invoices: await getInvoices(organization.stripeCustomerId, {}),
+            sources: await getSources(organization.stripeCustomerId, {})
+          }
+        : {})
     };
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -554,7 +691,25 @@ export const getAllOrganizationDataForUser = async (
 export const getOrganizationMembershipsForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
-  query?: KeyValue
+  {
+    select,
+    include,
+    orderBy,
+    skip,
+    after,
+    before,
+    first,
+    last
+  }: {
+    select?: membershipsSelect;
+    include?: membershipsInclude;
+    orderBy?: membershipsOrderByInput;
+    skip?: number;
+    after?: membershipsWhereUniqueInput;
+    before?: membershipsWhereUniqueInput;
+    first?: number;
+    last?: number;
+  }
 ) => {
   if (
     await can(
@@ -564,7 +719,17 @@ export const getOrganizationMembershipsForUser = async (
       organizationId
     )
   )
-    return getOrganizationMemberships(organizationId, query);
+    return prisma.memberships.findMany({
+      where: { organizationId: parseInt(organizationId) },
+      select,
+      include,
+      orderBy,
+      skip,
+      after,
+      before,
+      first,
+      last
+    });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -581,7 +746,10 @@ export const getOrganizationMembershipForUser = async (
       organizationId
     )
   )
-    return getOrganizationMembershipDetailed(organizationId, membershipId);
+    return prisma.memberships.findOne({
+      where: { id: parseInt(membershipId) },
+      include: { user: true }
+    });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -589,7 +757,7 @@ export const updateOrganizationMembershipForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
   membershipId: string,
-  data: KeyValue
+  data: membershipsUpdateInput
 ) => {
   if (
     await can(
@@ -599,7 +767,10 @@ export const updateOrganizationMembershipForUser = async (
       organizationId
     )
   )
-    return updateOrganizationMembership(organizationId, membershipId, data);
+    return prisma.memberships.update({
+      where: { id: parseInt(membershipId) },
+      data
+    });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -616,11 +787,11 @@ export const deleteOrganizationMembershipForUser = async (
       organizationId
     )
   ) {
-    // Check if there's only one member in this team
-    const members = await getOrganizationMemberships(organizationId);
-    if (members && members.data && members.data.length === 1)
-      throw new Error(CANNOT_DELETE_SOLE_MEMBER);
-    return deleteOrganizationMembership(organizationId, membershipId);
+    const members = await prisma.memberships.findMany({
+      where: { organizationId: parseInt(organizationId) }
+    });
+    if (members.length === 1) throw new Error(CANNOT_DELETE_SOLE_MEMBER);
+    return prisma.memberships.delete({ where: { id: parseInt(membershipId) } });
   }
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -641,37 +812,56 @@ export const inviteMemberToOrganization = async (
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.onlyAllowDomain) {
       const emailDomain = newMemberEmail.split("@")[1];
       try {
         const domainDetails = await getDomainByDomainName(emailDomain);
-        if (!domainDetails || domainDetails.organizationId != organizationId)
+        if (domainDetails.organizationId !== parseInt(organizationId))
           throw new Error();
       } catch (error) {
         throw new Error(CANNOT_INVITE_DOMAIN);
       }
     }
-    let newUser: User;
+    let newUser: users | undefined = undefined;
     let userExists = false;
-    let createdUserId: string;
-    try {
-      newUser = await getUserByEmail(newMemberEmail);
+    let createdUserId: number;
+
+    const checkUser = await prisma.users.findMany({
+      where: { emails: { some: { email: newMemberEmail } } },
+      first: 1
+    });
+    if (checkUser.length) {
+      newUser = checkUser[0];
       userExists = true;
-    } catch (error) {}
-    if (userExists) {
-      newUser = await getUserByEmail(newMemberEmail);
-      if (!newUser.id) throw new Error(USER_NOT_FOUND);
-      let isMemberAlready = false;
-      try {
-        isMemberAlready = !!(await getUserOrganizationMembership(
-          newUser.id,
-          organizationId
-        ));
-      } catch (error) {}
+    }
+
+    if (userExists && newUser) {
+      const isMemberAlready =
+        (
+          await prisma.memberships.findMany({
+            where: {
+              userId: newUser.id,
+              organizationId: parseInt(organizationId)
+            }
+          })
+        ).length !== 0;
       createdUserId = newUser.id;
       if (isMemberAlready) throw new Error(USER_IS_MEMBER_ALREADY);
-      await createMembership({ userId: newUser.id, organizationId, role });
+      await prisma.memberships.create({
+        data: {
+          user: { connect: { id: newUser.id } },
+          organization: { connect: { id: parseInt(organizationId) } },
+          role
+        }
+      });
     } else {
       const newAccount = await register(
         { name: newMemberName },
@@ -684,13 +874,20 @@ export const inviteMemberToOrganization = async (
     }
     if (createdUserId) {
       const inviter =
-        typeof userId !== "object" ? (await getUser(userId)).name : "Someone";
-      const userDetails = await getUser(createdUserId);
-      await mail(newMemberEmail, Templates.INVITED_TO_TEAM, {
+        typeof userId !== "object"
+          ? (await prisma.users.findOne({ where: { id: parseInt(userId) } }))
+              ?.name ?? "Someone"
+          : "Someone";
+      const userDetails = prisma.users.findOne({
+        where: { id: createdUserId }
+      });
+      mail(newMemberEmail, Templates.INVITED_TO_TEAM, {
         ...userDetails,
         team: organization.name,
         inviter
-      });
+      })
+        .then(() => {})
+        .catch(() => {});
     }
     return;
   }
@@ -700,7 +897,25 @@ export const inviteMemberToOrganization = async (
 export const getOrganizationApiKeysForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
-  query: KeyValue
+  {
+    select,
+    include,
+    orderBy,
+    skip,
+    after,
+    before,
+    first,
+    last
+  }: {
+    select?: api_keysSelect;
+    include?: api_keysInclude;
+    orderBy?: api_keysOrderByInput;
+    skip?: number;
+    after?: api_keysWhereUniqueInput;
+    before?: api_keysWhereUniqueInput;
+    first?: number;
+    last?: number;
+  }
 ) => {
   if (
     await can(
@@ -710,7 +925,17 @@ export const getOrganizationApiKeysForUser = async (
       organizationId
     )
   )
-    return getOrganizationApiKeys(organizationId, query);
+    return prisma.api_keys.findMany({
+      where: { organizationId: parseInt(organizationId) },
+      select,
+      include,
+      orderBy,
+      skip,
+      after,
+      before,
+      first,
+      last
+    });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -727,7 +952,7 @@ export const getOrganizationApiKeyForUser = async (
       organizationId
     )
   )
-    return getApiKey(organizationId, apiKeyId);
+    return prisma.api_keys.findOne({ where: { id: parseInt(apiKeyId) } });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -735,7 +960,10 @@ export const getOrganizationApiKeyLogsForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
   apiKeyId: string,
-  query: KeyValue
+  query: {
+    range?: string;
+    from?: string;
+  }
 ) => {
   if (
     await can(
@@ -745,7 +973,7 @@ export const getOrganizationApiKeyLogsForUser = async (
       organizationId
     )
   )
-    return getApiKeyLogs(organizationId, apiKeyId, query);
+    return getApiKeyLogs(apiKeyId, query);
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -753,7 +981,7 @@ export const updateApiKeyForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
   apiKeyId: string,
-  data: KeyValue,
+  data: api_keysUpdateInput,
   locals: Locals
 ) => {
   if (
@@ -764,7 +992,10 @@ export const updateApiKeyForUser = async (
       organizationId
     )
   ) {
-    const result = await updateApiKey(organizationId, apiKeyId, data);
+    const result = await prisma.api_keys.update({
+      where: { id: parseInt(apiKeyId) },
+      data
+    });
     queueWebhook(organizationId, Webhooks.UPDATE_API_KEY, data);
     trackEvent({ organizationId, type: Webhooks.UPDATE_API_KEY }, locals);
     return result;
@@ -775,7 +1006,7 @@ export const updateApiKeyForUser = async (
 export const createApiKeyForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
-  apiKey: KeyValue,
+  apiKey: api_keysCreateInput,
   locals: Locals
 ) => {
   if (
@@ -786,7 +1017,18 @@ export const createApiKeyForUser = async (
       organizationId
     )
   ) {
-    const result = await createApiKey({ organizationId, ...apiKey });
+    const result = await prisma.api_keys.create({
+      data: {
+        ...apiKey,
+        organization: {
+          connect: {
+            id: parseInt(
+              typeof userId === "object" ? userId.organizationId : userId
+            )
+          }
+        }
+      }
+    });
     queueWebhook(organizationId, Webhooks.CREATE_API_KEY, apiKey);
     trackEvent({ organizationId, type: Webhooks.CREATE_API_KEY }, locals);
     return result;
@@ -808,7 +1050,9 @@ export const deleteApiKeyForUser = async (
       organizationId
     )
   ) {
-    const result = await deleteApiKey(organizationId, apiKeyId);
+    const result = await prisma.api_keys.delete({
+      where: { id: parseInt(apiKeyId) }
+    });
     queueWebhook(organizationId, Webhooks.DELETE_API_KEY, apiKeyId);
     trackEvent({ organizationId, type: Webhooks.DELETE_API_KEY }, locals);
     return result;
@@ -819,7 +1063,25 @@ export const deleteApiKeyForUser = async (
 export const getOrganizationDomainsForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
-  query: KeyValue
+  {
+    select,
+    include,
+    orderBy,
+    skip,
+    after,
+    before,
+    first,
+    last
+  }: {
+    select?: domainsSelect;
+    include?: domainsInclude;
+    orderBy?: domainsOrderByInput;
+    skip?: number;
+    after?: domainsWhereUniqueInput;
+    before?: domainsWhereUniqueInput;
+    first?: number;
+    last?: number;
+  }
 ) => {
   if (
     await can(
@@ -829,7 +1091,17 @@ export const getOrganizationDomainsForUser = async (
       organizationId
     )
   )
-    return getOrganizationDomains(organizationId, query);
+    return prisma.domains.findMany({
+      where: { organizationId: parseInt(organizationId) },
+      select,
+      include,
+      orderBy,
+      skip,
+      after,
+      before,
+      first,
+      last
+    });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -846,7 +1118,7 @@ export const getOrganizationDomainForUser = async (
       organizationId
     )
   )
-    return getDomain(organizationId, domainId);
+    return prisma.domains.findOne({ where: { id: parseInt(domainId) } });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -854,7 +1126,7 @@ export const updateDomainForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
   domainId: string,
-  data: KeyValue,
+  data: domainsUpdateInput,
   locals: Locals
 ) => {
   if (
@@ -865,7 +1137,10 @@ export const updateDomainForUser = async (
       organizationId
     )
   ) {
-    const result = await updateDomain(organizationId, domainId, data);
+    const result = await prisma.domains.update({
+      where: { id: parseInt(domainId) },
+      data
+    });
     queueWebhook(organizationId, Webhooks.UPDATE_DOMAIN, data);
     trackEvent({ organizationId, type: Webhooks.UPDATE_DOMAIN }, locals);
     return result;
@@ -876,7 +1151,7 @@ export const updateDomainForUser = async (
 export const createDomainForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
-  domain: KeyValue,
+  domain: domainsCreateInput,
   locals: Locals
 ) => {
   if (
@@ -888,11 +1163,18 @@ export const createDomainForUser = async (
     )
   ) {
     await checkDomainAvailability(domain.domain);
-    const result = await createDomain({
-      domain: "",
-      organizationId,
-      ...domain,
-      isVerified: false
+    const result = await prisma.domains.create({
+      data: {
+        ...domain,
+        isVerified: false,
+        organization: {
+          connect: {
+            id: parseInt(
+              typeof userId === "object" ? userId.organizationId : userId
+            )
+          }
+        }
+      }
     });
     queueWebhook(organizationId, Webhooks.CREATE_DOMAIN, domain);
     trackEvent({ organizationId, type: Webhooks.CREATE_DOMAIN }, locals);
@@ -915,7 +1197,9 @@ export const deleteDomainForUser = async (
       organizationId
     )
   ) {
-    const result = await deleteDomain(organizationId, domainId);
+    const result = await prisma.domains.delete({
+      where: { id: parseInt(domainId) }
+    });
     queueWebhook(organizationId, Webhooks.DELETE_DOMAIN, domainId);
     trackEvent({ organizationId, type: Webhooks.DELETE_DOMAIN }, locals);
     return result;
@@ -938,7 +1222,10 @@ export const verifyDomainForUser = async (
       organizationId
     )
   ) {
-    const domain = await getDomain(organizationId, domainId);
+    const domain = await prisma.domains.findOne({
+      where: { id: parseInt(domainId) }
+    });
+    if (!domain) throw new Error(RESOURCE_NOT_FOUND);
     if (domain.isVerified) throw new Error(DOMAIN_ALREADY_VERIFIED);
     if (!domain.verificationCode) throw new Error(DOMAIN_UNABLE_TO_VERIFY);
     if (method === "file") {
@@ -948,9 +1235,10 @@ export const verifyDomainForUser = async (
             `http://${domain.domain}/.well-known/${JWT_ISSUER}-verify.txt`
           )
         ).data;
-        if (file.trim() === domain.verificationCode) {
-          const result = await updateDomain(organizationId, domainId, {
-            isVerified: true
+        if (file.replace(/\r?\n|\r/g, "").trim() === domain.verificationCode) {
+          const result = await prisma.domains.update({
+            where: { id: parseInt(domainId) },
+            data: { isVerified: true }
           });
           queueWebhook(organizationId, Webhooks.VERIFY_DOMAIN, {
             domainId,
@@ -965,8 +1253,9 @@ export const verifyDomainForUser = async (
     } else {
       const dns = await dnsResolve(domain.domain, "TXT");
       if (JSON.stringify(dns).includes(domain.verificationCode)) {
-        const result = await updateDomain(organizationId, domainId, {
-          isVerified: true
+        const result = await prisma.domains.update({
+          where: { id: parseInt(domainId) },
+          data: { isVerified: true }
         });
         queueWebhook(organizationId, Webhooks.VERIFY_DOMAIN, {
           domainId,
@@ -986,7 +1275,25 @@ export const verifyDomainForUser = async (
 export const getOrganizationWebhooksForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
-  query: KeyValue
+  {
+    select,
+    include,
+    orderBy,
+    skip,
+    after,
+    before,
+    first,
+    last
+  }: {
+    select?: webhooksSelect;
+    include?: webhooksInclude;
+    orderBy?: webhooksOrderByInput;
+    skip?: number;
+    after?: webhooksWhereUniqueInput;
+    before?: webhooksWhereUniqueInput;
+    first?: number;
+    last?: number;
+  }
 ) => {
   if (
     await can(
@@ -996,7 +1303,17 @@ export const getOrganizationWebhooksForUser = async (
       organizationId
     )
   )
-    return getOrganizationWebhooks(organizationId, query);
+    return prisma.webhooks.findMany({
+      where: { organizationId: parseInt(organizationId) },
+      select,
+      include,
+      orderBy,
+      skip,
+      after,
+      before,
+      first,
+      last
+    });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -1013,7 +1330,7 @@ export const getOrganizationWebhookForUser = async (
       organizationId
     )
   )
-    return getWebhook(organizationId, webhookId);
+    return prisma.webhooks.findOne({ where: { id: parseInt(webhookId) } });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -1021,7 +1338,7 @@ export const updateWebhookForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
   webhookId: string,
-  data: KeyValue,
+  data: webhooksUpdateInput,
   locals: Locals
 ) => {
   if (
@@ -1032,7 +1349,10 @@ export const updateWebhookForUser = async (
       organizationId
     )
   ) {
-    const result = await updateWebhook(organizationId, webhookId, data);
+    const result = await prisma.webhooks.update({
+      where: { id: parseInt(webhookId) },
+      data
+    });
     queueWebhook(organizationId, Webhooks.UPDATE_WEBHOOK, data);
     trackEvent({ organizationId, type: Webhooks.UPDATE_WEBHOOK }, locals);
     return result;
@@ -1043,7 +1363,7 @@ export const updateWebhookForUser = async (
 export const createWebhookForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
-  webhook: KeyValue,
+  webhook: webhooksCreateInput,
   locals: Locals
 ) => {
   if (
@@ -1054,10 +1374,21 @@ export const createWebhookForUser = async (
       organizationId
     )
   ) {
-    const result = await createWebhook({
-      organizationId,
-      ...webhook
-    } as Webhook);
+    const result = await prisma.webhooks.create({
+      data: {
+        ...webhook,
+        organization: {
+          connect: {
+            id: parseInt(
+              typeof userId === "object" ? userId.organizationId : userId
+            )
+          }
+        }
+      }
+    });
+    fireSingleWebhook(result, Webhooks.TEST_WEBHOOK)
+      .then(() => {})
+      .catch(() => {});
     queueWebhook(organizationId, Webhooks.CREATE_WEBHOOK, webhook);
     trackEvent({ organizationId, type: Webhooks.CREATE_WEBHOOK }, locals);
     return result;
@@ -1079,7 +1410,9 @@ export const deleteWebhookForUser = async (
       organizationId
     )
   ) {
-    const result = await deleteWebhook(organizationId, webhookId);
+    const result = prisma.webhooks.delete({
+      where: { id: parseInt(webhookId) }
+    });
     queueWebhook(organizationId, Webhooks.DELETE_WEBHOOK, webhookId);
     trackEvent({ organizationId, type: Webhooks.DELETE_WEBHOOK }, locals);
     return result;
@@ -1116,7 +1449,14 @@ export const applyCouponToOrganizationForUser = async (
     } catch (error) {
       throw new Error(INVALID_INPUT);
     }
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (amount && currency && organization.stripeCustomerId) {
       const result = await createCustomerBalanceTransaction(
         organization.stripeCustomerId,
@@ -1147,7 +1487,14 @@ export const getOrganizationTransactionsForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
       return getCustomBalanceTransactions(
         organization.stripeCustomerId,
@@ -1171,7 +1518,14 @@ export const getOrganizationTransactionForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganization(organizationId);
+    const organization = await prisma.organizations.findOne({
+      where: {
+        id: parseInt(
+          typeof userId === "object" ? userId.organizationId : userId
+        )
+      }
+    });
+    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
       return getCustomBalanceTransaction(
         organization.stripeCustomerId,
