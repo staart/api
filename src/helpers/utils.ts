@@ -169,3 +169,43 @@ export const dnsResolve = (
       resolve(records);
     });
   });
+
+export const queryToParams = (req: Request) => {
+  if (typeof req.query === "object") {
+    const query: { [index: string]: string | string[] } = req.query;
+    const result: {
+      [index: string]: number | { [index: string]: string | boolean };
+    } = {};
+    if (typeof query.skip === "string") result.skip = parseInt(query.skip);
+    if (typeof query.first === "string") result.first = parseInt(query.first);
+    if (typeof query.last === "string") result.last = parseInt(query.last);
+
+    query.select = query.select || [];
+    if (typeof query.select === "string") query.select = [query.select];
+    const select: { [index: string]: boolean } = {};
+    query.select.forEach(selectQuery => (select[selectQuery] = true));
+    if (Object.keys(select).length) result.select = select;
+
+    query.include = query.include || [];
+    if (typeof query.include === "string") query.include = [query.include];
+    const include: { [index: string]: boolean } = {};
+    query.include.forEach(includeQuery => (include[includeQuery] = true));
+    if (Object.keys(include).length) result.include = include;
+
+    query.orderBy = query.orderBy || [];
+    if (typeof query.orderBy === "string") query.orderBy = [query.orderBy];
+    const orderBy: { [index: string]: string } = {};
+    query.orderBy.forEach(orderByQuery => {
+      if (orderByQuery.trim() && orderByQuery.includes(":")) {
+        const orderByArg = orderByQuery.split(":")[1];
+        if (["asc", "desc"].includes(orderByArg))
+          orderBy[orderByQuery.split(":")[0]] = orderByArg;
+      }
+    });
+    if (Object.keys(orderBy).length) result.orderBy = orderBy;
+
+    console.log(JSON.stringify(query), JSON.stringify(result));
+    return result;
+  }
+  return {};
+};
