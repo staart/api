@@ -1,5 +1,6 @@
 import { error } from "@staart/errors";
 import { CronJob } from "cron";
+import { getConfig } from "@staart/config";
 import { ELASTIC_EVENTS_PREFIX, ELASTIC_LOGS_PREFIX } from "../config";
 import {
   elasticSearchIndex,
@@ -21,7 +22,9 @@ import { receiveWebhookMessage } from "../helpers/webhooks";
  */
 export default () => {
   new CronJob(
-    process.env.NODE_ENV === "production" ? "* * * * *" : "*/10 * * * * *",
+    getConfig("NODE_ENV") === "production"
+      ? "* * * * *"
+      : getConfig("DEV_CRON_MINUTE") ?? "*/10 * * * * *",
     async () => {
       await receiveEmailMessage();
       await receiveElasticSearchMessage();
