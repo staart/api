@@ -1,7 +1,7 @@
 import { error } from "@staart/errors";
 import { CronJob } from "cron";
 import { getConfig } from "@staart/config";
-import { ELASTIC_EVENTS_PREFIX, ELASTIC_LOGS_PREFIX } from "../config";
+import { ELASTIC_EVENTS_INDEX, ELASTIC_LOGS_INDEX } from "../config";
 import {
   elasticSearchIndex,
   receiveElasticSearchMessage,
@@ -59,7 +59,7 @@ const storeSecurityEvents = async () => {
     }
     try {
       await elasticSearchIndex({
-        index: `${ELASTIC_EVENTS_PREFIX}${year}-${month}-${day}`,
+        index: ELASTIC_EVENTS_INDEX,
         body,
       });
     } catch (err) {
@@ -91,7 +91,7 @@ const storeTrackingLogs = async () => {
         }
       }
       await elasticSearchIndex({
-        index: `${ELASTIC_LOGS_PREFIX}${year}-${month}-${day}`,
+        index: ELASTIC_LOGS_INDEX,
         body,
       });
     } catch (err) {

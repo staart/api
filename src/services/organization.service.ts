@@ -1,26 +1,26 @@
 import {
   cleanElasticSearchQueryResponse,
-  elasticSearch
+  elasticSearch,
 } from "@staart/elasticsearch";
 import {
   INVALID_INPUT,
   ORGANIZATION_NOT_FOUND,
   USERNAME_EXISTS,
-  RESOURCE_NOT_FOUND
+  RESOURCE_NOT_FOUND,
 } from "@staart/errors";
 import { ms } from "@staart/text";
 import {
   capitalizeFirstAndLastLetter,
   createSlug,
   randomString,
-  slugify
+  slugify,
 } from "@staart/text";
 import axios from "axios";
 import randomColor from "randomcolor";
 import {
-  ELASTIC_LOGS_PREFIX,
+  ELASTIC_LOGS_INDEX,
   JWT_ISSUER,
-  TOKEN_EXPIRY_API_KEY_MAX
+  TOKEN_EXPIRY_API_KEY_MAX,
 } from "../config";
 import { apiKeyToken, invalidateToken } from "../helpers/jwt";
 import { KeyValue } from "../interfaces/general";
@@ -30,7 +30,7 @@ import {
   organizationsUpdateInput,
   api_keysCreateInput,
   api_keysUpdateInput,
-  domainsCreateInput
+  domainsCreateInput,
 } from "@prisma/client";
 
 /**
@@ -42,7 +42,7 @@ export const checkOrganizationUsernameAvailability = async (
   return (
     (
       await prisma.organizations.findMany({
-        where: { username }
+        where: { username },
       })
     ).length === 0
   );
@@ -73,7 +73,7 @@ export const createOrganization = async (
   );
   const backgroundColor = randomColor({
     luminosity: "dark",
-    format: "hex"
+    format: "hex",
   }).replace("#", "");
   organization.profilePicture = `https://ui-avatars.com/api/?name=${encodeURIComponent(
     (organization.name || "XX").substring(0, 2).toUpperCase()
@@ -91,7 +91,7 @@ export const updateOrganization = async (
 ) => {
   if (typeof id === "number") id = id.toString();
   const originalOrganization = await prisma.organizations.findOne({
-    where: { id: parseInt(id) }
+    where: { id: parseInt(id) },
   });
   if (!originalOrganization) throw new Error(ORGANIZATION_NOT_FOUND);
   if (
@@ -100,7 +100,7 @@ export const updateOrganization = async (
     organization.username !== originalOrganization.username
   ) {
     const currentOwners = await prisma.organizations.findMany({
-      where: { username: originalOrganization.username }
+      where: { username: originalOrganization.username },
     });
     if (currentOwners.length) {
       const currentOwnerId = currentOwners[0].id;
@@ -109,7 +109,7 @@ export const updateOrganization = async (
   }
   return prisma.organizations.update({
     data: organization,
-    where: { id: parseInt(id) }
+    where: { id: parseInt(id) },
   });
 };
 
@@ -120,7 +120,7 @@ export const getApiKeyLogs = async (apiKeyId: string, query: KeyValue) => {
   const range: string = query.range || "7d";
   const from = query.from ? parseInt(query.from) : 0;
   const result = await elasticSearch.search({
-    index: `${ELASTIC_LOGS_PREFIX}*`,
+    index: ELASTIC_LOGS_INDEX,
     from,
     body: {
       query: {
@@ -128,26 +128,26 @@ export const getApiKeyLogs = async (apiKeyId: string, query: KeyValue) => {
           must: [
             {
               match: {
-                apiKeyId
-              }
+                apiKeyId,
+              },
             },
             {
               range: {
                 date: {
-                  gte: new Date(new Date().getTime() - ms(range))
-                }
-              }
-            }
-          ]
-        }
+                  gte: new Date(new Date().getTime() - ms(range)),
+                },
+              },
+            },
+          ],
+        },
       },
       sort: [
         {
-          date: { order: "desc" }
-        }
+          date: { order: "desc" },
+        },
       ],
-      size: 10
-    }
+      size: 10,
+    },
   });
   return cleanElasticSearchQueryResponse(result.body, 10);
 };
@@ -170,7 +170,7 @@ export const updateApiKey = async (
   data: api_keysUpdateInput
 ) => {
   const apiKey = await prisma.api_keys.findOne({
-    where: { id: parseInt(apiKeyId) }
+    where: { id: parseInt(apiKeyId) },
   });
   if (!apiKey) throw new Error(RESOURCE_NOT_FOUND);
   if (apiKey.jwtApiKey) await invalidateToken(apiKey.jwtApiKey);
@@ -184,7 +184,7 @@ export const updateApiKey = async (
 export const getDomainByDomainName = async (domain: string) => {
   const domainDetails = await prisma.domains.findMany({
     where: { domain, isVerified: true },
-    first: 1
+    first: 1,
   });
   if (domainDetails.length) return domainDetails[0];
   throw new Error(RESOURCE_NOT_FOUND);
@@ -197,7 +197,7 @@ export const refreshOrganizationProfilePicture = async (
     organizationId = organizationId.toString();
   const domains = await prisma.domains.findMany({
     where: { organizationId: parseInt(organizationId) },
-    orderBy: { updatedAt: "desc" }
+    orderBy: { updatedAt: "desc" },
   });
   if (domains.length) {
     const domainIcons = await axios.get<{ url?: string }>(
@@ -210,17 +210,17 @@ export const refreshOrganizationProfilePicture = async (
     )
       return prisma.organizations.update({
         data: { profilePicture: domainIcons.data.url },
-        where: { id: parseInt(organizationId) }
+        where: { id: parseInt(organizationId) },
       });
   }
   const organization = await prisma.organizations.findOne({
     where: { id: parseInt(organizationId) },
-    select: { name: true, username: true }
+    select: { name: true, username: true },
   });
   if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
   const backgroundColor = randomColor({
     luminosity: "dark",
-    format: "hex"
+    format: "hex",
   }).replace("#", "");
   const profilePicture = `https://ui-avatars.com/api/?name=${encodeURIComponent(
     organization.name || organization.username || "XX"
@@ -230,7 +230,7 @@ export const refreshOrganizationProfilePicture = async (
   )}&background=${backgroundColor}&color=fff`;
   return prisma.organizations.update({
     data: { profilePicture },
-    where: { id: parseInt(organizationId) }
+    where: { id: parseInt(organizationId) },
   });
 };
 
@@ -240,7 +240,7 @@ export const refreshOrganizationProfilePicture = async (
 export const createDomain = async (domain: domainsCreateInput) => {
   domain.createdAt = new Date();
   domain.verificationCode = `${JWT_ISSUER}=${randomString({
-    length: 32
+    length: 32,
   })}`;
   const response = await prisma.domains.create({ data: domain });
   await refreshOrganizationProfilePicture(response.organizationId);

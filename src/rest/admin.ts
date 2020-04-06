@@ -1,10 +1,10 @@
 import {
   cleanElasticSearchQueryResponse,
-  elasticSearch
+  elasticSearch,
 } from "@staart/elasticsearch";
 import { INSUFFICIENT_PERMISSION } from "@staart/errors";
 import { ms } from "@staart/text";
-import { ELASTIC_LOGS_PREFIX } from "../config";
+import { ELASTIC_LOGS_INDEX } from "../config";
 import { can } from "../helpers/authorization";
 import { SudoScopes } from "../interfaces/enum";
 import { prisma } from "../helpers/prisma";
@@ -16,7 +16,7 @@ import {
   usersSelect,
   usersInclude,
   usersOrderByInput,
-  usersWhereUniqueInput
+  usersWhereUniqueInput,
 } from "@prisma/client";
 
 export const getAllOrganizationForUser = async (
@@ -29,7 +29,7 @@ export const getAllOrganizationForUser = async (
     after,
     before,
     first,
-    last
+    last,
   }: {
     select?: organizationsSelect;
     include?: organizationsInclude;
@@ -50,7 +50,7 @@ export const getAllOrganizationForUser = async (
       after,
       before,
       first,
-      last
+      last,
     });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -65,7 +65,7 @@ export const getAllUsersForUser = async (
     after,
     before,
     first,
-    last
+    last,
   }: {
     select?: usersSelect;
     include?: usersInclude;
@@ -86,7 +86,7 @@ export const getAllUsersForUser = async (
       after,
       before,
       first,
-      last
+      last,
     });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -106,7 +106,7 @@ export const getServerLogsForUser = async (
   const range: string = query.range || "7d";
   const from = query.from ? parseInt(query.from) : 0;
   const result = await elasticSearch.search({
-    index: `${ELASTIC_LOGS_PREFIX}*`,
+    index: ELASTIC_LOGS_INDEX,
     from,
     body: {
       query: {
@@ -115,20 +115,20 @@ export const getServerLogsForUser = async (
             {
               range: {
                 date: {
-                  gte: new Date(new Date().getTime() - ms(range))
-                }
-              }
-            }
-          ]
-        }
+                  gte: new Date(new Date().getTime() - ms(range)),
+                },
+              },
+            },
+          ],
+        },
       },
       sort: [
         {
-          date: { order: "desc" }
-        }
+          date: { order: "desc" },
+        },
       ],
-      size: 10
-    }
+      size: 10,
+    },
   });
   return cleanElasticSearchQueryResponse(result.body, 10);
 };
