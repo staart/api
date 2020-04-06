@@ -3,21 +3,25 @@ import { CronJob } from "cron";
 import { ELASTIC_EVENTS_PREFIX, ELASTIC_LOGS_PREFIX } from "../config";
 import {
   elasticSearchIndex,
-  receiveElasticSearchMessage
+  receiveElasticSearchMessage,
 } from "../helpers/elasticsearch";
 import { receiveEmailMessage } from "../helpers/mail";
 import {
   clearSecurityEventsData,
   clearTrackingData,
   getSecurityEvents,
-  getTrackingData
+  getTrackingData,
 } from "../helpers/tracking";
 import { IdValues } from "../helpers/utils";
 import { receiveWebhookMessage } from "../helpers/webhooks";
 
+/**
+ * We run this cron job every minute in production
+ * but every 10 seconds in development
+ */
 export default () => {
   new CronJob(
-    "* * * * *",
+    process.env.NODE_ENV === "production" ? "* * * * *" : "*/10 * * * * *",
     async () => {
       await receiveEmailMessage();
       await receiveElasticSearchMessage();
@@ -41,11 +45,11 @@ const storeSecurityEvents = async () => {
   day = parseInt(day) < 10 ? `0${day}` : day;
   for await (const body of data) {
     if (typeof body === "object") {
-      Object.keys(body).forEach(key => {
+      Object.keys(body).forEach((key) => {
         if (IdValues.includes(key)) body[key] = body[key];
       });
       if (body.data && typeof body.data === "object") {
-        Object.keys(body.data).forEach(key => {
+        Object.keys(body.data).forEach((key) => {
           if (IdValues.includes(key)) body.data[key] = body.data[key];
         });
       }
@@ -53,7 +57,7 @@ const storeSecurityEvents = async () => {
     try {
       await elasticSearchIndex({
         index: `${ELASTIC_EVENTS_PREFIX}${year}-${month}-${day}`,
-        body
+        body,
       });
     } catch (err) {
       error("Got error in saving to ElasticSearch", JSON.stringify(err));
@@ -74,18 +78,18 @@ const storeTrackingLogs = async () => {
   for await (const body of data) {
     try {
       if (typeof body === "object") {
-        Object.keys(body).forEach(key => {
+        Object.keys(body).forEach((key) => {
           if (IdValues.includes(key)) body[key] = body[key];
         });
         if (body.data && typeof body.data === "object") {
-          Object.keys(body.data).forEach(key => {
+          Object.keys(body.data).forEach((key) => {
             if (IdValues.includes(key)) body.data[key] = body.data[key];
           });
         }
       }
       await elasticSearchIndex({
         index: `${ELASTIC_LOGS_PREFIX}${year}-${month}-${day}`,
-        body
+        body,
       });
     } catch (err) {
       error("Got error in saving to ElasticSearch", JSON.stringify(err));
