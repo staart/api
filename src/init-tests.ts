@@ -7,6 +7,7 @@ import { ELASTIC_INSTANCES_INDEX, TEST_EMAIL } from "./config";
 import { elasticSearchIndex } from "./helpers/elasticsearch";
 import { receiveEmailMessage } from "./helpers/mail";
 import { prisma } from "./helpers/prisma";
+import { elasticSearchEnabled } from "@staart/elasticsearch";
 
 redis
   .set(pkg.name, systemInfo.time().current)
@@ -16,7 +17,7 @@ redis
 
 receiveEmailMessage()
   .then(() => success("Redis message queue is working"))
-  .catch(e => console.log(e, "Redis queue", "Unable to receive message"));
+  .catch((e) => console.log(e, "Redis queue", "Unable to receive message"));
 
 prisma.users
   .findMany({ first: 1 })
@@ -35,10 +36,10 @@ sendMail({
         version: pkg.version,
         repository: pkg.repository,
         author: pkg.author,
-        "staart-version": pkg["staart-version"]
-      }
+        "staart-version": pkg["staart-version"],
+      },
     }
-  )}`
+  )}`,
 })
   .then(() => {})
   .catch(() =>
@@ -51,16 +52,18 @@ const getSystemInformation = async () => {
     version: pkg.version,
     repository: pkg.repository,
     author: pkg.author,
-    "staart-version": pkg["staart-version"]
+    "staart-version": pkg["staart-version"],
   };
 };
 
-getSystemInformation()
-  .then(body =>
-    elasticSearchIndex({
-      index: ELASTIC_INSTANCES_INDEX,
-      body
-    })
-  )
-  .then(() => {})
-  .catch(() => {});
+if (elasticSearchEnabled)
+  getSystemInformation()
+    .then((body) =>
+      elasticSearchIndex({
+        index: ELASTIC_INSTANCES_INDEX,
+        body,
+      })
+    )
+    .then(() => {})
+    .catch(() => {});
+else logError("ElasticSearch", "ES is disabled");

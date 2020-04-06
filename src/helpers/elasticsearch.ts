@@ -1,4 +1,4 @@
-import { elasticSearch } from "@staart/elasticsearch";
+import { elasticSearch, elasticSearchEnabled } from "@staart/elasticsearch";
 import { logError } from "@staart/errors";
 import { redisQueue } from "@staart/redis";
 import { REDIS_QUEUE_PREFIX } from "../config";
@@ -31,6 +31,11 @@ export const receiveElasticSearchMessage = async () => {
     qname: ELASTIC_QUEUE,
   });
   if ("id" in result) {
+    if (!elasticSearchEnabled)
+      return redisQueue.deleteMessageAsync({
+        qname: ELASTIC_QUEUE,
+        id: result.id,
+      });
     const {
       indexParams,
       tryNumber,
