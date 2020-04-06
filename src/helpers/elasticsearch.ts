@@ -21,19 +21,19 @@ export const elasticSearchIndex = async (indexParams: {
   await setupQueue();
   await redisQueue.sendMessageAsync({
     qname: ELASTIC_QUEUE,
-    message: JSON.stringify({ indexParams, tryNumber: 1 })
+    message: JSON.stringify({ indexParams, tryNumber: 1 }),
   });
 };
 
 export const receiveElasticSearchMessage = async () => {
   await setupQueue();
   const result = await redisQueue.receiveMessageAsync({
-    qname: ELASTIC_QUEUE
+    qname: ELASTIC_QUEUE,
   });
   if ("id" in result) {
     const {
       indexParams,
-      tryNumber
+      tryNumber,
     }: {
       tryNumber: number;
       indexParams: {
@@ -42,34 +42,29 @@ export const receiveElasticSearchMessage = async () => {
         type: string;
       };
     } = JSON.parse(result.message);
-    if (tryNumber && tryNumber > 3) {
-      logError(
-        "ElasticSearch",
-        `Unable to save record: ${JSON.stringify(indexParams)}`
-      );
+    if (tryNumber && tryNumber > 3)
       return redisQueue.deleteMessageAsync({
         qname: ELASTIC_QUEUE,
-        id: result.id
+        id: result.id,
       });
-    }
     try {
       await elasticSearch.index(indexParams);
     } catch (error) {
       logError(
         "ElasticSearch",
-        `Unable to save record, trying again: ${error}`
+        `Unable to save record, trying again: ${JSON.stringify(error)}`
       );
       await redisQueue.sendMessageAsync({
         qname: ELASTIC_QUEUE,
         message: JSON.stringify({
           indexParams,
-          tryNumber: tryNumber + 1
-        })
+          tryNumber: tryNumber + 1,
+        }),
       });
     }
     await redisQueue.deleteMessageAsync({
       qname: ELASTIC_QUEUE,
-      id: result.id
+      id: result.id,
     });
     receiveElasticSearchMessage();
   }
