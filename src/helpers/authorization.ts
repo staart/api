@@ -14,6 +14,7 @@ import {
 } from "@prisma/client";
 import { prisma } from "./prisma";
 import { getUserById } from "../services/user.service";
+import { getOrganizationById } from "../services/organization.service";
 
 /**
  * Whether a user can perform an action on another user
@@ -217,10 +218,7 @@ export const can = async (
       if (!membership) throw new Error(USER_NOT_FOUND);
       target = membership;
     } else if (targetType === "organization") {
-      const organization = await prisma.organizations.findOne({
-        where: { id: parseInt(target) },
-      });
-      if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
+      const organization = await getOrganizationById(target);
       target = organization;
     } else {
       // Target is a user
