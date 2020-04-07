@@ -225,11 +225,15 @@ export const can = async (
       target = organization;
     } else {
       // Target is a user
-      const user = await prisma.users.findOne({
-        where: { id: parseInt(target) },
-      });
-      if (!user) throw new Error(USER_NOT_FOUND);
-      target = user;
+      if (requestFromType === "users" && user.id === parseInt(target)) {
+        target = user as users;
+      } else {
+        const targetUser = await prisma.users.findOne({
+          where: { id: parseInt(target) },
+        });
+        if (!targetUser) throw new Error(USER_NOT_FOUND);
+        target = targetUser;
+      }
     }
   }
 
