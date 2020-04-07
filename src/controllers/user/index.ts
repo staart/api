@@ -15,7 +15,7 @@ import { authHandler, validator } from "../../helpers/middleware";
 import { userUsernameToId } from "../../helpers/utils";
 import {
   deleteUserForUser,
-  getUserFromId,
+  getUserFromIdForUser,
   updateUserForUser,
 } from "../../rest/user";
 import { UserAccessTokensController } from "./access-tokens";
@@ -40,7 +40,7 @@ export class UserController {
   async get(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    return getUserFromId(id, res.locals.token.id);
+    return getUserFromIdForUser(id, res.locals.token.id);
   }
 
   @Patch(":id")
@@ -56,7 +56,9 @@ export class UserController {
         countryCode: Joi.string().length(2),
         password: Joi.string().min(6),
         gender: Joi.string().length(1),
-        preferredLanguage: Joi.string().min(2).max(5),
+        preferredLanguage: Joi.string()
+          .min(2)
+          .max(5),
         timezone: Joi.string(),
         notificationEmails: Joi.number(),
         prefersReducedMotion: Joi.boolean(),

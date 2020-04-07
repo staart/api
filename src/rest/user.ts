@@ -62,7 +62,10 @@ import { ALLOW_DISPOSABLE_EMAILS } from "../config";
 import { checkIfDisposableEmail } from "@staart/disposable-email";
 import { ApiKeyResponse } from "../helpers/jwt";
 
-export const getUserFromId = async (userId: string, tokenUserId: string) => {
+export const getUserFromIdForUser = async (
+  userId: string,
+  tokenUserId: string
+) => {
   if (await can(tokenUserId, UserScopes.READ_USER, "user", userId)) {
     const user = await getUserById(userId);
     if (user) return user;
