@@ -41,7 +41,7 @@
     "@types/geolite2": "^2.0.0",
     "@types/hapi__joi": "^16.0.12",
     "@types/jest": "^25.2.1",
-    "@types/jsonwebtoken": "^8.3.8",
+    "@types/jsonwebtoken": "^8.3.9",
     "@types/mysql": "^2.15.9",
     "@types/node": "^13.11.0",
     "@types/node-emoji": "^1.8.1",
