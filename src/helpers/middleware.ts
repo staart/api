@@ -1,7 +1,7 @@
 import {
   INVALID_SIGNATURE,
   MISSING_SIGNATURE,
-  MISSING_TOKEN
+  MISSING_TOKEN,
 } from "@staart/errors";
 import { constructWebhookEvent } from "@staart/payments";
 import {
@@ -9,7 +9,7 @@ import {
   RateLimit,
   Request,
   Response,
-  slowDown
+  slowDown,
 } from "@staart/server";
 import { RawRequest } from "@staart/server";
 import { ms } from "@staart/text";
@@ -26,7 +26,7 @@ import {
   RATE_LIMIT_TIME,
   SPEED_LIMIT_COUNT,
   SPEED_LIMIT_DELAY,
-  SPEED_LIMIT_TIME
+  SPEED_LIMIT_TIME,
 } from "../config";
 import { Tokens } from "../interfaces/enum";
 import { StripeLocals } from "../interfaces/general";
@@ -38,7 +38,7 @@ import {
   checkIpRestrictions,
   checkReferrerRestrictions,
   TokenResponse,
-  verifyToken
+  verifyToken,
 } from "./jwt";
 import { trackUrl } from "./tracking";
 import { includesDomainInCommaList } from "./utils";
@@ -46,20 +46,20 @@ import { includesDomainInCommaList } from "./utils";
 const bruteForce = slowDown({
   windowMs: BRUTE_FORCE_TIME,
   delayAfter: BRUTE_FORCE_COUNT,
-  delayMs: BRUTE_FORCE_DELAY
+  delayMs: BRUTE_FORCE_DELAY,
 });
 const rateLimiter = RateLimit({
   windowMs: RATE_LIMIT_TIME,
-  max: RATE_LIMIT_MAX
+  max: RATE_LIMIT_MAX,
 });
 const publicRateLimiter = RateLimit({
   windowMs: PUBLIC_RATE_LIMIT_TIME,
-  max: PUBLIC_RATE_LIMIT_MAX
+  max: PUBLIC_RATE_LIMIT_MAX,
 });
 const speedLimiter = slowDown({
   windowMs: SPEED_LIMIT_TIME,
   delayAfter: SPEED_LIMIT_COUNT,
-  delayMs: SPEED_LIMIT_DELAY
+  delayMs: SPEED_LIMIT_DELAY,
 });
 
 /**

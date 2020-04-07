@@ -2,7 +2,7 @@ import {
   RESOURCE_CREATED,
   RESOURCE_DELETED,
   RESOURCE_SUCCESS,
-  respond
+  respond,
 } from "@staart/messages";
 import {
   ClassMiddleware,
@@ -12,7 +12,7 @@ import {
   Post,
   Put,
   Request,
-  Response
+  Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../helpers/middleware";
@@ -22,7 +22,7 @@ import {
   addEmailToUserForUser,
   getEmailForUser,
   resendEmailVerificationForUser,
-  deleteEmailFromUserForUser
+  deleteEmailFromUserForUser,
 } from "../../rest/user";
 
 @Controller(":id/emails")
@@ -42,9 +42,7 @@ export class UserEmailsController {
     joiValidate(
       {
         id: Joi.string().required(),
-        email: Joi.string()
-          .email()
-          .required()
+        email: Joi.string().email().required(),
       },
       { id, email }
     );
@@ -59,7 +57,7 @@ export class UserEmailsController {
     joiValidate(
       {
         id: Joi.string().required(),
-        emailId: Joi.string().required()
+        emailId: Joi.string().required(),
       },
       { id, emailId }
     );
@@ -73,7 +71,7 @@ export class UserEmailsController {
     joiValidate(
       {
         id: Joi.string().required(),
-        emailId: Joi.string().required()
+        emailId: Joi.string().required(),
       },
       { id, emailId }
     );
@@ -88,7 +86,7 @@ export class UserEmailsController {
     joiValidate(
       {
         id: Joi.string().required(),
-        emailId: Joi.string().required()
+        emailId: Joi.string().required(),
       },
       { id, emailId }
     );

@@ -2,7 +2,7 @@ import {
   RESOURCE_CREATED,
   RESOURCE_DELETED,
   RESOURCE_UPDATED,
-  respond
+  respond,
 } from "@staart/messages";
 import {
   ClassMiddleware,
@@ -13,20 +13,20 @@ import {
   Patch,
   Put,
   Request,
-  Response
+  Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../helpers/middleware";
 import {
   localsToTokenOrKey,
-  organizationUsernameToId
+  organizationUsernameToId,
 } from "../../helpers/utils";
 import {
   createWebhookForUser,
   deleteWebhookForUser,
   getOrganizationWebhookForUser,
   getOrganizationWebhooksForUser,
-  updateWebhookForUser
+  updateWebhookForUser,
 } from "../../rest/organization";
 
 @Controller(":id/webhooks")
@@ -40,7 +40,7 @@ export class OrganizationWebhooksController {
     joiValidate(
       {
         start: Joi.string(),
-        itemsPerPage: Joi.number()
+        itemsPerPage: Joi.number(),
       },
       webhookParams
     );
@@ -59,7 +59,7 @@ export class OrganizationWebhooksController {
         url: Joi.string().required(),
         contentType: Joi.string(),
         secret: Joi.string().allow(),
-        isActive: Joi.boolean()
+        isActive: Joi.boolean(),
       },
       "body"
     )
@@ -83,7 +83,7 @@ export class OrganizationWebhooksController {
     joiValidate(
       {
         id: Joi.string().required(),
-        webhookId: Joi.string().required()
+        webhookId: Joi.string().required(),
       },
       { id, webhookId }
     );
@@ -102,7 +102,7 @@ export class OrganizationWebhooksController {
         url: Joi.string(),
         contentType: Joi.string(),
         secret: Joi.string(),
-        isActive: Joi.boolean()
+        isActive: Joi.boolean(),
       },
       "body"
     )
@@ -113,7 +113,7 @@ export class OrganizationWebhooksController {
     joiValidate(
       {
         id: Joi.string().required(),
-        webhookId: Joi.string().required()
+        webhookId: Joi.string().required(),
       },
       { id, webhookId }
     );
@@ -134,7 +134,7 @@ export class OrganizationWebhooksController {
     joiValidate(
       {
         id: Joi.string().required(),
-        webhookId: Joi.string().required()
+        webhookId: Joi.string().required(),
       },
       { id, webhookId }
     );

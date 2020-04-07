@@ -1,21 +1,21 @@
 # Contributing
 
 When contributing to this repository, please first discuss the change you wish to make via issue,
-email, or any other method with the owners of this repository before making a change. 
+email, or any other method with the owners of this repository before making a change.
 
 Please note we have a code of conduct, please follow it in all your interactions with the project.
 
 ## Pull Request Process
 
 1. When making commits, make sure you are using [Gitmoji](https://github.com/carloscuesta/gitmoji).
-2. Ensure any install or build dependencies are removed before the end of the layer when doing a 
+2. Ensure any install or build dependencies are removed before the end of the layer when doing a
    build.
-3. Update the README.md with details of changes to the interface, this includes new environment 
+3. Update the README.md with details of changes to the interface, this includes new environment
    variables, exposed ports, useful file locations and container parameters.
-4. Increase the version numbers in any examples files and the README.md to the new version that this 
+4. Increase the version numbers in any examples files and the README.md to the new version that this
    Pull Request would represent. We increase the patch version in every commit to ensure people
    using Staart are always on the most recent version using our internal update system.
-5. You may merge the Pull Request in once you have the review sign-off of Anand Chowdhary, or if you 
+5. You may merge the Pull Request in once you have the review sign-off of Anand Chowdhary, or if you
    do not have permission to do that, you may request a reviewer to merge it for you.
 
 ## Code of Conduct
@@ -34,21 +34,21 @@ orientation.
 Examples of behavior that contributes to creating a positive environment
 include:
 
-* Using welcoming and inclusive language
-* Being respectful of differing viewpoints and experiences
-* Gracefully accepting constructive criticism
-* Focusing on what is best for the community
-* Showing empathy towards other community members
+- Using welcoming and inclusive language
+- Being respectful of differing viewpoints and experiences
+- Gracefully accepting constructive criticism
+- Focusing on what is best for the community
+- Showing empathy towards other community members
 
 Examples of unacceptable behavior by participants include:
 
-* The use of sexualized language or imagery and unwelcome sexual attention or
-advances
-* Trolling, insulting/derogatory comments, and personal or political attacks
-* Public or private harassment
-* Publishing others' private information, such as a physical or electronic
+- The use of sexualized language or imagery and unwelcome sexual attention or
+  advances
+- Trolling, insulting/derogatory comments, and personal or political attacks
+- Public or private harassment
+- Publishing others' private information, such as a physical or electronic
   address, without explicit permission
-* Other conduct which could reasonably be considered inappropriate in a
+- Other conduct which could reasonably be considered inappropriate in a
   professional setting
 
 ### Our Responsibilities

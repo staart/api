@@ -5,7 +5,7 @@ import {
   Delete,
   Get,
   Request,
-  Response
+  Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../helpers/middleware";
@@ -13,7 +13,7 @@ import { userUsernameToId } from "../../helpers/utils";
 import {
   deleteSessionForUser,
   getUserSessionForUser,
-  getUserSessionsForUser
+  getUserSessionsForUser,
 } from "../../rest/user";
 
 @Controller(":id/sessions")
@@ -27,7 +27,7 @@ export class UserSessionsController {
     joiValidate(
       {
         start: Joi.string(),
-        itemsPerPage: Joi.number()
+        itemsPerPage: Joi.number(),
       },
       sessionParams
     );
@@ -41,7 +41,7 @@ export class UserSessionsController {
     joiValidate(
       {
         id: Joi.string().required(),
-        sessionId: Joi.string().required()
+        sessionId: Joi.string().required(),
       },
       { id, sessionId }
     );
@@ -55,7 +55,7 @@ export class UserSessionsController {
     joiValidate(
       {
         id: Joi.string().required(),
-        sessionId: Joi.string().required()
+        sessionId: Joi.string().required(),
       },
       { id, sessionId }
     );

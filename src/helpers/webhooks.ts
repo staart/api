@@ -27,7 +27,12 @@ export const queueWebhook = (
     .then(() =>
       redisQueue.sendMessageAsync({
         qname: WEBHOOK_QUEUE,
-        message: JSON.stringify({ organizationId, webhook, data, tryNumber: 1 })
+        message: JSON.stringify({
+          organizationId,
+          webhook,
+          data,
+          tryNumber: 1,
+        }),
       })
     )
     .then(() => {})
@@ -37,14 +42,14 @@ export const queueWebhook = (
 export const receiveWebhookMessage = async () => {
   await setupQueue();
   const result = await redisQueue.receiveMessageAsync({
-    qname: WEBHOOK_QUEUE
+    qname: WEBHOOK_QUEUE,
   });
   if ("id" in result) {
     const {
       organizationId,
       webhook,
       data,
-      tryNumber
+      tryNumber,
     }: {
       tryNumber: number;
       organizationId: string;
@@ -55,7 +60,7 @@ export const receiveWebhookMessage = async () => {
       logError("Webhook", `Unable to fire: ${organizationId} ${webhook}`);
       return redisQueue.deleteMessageAsync({
         qname: WEBHOOK_QUEUE,
-        id: result.id
+        id: result.id,
       });
     }
     try {
@@ -67,13 +72,13 @@ export const receiveWebhookMessage = async () => {
           organizationId,
           webhook,
           data,
-          tryNumber: tryNumber + 1
-        })
+          tryNumber: tryNumber + 1,
+        }),
       });
     }
     await redisQueue.deleteMessageAsync({
       qname: WEBHOOK_QUEUE,
-      id: result.id
+      id: result.id,
     });
     receiveWebhookMessage();
   }
@@ -85,7 +90,7 @@ const safeFireWebhook = async (
   data?: any
 ) => {
   const webhooksToFire = await prisma.webhooks.findMany({
-    where: { organizationId: parseInt(organizationId), event: webhook }
+    where: { organizationId: parseInt(organizationId), event: webhook },
   });
   for await (const hook of webhooksToFire) {
     try {
@@ -109,18 +114,18 @@ export const fireSingleWebhook = async (
     headers: {
       "User-Agent": `${JWT_ISSUER}-webhook-service`,
       "X-Signature": secret,
-      "Content-Type": webhook.contentType
+      "Content-Type": webhook.contentType,
     },
     data: {
       hookType,
-      data
-    }
+      data,
+    },
   };
   const result = await axios.post(webhook.url, options);
   if (webhook.id)
     await prisma.webhooks.update({
       where: { id: webhook.id },
-      data: { lastFiredAt: new Date() }
+      data: { lastFiredAt: new Date() },
     });
   return result;
 };

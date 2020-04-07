@@ -20,14 +20,14 @@ const setupQueue = async () => {
 export const receiveEmailMessage = async () => {
   await setupQueue();
   const result = await redisQueue.receiveMessageAsync({
-    qname: MAIL_QUEUE
+    qname: MAIL_QUEUE,
   });
   if ("id" in result) {
     const {
       to,
       template,
       data,
-      tryNumber
+      tryNumber,
     }: {
       to: string;
       template: string;
@@ -38,7 +38,7 @@ export const receiveEmailMessage = async () => {
       logError("Email", `Unable to send email: ${to}`);
       return redisQueue.deleteMessageAsync({
         qname: MAIL_QUEUE,
-        id: result.id
+        id: result.id,
       });
     }
     try {
@@ -50,13 +50,13 @@ export const receiveEmailMessage = async () => {
           to,
           template,
           data,
-          tryNumber: tryNumber + 1
-        })
+          tryNumber: tryNumber + 1,
+        }),
       });
     }
     await redisQueue.deleteMessageAsync({
       qname: MAIL_QUEUE,
-      id: result.id
+      id: result.id,
     });
     receiveEmailMessage();
   }
@@ -69,7 +69,7 @@ export const mail = async (to: string, template: string, data: any = {}) => {
   await setupQueue();
   await redisQueue.sendMessageAsync({
     qname: MAIL_QUEUE,
-    message: JSON.stringify({ to, template, data, tryNumber: 1 })
+    message: JSON.stringify({ to, template, data, tryNumber: 1 }),
   });
 };
 
@@ -88,6 +88,6 @@ const safeSendEmail = async (to: string, template: string, data: any = {}) => {
     to: to.toString(),
     subject: result[1].split("\n", 1)[0].replace(/<\/?[^>]+(>|$)/g, ""),
     message,
-    altText
+    altText,
   });
 };

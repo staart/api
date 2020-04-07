@@ -4,18 +4,18 @@ import {
   Get,
   Patch,
   Request,
-  Response
+  Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../helpers/middleware";
 import {
   localsToTokenOrKey,
-  organizationUsernameToId
+  organizationUsernameToId,
 } from "../../helpers/utils";
 import {
   getOrganizationBillingForUser,
   getOrganizationPricingPlansForUser,
-  updateOrganizationBillingForUser
+  updateOrganizationBillingForUser,
 } from "../../rest/organization";
 
 @Controller(":id")
@@ -55,7 +55,7 @@ export class OrganizationBillingController {
     const organizationId = await organizationUsernameToId(req.params.id);
     joiValidate(
       {
-        organizationId: Joi.string().required()
+        organizationId: Joi.string().required(),
       },
       { organizationId }
     );

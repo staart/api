@@ -5,7 +5,7 @@ import {
   Request,
   RequestHandler,
   Response,
-  Wrapper
+  Wrapper,
 } from "@staart/server";
 import { stringify } from "querystring";
 import { BASE_URL, FRONTEND_URL } from "../../config";
@@ -17,7 +17,7 @@ import {
   github,
   google,
   microsoft,
-  salesforce
+  salesforce,
 } from "../../rest/oauth";
 
 const OAuthRedirector = (action: RequestHandler) => (
@@ -30,7 +30,7 @@ const OAuthRedirector = (action: RequestHandler) => (
       `${FRONTEND_URL}/errors/oauth?${stringify({
         ...args[0].params,
         ...args[0].query,
-        error: error.toString().replace("Error: ", "")
+        error: error.toString().replace("Error: ", ""),
       })}`
     );
   });
@@ -45,7 +45,7 @@ const OAuthRedirect = (
     res,
     `${FRONTEND_URL}/auth/token?${stringify({
       ...response,
-      subject: Tokens.LOGIN
+      subject: Tokens.LOGIN,
     })}`
   );
 };

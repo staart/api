@@ -12,7 +12,7 @@ import {
   MICROSOFT_CLIENT_ID,
   MICROSOFT_CLIENT_SECRET,
   SALESFORCE_CLIENT_ID,
-  SALESFORCE_CLIENT_SECRET
+  SALESFORCE_CLIENT_SECRET,
 } from "../config";
 import { getLoginResponse } from "../helpers/jwt";
 import { EventType } from "../interfaces/enum";
@@ -32,7 +32,7 @@ export const loginWithOAuth2Service = async (
   if (!name) throw new Error(OAUTH_NO_NAME);
   if (!email) throw new Error(OAUTH_NO_EMAIL);
   const allUsers = await prisma.users.findMany({
-    where: { emails: { some: { email } } }
+    where: { emails: { some: { email } } },
   });
   if (allUsers.length)
     return getLoginResponse(
@@ -50,7 +50,7 @@ export const loginWithOAuth2Service = async (
     true
   );
   const loggedInUser = await prisma.users.findOne({
-    where: { id: newUser.userId }
+    where: { id: newUser.userId },
   });
   if (!loggedInUser) throw new Error(USER_NOT_FOUND);
   return getLoginResponse(
@@ -68,20 +68,20 @@ export const salesforce = {
     redirectUri: getRedirectUri("salesforce"),
     authorizationUri: "https://login.salesforce.com/services/oauth2/authorize",
     accessTokenUri: "https://login.salesforce.com/services/oauth2/token",
-    scopes: ["id"]
+    scopes: ["id"],
   }),
   callback: async (url: string, locals: Locals) => {
     const token = (await salesforce.client.code.getToken(url)).accessToken;
     const data = (
       await axios.get("https://login.salesforce.com/services/oauth2/userinfo", {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       })
     ).data;
     if (!data.email_verified) throw new Error(OAUTH_NO_EMAIL);
     return loginWithOAuth2Service("salesforce", data.name, data.email, locals);
-  }
+  },
 };
 export const github = {
   client: new ClientOAuth2({
@@ -90,19 +90,19 @@ export const github = {
     redirectUri: getRedirectUri("github"),
     authorizationUri: "https://github.com/login/oauth/authorize",
     accessTokenUri: "https://github.com/login/oauth/access_token",
-    scopes: ["read:user", "user:email"]
+    scopes: ["read:user", "user:email"],
   }),
   callback: async (url: string, locals: Locals) => {
     const token = (await github.client.code.getToken(url)).accessToken;
     const data = (
       await axios.get("https://api.github.com/user", {
         headers: {
-          Authorization: `token ${token}`
-        }
+          Authorization: `token ${token}`,
+        },
       })
     ).data;
     return loginWithOAuth2Service("github", data.name, data.email, locals);
-  }
+  },
 };
 export const facebook = {
   client: new ClientOAuth2({
@@ -111,7 +111,7 @@ export const facebook = {
     redirectUri: getRedirectUri("facebook"),
     authorizationUri: "https://www.facebook.com/v3.3/dialog/oauth",
     accessTokenUri: "https://graph.facebook.com/v3.3/oauth/access_token",
-    scopes: ["email"]
+    scopes: ["email"],
   }),
   callback: async (url: string, locals: Locals) => {
     const token = (await facebook.client.code.getToken(url)).accessToken;
@@ -121,7 +121,7 @@ export const facebook = {
       )
     ).data;
     return loginWithOAuth2Service("facebook", data.name, data.email, locals);
-  }
+  },
 };
 export const google = {
   client: new ClientOAuth2({
@@ -130,7 +130,7 @@ export const google = {
     redirectUri: getRedirectUri("google"),
     authorizationUri: "https://accounts.google.com/o/oauth2/v2/auth",
     accessTokenUri: "https://www.googleapis.com/oauth2/v4/token",
-    scopes: ["https://www.googleapis.com/auth/userinfo.email"]
+    scopes: ["https://www.googleapis.com/auth/userinfo.email"],
   }),
   callback: async (url: string, locals: Locals) => {
     // const token = (await google.client.code.getToken(url));
@@ -142,7 +142,7 @@ export const google = {
     //   }
     // })).data;
     // return loginWithOAuth2Service("google", data.name, data.email, locals);
-  }
+  },
 };
 export const microsoft = {
   client: new ClientOAuth2({
@@ -152,15 +152,15 @@ export const microsoft = {
     authorizationUri:
       "https://login.microsoftonline.com/common/oauth2/authorize",
     accessTokenUri: "https://login.microsoftonline.com/common/oauth2/token",
-    scopes: ["user.read", "mail.read"]
+    scopes: ["user.read", "mail.read"],
   }),
   callback: async (url: string, locals: Locals) => {
     const token = (await microsoft.client.code.getToken(url)).accessToken;
     const data = (
       await axios.get("https://graph.microsoft.com/v1.0/me", {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       })
     ).data;
     console.log(JSON.stringify(data));
@@ -170,5 +170,5 @@ export const microsoft = {
       data.mail,
       locals
     );
-  }
+  },
 };

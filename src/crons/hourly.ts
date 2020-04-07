@@ -18,8 +18,8 @@ const deleteExpiredSessions = async () => {
   await prisma.sessions.deleteMany({
     where: {
       createdAt: {
-        lte: new Date(new Date().getTime() - ms(TOKEN_EXPIRY_REFRESH))
-      }
-    }
+        lte: new Date(new Date().getTime() - ms(TOKEN_EXPIRY_REFRESH)),
+      },
+    },
   });
 };

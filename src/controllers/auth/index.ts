@@ -3,7 +3,7 @@ import {
   RESOURCE_CREATED,
   RESOURCE_SUCCESS,
   RESOURCE_UPDATED,
-  respond
+  respond,
 } from "@staart/messages";
 import {
   ChildControllers,
@@ -11,14 +11,14 @@ import {
   Middleware,
   Post,
   Request,
-  Response
+  Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { verifyToken } from "../../helpers/jwt";
 import {
   authHandler,
   bruteForceHandler,
-  validator
+  validator,
 } from "../../helpers/middleware";
 import {
   approveLocation,
@@ -30,7 +30,7 @@ import {
   sendPasswordReset,
   updatePassword,
   validateRefreshToken,
-  verifyEmail
+  verifyEmail,
 } from "../../rest/auth";
 import { AuthOAuthController } from "./oauth";
 import { addInvitationCredits } from "../../rest/user";
@@ -43,9 +43,7 @@ export class AuthController {
   @Middleware(
     validator(
       {
-        email: Joi.string()
-          .email()
-          .required(),
+        email: Joi.string().email().required(),
         name: Joi.string()
           .min(3)
           .regex(/^[a-zA-Z ]*$/)
@@ -53,11 +51,9 @@ export class AuthController {
         countryCode: Joi.string().length(2),
         password: Joi.string().min(6),
         gender: Joi.string().length(1),
-        preferredLanguage: Joi.string()
-          .min(2)
-          .max(5),
+        preferredLanguage: Joi.string().min(2).max(5),
         timezone: Joi.string(),
-        invitedByUser: Joi.string().optional()
+        invitedByUser: Joi.string().optional(),
       },
       "body"
     )
@@ -88,12 +84,8 @@ export class AuthController {
   @Middleware(
     validator(
       {
-        email: Joi.string()
-          .email()
-          .required(),
-        password: Joi.string()
-          .min(6)
-          .required()
+        email: Joi.string().email().required(),
+        password: Joi.string().min(6).required(),
       },
       "body"
     )
@@ -107,9 +99,7 @@ export class AuthController {
     validator(
       {
         token: Joi.string().required(),
-        code: Joi.number()
-          .min(5)
-          .required()
+        code: Joi.number().min(5).required(),
       },
       "body"
     )
@@ -125,7 +115,7 @@ export class AuthController {
     validator(
       {
         token: Joi.string().required(),
-        subject: Joi.string().required()
+        subject: Joi.string().required(),
       },
       "body"
     )
@@ -163,9 +153,7 @@ export class AuthController {
   @Middleware(
     validator(
       {
-        email: Joi.string()
-          .email()
-          .required()
+        email: Joi.string().email().required(),
       },
       "body"
     )
@@ -184,9 +172,7 @@ export class AuthController {
     joiValidate(
       {
         token: Joi.string().required(),
-        password: Joi.string()
-          .min(6)
-          .required()
+        password: Joi.string().min(6).required(),
       },
       { token, password }
     );

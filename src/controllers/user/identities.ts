@@ -7,7 +7,7 @@ import {
   Post,
   Put,
   Request,
-  Response
+  Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../helpers/middleware";
@@ -17,7 +17,7 @@ import {
   createUserIdentityForUser,
   deleteIdentityForUser,
   getUserIdentitiesForUser,
-  getUserIdentityForUser
+  getUserIdentityForUser,
 } from "../../rest/user";
 
 @Controller(":id/identities")
@@ -31,7 +31,7 @@ export class UserIdentitiesController {
     joiValidate(
       {
         start: Joi.string(),
-        itemsPerPage: Joi.number()
+        itemsPerPage: Joi.number(),
       },
       identityParams
     );
@@ -66,7 +66,7 @@ export class UserIdentitiesController {
     joiValidate(
       {
         id: Joi.string().required(),
-        identityId: Joi.string().required()
+        identityId: Joi.string().required(),
       },
       { id, identityId }
     );
@@ -80,7 +80,7 @@ export class UserIdentitiesController {
     joiValidate(
       {
         id: Joi.string().required(),
-        identityId: Joi.string().required()
+        identityId: Joi.string().required(),
       },
       { id, identityId }
     );

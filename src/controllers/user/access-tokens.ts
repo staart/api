@@ -2,7 +2,7 @@ import {
   RESOURCE_CREATED,
   RESOURCE_DELETED,
   RESOURCE_UPDATED,
-  respond
+  respond,
 } from "@staart/messages";
 import {
   ClassMiddleware,
@@ -13,7 +13,7 @@ import {
   Patch,
   Put,
   Request,
-  Response
+  Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../helpers/middleware";
@@ -23,7 +23,7 @@ import {
   deleteAccessTokenForUser,
   getUserAccessTokenForUser,
   getUserAccessTokensForUser,
-  updateAccessTokenForUser
+  updateAccessTokenForUser,
 } from "../../rest/user";
 
 @Controller(":id/access-tokens")
@@ -37,7 +37,7 @@ export class UserAccessTokensController {
     joiValidate(
       {
         start: Joi.string(),
-        itemsPerPage: Joi.number()
+        itemsPerPage: Joi.number(),
       },
       accessTokenParams
     );
@@ -54,7 +54,7 @@ export class UserAccessTokensController {
       {
         scopes: Joi.string(),
         name: Joi.string(),
-        description: Joi.string()
+        description: Joi.string(),
       },
       "body"
     )
@@ -78,7 +78,7 @@ export class UserAccessTokensController {
     joiValidate(
       {
         id: Joi.string().required(),
-        accessTokenId: Joi.string().required()
+        accessTokenId: Joi.string().required(),
       },
       { id, accessTokenId }
     );
@@ -91,7 +91,7 @@ export class UserAccessTokensController {
       {
         scopes: Joi.string().allow(),
         name: Joi.string().allow(),
-        description: Joi.string().allow()
+        description: Joi.string().allow(),
       },
       "body"
     )
@@ -102,7 +102,7 @@ export class UserAccessTokensController {
     joiValidate(
       {
         id: Joi.string().required(),
-        accessTokenId: Joi.string().required()
+        accessTokenId: Joi.string().required(),
       },
       { id, accessTokenId }
     );
@@ -123,7 +123,7 @@ export class UserAccessTokensController {
     joiValidate(
       {
         id: Joi.string().required(),
-        accessTokenId: Joi.string().required()
+        accessTokenId: Joi.string().required(),
       },
       { id, accessTokenId }
     );

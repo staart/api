@@ -4,7 +4,7 @@ import {
   REVOKED_TOKEN,
   UNAPPROVED_LOCATION,
   UNVERIFIED_EMAIL,
-  USER_NOT_FOUND
+  USER_NOT_FOUND,
 } from "@staart/errors";
 import redis from "@staart/redis";
 import { ipRangeCheck, randomString } from "@staart/text";
@@ -17,7 +17,7 @@ import {
   TOKEN_EXPIRY_EMAIL_VERIFICATION,
   TOKEN_EXPIRY_LOGIN,
   TOKEN_EXPIRY_PASSWORD_RESET,
-  TOKEN_EXPIRY_REFRESH
+  TOKEN_EXPIRY_REFRESH,
 } from "../config";
 import { EventType, Templates, Tokens } from "../interfaces/enum";
 import { Locals } from "../interfaces/general";
@@ -26,20 +26,20 @@ import { mail } from "./mail";
 import {
   deleteSensitiveInfoUser,
   includesDomainInCommaList,
-  removeFalsyValues
+  removeFalsyValues,
 } from "./utils";
 import {
   access_tokensCreateInput,
   access_tokensUpdateInput,
   users,
   api_keysCreateInput,
-  api_keysUpdateInput
+  api_keysUpdateInput,
 } from "@prisma/client";
 import { prisma } from "./prisma";
 import {
   updateSessionByJwt,
   checkApprovedLocation,
-  getUserPrimaryEmail
+  getUserPrimaryEmail,
 } from "../services/user.service";
 
 /**
@@ -59,7 +59,7 @@ export const generateToken = (
         expiresIn,
         subject,
         issuer: JWT_ISSUER,
-        jwtid: randomString({ length: 12 })
+        jwtid: randomString({ length: 12 }),
       },
       (error, token) => {
         if (error) return reject(error);
@@ -214,18 +214,18 @@ export const postLoginTokens = async (
         jwtToken,
         ipAddress: locals.ipAddress || "unknown-ip-address",
         userAgent: locals.userAgent || "unknown-user-agent",
-        user: { connect: { id: user.id } }
-      }
+        user: { connect: { id: user.id } },
+      },
     });
   } else {
     await updateSessionByJwt(user.id, refreshTokenString, {});
   }
   return {
     token: await loginToken({
-      ...deleteSensitiveInfoUser(user)
+      ...deleteSensitiveInfoUser(user),
       // email: (await getUserBestEmail(user.id)).email
     }),
-    refresh: !refreshTokenString ? refresh : undefined
+    refresh: !refreshTokenString ? refresh : undefined,
   };
 };
 
@@ -246,7 +246,7 @@ export const getLoginResponse = async (
 ): Promise<LoginResponse> => {
   if (!user.id) throw new Error(USER_NOT_FOUND);
   const verifiedEmails = await prisma.emails.findMany({
-    where: { userId: user.id, isVerified: true }
+    where: { userId: user.id, isVerified: true },
   });
   if (!verifiedEmails.length) throw new Error(UNVERIFIED_EMAIL);
   if (locals) {
@@ -260,7 +260,7 @@ export const getLoginResponse = async (
           location: location
             ? location.city || location.region_name || location.country_code
             : "Unknown location",
-          token: await approveLocationToken(user.id, locals.ipAddress)
+          token: await approveLocationToken(user.id, locals.ipAddress),
         }
       );
       throw new Error(UNAPPROVED_LOCATION);
@@ -268,7 +268,7 @@ export const getLoginResponse = async (
   }
   if (user.twoFactorEnabled)
     return {
-      twoFactorToken: await twoFactorToken(user)
+      twoFactorToken: await twoFactorToken(user),
     };
   return postLoginTokens(user, locals);
 };
@@ -302,7 +302,7 @@ export const invalidateToken = async (token: string) => {
       "1",
       details.exp && [
         "EX",
-        Math.floor((details.exp - new Date().getTime()) / 1000)
+        Math.floor((details.exp - new Date().getTime()) / 1000),
       ]
     );
 };
@@ -312,7 +312,7 @@ export const checkIpRestrictions = (apiKey: ApiKeyResponse, locals: Locals) => {
   if (
     !ipRangeCheck(
       locals.ipAddress,
-      apiKey.ipRestrictions.split(",").map(range => range.trim())
+      apiKey.ipRestrictions.split(",").map((range) => range.trim())
     )
   )
     throw new Error(IP_RANGE_CHECK_FAIL);

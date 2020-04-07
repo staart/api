@@ -8,7 +8,7 @@ import {
   Post,
   Put,
   Request,
-  Response
+  Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../helpers/middleware";
@@ -20,7 +20,7 @@ import {
   getBackupCodesForUser,
   regenerateBackupCodesForUser,
   updatePasswordForUser,
-  verify2FAForUser
+  verify2FAForUser,
 } from "../../rest/user";
 
 @Controller(":id")
@@ -30,12 +30,8 @@ export class UserSecurityController {
   @Middleware(
     validator(
       {
-        oldPassword: Joi.string()
-          .min(6)
-          .required(),
-        newPassword: Joi.string()
-          .min(6)
-          .required()
+        oldPassword: Joi.string().min(6).required(),
+        newPassword: Joi.string().min(6).required(),
       },
       "body"
     )
@@ -46,7 +42,7 @@ export class UserSecurityController {
     const newPassword = req.body.newPassword;
     joiValidate(
       {
-        id: Joi.string().required()
+        id: Joi.string().required(),
       },
       { id }
     );
@@ -81,9 +77,7 @@ export class UserSecurityController {
     joiValidate(
       {
         id: Joi.string().required(),
-        code: Joi.number()
-          .min(5)
-          .required()
+        code: Joi.number().min(5).required(),
       },
       { id, code }
     );

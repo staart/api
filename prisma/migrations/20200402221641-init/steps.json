@@ -4,56 +4,32 @@
     {
       "tag": "CreateEnum",
       "enum": "Gender",
-      "values": [
-        "MALE",
-        "FEMALE",
-        "NONBINARY",
-        "UNKNOWN"
-      ]
+      "values": ["MALE", "FEMALE", "NONBINARY", "UNKNOWN"]
     },
     {
       "tag": "CreateEnum",
       "enum": "NotificationEmails",
-      "values": [
-        "ACCOUNT",
-        "UPDATES",
-        "PROMOTIONS"
-      ]
+      "values": ["ACCOUNT", "UPDATES", "PROMOTIONS"]
     },
     {
       "tag": "CreateEnum",
       "enum": "PrefersColorScheme",
-      "values": [
-        "NO_PREFERENCE",
-        "LIGHT",
-        "DARK"
-      ]
+      "values": ["NO_PREFERENCE", "LIGHT", "DARK"]
     },
     {
       "tag": "CreateEnum",
       "enum": "PrefersReducedMotion",
-      "values": [
-        "NO_PREFERENCE",
-        "REDUCE"
-      ]
+      "values": ["NO_PREFERENCE", "REDUCE"]
     },
     {
       "tag": "CreateEnum",
       "enum": "UserRole",
-      "values": [
-        "SUDO",
-        "USER"
-      ]
+      "values": ["SUDO", "USER"]
     },
     {
       "tag": "CreateEnum",
       "enum": "MembershipRole",
-      "values": [
-        "OWNER",
-        "ADMIN",
-        "RESELLER",
-        "MEMBER"
-      ]
+      "values": ["OWNER", "ADMIN", "RESELLER", "MEMBER"]
     },
     {
       "tag": "CreateSource",

@@ -1,7 +1,7 @@
 import {
   ORGANIZATION_NOT_FOUND,
   USER_NOT_FOUND,
-  INVALID_TOKEN
+  INVALID_TOKEN,
 } from "@staart/errors";
 import { OrgScopes, Tokens, UserScopes, SudoScopes } from "../interfaces/enum";
 import { ApiKeyResponse, AccessTokenResponse } from "./jwt";
@@ -10,7 +10,7 @@ import {
   organizations,
   memberships,
   access_tokens,
-  api_keys
+  api_keys,
 } from "@prisma/client";
 import { prisma } from "./prisma";
 
@@ -25,23 +25,23 @@ const canUserUser = async (user: users, action: UserScopes, target: users) => {
   if (user.id === target.id) return true;
 
   const userMemberships = await prisma.memberships.findMany({
-    where: { user: user }
+    where: { user: user },
   });
   const targetMemberships = await prisma.memberships.findMany({
-    where: { user: target }
+    where: { user: target },
   });
 
   let allowed = false;
 
   const similarMemberships: Array<number> = [];
   userMemberships.forEach((userMembership, index) => {
-    targetMemberships.forEach(targetMembership => {
+    targetMemberships.forEach((targetMembership) => {
       if (userMembership.id && userMembership.id === targetMembership.id)
         similarMemberships.push(index);
     });
   });
 
-  similarMemberships.forEach(similarMembership => {
+  similarMemberships.forEach((similarMembership) => {
     // A user can read another user in the same organization, as long as they're not a basic member
     if (action === UserScopes.READ_USER)
       if (userMemberships[similarMembership].role) allowed = true;
@@ -80,11 +80,11 @@ const canUserOrganization = async (
 
   const memberships = await prisma.memberships.findMany({ where: { user } });
   const targetMemberships = memberships.filter(
-    m => m.organizationId === target.id
+    (m) => m.organizationId === target.id
   );
 
   let allowed = false;
-  targetMemberships.forEach(membership => {
+  targetMemberships.forEach((membership) => {
     // An organization owner can do anything
     if (membership.role === "OWNER") allowed = true;
 
@@ -125,7 +125,7 @@ const canUserMembership = async (
   const memberships = await prisma.memberships.findMany({ where: { user } });
 
   let allowed = false;
-  memberships.forEach(membership => {
+  memberships.forEach((membership) => {
     // An admin, owner, or reseller can edit
     if (
       membership.organizationId === target.organizationId &&
@@ -199,7 +199,7 @@ export const can = async (
     }
   } else {
     const result = await prisma.users.findOne({
-      where: { id: parseInt(user) }
+      where: { id: parseInt(user) },
     });
     if (!result) throw new Error(USER_NOT_FOUND);
     user = result;
@@ -213,20 +213,20 @@ export const can = async (
   if (typeof target === "string") {
     if (targetType === "membership") {
       const membership = await prisma.memberships.findOne({
-        where: { id: parseInt(target) }
+        where: { id: parseInt(target) },
       });
       if (!membership) throw new Error(USER_NOT_FOUND);
       target = membership;
     } else if (targetType === "organization") {
       const organization = await prisma.organizations.findOne({
-        where: { id: parseInt(target) }
+        where: { id: parseInt(target) },
       });
       if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
       target = organization;
     } else {
       // Target is a user
       const user = await prisma.users.findOne({
-        where: { id: parseInt(target) }
+        where: { id: parseInt(target) },
       });
       if (!user) throw new Error(USER_NOT_FOUND);
       target = user;
@@ -235,7 +235,7 @@ export const can = async (
 
   if (requestFromType === "api_keys") {
     const apiKeyDetails = await prisma.api_keys.findOne({
-      where: { id: parseInt((user as ApiKeyResponse).id) }
+      where: { id: parseInt((user as ApiKeyResponse).id) },
     });
     if (!apiKeyDetails || !target) throw new Error(INVALID_TOKEN);
     return canApiKeyOrganization(
@@ -245,7 +245,7 @@ export const can = async (
     );
   } else if (requestFromType === "access_tokens") {
     const accessTokenDetails = await prisma.access_tokens.findOne({
-      where: { id: parseInt((user as ApiKeyResponse).id) }
+      where: { id: parseInt((user as ApiKeyResponse).id) },
     });
     if (!accessTokenDetails || !target) throw new Error(INVALID_TOKEN);
     return canAccessTokenUser(

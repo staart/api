@@ -11,7 +11,7 @@ import {
   CANNOT_DELETE_SOLE_MEMBER,
   CANNOT_DELETE_SOLE_OWNER,
   CANNOT_UPDATE_SOLE_OWNER,
-  MEMBERSHIP_NOT_FOUND
+  MEMBERSHIP_NOT_FOUND,
 } from "@staart/errors";
 import { compare } from "@staart/text";
 import { authenticator } from "otplib";
@@ -21,7 +21,7 @@ import {
   createBackupCodes,
   getUserPrimaryEmail,
   getUserBestEmail,
-  resendEmailVerification
+  resendEmailVerification,
 } from "../services/user.service";
 import { can } from "../helpers/authorization";
 import { trackEvent } from "../helpers/tracking";
@@ -55,7 +55,7 @@ import {
   emailsInclude,
   emailsOrderByInput,
   emailsWhereUniqueInput,
-  membershipsUpdateInput
+  membershipsUpdateInput,
 } from "@prisma/client";
 import { ALLOW_DISPOSABLE_EMAILS } from "../config";
 import { checkIfDisposableEmail } from "@staart/disposable-email";
@@ -64,7 +64,7 @@ import { ApiKeyResponse } from "../helpers/jwt";
 export const getUserFromId = async (userId: string, tokenUserId: string) => {
   if (await can(tokenUserId, UserScopes.READ_USER, "user", userId)) {
     const user = await prisma.users.findOne({
-      where: { id: parseInt(userId) }
+      where: { id: parseInt(userId) },
     });
     if (user) return user;
     throw new Error(USER_NOT_FOUND);
@@ -82,13 +82,13 @@ export const updateUserForUser = async (
   if (await can(tokenUserId, UserScopes.UPDATE_USER, "user", updateUserId)) {
     const user = await prisma.users.update({
       data,
-      where: { id: parseInt(updateUserId) }
+      where: { id: parseInt(updateUserId) },
     });
     trackEvent(
       {
         userId: tokenUserId,
         type: EventType.USER_UPDATED,
-        data: { id: updateUserId, data }
+        data: { id: updateUserId, data },
       },
       locals
     );
@@ -108,7 +108,7 @@ export const updatePasswordForUser = async (
     await can(tokenUserId, UserScopes.CHANGE_PASSWORD, "user", updateUserId)
   ) {
     const user = await prisma.users.findOne({
-      where: { id: parseInt(updateUserId) }
+      where: { id: parseInt(updateUserId) },
     });
     if (!user) throw new Error(USER_NOT_FOUND);
     if (!user.password) throw new Error(MISSING_PASSWORD);
@@ -116,13 +116,13 @@ export const updatePasswordForUser = async (
     if (!correctPassword) throw new Error(INCORRECT_PASSWORD);
     const result = await prisma.users.update({
       data: { password: newPassword },
-      where: { id: parseInt(updateUserId) }
+      where: { id: parseInt(updateUserId) },
     });
     trackEvent(
       {
         userId: tokenUserId,
         type: EventType.AUTH_PASSWORD_CHANGED,
-        data: { id: updateUserId }
+        data: { id: updateUserId },
       },
       locals
     );
@@ -138,20 +138,20 @@ export const deleteUserForUser = async (
 ) => {
   if (await can(tokenUserId, UserScopes.DELETE_USER, "user", updateUserId)) {
     await prisma.emails.deleteMany({
-      where: { userId: parseInt(updateUserId) }
+      where: { userId: parseInt(updateUserId) },
     });
     await prisma.memberships.deleteMany({
-      where: { userId: parseInt(updateUserId) }
+      where: { userId: parseInt(updateUserId) },
     });
     await prisma.approved_locations.deleteMany({
-      where: { userId: parseInt(updateUserId) }
+      where: { userId: parseInt(updateUserId) },
     });
     await prisma.users.deleteMany({ where: { id: parseInt(updateUserId) } });
     trackEvent(
       {
         userId: tokenUserId,
         type: EventType.USER_DELETED,
-        data: { id: updateUserId }
+        data: { id: updateUserId },
       },
       locals
     );
@@ -171,7 +171,7 @@ export const getMembershipsForUser = async (
     after,
     before,
     first,
-    last
+    last,
   }: {
     select?: membershipsSelect;
     include?: membershipsInclude;
@@ -195,7 +195,7 @@ export const getMembershipsForUser = async (
       after,
       before,
       first,
-      last
+      last,
     });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -215,8 +215,8 @@ export const getAllDataForUser = async (
       backup_codes: true,
       identities: true,
       memberships: true,
-      sessions: true
-    }
+      sessions: true,
+    },
   });
 };
 
@@ -226,7 +226,7 @@ export const enable2FAForUser = async (tokenUserId: string, userId: string) => {
   const secret = authenticator.generateSecret();
   await prisma.users.update({
     where: { id: parseInt(userId) },
-    data: { twoFactorSecret: secret }
+    data: { twoFactorSecret: secret },
   });
   const authPath = authenticator.keyuri(`user-${userId}`, SERVICE_2FA, secret);
   const qrCode = await toDataURL(authPath);
@@ -244,7 +244,7 @@ export const verify2FAForUser = async (
   const secret = (
     await prisma.users.findOne({
       select: { twoFactorSecret: true },
-      where: { id: parseInt(userId) }
+      where: { id: parseInt(userId) },
     })
   )?.twoFactorSecret;
   if (!secret) throw new Error(NOT_ENABLED_2FA);
@@ -253,7 +253,7 @@ export const verify2FAForUser = async (
   await createBackupCodes(userId, 10);
   return prisma.users.update({
     where: { id: parseInt(userId) },
-    data: { twoFactorEnabled: true }
+    data: { twoFactorEnabled: true },
   });
 };
 
@@ -268,8 +268,8 @@ export const disable2FAForUser = async (
     where: { id: parseInt(userId) },
     data: {
       twoFactorEnabled: false,
-      twoFactorSecret: null
-    }
+      twoFactorSecret: null,
+    },
   });
 };
 
@@ -313,7 +313,7 @@ export const getUserAccessTokensForUser = async (
     after,
     before,
     first,
-    last
+    last,
   }: {
     select?: access_tokensSelect;
     include?: access_tokensInclude;
@@ -337,7 +337,7 @@ export const getUserAccessTokensForUser = async (
       after,
       before,
       first,
-      last
+      last,
     });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -351,7 +351,7 @@ export const getUserAccessTokenForUser = async (
     await can(tokenUserId, UserScopes.READ_USER_ACCESS_TOKENS, "user", userId)
   )
     return prisma.access_tokens.findOne({
-      where: { id: parseInt(accessTokenId) }
+      where: { id: parseInt(accessTokenId) },
     });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -368,7 +368,7 @@ export const updateAccessTokenForUser = async (
   )
     return prisma.access_tokens.update({
       where: { id: parseInt(accessTokenId) },
-      data
+      data,
     });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -383,7 +383,7 @@ export const createAccessTokenForUser = async (
     await can(tokenUserId, UserScopes.CREATE_USER_ACCESS_TOKENS, "user", userId)
   )
     return prisma.access_tokens.create({
-      data: { ...accessToken, user: { connect: { id: parseInt(userId) } } }
+      data: { ...accessToken, user: { connect: { id: parseInt(userId) } } },
     });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -398,7 +398,7 @@ export const deleteAccessTokenForUser = async (
     await can(tokenUserId, UserScopes.DELETE_USER_ACCESS_TOKENS, "user", userId)
   )
     return prisma.access_tokens.delete({
-      where: { id: parseInt(accessTokenId) }
+      where: { id: parseInt(accessTokenId) },
     });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -414,7 +414,7 @@ export const getUserSessionsForUser = async (
     after,
     before,
     first,
-    last
+    last,
   }: {
     select?: sessionsSelect;
     include?: sessionsInclude;
@@ -436,7 +436,7 @@ export const getUserSessionsForUser = async (
       after,
       before,
       first,
-      last
+      last,
     });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -474,7 +474,7 @@ export const getUserIdentitiesForUser = async (
     after,
     before,
     first,
-    last
+    last,
   }: {
     select?: identitiesSelect;
     include?: identitiesInclude;
@@ -496,7 +496,7 @@ export const getUserIdentitiesForUser = async (
       after,
       before,
       first,
-      last
+      last,
     });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -508,7 +508,7 @@ export const createUserIdentityForUser = async (
 ) => {
   if (await can(tokenUserId, UserScopes.CREATE_USER_IDENTITY, "user", userId))
     return prisma.identities.create({
-      data: { ...identity, user: { connect: { id: parseInt(userId) } } }
+      data: { ...identity, user: { connect: { id: parseInt(userId) } } },
     });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -552,18 +552,18 @@ export const addInvitationCredits = async (
   const invitedByUserId = (
     await prisma.users.findOne({
       select: { username: true },
-      where: { id: parseInt(invitedBy) }
+      where: { id: parseInt(invitedBy) },
     })
   )?.username;
   if (!invitedByUserId) return;
   const invitedByDetails = await prisma.users.findOne({
-    where: { id: parseInt(invitedByUserId) }
+    where: { id: parseInt(invitedByUserId) },
   });
   if (!invitedByDetails) return;
   const invitedByEmail = await getUserPrimaryEmail(invitedByUserId);
   const newUserEmail = await getUserBestEmail(newUserId);
   const newUserDetails = await prisma.users.findOne({
-    where: { id: parseInt(newUserId) }
+    where: { id: parseInt(newUserId) },
   });
   if (!newUserDetails) return;
   const emailData = {
@@ -578,7 +578,7 @@ export const addInvitationCredits = async (
       500,
       "usd",
       `Invite credits from ${invitedByDetails.name}`
-    )
+    ),
   };
   await mail(invitedByEmail.email, Templates.CREDITS_INVITED_BY, emailData);
   await mail(newUserEmail.email, Templates.CREDITS_NEW_USER, emailData);
@@ -595,7 +595,7 @@ export const getAllEmailsForUser = async (
     after,
     before,
     first,
-    last
+    last,
   }: {
     select?: emailsSelect;
     include?: emailsInclude;
@@ -617,7 +617,7 @@ export const getAllEmailsForUser = async (
       after,
       before,
       first,
-      last
+      last,
     });
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -663,7 +663,7 @@ export const addEmailToUserForUser = async (
     (await prisma.emails.findMany({ where: { email } })).length !== 0;
   if (emailExistsAlready) throw new Error(EMAIL_EXISTS);
   const result = await prisma.emails.create({
-    data: { email, user: { connect: { id: parseInt(userId) } } }
+    data: { email, user: { connect: { id: parseInt(userId) } } },
   });
   trackEvent(
     { userId, type: EventType.EMAIL_CREATED, data: { email } },
@@ -681,28 +681,28 @@ export const deleteEmailFromUserForUser = async (
   if (!(await can(tokenUserId, UserScopes.DELETE_USER_EMAILS, "user", userId)))
     throw new Error(INSUFFICIENT_PERMISSION);
   const email = await prisma.emails.findOne({
-    where: { id: parseInt(userId) }
+    where: { id: parseInt(userId) },
   });
   if (!email) throw new Error(RESOURCE_NOT_FOUND);
   if (email.userId !== parseInt(userId))
     throw new Error(INSUFFICIENT_PERMISSION);
   const verifiedEmails = await prisma.emails.findMany({
-    where: { id: parseInt(userId) }
+    where: { id: parseInt(userId) },
   });
   if (verifiedEmails.length === 1 && email.isVerified)
     throw new Error(EMAIL_CANNOT_DELETE);
   const currentPrimaryEmailId = (await getUserPrimaryEmail(userId)).id;
   if (currentPrimaryEmailId === parseInt(emailId)) {
     const nextVerifiedEmail = verifiedEmails.filter(
-      emailObject => emailObject.id !== parseInt(emailId)
+      (emailObject) => emailObject.id !== parseInt(emailId)
     )[0];
     await prisma.users.update({
       where: { id: parseInt(userId) },
-      data: { primaryEmail: nextVerifiedEmail.id }
+      data: { primaryEmail: nextVerifiedEmail.id },
     });
   }
   const result = await prisma.emails.delete({
-    where: { id: parseInt(emailId) }
+    where: { id: parseInt(emailId) },
   });
   trackEvent(
     { userId, type: EventType.EMAIL_DELETED, data: { email: email.email } },
@@ -725,7 +725,7 @@ export const getMembershipDetailsForUser = async (
   )
     return prisma.memberships.findOne({
       where: { id: parseInt(membershipId) },
-      include: { user: true, organization: true }
+      include: { user: true, organization: true },
     });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -736,7 +736,7 @@ export const deleteMembershipForUser = async (
   locals: Locals
 ) => {
   const membership = await prisma.memberships.findOne({
-    where: { id: parseInt(membershipId) }
+    where: { id: parseInt(membershipId) },
   });
   if (!membership) throw new Error(MEMBERSHIP_NOT_FOUND);
   if (
@@ -748,11 +748,11 @@ export const deleteMembershipForUser = async (
     )
   ) {
     const organizationMembers = await prisma.memberships.findMany({
-      where: { organizationId: membership.organizationId }
+      where: { organizationId: membership.organizationId },
     });
     if (membership.role === "OWNER") {
       const currentMembers = organizationMembers.filter(
-        member => member.role === "OWNER"
+        (member) => member.role === "OWNER"
       );
       if (currentMembers.length < 2) throw new Error(CANNOT_DELETE_SOLE_OWNER);
     }
@@ -761,7 +761,7 @@ export const deleteMembershipForUser = async (
     trackEvent(
       {
         userId: membershipId,
-        type: EventType.MEMBERSHIP_DELETED
+        type: EventType.MEMBERSHIP_DELETED,
       },
       locals
     );
@@ -785,16 +785,16 @@ export const updateMembershipForUser = async (
     )
   ) {
     const membership = await prisma.memberships.findOne({
-      where: { id: parseInt(membershipId) }
+      where: { id: parseInt(membershipId) },
     });
     if (!membership) throw new Error(MEMBERSHIP_NOT_FOUND);
     if (data.role !== membership.role) {
       if (membership.role === "OWNER") {
         const organizationMembers = await prisma.memberships.findMany({
-          where: { organizationId: membership.organizationId }
+          where: { organizationId: membership.organizationId },
         });
         const currentMembers = organizationMembers.filter(
-          member => member.role === "OWNER"
+          (member) => member.role === "OWNER"
         );
         if (currentMembers.length < 2)
           throw new Error(CANNOT_UPDATE_SOLE_OWNER);
@@ -803,13 +803,13 @@ export const updateMembershipForUser = async (
     trackEvent(
       {
         userId: membershipId,
-        type: EventType.MEMBERSHIP_UPDATED
+        type: EventType.MEMBERSHIP_UPDATED,
       },
       locals
     );
     return prisma.memberships.update({
       where: { id: parseInt(membershipId) },
-      data
+      data,
     });
   }
   throw new Error(INSUFFICIENT_PERMISSION);

@@ -5,7 +5,7 @@ test("Remove sensitive info", () => {
     deleteSensitiveInfoUser({
       id: "wiuhoeijpaoe",
       name: "Anand Chowdhary",
-      password: "1abc9c"
+      password: "1abc9c",
     }).password
   ).toBeUndefined();
 });

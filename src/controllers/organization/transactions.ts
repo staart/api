@@ -4,18 +4,18 @@ import {
   Get,
   Request,
   Response,
-  Put
+  Put,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../helpers/middleware";
 import {
   localsToTokenOrKey,
-  organizationUsernameToId
+  organizationUsernameToId,
 } from "../../helpers/utils";
 import {
   getOrganizationTransactionForUser,
   getOrganizationTransactionsForUser,
-  applyCouponToOrganizationForUser
+  applyCouponToOrganizationForUser,
 } from "../../rest/organization";
 
 @Controller(":id/transactions")
@@ -32,7 +32,7 @@ export class OrganizationTransactionsController {
     joiValidate(
       {
         start: Joi.string(),
-        itemsPerPage: Joi.number()
+        itemsPerPage: Joi.number(),
       },
       transactionParams
     );
@@ -50,7 +50,7 @@ export class OrganizationTransactionsController {
     joiValidate(
       {
         organizationId: Joi.string().required(),
-        couponCode: Joi.string().required()
+        couponCode: Joi.string().required(),
       },
       { organizationId, couponCode }
     );
@@ -68,7 +68,7 @@ export class OrganizationTransactionsController {
     joiValidate(
       {
         organizationId: Joi.string().required(),
-        transactionId: Joi.string().required()
+        transactionId: Joi.string().required(),
       },
       { organizationId, transactionId }
     );

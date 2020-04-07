@@ -2,7 +2,7 @@ import {
   RESOURCE_CREATED,
   RESOURCE_DELETED,
   RESOURCE_UPDATED,
-  respond
+  respond,
 } from "@staart/messages";
 import {
   ClassMiddleware,
@@ -13,13 +13,13 @@ import {
   Patch,
   Put,
   Request,
-  Response
+  Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../helpers/middleware";
 import {
   localsToTokenOrKey,
-  organizationUsernameToId
+  organizationUsernameToId,
 } from "../../helpers/utils";
 import {
   createApiKeyForUser,
@@ -27,7 +27,7 @@ import {
   getOrganizationApiKeyForUser,
   getOrganizationApiKeyLogsForUser,
   getOrganizationApiKeysForUser,
-  updateApiKeyForUser
+  updateApiKeyForUser,
 } from "../../rest/organization";
 
 @Controller(":id/api-keys")
@@ -41,7 +41,7 @@ export class OrganizationApiKeysController {
     joiValidate(
       {
         start: Joi.string(),
-        itemsPerPage: Joi.number()
+        itemsPerPage: Joi.number(),
       },
       apiKeyParams
     );
@@ -60,7 +60,7 @@ export class OrganizationApiKeysController {
         ipRestrictions: Joi.string(),
         referrerRestrictions: Joi.string(),
         name: Joi.string(),
-        description: Joi.string()
+        description: Joi.string(),
       },
       "body"
     )
@@ -84,7 +84,7 @@ export class OrganizationApiKeysController {
     joiValidate(
       {
         id: Joi.string().required(),
-        apiKeyId: Joi.string().required()
+        apiKeyId: Joi.string().required(),
       },
       { id, apiKeyId }
     );
@@ -99,7 +99,7 @@ export class OrganizationApiKeysController {
         ipRestrictions: Joi.string().allow(),
         referrerRestrictions: Joi.string().allow(),
         name: Joi.string().allow(),
-        description: Joi.string().allow()
+        description: Joi.string().allow(),
       },
       "body"
     )
@@ -110,7 +110,7 @@ export class OrganizationApiKeysController {
     joiValidate(
       {
         id: Joi.string().required(),
-        apiKeyId: Joi.string().required()
+        apiKeyId: Joi.string().required(),
       },
       { id, apiKeyId }
     );
@@ -131,7 +131,7 @@ export class OrganizationApiKeysController {
     joiValidate(
       {
         id: Joi.string().required(),
-        apiKeyId: Joi.string().required()
+        apiKeyId: Joi.string().required(),
       },
       { id, apiKeyId }
     );
@@ -151,7 +151,7 @@ export class OrganizationApiKeysController {
     joiValidate(
       {
         id: Joi.string().required(),
-        apiKeyId: Joi.string().required()
+        apiKeyId: Joi.string().required(),
       },
       { id, apiKeyId }
     );

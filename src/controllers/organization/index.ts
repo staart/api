@@ -2,7 +2,7 @@ import {
   RESOURCE_CREATED,
   RESOURCE_DELETED,
   RESOURCE_UPDATED,
-  respond
+  respond,
 } from "@staart/messages";
 import {
   ChildControllers,
@@ -14,20 +14,20 @@ import {
   Patch,
   Put,
   Request,
-  Response
+  Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../helpers/middleware";
 import {
   localsToTokenOrKey,
-  organizationUsernameToId
+  organizationUsernameToId,
 } from "../../helpers/utils";
 import {
   deleteOrganizationForUser,
   getAllOrganizationDataForUser,
   getOrganizationForUser,
   newOrganizationForUser,
-  updateOrganizationForUser
+  updateOrganizationForUser,
 } from "../../rest/organization";
 import { OrganizationApiKeysController } from "./api-keys";
 import { OrganizationBillingController } from "./billing";
@@ -49,7 +49,7 @@ import { OrganizationTransactionsController } from "./transactions";
   new OrganizationSourcesController(),
   new OrganizationSubscriptionsController(),
   new OrganizationWebhooksController(),
-  new OrganizationTransactionsController()
+  new OrganizationTransactionsController(),
 ])
 @ClassMiddleware(authHandler)
 export class OrganizationController {
@@ -57,7 +57,7 @@ export class OrganizationController {
   @Middleware(
     validator(
       {
-        name: Joi.string().required()
+        name: Joi.string().required(),
       },
       "body"
     )
@@ -88,7 +88,7 @@ export class OrganizationController {
         autoJoinDomain: Joi.boolean(),
         onlyAllowDomain: Joi.boolean(),
         ipRestrictions: Joi.string(),
-        profilePicture: Joi.string()
+        profilePicture: Joi.string(),
       },
       "body"
     )

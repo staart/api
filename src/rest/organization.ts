@@ -11,7 +11,7 @@ import {
   USER_IS_MEMBER_ALREADY,
   USER_NOT_FOUND,
   ORGANIZATION_NOT_FOUND,
-  RESOURCE_NOT_FOUND
+  RESOURCE_NOT_FOUND,
 } from "@staart/errors";
 import {
   createCustomer,
@@ -32,7 +32,7 @@ import {
   updateSubscription,
   createCustomerBalanceTransaction,
   getCustomBalanceTransactions,
-  getCustomBalanceTransaction
+  getCustomBalanceTransaction,
 } from "@staart/payments";
 import axios from "axios";
 import { JWT_ISSUER } from "../config";
@@ -41,7 +41,7 @@ import {
   ApiKeyResponse,
   verifyToken,
   checkInvalidatedToken,
-  invalidateToken
+  invalidateToken,
 } from "../helpers/jwt";
 import { mail } from "../helpers/mail";
 import { trackEvent } from "../helpers/tracking";
@@ -78,12 +78,12 @@ import {
   webhooksInclude,
   webhooksOrderByInput,
   webhooksWhereUniqueInput,
-  webhooksUpdateInput
+  webhooksUpdateInput,
 } from "@prisma/client";
 import {
   getDomainByDomainName,
   getApiKeyLogs,
-  checkDomainAvailability
+  checkDomainAvailability,
 } from "../services/organization.service";
 import { fireSingleWebhook } from "../helpers/webhooks";
 
@@ -96,8 +96,8 @@ export const getOrganizationForUser = async (
       where: {
         id: parseInt(
           typeof userId === "object" ? userId.organizationId : userId
-        )
-      }
+        ),
+      },
     });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -109,7 +109,7 @@ export const newOrganizationForUser = async (
 ) => {
   if (!organization.name) {
     const user = await prisma.users.findOne({
-      where: { id: parseInt(userId) }
+      where: { id: parseInt(userId) },
     });
     if (!user) throw new Error(USER_NOT_FOUND);
     organization.name = user.name;
@@ -121,10 +121,10 @@ export const newOrganizationForUser = async (
         create: {
           organization: {},
           user: { connect: { id: parseInt(userId) } },
-          role: "OWNER"
-        }
-      }
-    }
+          role: "OWNER",
+        },
+      },
+    },
   });
 };
 
@@ -139,9 +139,9 @@ export const updateOrganizationForUser = async (
       where: {
         id: parseInt(
           typeof userId === "object" ? userId.organizationId : userId
-        )
+        ),
       },
-      data: {}
+      data: {},
     });
     queueWebhook(organizationId, Webhooks.UPDATE_ORGANIZATION, data);
     trackEvent({ organizationId, type: Webhooks.UPDATE_ORGANIZATION }, locals);
@@ -160,8 +160,8 @@ export const deleteOrganizationForUser = async (
       where: {
         id: parseInt(
           typeof userId === "object" ? userId.organizationId : userId
-        )
-      }
+        ),
+      },
     });
     if (!organizationDetails) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organizationDetails.stripeCustomerId)
@@ -170,8 +170,8 @@ export const deleteOrganizationForUser = async (
       where: {
         id: parseInt(
           typeof userId === "object" ? userId.organizationId : userId
-        )
-      }
+        ),
+      },
     });
     queueWebhook(organizationId, Webhooks.DELETE_ORGANIZATION);
     trackEvent({ organizationId, type: Webhooks.DELETE_ORGANIZATION }, locals);
@@ -196,8 +196,8 @@ export const getOrganizationBillingForUser = async (
       where: {
         id: parseInt(
           typeof userId === "object" ? userId.organizationId : userId
-        )
-      }
+        ),
+      },
     });
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
@@ -225,8 +225,8 @@ export const updateOrganizationBillingForUser = async (
       where: {
         id: parseInt(
           typeof userId === "object" ? userId.organizationId : userId
-        )
-      }
+        ),
+      },
     });
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     let result;
@@ -241,9 +241,9 @@ export const updateOrganizationBillingForUser = async (
             where: {
               id: parseInt(
                 typeof userId === "object" ? userId.organizationId : userId
-              )
+              ),
             },
-            data
+            data,
           })
       );
     }
@@ -274,8 +274,8 @@ export const getOrganizationInvoicesForUser = async (
       where: {
         id: parseInt(
           typeof userId === "object" ? userId.organizationId : userId
-        )
-      }
+        ),
+      },
     });
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
@@ -302,8 +302,8 @@ export const getOrganizationInvoiceForUser = async (
       where: {
         id: parseInt(
           typeof userId === "object" ? userId.organizationId : userId
-        )
-      }
+        ),
+      },
     });
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
@@ -330,8 +330,8 @@ export const getOrganizationSourcesForUser = async (
       where: {
         id: parseInt(
           typeof userId === "object" ? userId.organizationId : userId
-        )
-      }
+        ),
+      },
     });
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
@@ -358,8 +358,8 @@ export const getOrganizationSourceForUser = async (
       where: {
         id: parseInt(
           typeof userId === "object" ? userId.organizationId : userId
-        )
-      }
+        ),
+      },
     });
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
@@ -386,8 +386,8 @@ export const getOrganizationSubscriptionsForUser = async (
       where: {
         id: parseInt(
           typeof userId === "object" ? userId.organizationId : userId
-        )
-      }
+        ),
+      },
     });
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
@@ -414,8 +414,8 @@ export const getOrganizationSubscriptionForUser = async (
       where: {
         id: parseInt(
           typeof userId === "object" ? userId.organizationId : userId
-        )
-      }
+        ),
+      },
     });
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
@@ -444,8 +444,8 @@ export const updateOrganizationSubscriptionForUser = async (
       where: {
         id: parseInt(
           typeof userId === "object" ? userId.organizationId : userId
-        )
-      }
+        ),
+      },
     });
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId) {
@@ -488,8 +488,8 @@ export const createOrganizationSubscriptionForUser = async (
       where: {
         id: parseInt(
           typeof userId === "object" ? userId.organizationId : userId
-        )
-      }
+        ),
+      },
     });
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId) {
@@ -542,8 +542,8 @@ export const deleteOrganizationSourceForUser = async (
       where: {
         id: parseInt(
           typeof userId === "object" ? userId.organizationId : userId
-        )
-      }
+        ),
+      },
     });
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId) {
@@ -586,8 +586,8 @@ export const updateOrganizationSourceForUser = async (
       where: {
         id: parseInt(
           typeof userId === "object" ? userId.organizationId : userId
-        )
-      }
+        ),
+      },
     });
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId) {
@@ -626,8 +626,8 @@ export const createOrganizationSourceForUser = async (
       where: {
         id: parseInt(
           typeof userId === "object" ? userId.organizationId : userId
-        )
-      }
+        ),
+      },
     });
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId) {
@@ -660,14 +660,14 @@ export const getAllOrganizationDataForUser = async (
       where: {
         id: parseInt(
           typeof userId === "object" ? userId.organizationId : userId
-        )
+        ),
       },
       include: {
         api_keys: true,
         domains: true,
         memberships: true,
-        webhooks: true
-      }
+        webhooks: true,
+      },
     });
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     return {
@@ -680,9 +680,9 @@ export const getAllOrganizationDataForUser = async (
               {}
             ),
             invoices: await getInvoices(organization.stripeCustomerId, {}),
-            sources: await getSources(organization.stripeCustomerId, {})
+            sources: await getSources(organization.stripeCustomerId, {}),
           }
-        : {})
+        : {}),
     };
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -699,7 +699,7 @@ export const getOrganizationMembershipsForUser = async (
     after,
     before,
     first,
-    last
+    last,
   }: {
     select?: membershipsSelect;
     include?: membershipsInclude;
@@ -728,7 +728,7 @@ export const getOrganizationMembershipsForUser = async (
       after,
       before,
       first,
-      last
+      last,
     });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -748,7 +748,7 @@ export const getOrganizationMembershipForUser = async (
   )
     return prisma.memberships.findOne({
       where: { id: parseInt(membershipId) },
-      include: { user: true }
+      include: { user: true },
     });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -769,7 +769,7 @@ export const updateOrganizationMembershipForUser = async (
   )
     return prisma.memberships.update({
       where: { id: parseInt(membershipId) },
-      data
+      data,
     });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -788,7 +788,7 @@ export const deleteOrganizationMembershipForUser = async (
     )
   ) {
     const members = await prisma.memberships.findMany({
-      where: { organizationId: parseInt(organizationId) }
+      where: { organizationId: parseInt(organizationId) },
     });
     if (members.length === 1) throw new Error(CANNOT_DELETE_SOLE_MEMBER);
     return prisma.memberships.delete({ where: { id: parseInt(membershipId) } });
@@ -816,8 +816,8 @@ export const inviteMemberToOrganization = async (
       where: {
         id: parseInt(
           typeof userId === "object" ? userId.organizationId : userId
-        )
-      }
+        ),
+      },
     });
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.onlyAllowDomain) {
@@ -836,7 +836,7 @@ export const inviteMemberToOrganization = async (
 
     const checkUser = await prisma.users.findMany({
       where: { emails: { some: { email: newMemberEmail } } },
-      first: 1
+      first: 1,
     });
     if (checkUser.length) {
       newUser = checkUser[0];
@@ -849,8 +849,8 @@ export const inviteMemberToOrganization = async (
           await prisma.memberships.findMany({
             where: {
               userId: newUser.id,
-              organizationId: parseInt(organizationId)
-            }
+              organizationId: parseInt(organizationId),
+            },
           })
         ).length !== 0;
       createdUserId = newUser.id;
@@ -859,8 +859,8 @@ export const inviteMemberToOrganization = async (
         data: {
           user: { connect: { id: newUser.id } },
           organization: { connect: { id: parseInt(organizationId) } },
-          role
-        }
+          role,
+        },
       });
     } else {
       const newAccount = await register(
@@ -879,12 +879,12 @@ export const inviteMemberToOrganization = async (
               ?.name ?? "Someone"
           : "Someone";
       const userDetails = prisma.users.findOne({
-        where: { id: createdUserId }
+        where: { id: createdUserId },
       });
       mail(newMemberEmail, Templates.INVITED_TO_TEAM, {
         ...userDetails,
         team: organization.name,
-        inviter
+        inviter,
       })
         .then(() => {})
         .catch(() => {});
@@ -905,7 +905,7 @@ export const getOrganizationApiKeysForUser = async (
     after,
     before,
     first,
-    last
+    last,
   }: {
     select?: api_keysSelect;
     include?: api_keysInclude;
@@ -934,7 +934,7 @@ export const getOrganizationApiKeysForUser = async (
       after,
       before,
       first,
-      last
+      last,
     });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -994,7 +994,7 @@ export const updateApiKeyForUser = async (
   ) {
     const result = await prisma.api_keys.update({
       where: { id: parseInt(apiKeyId) },
-      data
+      data,
     });
     queueWebhook(organizationId, Webhooks.UPDATE_API_KEY, data);
     trackEvent({ organizationId, type: Webhooks.UPDATE_API_KEY }, locals);
@@ -1024,10 +1024,10 @@ export const createApiKeyForUser = async (
           connect: {
             id: parseInt(
               typeof userId === "object" ? userId.organizationId : userId
-            )
-          }
-        }
-      }
+            ),
+          },
+        },
+      },
     });
     queueWebhook(organizationId, Webhooks.CREATE_API_KEY, apiKey);
     trackEvent({ organizationId, type: Webhooks.CREATE_API_KEY }, locals);
@@ -1051,7 +1051,7 @@ export const deleteApiKeyForUser = async (
     )
   ) {
     const result = await prisma.api_keys.delete({
-      where: { id: parseInt(apiKeyId) }
+      where: { id: parseInt(apiKeyId) },
     });
     queueWebhook(organizationId, Webhooks.DELETE_API_KEY, apiKeyId);
     trackEvent({ organizationId, type: Webhooks.DELETE_API_KEY }, locals);
@@ -1071,7 +1071,7 @@ export const getOrganizationDomainsForUser = async (
     after,
     before,
     first,
-    last
+    last,
   }: {
     select?: domainsSelect;
     include?: domainsInclude;
@@ -1100,7 +1100,7 @@ export const getOrganizationDomainsForUser = async (
       after,
       before,
       first,
-      last
+      last,
     });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -1139,7 +1139,7 @@ export const updateDomainForUser = async (
   ) {
     const result = await prisma.domains.update({
       where: { id: parseInt(domainId) },
-      data
+      data,
     });
     queueWebhook(organizationId, Webhooks.UPDATE_DOMAIN, data);
     trackEvent({ organizationId, type: Webhooks.UPDATE_DOMAIN }, locals);
@@ -1171,10 +1171,10 @@ export const createDomainForUser = async (
           connect: {
             id: parseInt(
               typeof userId === "object" ? userId.organizationId : userId
-            )
-          }
-        }
-      }
+            ),
+          },
+        },
+      },
     });
     queueWebhook(organizationId, Webhooks.CREATE_DOMAIN, domain);
     trackEvent({ organizationId, type: Webhooks.CREATE_DOMAIN }, locals);
@@ -1198,7 +1198,7 @@ export const deleteDomainForUser = async (
     )
   ) {
     const result = await prisma.domains.delete({
-      where: { id: parseInt(domainId) }
+      where: { id: parseInt(domainId) },
     });
     queueWebhook(organizationId, Webhooks.DELETE_DOMAIN, domainId);
     trackEvent({ organizationId, type: Webhooks.DELETE_DOMAIN }, locals);
@@ -1223,7 +1223,7 @@ export const verifyDomainForUser = async (
     )
   ) {
     const domain = await prisma.domains.findOne({
-      where: { id: parseInt(domainId) }
+      where: { id: parseInt(domainId) },
     });
     if (!domain) throw new Error(RESOURCE_NOT_FOUND);
     if (domain.isVerified) throw new Error(DOMAIN_ALREADY_VERIFIED);
@@ -1238,11 +1238,11 @@ export const verifyDomainForUser = async (
         if (file.replace(/\r?\n|\r/g, "").trim() === domain.verificationCode) {
           const result = await prisma.domains.update({
             where: { id: parseInt(domainId) },
-            data: { isVerified: true }
+            data: { isVerified: true },
           });
           queueWebhook(organizationId, Webhooks.VERIFY_DOMAIN, {
             domainId,
-            method
+            method,
           });
           trackEvent({ organizationId, type: Webhooks.VERIFY_DOMAIN }, locals);
           return result;
@@ -1255,11 +1255,11 @@ export const verifyDomainForUser = async (
       if (JSON.stringify(dns).includes(domain.verificationCode)) {
         const result = await prisma.domains.update({
           where: { id: parseInt(domainId) },
-          data: { isVerified: true }
+          data: { isVerified: true },
         });
         queueWebhook(organizationId, Webhooks.VERIFY_DOMAIN, {
           domainId,
-          method
+          method,
         });
         trackEvent({ organizationId, type: Webhooks.VERIFY_DOMAIN }, locals);
         return result;
@@ -1283,7 +1283,7 @@ export const getOrganizationWebhooksForUser = async (
     after,
     before,
     first,
-    last
+    last,
   }: {
     select?: webhooksSelect;
     include?: webhooksInclude;
@@ -1312,7 +1312,7 @@ export const getOrganizationWebhooksForUser = async (
       after,
       before,
       first,
-      last
+      last,
     });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -1351,7 +1351,7 @@ export const updateWebhookForUser = async (
   ) {
     const result = await prisma.webhooks.update({
       where: { id: parseInt(webhookId) },
-      data
+      data,
     });
     queueWebhook(organizationId, Webhooks.UPDATE_WEBHOOK, data);
     trackEvent({ organizationId, type: Webhooks.UPDATE_WEBHOOK }, locals);
@@ -1381,10 +1381,10 @@ export const createWebhookForUser = async (
           connect: {
             id: parseInt(
               typeof userId === "object" ? userId.organizationId : userId
-            )
-          }
-        }
-      }
+            ),
+          },
+        },
+      },
     });
     fireSingleWebhook(result, Webhooks.TEST_WEBHOOK)
       .then(() => {})
@@ -1411,7 +1411,7 @@ export const deleteWebhookForUser = async (
     )
   ) {
     const result = prisma.webhooks.delete({
-      where: { id: parseInt(webhookId) }
+      where: { id: parseInt(webhookId) },
     });
     queueWebhook(organizationId, Webhooks.DELETE_WEBHOOK, webhookId);
     trackEvent({ organizationId, type: Webhooks.DELETE_WEBHOOK }, locals);
@@ -1453,8 +1453,8 @@ export const applyCouponToOrganizationForUser = async (
       where: {
         id: parseInt(
           typeof userId === "object" ? userId.organizationId : userId
-        )
-      }
+        ),
+      },
     });
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (amount && currency && organization.stripeCustomerId) {
@@ -1463,7 +1463,7 @@ export const applyCouponToOrganizationForUser = async (
         {
           amount,
           currency,
-          description
+          description,
         }
       );
       await invalidateToken(coupon);
@@ -1491,8 +1491,8 @@ export const getOrganizationTransactionsForUser = async (
       where: {
         id: parseInt(
           typeof userId === "object" ? userId.organizationId : userId
-        )
-      }
+        ),
+      },
     });
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
@@ -1522,8 +1522,8 @@ export const getOrganizationTransactionForUser = async (
       where: {
         id: parseInt(
           typeof userId === "object" ? userId.organizationId : userId
-        )
-      }
+        ),
+      },
     });
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)

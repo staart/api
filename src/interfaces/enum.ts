@@ -23,7 +23,7 @@ export enum EventType {
   BILLING_UPDATED = "billing.updated",
   API_KEY_CREATED = "apiKey.created",
   API_KEY_UPDATED = "apiKey.updated",
-  API_KEY_DELETED = "apiKey.deleted"
+  API_KEY_DELETED = "apiKey.deleted",
 }
 
 export enum Templates {
@@ -33,7 +33,7 @@ export enum Templates {
   INVITED_TO_TEAM = "invited",
   UNAPPROVED_LOCATION = "unapproved-location",
   CREDITS_NEW_USER = "credits-new-user",
-  CREDITS_INVITED_BY = "credits-invited-by"
+  CREDITS_INVITED_BY = "credits-invited-by",
 }
 
 export enum Tokens {
@@ -45,7 +45,7 @@ export enum Tokens {
   PASSWORD_RESET = "password-reset",
   EMAIL_VERIFY = "email-verify",
   APPROVE_LOCATION = "approve-location",
-  COUPON = "coupon"
+  COUPON = "coupon",
 }
 
 export enum OrgScopes {
@@ -84,11 +84,11 @@ export enum OrgScopes {
   READ_ORG_TRANSACTIONS = "org:transactions:read",
   UPDATE_ORG_TRANSACTIONS = "org:transactions:update",
   DELETE_ORG_TRANSACTIONS = "org:transactions:delete",
-  CREATE_ORG_TRANSACTIONS = "org:transactions:create"
+  CREATE_ORG_TRANSACTIONS = "org:transactions:create",
 }
 
 export enum SudoScopes {
-  READ = "read"
+  READ = "read",
 }
 
 export enum UserScopes {
@@ -117,7 +117,7 @@ export enum UserScopes {
   DELETE_USER_SESSION = "user:sessions:delete",
   CREATE_USER_IDENTITY = "user:identities:create",
   READ_USER_IDENTITY = "user:identities:read",
-  DELETE_USER_IDENTITY = "user:identities:delete"
+  DELETE_USER_IDENTITY = "user:identities:delete",
 }
 
 export enum Webhooks {
@@ -140,5 +140,5 @@ export enum Webhooks {
   TEST_WEBHOOK = "test-webhook",
   UPDATE_WEBHOOK = "update-webhook",
   CREATE_WEBHOOK = "create-webhook",
-  DELETE_WEBHOOK = "delete-webhook"
+  DELETE_WEBHOOK = "delete-webhook",
 }

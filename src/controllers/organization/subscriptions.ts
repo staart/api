@@ -6,19 +6,19 @@ import {
   Patch,
   Put,
   Request,
-  Response
+  Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../helpers/middleware";
 import {
   localsToTokenOrKey,
-  organizationUsernameToId
+  organizationUsernameToId,
 } from "../../helpers/utils";
 import {
   createOrganizationSubscriptionForUser,
   getOrganizationSubscriptionForUser,
   getOrganizationSubscriptionsForUser,
-  updateOrganizationSubscriptionForUser
+  updateOrganizationSubscriptionForUser,
 } from "../../rest/organization";
 
 @Controller(":id/subscriptions")
@@ -38,7 +38,7 @@ export class OrganizationSubscriptionsController {
         billing: Joi.string().valid("charge_automatically", "send_invoice"),
         itemsPerPage: Joi.number(),
         plan: Joi.string(),
-        status: Joi.string()
+        status: Joi.string(),
       },
       subscriptionParams
     );
@@ -62,7 +62,7 @@ export class OrganizationSubscriptionsController {
         plan: Joi.string().required(),
         billing: Joi.string().valid("charge_automatically", "send_invoice"),
         tax_percent: Joi.number(),
-        number_of_seats: Joi.number()
+        number_of_seats: Joi.number(),
       },
       subscriptionParams
     );
@@ -82,7 +82,7 @@ export class OrganizationSubscriptionsController {
     joiValidate(
       {
         organizationId: Joi.string().required(),
-        subscriptionId: Joi.string().required()
+        subscriptionId: Joi.string().required(),
       },
       { organizationId, subscriptionId }
     );
@@ -101,7 +101,7 @@ export class OrganizationSubscriptionsController {
     joiValidate(
       {
         organizationId: Joi.string().required(),
-        subscriptionId: Joi.string().required()
+        subscriptionId: Joi.string().required(),
       },
       { organizationId, subscriptionId }
     );
@@ -110,7 +110,7 @@ export class OrganizationSubscriptionsController {
         billing: Joi.string().valid("charge_automatically", "send_invoice"),
         cancel_at_period_end: Joi.boolean(),
         coupon: Joi.string(),
-        default_source: Joi.string()
+        default_source: Joi.string(),
       },
       data
     );

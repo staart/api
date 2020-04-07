@@ -2,7 +2,7 @@ import {
   RESOURCE_CREATED,
   RESOURCE_DELETED,
   RESOURCE_UPDATED,
-  respond
+  respond,
 } from "@staart/messages";
 import {
   ClassMiddleware,
@@ -13,20 +13,20 @@ import {
   Patch,
   Put,
   Request,
-  Response
+  Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../helpers/middleware";
 import {
   localsToTokenOrKey,
-  organizationUsernameToId
+  organizationUsernameToId,
 } from "../../helpers/utils";
 import {
   deleteOrganizationMembershipForUser,
   getOrganizationMembershipForUser,
   getOrganizationMembershipsForUser,
   inviteMemberToOrganization,
-  updateOrganizationMembershipForUser
+  updateOrganizationMembershipForUser,
 } from "../../rest/organization";
 import { MembershipRole } from "@prisma/client";
 
@@ -56,19 +56,15 @@ export class OrganizationMembershipsController {
     joiValidate(
       {
         organizationId: Joi.string().required(),
-        newMemberName: Joi.string()
-          .min(6)
-          .required(),
-        newMemberEmail: Joi.string()
-          .email()
-          .required(),
-        role: Joi.number()
+        newMemberName: Joi.string().min(6).required(),
+        newMemberEmail: Joi.string().email().required(),
+        role: Joi.number(),
       },
       {
         organizationId,
         newMemberName,
         newMemberEmail,
-        role
+        role,
       }
     );
     await inviteMemberToOrganization(
@@ -89,7 +85,7 @@ export class OrganizationMembershipsController {
     joiValidate(
       {
         organizationId: Joi.string().required(),
-        membershipId: Joi.string().required()
+        membershipId: Joi.string().required(),
       },
       { organizationId, membershipId }
     );
@@ -104,9 +100,7 @@ export class OrganizationMembershipsController {
   @Middleware(
     validator(
       {
-        role: Joi.number()
-          .min(1)
-          .max(5)
+        role: Joi.number().min(1).max(5),
       },
       "body"
     )
@@ -117,7 +111,7 @@ export class OrganizationMembershipsController {
     joiValidate(
       {
         organizationId: Joi.string().required(),
-        membershipId: Joi.string().required()
+        membershipId: Joi.string().required(),
       },
       { organizationId, membershipId }
     );
@@ -137,7 +131,7 @@ export class OrganizationMembershipsController {
     joiValidate(
       {
         organizationId: Joi.string().required(),
-        membershipId: Joi.string().required()
+        membershipId: Joi.string().required(),
       },
       { organizationId, membershipId }
     );

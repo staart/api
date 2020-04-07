@@ -6,7 +6,7 @@ import {
   Get,
   Patch,
   Request,
-  Response
+  Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../helpers/middleware";
@@ -15,7 +15,7 @@ import {
   getMembershipsForUser,
   getMembershipDetailsForUser,
   deleteMembershipForUser,
-  updateMembershipForUser
+  updateMembershipForUser,
 } from "../../rest/user";
 
 @Controller(":id/memberships")
@@ -35,7 +35,7 @@ export class UserMembershipsController {
     joiValidate(
       {
         id: Joi.string().required(),
-        membershipId: Joi.string().required()
+        membershipId: Joi.string().required(),
       },
       { id, membershipId }
     );
@@ -49,7 +49,7 @@ export class UserMembershipsController {
     joiValidate(
       {
         id: Joi.string().required(),
-        membershipId: Joi.string().required()
+        membershipId: Joi.string().required(),
       },
       { id, membershipId }
     );
@@ -64,7 +64,7 @@ export class UserMembershipsController {
     joiValidate(
       {
         id: Joi.string().required(),
-        membershipId: Joi.string().required()
+        membershipId: Joi.string().required(),
       },
       { id, membershipId }
     );

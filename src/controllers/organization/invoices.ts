@@ -3,17 +3,17 @@ import {
   Controller,
   Get,
   Request,
-  Response
+  Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../helpers/middleware";
 import {
   localsToTokenOrKey,
-  organizationUsernameToId
+  organizationUsernameToId,
 } from "../../helpers/utils";
 import {
   getOrganizationInvoiceForUser,
-  getOrganizationInvoicesForUser
+  getOrganizationInvoicesForUser,
 } from "../../rest/organization";
 
 @Controller(":id/invoices")
@@ -33,7 +33,7 @@ export class OrganizationInvoicesController {
         billing: Joi.string().valid("charge_automatically", "send_invoice"),
         itemsPerPage: Joi.number(),
         plan: Joi.string(),
-        status: Joi.string()
+        status: Joi.string(),
       },
       subscriptionParams
     );
@@ -51,7 +51,7 @@ export class OrganizationInvoicesController {
     joiValidate(
       {
         organizationId: Joi.string().required(),
-        invoiceId: Joi.string().required()
+        invoiceId: Joi.string().required(),
       },
       { organizationId, invoiceId }
     );

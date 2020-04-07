@@ -28,7 +28,7 @@ CREATE TABLE `staart`.`users` (
     `updatedAt` datetime(3) NOT NULL  ,
     `username` varchar(191) NOT NULL  ,
     PRIMARY KEY (`id`)
-) 
+)
 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 
 CREATE TABLE `staart`.`organizations` (
@@ -44,7 +44,7 @@ CREATE TABLE `staart`.`organizations` (
     `updatedAt` datetime(3) NOT NULL  ,
     `username` varchar(191) NOT NULL  ,
     PRIMARY KEY (`id`)
-) 
+)
 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 
 CREATE TABLE `staart`.`emails` (
@@ -55,7 +55,7 @@ CREATE TABLE `staart`.`emails` (
     `updatedAt` datetime(3) NOT NULL  ,
     `userId` int NOT NULL ,
     PRIMARY KEY (`id`)
-) 
+)
 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 
 CREATE TABLE `staart`.`access-tokens` (
@@ -69,7 +69,7 @@ CREATE TABLE `staart`.`access-tokens` (
     `updatedAt` datetime(3) NOT NULL  ,
     `userId` int NOT NULL ,
     PRIMARY KEY (`id`)
-) 
+)
 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 
 CREATE TABLE `staart`.`api-keys` (
@@ -85,7 +85,7 @@ CREATE TABLE `staart`.`api-keys` (
     `scopes` varchar(191)   ,
     `updatedAt` datetime(3) NOT NULL  ,
     PRIMARY KEY (`id`)
-) 
+)
 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 
 CREATE TABLE `staart`.`approved-locations` (
@@ -94,7 +94,7 @@ CREATE TABLE `staart`.`approved-locations` (
     `subnet` varchar(191) NOT NULL  ,
     `userId` int NOT NULL ,
     PRIMARY KEY (`id`)
-) 
+)
 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 
 CREATE TABLE `staart`.`backup-codes` (
@@ -105,7 +105,7 @@ CREATE TABLE `staart`.`backup-codes` (
     `updatedAt` datetime(3) NOT NULL  ,
     `userId` int NOT NULL ,
     PRIMARY KEY (`id`)
-) 
+)
 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 
 CREATE TABLE `staart`.`domains` (
@@ -117,7 +117,7 @@ CREATE TABLE `staart`.`domains` (
     `updatedAt` datetime(3) NOT NULL  ,
     `verificationCode` varchar(191) NOT NULL  ,
     PRIMARY KEY (`id`)
-) 
+)
 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 
 CREATE TABLE `staart`.`identities` (
@@ -129,7 +129,7 @@ CREATE TABLE `staart`.`identities` (
     `updatedAt` datetime(3) NOT NULL  ,
     `userId` int NOT NULL ,
     PRIMARY KEY (`id`)
-) 
+)
 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 
 CREATE TABLE `staart`.`memberships` (
@@ -140,7 +140,7 @@ CREATE TABLE `staart`.`memberships` (
     `updatedAt` datetime(3) NOT NULL  ,
     `userId` int NOT NULL ,
     PRIMARY KEY (`id`)
-) 
+)
 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 
 CREATE TABLE `staart`.`sessions` (
@@ -156,7 +156,7 @@ CREATE TABLE `staart`.`sessions` (
     `userAgent` varchar(191) NOT NULL  ,
     `userId` int NOT NULL ,
     PRIMARY KEY (`id`)
-) 
+)
 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 
 CREATE TABLE `staart`.`webhooks` (
@@ -171,7 +171,7 @@ CREATE TABLE `staart`.`webhooks` (
     `updatedAt` datetime(3) NOT NULL  ,
     `url` varchar(191) NOT NULL  ,
     PRIMARY KEY (`id`)
-) 
+)
 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 
 CREATE UNIQUE INDEX `users.username` ON `staart`.`users`(`username`)
@@ -461,5 +461,3 @@ migration ..20200402221641-init
 +  @@index([organizationId], name: "organizationId")
 +}
 ```
-
-

@@ -4,13 +4,13 @@ import {
   Controller,
   Get,
   Request,
-  Response
+  Response,
 } from "@staart/server";
 import { authHandler } from "../../helpers/middleware";
 import {
   getAllOrganizationForUser,
   getAllUsersForUser,
-  getServerLogsForUser
+  getServerLogsForUser,
 } from "../../rest/admin";
 
 @Controller("admin")
@@ -41,7 +41,7 @@ export class AdminController {
   async info() {
     return {
       success: true,
-      message: "admin-info-success"
+      message: "admin-info-success",
     };
   }
 }

@@ -38,7 +38,7 @@ export const trackUrl = async (req: Request, res: Response) => {
     headers: req.headers,
     url: req.url,
     ipCountry: (req.get("cf-ipcountry") || "").toLowerCase(),
-    ...res.locals
+    ...res.locals,
   };
   if (trackingObject.apiKey) {
     try {
@@ -54,7 +54,7 @@ export const trackUrl = async (req: Request, res: Response) => {
       return;
     }
   }
-  Object.keys(trackingObject).forEach(key => {
+  Object.keys(trackingObject).forEach((key) => {
     if (
       typeof trackingObject[key] === "object" &&
       !Array.isArray(trackingObject[key]) &&

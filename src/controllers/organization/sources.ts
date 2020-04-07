@@ -2,7 +2,7 @@ import {
   RESOURCE_CREATED,
   RESOURCE_DELETED,
   RESOURCE_UPDATED,
-  respond
+  respond,
 } from "@staart/messages";
 import {
   ClassMiddleware,
@@ -12,20 +12,20 @@ import {
   Patch,
   Put,
   Request,
-  Response
+  Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../helpers/middleware";
 import {
   localsToTokenOrKey,
-  organizationUsernameToId
+  organizationUsernameToId,
 } from "../../helpers/utils";
 import {
   createOrganizationSourceForUser,
   deleteOrganizationSourceForUser,
   getOrganizationSourceForUser,
   getOrganizationSourcesForUser,
-  updateOrganizationSourceForUser
+  updateOrganizationSourceForUser,
 } from "../../rest/organization";
 
 @Controller(":id/sources")
@@ -42,7 +42,7 @@ export class OrganizationSourcesController {
     joiValidate(
       {
         start: Joi.string(),
-        itemsPerPage: Joi.number()
+        itemsPerPage: Joi.number(),
       },
       subscriptionParams
     );
@@ -76,7 +76,7 @@ export class OrganizationSourcesController {
     joiValidate(
       {
         organizationId: Joi.string().required(),
-        sourceId: Joi.string().required()
+        sourceId: Joi.string().required(),
       },
       { organizationId, sourceId }
     );
@@ -94,7 +94,7 @@ export class OrganizationSourcesController {
     joiValidate(
       {
         organizationId: Joi.string().required(),
-        sourceId: Joi.string().required()
+        sourceId: Joi.string().required(),
       },
       { organizationId, sourceId }
     );
@@ -115,7 +115,7 @@ export class OrganizationSourcesController {
     joiValidate(
       {
         organizationId: Joi.string().required(),
-        sourceId: Joi.string().required()
+        sourceId: Joi.string().required(),
       },
       { organizationId, sourceId }
     );

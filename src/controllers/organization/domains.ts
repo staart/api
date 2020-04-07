@@ -3,7 +3,7 @@ import {
   RESOURCE_DELETED,
   RESOURCE_SUCCESS,
   RESOURCE_UPDATED,
-  respond
+  respond,
 } from "@staart/messages";
 import {
   ClassMiddleware,
@@ -15,13 +15,13 @@ import {
   Post,
   Put,
   Request,
-  Response
+  Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../helpers/middleware";
 import {
   localsToTokenOrKey,
-  organizationUsernameToId
+  organizationUsernameToId,
 } from "../../helpers/utils";
 import {
   createDomainForUser,
@@ -29,7 +29,7 @@ import {
   getOrganizationDomainForUser,
   getOrganizationDomainsForUser,
   updateDomainForUser,
-  verifyDomainForUser
+  verifyDomainForUser,
 } from "../../rest/organization";
 
 @Controller(":id/domains")
@@ -43,7 +43,7 @@ export class OrganizationDomainsController {
     joiValidate(
       {
         start: Joi.string(),
-        itemsPerPage: Joi.number()
+        itemsPerPage: Joi.number(),
       },
       domainParams
     );
@@ -58,7 +58,7 @@ export class OrganizationDomainsController {
   @Middleware(
     validator(
       {
-        domain: Joi.string()
+        domain: Joi.string(),
       },
       "body"
     )
@@ -82,7 +82,7 @@ export class OrganizationDomainsController {
     joiValidate(
       {
         id: Joi.string().required(),
-        domainId: Joi.string().required()
+        domainId: Joi.string().required(),
       },
       { id, domainId }
     );
@@ -93,7 +93,7 @@ export class OrganizationDomainsController {
   @Middleware(
     validator(
       {
-        domain: Joi.string()
+        domain: Joi.string(),
       },
       "body"
     )
@@ -104,7 +104,7 @@ export class OrganizationDomainsController {
     joiValidate(
       {
         id: Joi.string().required(),
-        domainId: Joi.string().required()
+        domainId: Joi.string().required(),
       },
       { id, domainId }
     );
@@ -125,7 +125,7 @@ export class OrganizationDomainsController {
     joiValidate(
       {
         id: Joi.string().required(),
-        domainId: Joi.string().required()
+        domainId: Joi.string().required(),
       },
       { id, domainId }
     );
@@ -147,9 +147,7 @@ export class OrganizationDomainsController {
       {
         id: Joi.string().required(),
         domainId: Joi.string().required(),
-        method: Joi.string()
-          .allow(["file", "dns"])
-          .only()
+        method: Joi.string().allow(["file", "dns"]).only(),
       },
       { id, domainId, method }
     );

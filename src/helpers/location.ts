@@ -17,7 +17,7 @@ export interface GeoLocation {
 let lookup: Reader<CityResponse> | undefined = undefined;
 const getLookup = async () => {
   if (lookup) return lookup;
-  lookup = await geolite2.open<CityResponse>("GeoLite2-City", path => {
+  lookup = await geolite2.open<CityResponse>("GeoLite2-City", (path) => {
     return maxmind.open(path);
   });
   success("Opened GeoIP2 database reader");

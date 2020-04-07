@@ -8,7 +8,7 @@ import {
   Middleware,
   Patch,
   Request,
-  Response
+  Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../helpers/middleware";
@@ -16,7 +16,7 @@ import { userUsernameToId } from "../../helpers/utils";
 import {
   deleteUserForUser,
   getUserFromId,
-  updateUserForUser
+  updateUserForUser,
 } from "../../rest/user";
 import { UserAccessTokensController } from "./access-tokens";
 import { UserEmailsController } from "./emails";
@@ -32,7 +32,7 @@ import { UserSessionsController } from "./sessions";
   new UserSecurityController(),
   new UserAccessTokensController(),
   new UserSessionsController(),
-  new UserIdentitiesController()
+  new UserIdentitiesController(),
 ])
 @ClassMiddleware(authHandler)
 export class UserController {
@@ -56,15 +56,13 @@ export class UserController {
         countryCode: Joi.string().length(2),
         password: Joi.string().min(6),
         gender: Joi.string().length(1),
-        preferredLanguage: Joi.string()
-          .min(2)
-          .max(5),
+        preferredLanguage: Joi.string().min(2).max(5),
         timezone: Joi.string(),
         notificationEmails: Joi.number(),
         prefersReducedMotion: Joi.boolean(),
         prefersColorSchemeDark: Joi.boolean(),
         profilePicture: Joi.string(),
-        checkLocationOnLogin: Joi.boolean()
+        checkLocationOnLogin: Joi.boolean(),
       },
       "body"
     )
