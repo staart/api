@@ -32,6 +32,7 @@ import { mail } from "../helpers/mail";
 import { Templates } from "../interfaces/enum";
 import { sendNewPassword } from "../rest/auth";
 import redis from "@staart/redis";
+import { getItemFromCache, setItemInCache } from "../helpers/cache";
 
 /**
  * Get the best available username for a user
@@ -382,4 +383,33 @@ export const resendEmailVerification = async (id: string | number) => {
  */
 export const getUserById = async (id: number | string) => {
   if (typeof id === "number") id = id.toString();
+  const key = `cache_getUserById_${id}`;
+  try {
+    return getItemFromCache<users>(key);
+  } catch (error) {
+    const user = await prisma.users.findOne({ where: { id: parseInt(id) } });
+    if (user) {
+      await setItemInCache(key, user);
+      return user;
+    }
+    throw new Error(USER_NOT_FOUND);
+  }
+};
+
+/**
+ * Get a user object from its username
+ * @param username - User's username
+ */
+export const getUserByUsername = async (username: string) => {
+  const key = `cache_getUserByUsername_${username}`;
+  try {
+    return getItemFromCache<users>(key);
+  } catch (error) {
+    const user = await prisma.users.findOne({ where: { username } });
+    if (user) {
+      await setItemInCache(key, user);
+      return user;
+    }
+    throw new Error(USER_NOT_FOUND);
+  }
 };

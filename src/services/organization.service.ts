@@ -31,7 +31,9 @@ import {
   api_keysCreateInput,
   api_keysUpdateInput,
   domainsCreateInput,
+  organizations,
 } from "@prisma/client";
+import { getItemFromCache, setItemInCache } from "../helpers/cache";
 
 /**
  * Check if an organization username is available
@@ -256,4 +258,45 @@ export const checkDomainAvailability = async (username: string) => {
     if (domain && domain.id) return false;
   } catch (error) {}
   return true;
+};
+
+/**
+ * Get a organization object from its ID
+ * @param id - User ID
+ */
+export const getOrganizationById = async (id: number | string) => {
+  if (typeof id === "number") id = id.toString();
+  const key = `cache_getOrganizationById_${id}`;
+  try {
+    return getItemFromCache<organizations>(key);
+  } catch (error) {
+    const organization = await prisma.organizations.findOne({
+      where: { id: parseInt(id) },
+    });
+    if (organization) {
+      await setItemInCache(key, organization);
+      return organization;
+    }
+    throw new Error(ORGANIZATION_NOT_FOUND);
+  }
+};
+
+/**
+ * Get a organization object from its username
+ * @param username - User's username
+ */
+export const getOrganizationByUsername = async (username: string) => {
+  const key = `cache_getOrganizationByUsername_${username}`;
+  try {
+    return getItemFromCache<organizations>(key);
+  } catch (error) {
+    const organization = await prisma.organizations.findOne({
+      where: { username },
+    });
+    if (organization) {
+      await setItemInCache(key, organization);
+      return organization;
+    }
+    throw new Error(ORGANIZATION_NOT_FOUND);
+  }
 };

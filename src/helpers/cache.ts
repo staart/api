@@ -30,7 +30,7 @@ export const setItemInCache = async (
   value: any,
   expiry?: Date
 ) => {
-  await redis.set(key, value, [
+  await redis.set(key, JSON.stringify(value), [
     "EX",
     expiry ? Math.floor((expiry.getTime() - new Date().getTime()) / 1000) : 600,
   ]);
