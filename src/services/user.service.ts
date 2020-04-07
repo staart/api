@@ -384,7 +384,6 @@ export const getUserById = async (id: number | string) => {
   try {
     return await getItemFromCache<users>(key);
   } catch (error) {
-    console.log("Reached error");
     const user = await prisma.users.findOne({ where: { id: parseInt(id) } });
     if (user) {
       await setItemInCache(key, user);

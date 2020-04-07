@@ -45,7 +45,7 @@ import {
 } from "../helpers/jwt";
 import { mail } from "../helpers/mail";
 import { trackEvent } from "../helpers/tracking";
-import { dnsResolve } from "../helpers/utils";
+import { dnsResolve, organizationUsernameToId } from "../helpers/utils";
 import { queueWebhook } from "../helpers/webhooks";
 import { OrgScopes, Templates, Webhooks, Tokens } from "../interfaces/enum";
 import { KeyValue, Locals } from "../interfaces/general";
@@ -85,6 +85,7 @@ import {
   getApiKeyLogs,
   checkDomainAvailability,
   getOrganizationById,
+  createOrganization,
 } from "../services/organization.service";
 import { fireSingleWebhook } from "../helpers/webhooks";
 import { getUserById } from "../services/user.service";
@@ -110,18 +111,7 @@ export const newOrganizationForUser = async (
     const user = await getUserById(userId);
     organization.name = user.name;
   }
-  return prisma.organizations.create({
-    data: {
-      ...organization,
-      memberships: {
-        create: {
-          organization: {},
-          user: { connect: { id: parseInt(userId) } },
-          role: "OWNER",
-        },
-      },
-    },
-  });
+  return createOrganization(organization, userId);
 };
 
 export const updateOrganizationForUser = async (

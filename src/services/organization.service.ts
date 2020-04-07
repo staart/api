@@ -69,7 +69,8 @@ const getBestUsernameForOrganization = async (name: string) => {
  * Create a new organization for a user
  */
 export const createOrganization = async (
-  organization: organizationsCreateInput
+  organization: organizationsCreateInput,
+  ownerId: string
 ) => {
   if (!organization.name) throw new Error(INVALID_INPUT);
   organization.name = capitalizeFirstAndLastLetter(organization.name);
@@ -84,7 +85,18 @@ export const createOrganization = async (
   organization.profilePicture = `https://ui-avatars.com/api/?name=${encodeURIComponent(
     (organization.name || "XX").substring(0, 2).toUpperCase()
   )}&background=${backgroundColor}&color=fff`;
-  const result = await prisma.organizations.create({ data: organization });
+  const result = await prisma.organizations.create({
+    data: {
+      ...organization,
+      memberships: {
+        create: {
+          organization: {},
+          user: { connect: { id: parseInt(ownerId) } },
+          role: "OWNER",
+        },
+      },
+    },
+  });
   return result;
 };
 
