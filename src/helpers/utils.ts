@@ -38,9 +38,11 @@ export const userUsernameToId = async (id: string, tokenUserId?: string) => {
   if (id === "me" && tokenUserId) {
     return String(tokenUserId);
   } else if (!id.match(/^-{0,1}\d+$/)) {
+    console.log("Converting to ID", id);
     const result = (
       await prisma.organizations.findOne({ where: { username: id } })
     )?.id;
+    console.log("Result", result);
     if (result) return result.toString();
     throw new Error(USER_NOT_FOUND);
   } else {
@@ -81,7 +83,7 @@ export const boolValues = [
   "autoJoinDomain",
   "onlyAllowDomain",
   "isActive",
-  "checkLocationOnLogin"
+  "checkLocationOnLogin",
 ];
 
 /**
@@ -91,7 +93,7 @@ export const dateValues = [
   "createdAt",
   "updatedAt",
   "lastFiredAt",
-  "expiresAt"
+  "expiresAt",
 ];
 
 /**
@@ -107,7 +109,7 @@ export const readOnlyValues = [
   "id",
   "jwtApiKey",
   "userId",
-  "organizationId"
+  "organizationId",
 ];
 
 /**
@@ -119,12 +121,12 @@ export const IdValues = [
   "organizationId",
   "primaryEmail",
   "apiKeyId",
-  "apiKeyOrganizationId"
+  "apiKeyOrganizationId",
 ];
 
 export const removeFalsyValues = (value: any) => {
   if (value && typeof value === "object") {
-    Object.keys(value).map(key => {
+    Object.keys(value).map((key) => {
       if (!value[key]) delete value[key];
     });
   }
@@ -132,9 +134,9 @@ export const removeFalsyValues = (value: any) => {
 };
 
 export const includesDomainInCommaList = (commaList: string, value: string) => {
-  const list = commaList.split(",").map(item => item.trim());
+  const list = commaList.split(",").map((item) => item.trim());
   let includes = false;
-  list.forEach(item => {
+  list.forEach((item) => {
     if (item === value || isMatch(value, `*.${item}`)) includes = true;
   });
   return includes;
@@ -183,19 +185,19 @@ export const queryToParams = (req: Request) => {
     query.select = query.select || [];
     if (typeof query.select === "string") query.select = [query.select];
     const select: { [index: string]: boolean } = {};
-    query.select.forEach(selectQuery => (select[selectQuery] = true));
+    query.select.forEach((selectQuery) => (select[selectQuery] = true));
     if (Object.keys(select).length) result.select = select;
 
     query.include = query.include || [];
     if (typeof query.include === "string") query.include = [query.include];
     const include: { [index: string]: boolean } = {};
-    query.include.forEach(includeQuery => (include[includeQuery] = true));
+    query.include.forEach((includeQuery) => (include[includeQuery] = true));
     if (Object.keys(include).length) result.include = include;
 
     query.orderBy = query.orderBy || [];
     if (typeof query.orderBy === "string") query.orderBy = [query.orderBy];
     const orderBy: { [index: string]: string } = {};
-    query.orderBy.forEach(orderByQuery => {
+    query.orderBy.forEach((orderByQuery) => {
       if (orderByQuery.trim() && orderByQuery.includes(":")) {
         const orderByArg = orderByQuery.split(":")[1];
         if (["asc", "desc"].includes(orderByArg))
