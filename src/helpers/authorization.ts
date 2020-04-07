@@ -13,6 +13,7 @@ import {
   api_keys,
 } from "@prisma/client";
 import { prisma } from "./prisma";
+import { getUserById } from "../services/user.service";
 
 /**
  * Whether a user can perform an action on another user
@@ -198,9 +199,7 @@ export const can = async (
       requestFromType = "access_tokens";
     }
   } else {
-    const result = await prisma.users.findOne({
-      where: { id: parseInt(user) },
-    });
+    const result = await getUserById(user);
     if (!result) throw new Error(USER_NOT_FOUND);
     user = result;
   }
@@ -228,9 +227,7 @@ export const can = async (
       if (requestFromType === "users" && user.id === parseInt(target)) {
         target = user as users;
       } else {
-        const targetUser = await prisma.users.findOne({
-          where: { id: parseInt(target) },
-        });
+        const targetUser = await getUserById(target);
         if (!targetUser) throw new Error(USER_NOT_FOUND);
         target = targetUser;
       }

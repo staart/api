@@ -22,6 +22,7 @@ import {
   getUserPrimaryEmail,
   getUserBestEmail,
   resendEmailVerification,
+  getUserById,
 } from "../services/user.service";
 import { can } from "../helpers/authorization";
 import { trackEvent } from "../helpers/tracking";
@@ -63,9 +64,7 @@ import { ApiKeyResponse } from "../helpers/jwt";
 
 export const getUserFromId = async (userId: string, tokenUserId: string) => {
   if (await can(tokenUserId, UserScopes.READ_USER, "user", userId)) {
-    const user = await prisma.users.findOne({
-      where: { id: parseInt(userId) },
-    });
+    const user = await getUserById(userId);
     if (user) return user;
     throw new Error(USER_NOT_FOUND);
   }
@@ -107,10 +106,7 @@ export const updatePasswordForUser = async (
   if (
     await can(tokenUserId, UserScopes.CHANGE_PASSWORD, "user", updateUserId)
   ) {
-    const user = await prisma.users.findOne({
-      where: { id: parseInt(updateUserId) },
-    });
-    if (!user) throw new Error(USER_NOT_FOUND);
+    const user = await getUserById(updateUserId);
     if (!user.password) throw new Error(MISSING_PASSWORD);
     const correctPassword = await compare(oldPassword, user.password);
     if (!correctPassword) throw new Error(INCORRECT_PASSWORD);
@@ -556,15 +552,11 @@ export const addInvitationCredits = async (
     })
   )?.username;
   if (!invitedByUserId) return;
-  const invitedByDetails = await prisma.users.findOne({
-    where: { id: parseInt(invitedByUserId) },
-  });
+  const invitedByDetails = await getUserById(invitedByUserId);
   if (!invitedByDetails) return;
   const invitedByEmail = await getUserPrimaryEmail(invitedByUserId);
   const newUserEmail = await getUserBestEmail(newUserId);
-  const newUserDetails = await prisma.users.findOne({
-    where: { id: parseInt(newUserId) },
-  });
+  const newUserDetails = await getUserById(newUserId);
   if (!newUserDetails) return;
   const emailData = {
     invitedByName: invitedByDetails.name,

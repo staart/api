@@ -19,6 +19,7 @@ import { EventType } from "../interfaces/enum";
 import { Locals } from "../interfaces/general";
 import { register } from "./auth";
 import { prisma } from "../helpers/prisma";
+import { getUserById } from "../services/user.service";
 
 const getRedirectUri = (service: string) =>
   `${BASE_URL}/auth/oauth/${service}/callback`;
@@ -49,9 +50,7 @@ export const loginWithOAuth2Service = async (
     undefined,
     true
   );
-  const loggedInUser = await prisma.users.findOne({
-    where: { id: newUser.userId },
-  });
+  const loggedInUser = await getUserById(newUser.userId);
   if (!loggedInUser) throw new Error(USER_NOT_FOUND);
   return getLoginResponse(
     loggedInUser,

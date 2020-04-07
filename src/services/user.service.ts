@@ -103,8 +103,7 @@ export const getUserByEmail = async (email: string, secureOrigin = false) => {
     where: { email, isVerified: true },
   });
   if (!emailObject.length) throw new Error(USER_NOT_FOUND);
-  const user = await prisma.users.findOne({ where: { id: emailObject[0].id } });
-  if (!user) throw new Error(USER_NOT_FOUND);
+  const user = await getUserById(emailObject[0].id);
   if (!secureOrigin) return deleteSensitiveInfoUser(user);
   return user;
 };
@@ -116,9 +115,7 @@ export const updateUser = async (id: string, user: KeyValue) => {
   if (user.password) user.password = await hash(user.password, 8);
   // If you're updating your primary email, your Gravatar should reflect it
   if (user.primaryEmail) {
-    const originalUser = await prisma.users.findOne({
-      where: { id: parseInt(id) },
-    });
+    const originalUser = await getUserById(id);
     if (!originalUser) throw new Error(USER_NOT_FOUND);
     if ((originalUser.profilePicture || "").includes("api.adorable.io")) {
       const emailDetails = await prisma.emails.findOne({
@@ -138,9 +135,7 @@ export const updateUser = async (id: string, user: KeyValue) => {
   }
   // If you're updating your username, make sure it's available
   if (user.username) {
-    const originalUser = await prisma.users.findOne({
-      where: { id: parseInt(id) },
-    });
+    const originalUser = await getUserById(id);
     if (!originalUser) throw new Error(USER_NOT_FOUND);
     const currentOwnerOfUsername = await prisma.users.findMany({
       where: { username: user.username },
@@ -182,7 +177,7 @@ export const checkApprovedLocation = async (
   ipAddress: string
 ) => {
   if (typeof userId === "number") userId = userId.toString();
-  const user = await prisma.users.findOne({ where: { id: parseInt(userId) } });
+  const user = await getUserById(userId);
   if (!user) throw new Error(USER_NOT_FOUND);
   if (!user.checkLocationOnLogin) return true;
   const subnet = anonymizeIpAddress(ipAddress);
@@ -336,7 +331,7 @@ export const createEmail = async (
     data: { ...email, user: { connect: { id: userId } } },
   });
   if (sendVerification) {
-    const user = await prisma.users.findOne({ where: { id: userId } });
+    const user = await getUserById(userId);
     if (!user) throw new Error(USER_NOT_FOUND);
     await sendEmailVerification(result.id, email.email, user);
   }
@@ -369,9 +364,7 @@ export const resendEmailVerification = async (id: string | number) => {
   });
   if (!emailObject) throw new Error(RESOURCE_NOT_FOUND);
   const email = emailObject.email;
-  const user = await prisma.users.findOne({
-    where: { id: emailObject.userId },
-  });
+  const user = await getUserById(emailObject.userId);
   if (!user) throw new Error(USER_NOT_FOUND);
   await mail(email, Templates.EMAIL_VERIFY, { name: user.name, email, token });
   return;

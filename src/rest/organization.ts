@@ -86,6 +86,7 @@ import {
   checkDomainAvailability,
 } from "../services/organization.service";
 import { fireSingleWebhook } from "../helpers/webhooks";
+import { getUserById } from "../services/user.service";
 
 export const getOrganizationForUser = async (
   userId: string | ApiKeyResponse,
@@ -108,10 +109,7 @@ export const newOrganizationForUser = async (
   locals: Locals
 ) => {
   if (!organization.name) {
-    const user = await prisma.users.findOne({
-      where: { id: parseInt(userId) },
-    });
-    if (!user) throw new Error(USER_NOT_FOUND);
+    const user = await getUserById(userId);
     organization.name = user.name;
   }
   return prisma.organizations.create({
@@ -875,12 +873,9 @@ export const inviteMemberToOrganization = async (
     if (createdUserId) {
       const inviter =
         typeof userId !== "object"
-          ? (await prisma.users.findOne({ where: { id: parseInt(userId) } }))
-              ?.name ?? "Someone"
+          ? (await getUserById(userId))?.name ?? "Someone"
           : "Someone";
-      const userDetails = prisma.users.findOne({
-        where: { id: createdUserId },
-      });
+      const userDetails = await getUserById(createdUserId);
       mail(newMemberEmail, Templates.INVITED_TO_TEAM, {
         ...userDetails,
         team: organization.name,

@@ -33,6 +33,7 @@ import {
   getBestUsernameForUser,
   createUser,
   addApprovedLocation,
+  getUserById,
 } from "../services/user.service";
 import { usersCreateInput, MembershipRole } from "@prisma/client";
 import { getDomainByDomainName } from "../services/organization.service";
@@ -42,7 +43,7 @@ export const validateRefreshToken = async (token: string, locals: Locals) => {
   await checkInvalidatedToken(token);
   const data = await verifyToken<{ id: string }>(token, Tokens.REFRESH);
   if (!data.id) throw new Error(USER_NOT_FOUND);
-  const user = await prisma.users.findOne({ where: { id: parseInt(data.id) } });
+  const user = await getUserById(data.id);
   if (!user) throw new Error(USER_NOT_FOUND);
   return postLoginTokens(user, locals, token);
 };
@@ -72,7 +73,7 @@ export const login = async (
 
 export const login2FA = async (code: number, token: string, locals: Locals) => {
   const data = await verifyToken<{ id: string }>(token, Tokens.TWO_FACTOR);
-  const user = await prisma.users.findOne({ where: { id: parseInt(data.id) } });
+  const user = await getUserById(data.id);
   if (!user) throw new Error(USER_NOT_FOUND);
   const secret = user.twoFactorSecret;
   if (!secret) throw new Error(NOT_ENABLED_2FA);
@@ -235,9 +236,7 @@ export const impersonate = async (
   )
     throw new Error(INSUFFICIENT_PERMISSION);
 
-  const user = await prisma.users.findOne({
-    where: { id: parseInt(impersonateUserId) },
-  });
+  const user = await getUserById(impersonateUserId);
   if (user)
     return getLoginResponse(user, EventType.AUTH_LOGIN, "impersonate", locals);
   throw new Error(USER_NOT_FOUND);
@@ -249,9 +248,7 @@ export const approveLocation = async (token: string, locals: Locals) => {
     Tokens.APPROVE_LOCATION
   );
   if (!tokenUser.id) throw new Error(USER_NOT_FOUND);
-  const user = await prisma.users.findOne({
-    where: { id: parseInt(tokenUser.id) },
-  });
+  const user = await getUserById(tokenUser.id);
   if (!user) throw new Error(USER_NOT_FOUND);
   const ipAddress = tokenUser.ipAddress || locals.ipAddress;
   await addApprovedLocation(user.id, ipAddress);
