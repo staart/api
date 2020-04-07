@@ -31,6 +31,7 @@ import { emailVerificationToken } from "../helpers/jwt";
 import { mail } from "../helpers/mail";
 import { Templates } from "../interfaces/enum";
 import { sendNewPassword } from "../rest/auth";
+import redis from "@staart/redis";
 
 /**
  * Get the best available username for a user
@@ -373,4 +374,12 @@ export const resendEmailVerification = async (id: string | number) => {
   if (!user) throw new Error(USER_NOT_FOUND);
   await mail(email, Templates.EMAIL_VERIFY, { name: user.name, email, token });
   return;
+};
+
+/**
+ * Get a user object from its ID
+ * @param id - User ID
+ */
+export const getUserById = async (id: number | string) => {
+  if (typeof id === "number") id = id.toString();
 };
