@@ -45,7 +45,7 @@ import {
 } from "../helpers/jwt";
 import { mail } from "../helpers/mail";
 import { trackEvent } from "../helpers/tracking";
-import { dnsResolve, organizationUsernameToId } from "../helpers/utils";
+import { dnsResolve } from "../helpers/utils";
 import { queueWebhook } from "../helpers/webhooks";
 import { OrgScopes, Templates, Webhooks, Tokens } from "../interfaces/enum";
 import { KeyValue, Locals } from "../interfaces/general";

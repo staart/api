@@ -502,7 +502,7 @@ export const getUserIdentitiesForUser = async (
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER_IDENTITY, "user", userId))
     return paginatedResult(
-      await prisma.sessions.findMany({
+      await prisma.identities.findMany({
         where: { userId: parseInt(userId) },
         select,
         include,
