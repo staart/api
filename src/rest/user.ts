@@ -192,7 +192,7 @@ export const getMembershipsForUser = async (
     await can(tokenUserId, UserScopes.READ_USER_MEMBERSHIPS, "user", dataUserId)
   )
     return paginatedResult(
-      prisma.memberships.findMany({
+      await prisma.memberships.findMany({
         where: { userId: parseInt(dataUserId) },
         include: { organization: true, ...include },
         select,
@@ -337,7 +337,7 @@ export const getUserAccessTokensForUser = async (
     await can(tokenUserId, UserScopes.READ_USER_ACCESS_TOKENS, "user", userId)
   )
     return paginatedResult(
-      prisma.access_tokens.findMany({
+      await prisma.access_tokens.findMany({
         where: { userId: parseInt(userId) },
         select,
         include,
@@ -439,7 +439,7 @@ export const getUserSessionsForUser = async (
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER_SESSION, "user", userId))
     return paginatedResult(
-      prisma.sessions.findMany({
+      await prisma.sessions.findMany({
         where: { userId: parseInt(userId) },
         select,
         include,
@@ -502,7 +502,7 @@ export const getUserIdentitiesForUser = async (
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER_IDENTITY, "user", userId))
     return paginatedResult(
-      prisma.sessions.findMany({
+      await prisma.sessions.findMany({
         where: { userId: parseInt(userId) },
         select,
         include,
@@ -622,7 +622,7 @@ export const getAllEmailsForUser = async (
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER_EMAILS, "user", userId)) {
     return paginatedResult(
-      prisma.emails.findMany({
+      await prisma.emails.findMany({
         where: { userId: parseInt(userId) },
         select,
         include,

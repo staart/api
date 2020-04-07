@@ -653,7 +653,7 @@ export const getOrganizationMembershipsForUser = async (
     )
   )
     return paginatedResult(
-      prisma.memberships.findMany({
+      await prisma.memberships.findMany({
         where: { organizationId: parseInt(organizationId) },
         select,
         include,
@@ -855,7 +855,7 @@ export const getOrganizationApiKeysForUser = async (
     )
   )
     return paginatedResult(
-      prisma.api_keys.findMany({
+      await prisma.api_keys.findMany({
         where: { organizationId: parseInt(organizationId) },
         select,
         include,
@@ -1024,7 +1024,7 @@ export const getOrganizationDomainsForUser = async (
     )
   )
     return paginatedResult(
-      prisma.domains.findMany({
+      await prisma.domains.findMany({
         where: { organizationId: parseInt(organizationId) },
         select,
         include,
@@ -1239,7 +1239,7 @@ export const getOrganizationWebhooksForUser = async (
     )
   )
     return paginatedResult(
-      prisma.webhooks.findMany({
+      await prisma.webhooks.findMany({
         where: { organizationId: parseInt(organizationId) },
         select,
         include,

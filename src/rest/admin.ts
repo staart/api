@@ -43,7 +43,7 @@ export const getAllOrganizationForUser = async (
 ) => {
   if (await can(tokenUserId, SudoScopes.READ, "sudo"))
     return paginatedResult(
-      prisma.organizations.findMany({
+      await prisma.organizations.findMany({
         select,
         include,
         orderBy,
@@ -82,7 +82,7 @@ export const getAllUsersForUser = async (
 ) => {
   if (await can(tokenUserId, SudoScopes.READ, "sudo"))
     return paginatedResult(
-      prisma.users.findMany({
+      await prisma.users.findMany({
         select,
         include,
         orderBy,
