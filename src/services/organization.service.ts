@@ -33,7 +33,11 @@ import {
   domainsCreateInput,
   organizations,
 } from "@prisma/client";
-import { getItemFromCache, setItemInCache } from "../helpers/cache";
+import {
+  getItemFromCache,
+  setItemInCache,
+  deleteItemFromCache,
+} from "../helpers/cache";
 
 /**
  * Check if an organization username is available
@@ -92,9 +96,11 @@ export const updateOrganization = async (
   organization: organizationsUpdateInput
 ) => {
   if (typeof id === "number") id = id.toString();
-  const originalOrganization = await prisma.organizations.findOne({
-    where: { id: parseInt(id) },
-  });
+  const originalOrganization = await getOrganizationById(id);
+  await deleteItemFromCache(
+    `cache_getOrganizationById_${originalOrganization.id}`,
+    `cache_getOrganizationByUsername_${originalOrganization.username}`
+  );
   if (!originalOrganization) throw new Error(ORGANIZATION_NOT_FOUND);
   if (
     organization.username &&

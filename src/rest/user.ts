@@ -61,6 +61,7 @@ import {
 import { ALLOW_DISPOSABLE_EMAILS } from "../config";
 import { checkIfDisposableEmail } from "@staart/disposable-email";
 import { ApiKeyResponse } from "../helpers/jwt";
+import { deleteItemFromCache } from "../helpers/cache";
 
 export const getUserFromIdForUser = async (
   userId: string,
@@ -145,7 +146,12 @@ export const deleteUserForUser = async (
     await prisma.approved_locations.deleteMany({
       where: { userId: parseInt(updateUserId) },
     });
+    const originalUser = await getUserById(updateUserId);
     await prisma.users.deleteMany({ where: { id: parseInt(updateUserId) } });
+    await deleteItemFromCache(
+      `cache_getUserById_${originalUser.id}`,
+      `cache_getUserByUsername_${originalUser.username}`
+    );
     trackEvent(
       {
         userId: tokenUserId,

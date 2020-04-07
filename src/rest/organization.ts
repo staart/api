@@ -84,9 +84,11 @@ import {
   getDomainByDomainName,
   getApiKeyLogs,
   checkDomainAvailability,
+  getOrganizationById,
 } from "../services/organization.service";
 import { fireSingleWebhook } from "../helpers/webhooks";
 import { getUserById } from "../services/user.service";
+import { deleteItemFromCache } from "../helpers/cache";
 
 export const getOrganizationForUser = async (
   userId: string | ApiKeyResponse,
@@ -154,14 +156,13 @@ export const deleteOrganizationForUser = async (
   locals: Locals
 ) => {
   if (await can(userId, OrgScopes.DELETE_ORG, "organization", organizationId)) {
-    const organizationDetails = await prisma.organizations.findOne({
-      where: {
-        id: parseInt(
-          typeof userId === "object" ? userId.organizationId : userId
-        ),
-      },
-    });
-    if (!organizationDetails) throw new Error(ORGANIZATION_NOT_FOUND);
+    const organizationDetails = await getOrganizationById(
+      typeof userId === "object" ? userId.organizationId : userId
+    );
+    await deleteItemFromCache(
+      `cache_getOrganizationById_${organizationDetails.id}`,
+      `cache_getOrganizationByUsername_${organizationDetails.username}`
+    );
     if (organizationDetails.stripeCustomerId)
       await deleteCustomer(organizationDetails.stripeCustomerId);
     await prisma.organizations.delete({

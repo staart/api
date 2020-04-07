@@ -31,8 +31,11 @@ import { emailVerificationToken } from "../helpers/jwt";
 import { mail } from "../helpers/mail";
 import { Templates } from "../interfaces/enum";
 import { sendNewPassword } from "../rest/auth";
-import redis from "@staart/redis";
-import { getItemFromCache, setItemInCache } from "../helpers/cache";
+import {
+  getItemFromCache,
+  setItemInCache,
+  deleteItemFromCache,
+} from "../helpers/cache";
 
 /**
  * Get the best available username for a user
@@ -112,11 +115,14 @@ export const getUserByEmail = async (email: string, secureOrigin = false) => {
  * Update a user's details
  */
 export const updateUser = async (id: string, user: KeyValue) => {
+  const originalUser = await getUserById(id);
+  await deleteItemFromCache(
+    `cache_getUserById_${originalUser.id}`,
+    `cache_getUserByUsername_${originalUser.username}`
+  );
   if (user.password) user.password = await hash(user.password, 8);
   // If you're updating your primary email, your Gravatar should reflect it
   if (user.primaryEmail) {
-    const originalUser = await getUserById(id);
-    if (!originalUser) throw new Error(USER_NOT_FOUND);
     if ((originalUser.profilePicture || "").includes("api.adorable.io")) {
       const emailDetails = await prisma.emails.findOne({
         where: { id: user.primaryEmail },
@@ -135,8 +141,6 @@ export const updateUser = async (id: string, user: KeyValue) => {
   }
   // If you're updating your username, make sure it's available
   if (user.username) {
-    const originalUser = await getUserById(id);
-    if (!originalUser) throw new Error(USER_NOT_FOUND);
     const currentOwnerOfUsername = await prisma.users.findMany({
       where: { username: user.username },
     });
