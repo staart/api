@@ -4,7 +4,10 @@ import { complete, success } from "@staart/errors";
 import { getConfig } from "@staart/config";
 
 export const prisma = new PrismaClient({
-  log: getConfig("NODE_ENV") === "production" ? ["warn"] : ["query", "warn"],
+  log:
+    getConfig("NODE_ENV") === "production"
+      ? ["warn"]
+      : ["query", "info", "warn"],
 });
 
 cleanup(() => {
