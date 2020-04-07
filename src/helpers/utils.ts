@@ -38,11 +38,8 @@ export const userUsernameToId = async (id: string, tokenUserId?: string) => {
   if (id === "me" && tokenUserId) {
     return String(tokenUserId);
   } else if (!id.match(/^-{0,1}\d+$/)) {
-    console.log("Converting to ID", id);
-    const result = (
-      await prisma.organizations.findOne({ where: { username: id } })
-    )?.id;
-    console.log("Result", result);
+    const result = (await prisma.users.findOne({ where: { username: id } }))
+      ?.id;
     if (result) return result.toString();
     throw new Error(USER_NOT_FOUND);
   } else {
