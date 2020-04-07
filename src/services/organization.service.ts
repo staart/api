@@ -74,7 +74,6 @@ export const createOrganization = async (
 ) => {
   if (!organization.name) throw new Error(INVALID_INPUT);
   organization.name = capitalizeFirstAndLastLetter(organization.name);
-  organization.createdAt = new Date();
   organization.username = await getBestUsernameForOrganization(
     organization.name
   );
@@ -85,19 +84,22 @@ export const createOrganization = async (
   organization.profilePicture = `https://ui-avatars.com/api/?name=${encodeURIComponent(
     (organization.name || "XX").substring(0, 2).toUpperCase()
   )}&background=${backgroundColor}&color=fff`;
-  const result = await prisma.organizations.create({
-    data: {
-      ...organization,
-      memberships: {
-        create: {
-          organization: {},
-          user: { connect: { id: parseInt(ownerId) } },
-          role: "OWNER",
-        },
+  try {
+    const result = await prisma.organizations.create({
+      data: organization,
+    });
+    await prisma.memberships.create({
+      data: {
+        role: "OWNER",
+        user: { connect: { id: parseInt(ownerId) } },
+        organization: { connect: { id: result.id } },
       },
-    },
-  });
-  return result;
+    });
+    return result;
+  } catch (error) {
+    console.log(error);
+    throw new Error(error);
+  }
 };
 
 /*
@@ -177,7 +179,6 @@ export const getApiKeyLogs = async (apiKeyId: string, query: KeyValue) => {
  */
 export const createApiKey = async (apiKey: api_keysCreateInput) => {
   apiKey.expiresAt = apiKey.expiresAt || new Date(TOKEN_EXPIRY_API_KEY_MAX);
-  apiKey.createdAt = new Date();
   apiKey.jwtApiKey = await apiKeyToken(apiKey);
   return prisma.api_keys.create({ data: apiKey });
 };
@@ -258,7 +259,6 @@ export const refreshOrganizationProfilePicture = async (
  * Create a domain
  */
 export const createDomain = async (domain: domainsCreateInput) => {
-  domain.createdAt = new Date();
   domain.verificationCode = `${JWT_ISSUER}=${randomString({
     length: 32,
   })}`;

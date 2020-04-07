@@ -127,7 +127,7 @@ export const updateOrganizationForUser = async (
           typeof userId === "object" ? userId.organizationId : userId
         ),
       },
-      data: {},
+      data,
     });
     queueWebhook(organizationId, Webhooks.UPDATE_ORGANIZATION, data);
     trackEvent({ organizationId, type: Webhooks.UPDATE_ORGANIZATION }, locals);
