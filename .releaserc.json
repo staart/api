@@ -4,8 +4,79 @@
       "semantic-release-gitmoji",
       {
         "releaseRules": {
+          "major": {
+            "include": [":ambulance:", ":boom:"]
+          },
+          "preminor": {
+            "include": [":construction:"]
+          },
+          "minor": {
+            "include": [
+              ":zap:",
+              ":fire:",
+              ":sparkles:",
+              ":lipstick:",
+              ":arrow_down:",
+              ":arrow_up:",
+              ":chart_with_upwards_trend:",
+              ":recycle:",
+              ":whale:",
+              ":heavy_plus_sign:",
+              ":heavy_minus_sign:",
+              ":globe_with_meridians:",
+              ":rewind:",
+              ":twisted_rightwards_arrows:",
+              ":package:",
+              ":alien:",
+              ":truck:",
+              ":page_facing_up:",
+              ":bento:",
+              ":wheelchair:",
+              ":beers:",
+              ":speech_balloon:",
+              ":card_file_box:",
+              ":loud_sound:",
+              ":mute:",
+              ":building_construction:",
+              ":alembic:",
+              ":wheel_of_dharma:",
+              ":label:",
+              ":seedling:",
+              ":triangular_flag_on_post:"
+            ]
+          },
           "patch": {
-            "include": [":bento:", ":recycle:"]
+            "include": [
+              ":art:",
+              ":bug:",
+              ":pencil:",
+              ":white_check_mark:",
+              ":lock:",
+              ":apple:",
+              ":penguin:",
+              ":checkered_flag:",
+              ":robot:",
+              ":green_apple:",
+              ":rotating_light:",
+              ":green_heart:",
+              ":pushpin:",
+              ":wrench:",
+              ":pencil2:",
+              ":poop:",
+              ":ok_hand:",
+              ":bulb:",
+              ":busts_in_silhouette:",
+              ":children_crossing:",
+              ":iphone:",
+              ":clown_face:",
+              ":egg:",
+              ":see_no_evil:",
+              ":camera_flash:",
+              ":mag:",
+              ":goal_net:",
+              ":dizzy:",
+              ":wastebasket:"
+            ]
           }
         }
       }
