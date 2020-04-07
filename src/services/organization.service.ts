@@ -268,7 +268,7 @@ export const getOrganizationById = async (id: number | string) => {
   if (typeof id === "number") id = id.toString();
   const key = `cache_getOrganizationById_${id}`;
   try {
-    return getItemFromCache<organizations>(key);
+    return await getItemFromCache<organizations>(key);
   } catch (error) {
     const organization = await prisma.organizations.findOne({
       where: { id: parseInt(id) },
@@ -288,7 +288,7 @@ export const getOrganizationById = async (id: number | string) => {
 export const getOrganizationByUsername = async (username: string) => {
   const key = `cache_getOrganizationByUsername_${username}`;
   try {
-    return getItemFromCache<organizations>(key);
+    return await getItemFromCache<organizations>(key);
   } catch (error) {
     const organization = await prisma.organizations.findOne({
       where: { username },
