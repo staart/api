@@ -14,3 +14,16 @@ cleanup(() => {
   complete("Gracefully exiting Staart API app");
   prisma.disconnect().then(() => success("Disconnected database connection"));
 });
+
+export const paginatedResult = <T>(
+  data: T,
+  { first, last }: { first?: number; last?: number }
+) => {
+  const dataArray = (data as any) as { id: number }[];
+  const hasMore = dataArray.length >= (first || last || Infinity);
+  return {
+    data,
+    hasMore,
+    next: hasMore ? dataArray[dataArray.length - 1].id : undefined,
+  };
+};

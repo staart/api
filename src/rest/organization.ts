@@ -50,7 +50,7 @@ import { queueWebhook } from "../helpers/webhooks";
 import { OrgScopes, Templates, Webhooks, Tokens } from "../interfaces/enum";
 import { KeyValue, Locals } from "../interfaces/general";
 import { register } from "./auth";
-import { prisma } from "../helpers/prisma";
+import { prisma, paginatedResult } from "../helpers/prisma";
 import {
   organizationsCreateInput,
   organizationsUpdateInput,
@@ -652,17 +652,20 @@ export const getOrganizationMembershipsForUser = async (
       organizationId
     )
   )
-    return prisma.memberships.findMany({
-      where: { organizationId: parseInt(organizationId) },
-      select,
-      include,
-      orderBy,
-      skip,
-      after,
-      before,
-      first,
-      last,
-    });
+    return paginatedResult(
+      prisma.memberships.findMany({
+        where: { organizationId: parseInt(organizationId) },
+        select,
+        include,
+        orderBy,
+        skip,
+        after,
+        before,
+        first,
+        last,
+      }),
+      { first, last }
+    );
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -851,17 +854,20 @@ export const getOrganizationApiKeysForUser = async (
       organizationId
     )
   )
-    return prisma.api_keys.findMany({
-      where: { organizationId: parseInt(organizationId) },
-      select,
-      include,
-      orderBy,
-      skip,
-      after,
-      before,
-      first,
-      last,
-    });
+    return paginatedResult(
+      prisma.api_keys.findMany({
+        where: { organizationId: parseInt(organizationId) },
+        select,
+        include,
+        orderBy,
+        skip,
+        after,
+        before,
+        first,
+        last,
+      }),
+      { first, last }
+    );
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -1017,17 +1023,20 @@ export const getOrganizationDomainsForUser = async (
       organizationId
     )
   )
-    return prisma.domains.findMany({
-      where: { organizationId: parseInt(organizationId) },
-      select,
-      include,
-      orderBy,
-      skip,
-      after,
-      before,
-      first,
-      last,
-    });
+    return paginatedResult(
+      prisma.domains.findMany({
+        where: { organizationId: parseInt(organizationId) },
+        select,
+        include,
+        orderBy,
+        skip,
+        after,
+        before,
+        first,
+        last,
+      }),
+      { first, last }
+    );
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -1229,17 +1238,20 @@ export const getOrganizationWebhooksForUser = async (
       organizationId
     )
   )
-    return prisma.webhooks.findMany({
-      where: { organizationId: parseInt(organizationId) },
-      select,
-      include,
-      orderBy,
-      skip,
-      after,
-      before,
-      first,
-      last,
-    });
+    return paginatedResult(
+      prisma.webhooks.findMany({
+        where: { organizationId: parseInt(organizationId) },
+        select,
+        include,
+        orderBy,
+        skip,
+        after,
+        before,
+        first,
+        last,
+      }),
+      { first, last }
+    );
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 

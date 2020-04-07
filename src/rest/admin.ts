@@ -7,7 +7,7 @@ import { ms } from "@staart/text";
 import { ELASTIC_LOGS_INDEX } from "../config";
 import { can } from "../helpers/authorization";
 import { SudoScopes } from "../interfaces/enum";
-import { prisma } from "../helpers/prisma";
+import { prisma, paginatedResult } from "../helpers/prisma";
 import {
   organizationsSelect,
   organizationsInclude,
@@ -42,16 +42,19 @@ export const getAllOrganizationForUser = async (
   }
 ) => {
   if (await can(tokenUserId, SudoScopes.READ, "sudo"))
-    return prisma.organizations.findMany({
-      select,
-      include,
-      orderBy,
-      skip,
-      after,
-      before,
-      first,
-      last,
-    });
+    return paginatedResult(
+      prisma.organizations.findMany({
+        select,
+        include,
+        orderBy,
+        skip,
+        after,
+        before,
+        first,
+        last,
+      }),
+      { first, last }
+    );
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -78,16 +81,19 @@ export const getAllUsersForUser = async (
   }
 ) => {
   if (await can(tokenUserId, SudoScopes.READ, "sudo"))
-    return prisma.users.findMany({
-      select,
-      include,
-      orderBy,
-      skip,
-      after,
-      before,
-      first,
-      last,
-    });
+    return paginatedResult(
+      prisma.users.findMany({
+        select,
+        include,
+        orderBy,
+        skip,
+        after,
+        before,
+        first,
+        last,
+      }),
+      { first, last }
+    );
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 

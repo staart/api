@@ -30,7 +30,7 @@ import { EventType, UserScopes, Templates } from "../interfaces/enum";
 import { Locals } from "../interfaces/general";
 import { mail } from "../helpers/mail";
 import { couponCodeJwt } from "../helpers/jwt";
-import { prisma } from "../helpers/prisma";
+import { prisma, paginatedResult } from "../helpers/prisma";
 import {
   users,
   membershipsSelect,
@@ -191,17 +191,20 @@ export const getMembershipsForUser = async (
   if (
     await can(tokenUserId, UserScopes.READ_USER_MEMBERSHIPS, "user", dataUserId)
   )
-    return prisma.memberships.findMany({
-      where: { userId: parseInt(dataUserId) },
-      include: { organization: true, ...include },
-      select,
-      orderBy,
-      skip,
-      after,
-      before,
-      first,
-      last,
-    });
+    return paginatedResult(
+      prisma.memberships.findMany({
+        where: { userId: parseInt(dataUserId) },
+        include: { organization: true, ...include },
+        select,
+        orderBy,
+        skip,
+        after,
+        before,
+        first,
+        last,
+      }),
+      { first, last }
+    );
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -333,17 +336,20 @@ export const getUserAccessTokensForUser = async (
   if (
     await can(tokenUserId, UserScopes.READ_USER_ACCESS_TOKENS, "user", userId)
   )
-    return prisma.access_tokens.findMany({
-      where: { userId: parseInt(userId) },
-      select,
-      include,
-      orderBy,
-      skip,
-      after,
-      before,
-      first,
-      last,
-    });
+    return paginatedResult(
+      prisma.access_tokens.findMany({
+        where: { userId: parseInt(userId) },
+        select,
+        include,
+        orderBy,
+        skip,
+        after,
+        before,
+        first,
+        last,
+      }),
+      { first, last }
+    );
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -432,17 +438,20 @@ export const getUserSessionsForUser = async (
   }
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER_SESSION, "user", userId))
-    return prisma.sessions.findMany({
-      where: { userId: parseInt(userId) },
-      select,
-      include,
-      orderBy,
-      skip,
-      after,
-      before,
-      first,
-      last,
-    });
+    return paginatedResult(
+      prisma.sessions.findMany({
+        where: { userId: parseInt(userId) },
+        select,
+        include,
+        orderBy,
+        skip,
+        after,
+        before,
+        first,
+        last,
+      }),
+      { first, last }
+    );
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -492,17 +501,20 @@ export const getUserIdentitiesForUser = async (
   }
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER_IDENTITY, "user", userId))
-    return prisma.sessions.findMany({
-      where: { userId: parseInt(userId) },
-      select,
-      include,
-      orderBy,
-      skip,
-      after,
-      before,
-      first,
-      last,
-    });
+    return paginatedResult(
+      prisma.sessions.findMany({
+        where: { userId: parseInt(userId) },
+        select,
+        include,
+        orderBy,
+        skip,
+        after,
+        before,
+        first,
+        last,
+      }),
+      { first, last }
+    );
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -609,17 +621,20 @@ export const getAllEmailsForUser = async (
   }
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER_EMAILS, "user", userId)) {
-    return prisma.emails.findMany({
-      where: { userId: parseInt(userId) },
-      select,
-      include,
-      orderBy,
-      skip,
-      after,
-      before,
-      first,
-      last,
-    });
+    return paginatedResult(
+      prisma.emails.findMany({
+        where: { userId: parseInt(userId) },
+        select,
+        include,
+        orderBy,
+        skip,
+        after,
+        before,
+        first,
+        last,
+      }),
+      { first, last }
+    );
   }
   throw new Error(INSUFFICIENT_PERMISSION);
 };
