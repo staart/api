@@ -5,8 +5,8 @@ import dns from "dns";
 import { Tokens } from "../interfaces/enum";
 import { ApiKeyResponse } from "./jwt";
 import { users } from "@prisma/client";
-import { prisma } from "./prisma";
-import { ORGANIZATION_NOT_FOUND, USER_NOT_FOUND } from "@staart/errors";
+import { getOrganizationById } from "../services/organization.service";
+import { getUserById } from "../services/user.service";
 
 /**
  * Make s single property optional
@@ -25,10 +25,7 @@ export const deleteSensitiveInfoUser = (user: users) => {
 
 export const organizationUsernameToId = async (id: string) => {
   if (!id.match(/^-{0,1}\d+$/)) {
-    const result = (await prisma.users.findOne({ where: { username: id } }))
-      ?.id;
-    if (result) return result.toString();
-    throw new Error(ORGANIZATION_NOT_FOUND);
+    return (await getOrganizationById(id)).id.toString();
   } else {
     return parseInt(id).toString();
   }
@@ -38,10 +35,7 @@ export const userUsernameToId = async (id: string, tokenUserId?: string) => {
   if (id === "me" && tokenUserId) {
     return String(tokenUserId);
   } else if (!id.match(/^-{0,1}\d+$/)) {
-    const result = (await prisma.users.findOne({ where: { username: id } }))
-      ?.id;
-    if (result) return result.toString();
-    throw new Error(USER_NOT_FOUND);
+    return (await getUserById(id)).id.toString();
   } else {
     return parseInt(id).toString();
   }
