@@ -6,7 +6,7 @@ import { Tokens } from "../interfaces/enum";
 import { ApiKeyResponse } from "./jwt";
 import { users } from "@prisma/client";
 import { getOrganizationById } from "../services/organization.service";
-import { getUserById } from "../services/user.service";
+import { getUserById, getUserByUsername } from "../services/user.service";
 
 /**
  * Make s single property optional
@@ -35,7 +35,7 @@ export const userUsernameToId = async (id: string, tokenUserId?: string) => {
   if (id === "me" && tokenUserId) {
     return String(tokenUserId);
   } else if (!id.match(/^-{0,1}\d+$/)) {
-    return (await getUserById(id)).id.toString();
+    return (await getUserByUsername(id)).id.toString();
   } else {
     return parseInt(id).toString();
   }
