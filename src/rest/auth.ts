@@ -127,7 +127,6 @@ export const register = async (
         ? {
             emails: {
               create: {
-                user: {},
                 email,
                 isVerified: emailVerified,
               },
@@ -138,7 +137,6 @@ export const register = async (
         ? {
             memberships: {
               create: {
-                user: {},
                 organization: {
                   connect: { id: parseInt(organizationId) },
                 },
