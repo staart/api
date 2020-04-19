@@ -34,6 +34,7 @@ import {
   createUser,
   addApprovedLocation,
   getUserById,
+  createEmail,
 } from "../services/user.service";
 import { usersCreateInput, MembershipRole } from "@prisma/client";
 import { getDomainByDomainName } from "../services/organization.service";
@@ -123,16 +124,6 @@ export const register = async (
   const userId = (
     await createUser({
       ...user,
-      ...(email
-        ? {
-            emails: {
-              create: {
-                email,
-                isVerified: emailVerified,
-              },
-            },
-          }
-        : {}),
       ...(organizationId
         ? {
             memberships: {
@@ -147,6 +138,7 @@ export const register = async (
         : {}),
     })
   ).id;
+  if (email) await createEmail(userId, email, emailVerified);
   if (locals) await addApprovedLocation(userId, locals.ipAddress);
   return { userId };
 };

@@ -327,19 +327,19 @@ export const updateSessionByJwt = async (
  */
 export const createEmail = async (
   userId: number,
-  email: emailsCreateInput,
+  email: string,
   sendVerification = true,
   sendPasswordSet = false
 ) => {
   const result = await prisma.emails.create({
-    data: { ...email, user: { connect: { id: userId } } },
+    data: { email, user: { connect: { id: userId } } },
   });
   if (sendVerification) {
     const user = await getUserById(userId);
     if (!user) throw new Error(USER_NOT_FOUND);
-    await sendEmailVerification(result.id, email.email, user);
+    await sendEmailVerification(result.id, email, user);
   }
-  if (sendPasswordSet) await sendNewPassword(userId, email.email);
+  if (sendPasswordSet) await sendNewPassword(userId, email);
   return result;
 };
 
