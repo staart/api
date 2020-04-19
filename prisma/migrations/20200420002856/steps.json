@@ -4,32 +4,56 @@
     {
       "tag": "CreateEnum",
       "enum": "Gender",
-      "values": ["MALE", "FEMALE", "NONBINARY", "UNKNOWN"]
+      "values": [
+        "MALE",
+        "FEMALE",
+        "NONBINARY",
+        "UNKNOWN"
+      ]
     },
     {
       "tag": "CreateEnum",
       "enum": "NotificationEmails",
-      "values": ["ACCOUNT", "UPDATES", "PROMOTIONS"]
+      "values": [
+        "ACCOUNT",
+        "UPDATES",
+        "PROMOTIONS"
+      ]
     },
     {
       "tag": "CreateEnum",
       "enum": "PrefersColorScheme",
-      "values": ["NO_PREFERENCE", "LIGHT", "DARK"]
+      "values": [
+        "NO_PREFERENCE",
+        "LIGHT",
+        "DARK"
+      ]
     },
     {
       "tag": "CreateEnum",
       "enum": "PrefersReducedMotion",
-      "values": ["NO_PREFERENCE", "REDUCE"]
+      "values": [
+        "NO_PREFERENCE",
+        "REDUCE"
+      ]
     },
     {
       "tag": "CreateEnum",
       "enum": "UserRole",
-      "values": ["SUDO", "USER"]
+      "values": [
+        "SUDO",
+        "USER"
+      ]
     },
     {
       "tag": "CreateEnum",
       "enum": "MembershipRole",
-      "values": ["OWNER", "ADMIN", "RESELLER", "MEMBER"]
+      "values": [
+        "OWNER",
+        "ADMIN",
+        "RESELLER",
+        "MEMBER"
+      ]
     },
     {
       "tag": "CreateSource",
@@ -200,17 +224,6 @@
           "model": "users",
           "field": "id"
         },
-        "directive": "id"
-      }
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "users",
-          "field": "id"
-        },
         "directive": "default"
       }
     },
@@ -227,6 +240,17 @@
       },
       "argument": "",
       "value": "autoincrement()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "users",
+          "field": "id"
+        },
+        "directive": "id"
+      }
     },
     {
       "tag": "CreateField",
@@ -584,8 +608,8 @@
         },
         "directive": "relation"
       },
-      "argument": "name",
-      "value": "\"emails\""
+      "argument": "",
+      "value": "\"userEmails\""
     },
     {
       "tag": "CreateField",
@@ -616,8 +640,8 @@
         },
         "directive": "relation"
       },
-      "argument": "name",
-      "value": "\"accessTokens\""
+      "argument": "",
+      "value": "\"userAccessTokens\""
     },
     {
       "tag": "CreateField",
@@ -648,8 +672,8 @@
         },
         "directive": "relation"
       },
-      "argument": "name",
-      "value": "\"approvedLocations\""
+      "argument": "",
+      "value": "\"userApprovedLocations\""
     },
     {
       "tag": "CreateField",
@@ -680,8 +704,8 @@
         },
         "directive": "relation"
       },
-      "argument": "name",
-      "value": "\"backupCodes\""
+      "argument": "",
+      "value": "\"userBackupCodes\""
     },
     {
       "tag": "CreateField",
@@ -712,8 +736,8 @@
         },
         "directive": "relation"
       },
-      "argument": "name",
-      "value": "\"identities\""
+      "argument": "",
+      "value": "\"userIdentities\""
     },
     {
       "tag": "CreateField",
@@ -744,7 +768,7 @@
         },
         "directive": "relation"
       },
-      "argument": "name",
+      "argument": "",
       "value": "\"userMemberships\""
     },
     {
@@ -776,8 +800,8 @@
         },
         "directive": "relation"
       },
-      "argument": "name",
-      "value": "\"sessions\""
+      "argument": "",
+      "value": "\"userSessions\""
     },
     {
       "tag": "CreateModel",
@@ -894,17 +918,6 @@
           "model": "organizations",
           "field": "id"
         },
-        "directive": "id"
-      }
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "organizations",
-          "field": "id"
-        },
         "directive": "default"
       }
     },
@@ -921,6 +934,17 @@
       },
       "argument": "",
       "value": "autoincrement()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "organizations",
+          "field": "id"
+        },
+        "directive": "id"
+      }
     },
     {
       "tag": "CreateField",
@@ -1072,8 +1096,8 @@
         },
         "directive": "relation"
       },
-      "argument": "name",
-      "value": "\"apiKeys\""
+      "argument": "",
+      "value": "\"organizationApiKeys\""
     },
     {
       "tag": "CreateField",
@@ -1104,8 +1128,8 @@
         },
         "directive": "relation"
       },
-      "argument": "name",
-      "value": "\"domains\""
+      "argument": "",
+      "value": "\"organizationDomains\""
     },
     {
       "tag": "CreateField",
@@ -1136,7 +1160,7 @@
         },
         "directive": "relation"
       },
-      "argument": "name",
+      "argument": "",
       "value": "\"organizationMemberships\""
     },
     {
@@ -1168,8 +1192,8 @@
         },
         "directive": "relation"
       },
-      "argument": "name",
-      "value": "\"webhooks\""
+      "argument": "",
+      "value": "\"organizationWebhooks\""
     },
     {
       "tag": "CreateModel",
@@ -1229,17 +1253,6 @@
           "model": "emails",
           "field": "id"
         },
-        "directive": "id"
-      }
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "emails",
-          "field": "id"
-        },
         "directive": "default"
       }
     },
@@ -1256,6 +1269,17 @@
       },
       "argument": "",
       "value": "autoincrement()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "emails",
+          "field": "id"
+        },
+        "directive": "id"
+      }
     },
     {
       "tag": "CreateField",
@@ -1324,6 +1348,20 @@
         },
         "directive": "relation"
       }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "emails",
+          "field": "user"
+        },
+        "directive": "relation"
+      },
+      "argument": "",
+      "value": "\"userEmails\""
     },
     {
       "tag": "CreateArgument",
@@ -1445,17 +1483,6 @@
           "model": "access_tokens",
           "field": "id"
         },
-        "directive": "id"
-      }
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "access_tokens",
-          "field": "id"
-        },
         "directive": "default"
       }
     },
@@ -1472,6 +1499,17 @@
       },
       "argument": "",
       "value": "autoincrement()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "access_tokens",
+          "field": "id"
+        },
+        "directive": "id"
+      }
     },
     {
       "tag": "CreateField",
@@ -1529,6 +1567,20 @@
         },
         "directive": "relation"
       }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "access_tokens",
+          "field": "user"
+        },
+        "directive": "relation"
+      },
+      "argument": "",
+      "value": "\"userAccessTokens\""
     },
     {
       "tag": "CreateArgument",
@@ -1673,17 +1725,6 @@
           "model": "api_keys",
           "field": "id"
         },
-        "directive": "id"
-      }
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "api_keys",
-          "field": "id"
-        },
         "directive": "default"
       }
     },
@@ -1700,6 +1741,17 @@
       },
       "argument": "",
       "value": "autoincrement()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "api_keys",
+          "field": "id"
+        },
+        "directive": "id"
+      }
     },
     {
       "tag": "CreateField",
@@ -1739,6 +1791,20 @@
         },
         "directive": "relation"
       }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "api_keys",
+          "field": "organization"
+        },
+        "directive": "relation"
+      },
+      "argument": "",
+      "value": "\"organizationApiKeys\""
     },
     {
       "tag": "CreateArgument",
@@ -1881,17 +1947,6 @@
           "model": "approved_locations",
           "field": "id"
         },
-        "directive": "id"
-      }
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "approved_locations",
-          "field": "id"
-        },
         "directive": "default"
       }
     },
@@ -1908,6 +1963,17 @@
       },
       "argument": "",
       "value": "autoincrement()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "approved_locations",
+          "field": "id"
+        },
+        "directive": "id"
+      }
     },
     {
       "tag": "CreateField",
@@ -1933,6 +1999,20 @@
         },
         "directive": "relation"
       }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "approved_locations",
+          "field": "user"
+        },
+        "directive": "relation"
+      },
+      "argument": "",
+      "value": "\"userApprovedLocations\""
     },
     {
       "tag": "CreateArgument",
@@ -2011,17 +2091,6 @@
           "model": "backup_codes",
           "field": "id"
         },
-        "directive": "id"
-      }
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "backup_codes",
-          "field": "id"
-        },
         "directive": "default"
       }
     },
@@ -2038,6 +2107,17 @@
       },
       "argument": "",
       "value": "autoincrement()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "backup_codes",
+          "field": "id"
+        },
+        "directive": "id"
+      }
     },
     {
       "tag": "CreateField",
@@ -2145,6 +2225,20 @@
         },
         "directive": "relation"
       }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "backup_codes",
+          "field": "user"
+        },
+        "directive": "relation"
+      },
+      "argument": "",
+      "value": "\"userBackupCodes\""
     },
     {
       "tag": "CreateArgument",
@@ -2282,17 +2376,6 @@
           "model": "domains",
           "field": "id"
         },
-        "directive": "id"
-      }
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "domains",
-          "field": "id"
-        },
         "directive": "default"
       }
     },
@@ -2309,6 +2392,17 @@
       },
       "argument": "",
       "value": "autoincrement()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "domains",
+          "field": "id"
+        },
+        "directive": "id"
+      }
     },
     {
       "tag": "CreateField",
@@ -2359,6 +2453,20 @@
         },
         "directive": "relation"
       }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "domains",
+          "field": "organization"
+        },
+        "directive": "relation"
+      },
+      "argument": "",
+      "value": "\"organizationDomains\""
     },
     {
       "tag": "CreateArgument",
@@ -2491,17 +2599,6 @@
           "model": "identities",
           "field": "id"
         },
-        "directive": "id"
-      }
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "identities",
-          "field": "id"
-        },
         "directive": "default"
       }
     },
@@ -2518,6 +2615,17 @@
       },
       "argument": "",
       "value": "autoincrement()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "identities",
+          "field": "id"
+        },
+        "directive": "id"
+      }
     },
     {
       "tag": "CreateField",
@@ -2575,6 +2683,20 @@
         },
         "directive": "relation"
       }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "identities",
+          "field": "user"
+        },
+        "directive": "relation"
+      },
+      "argument": "",
+      "value": "\"userIdentities\""
     },
     {
       "tag": "CreateArgument",
@@ -2682,17 +2804,6 @@
           "model": "memberships",
           "field": "id"
         },
-        "directive": "id"
-      }
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "memberships",
-          "field": "id"
-        },
         "directive": "default"
       }
     },
@@ -2711,6 +2822,17 @@
       "value": "autoincrement()"
     },
     {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "memberships",
+          "field": "id"
+        },
+        "directive": "id"
+      }
+    },
+    {
       "tag": "CreateField",
       "model": "memberships",
       "field": "organization",
@@ -2727,6 +2849,20 @@
         },
         "directive": "relation"
       }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "memberships",
+          "field": "organization"
+        },
+        "directive": "relation"
+      },
+      "argument": "",
+      "value": "\"organizationMemberships\""
     },
     {
       "tag": "CreateArgument",
@@ -2830,6 +2966,20 @@
         },
         "directive": "relation"
       }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "memberships",
+          "field": "user"
+        },
+        "directive": "relation"
+      },
+      "argument": "",
+      "value": "\"userMemberships\""
     },
     {
       "tag": "CreateArgument",
@@ -2957,17 +3107,6 @@
           "model": "sessions",
           "field": "id"
         },
-        "directive": "id"
-      }
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "sessions",
-          "field": "id"
-        },
         "directive": "default"
       }
     },
@@ -2984,6 +3123,17 @@
       },
       "argument": "",
       "value": "autoincrement()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "sessions",
+          "field": "id"
+        },
+        "directive": "id"
+      }
     },
     {
       "tag": "CreateField",
@@ -3069,6 +3219,20 @@
         },
         "directive": "relation"
       }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "sessions",
+          "field": "user"
+        },
+        "directive": "relation"
+      },
+      "argument": "",
+      "value": "\"userSessions\""
     },
     {
       "tag": "CreateArgument",
@@ -3215,17 +3379,6 @@
           "model": "webhooks",
           "field": "id"
         },
-        "directive": "id"
-      }
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "webhooks",
-          "field": "id"
-        },
         "directive": "default"
       }
     },
@@ -3242,6 +3395,17 @@
       },
       "argument": "",
       "value": "autoincrement()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "webhooks",
+          "field": "id"
+        },
+        "directive": "id"
+      }
     },
     {
       "tag": "CreateField",
@@ -3299,6 +3463,20 @@
         },
         "directive": "relation"
       }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "webhooks",
+          "field": "organization"
+        },
+        "directive": "relation"
+      },
+      "argument": "",
+      "value": "\"organizationWebhooks\""
     },
     {
       "tag": "CreateArgument",
