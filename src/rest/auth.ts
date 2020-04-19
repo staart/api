@@ -36,7 +36,7 @@ import {
   getUserById,
   createEmail,
 } from "../services/user.service";
-import { usersCreateInput, MembershipRole } from "@prisma/client";
+import { usersCreateInput, MembershipRole, users } from "@prisma/client";
 import { getDomainByDomainName } from "../services/organization.service";
 import { PartialBy } from "../helpers/utils";
 
@@ -63,11 +63,26 @@ export const login = async (
   password: string,
   locals: Locals
 ) => {
-  const user = await getUserByEmail(email, true);
+  let user: users;
+  try {
+    user = await getUserByEmail(email, true);
+  } catch (error) {
+    const hasUserWithUnverifiedEmail =
+      (await prisma.users.count({
+        where: {
+          emails: {
+            some: {
+              email,
+            },
+          },
+        },
+      })) !== 0;
+    if (hasUserWithUnverifiedEmail) throw new Error("401/unverified-email");
+    throw new Error(USER_NOT_FOUND);
+  }
   if (!user.password) throw new Error(MISSING_PASSWORD);
-  if (!user.id) throw new Error(USER_NOT_FOUND);
-  const correctPassword = await compare(password, user.password);
-  if (correctPassword)
+  const isPasswordCorrect = await compare(password, user.password);
+  if (isPasswordCorrect)
     return getLoginResponse(user, EventType.AUTH_LOGIN, "local", locals);
   throw new Error(INVALID_LOGIN);
 };
