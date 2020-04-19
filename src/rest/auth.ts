@@ -73,6 +73,7 @@ export const login = async (
           emails: {
             some: {
               email,
+              isVerified: false,
             },
           },
         },
@@ -153,7 +154,7 @@ export const register = async (
         : {}),
     })
   ).id;
-  if (email) await createEmail(userId, email, emailVerified);
+  if (email) await createEmail(userId, email, !emailVerified);
   if (locals) await addApprovedLocation(userId, locals.ipAddress);
   return { userId };
 };

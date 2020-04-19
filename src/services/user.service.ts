@@ -102,13 +102,19 @@ export const createUser = async (
  * Get the details of a user by their email
  */
 export const getUserByEmail = async (email: string, secureOrigin = false) => {
-  const emailObject = await prisma.emails.findMany({
-    where: { email, isVerified: true },
+  const users = await prisma.users.findMany({
+    where: {
+      emails: {
+        some: {
+          email,
+          isVerified: true,
+        },
+      },
+    },
   });
-  if (!emailObject.length) throw new Error(USER_NOT_FOUND);
-  const user = await getUserById(emailObject[0].id);
-  if (!secureOrigin) return deleteSensitiveInfoUser(user);
-  return user;
+  if (!users.length) throw new Error(USER_NOT_FOUND);
+  if (!secureOrigin) return deleteSensitiveInfoUser(users[0]);
+  return users[0];
 };
 
 /**
