@@ -58,13 +58,13 @@ export class UserController {
         gender: Joi.string()
           .allow("MALE", "FEMALE", "NONBINARY", "UNKNOWN")
           .only(),
-        preferredLanguage: Joi.string()
-          .min(2)
-          .max(5),
         timezone: Joi.string(),
         notificationEmails: Joi.string()
           .allow("ACCOUNT", "UPDATES", "PROMOTIONS")
           .only(),
+        prefersLanguage: Joi.string()
+          .min(2)
+          .max(5),
         prefersReducedMotion: Joi.string()
           .allow("NO_PREFERENCE", "REDUCE")
           .only(),
