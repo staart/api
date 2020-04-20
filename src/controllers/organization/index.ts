@@ -96,13 +96,13 @@ export class OrganizationController {
   async patch(req: Request, res: Response) {
     const id = await organizationUsernameToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    await updateOrganizationForUser(
+    const updated = await updateOrganizationForUser(
       localsToTokenOrKey(res),
       id,
       req.body,
       res.locals
     );
-    return respond(RESOURCE_UPDATED, { resource: "Team" });
+    return { ...respond(RESOURCE_UPDATED, { resource: "Team" }), updated };
   }
 
   @Delete(":id")

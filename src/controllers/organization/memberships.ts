@@ -121,13 +121,13 @@ export class OrganizationMembershipsController {
       },
       { organizationId, membershipId }
     );
-    await updateOrganizationMembershipForUser(
+    const updated = await updateOrganizationMembershipForUser(
       localsToTokenOrKey(res),
       organizationId,
       membershipId,
       req.body
     );
-    return respond(RESOURCE_UPDATED);
+    return { ...respond(RESOURCE_UPDATED), updated };
   }
 
   @Delete(":membershipId")

@@ -70,7 +70,12 @@ export class UserMembershipsController {
     );
     const data = req.body;
     delete req.body.id;
-    await updateMembershipForUser(id, membershipId, data, res.locals);
-    return respond(RESOURCE_UPDATED);
+    const updated = await updateMembershipForUser(
+      id,
+      membershipId,
+      data,
+      res.locals
+    );
+    return { ...respond(RESOURCE_UPDATED), updated };
   }
 }

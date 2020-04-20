@@ -98,14 +98,14 @@ export class OrganizationSourcesController {
       },
       { organizationId, sourceId }
     );
-    await updateOrganizationSourceForUser(
+    const updated = await updateOrganizationSourceForUser(
       localsToTokenOrKey(res),
       organizationId,
       sourceId,
       req.body,
       res.locals
     );
-    return respond(RESOURCE_UPDATED);
+    return { ...respond(RESOURCE_UPDATED), updated };
   }
 
   @Delete(":sourceId")

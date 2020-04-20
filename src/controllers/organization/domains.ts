@@ -108,14 +108,14 @@ export class OrganizationDomainsController {
       },
       { id, domainId }
     );
-    await updateDomainForUser(
+    const updated = await updateDomainForUser(
       localsToTokenOrKey(res),
       id,
       domainId,
       req.body,
       res.locals
     );
-    return respond(RESOURCE_UPDATED);
+    return { ...respond(RESOURCE_UPDATED), updated };
   }
 
   @Delete(":domainId")

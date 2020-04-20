@@ -80,8 +80,13 @@ export class UserController {
   async patch(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    await updateUserForUser(res.locals.token.id, id, req.body, res.locals);
-    return respond(RESOURCE_UPDATED);
+    const updated = await updateUserForUser(
+      res.locals.token.id,
+      id,
+      req.body,
+      res.locals
+    );
+    return { ...respond(RESOURCE_UPDATED), updated };
   }
 
   @Delete(":id")

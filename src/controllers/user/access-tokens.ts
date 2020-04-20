@@ -106,14 +106,14 @@ export class UserAccessTokensController {
       },
       { id, accessTokenId }
     );
-    await updateAccessTokenForUser(
+    const updated = await updateAccessTokenForUser(
       res.locals.token.id,
       id,
       accessTokenId,
       req.body,
       res.locals
     );
-    return respond(RESOURCE_UPDATED);
+    return { ...respond(RESOURCE_UPDATED), updated };
   }
 
   @Delete(":accessTokenId")

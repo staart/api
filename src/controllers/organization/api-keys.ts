@@ -114,14 +114,14 @@ export class OrganizationApiKeysController {
       },
       { id, apiKeyId }
     );
-    await updateApiKeyForUser(
+    const updated = await updateApiKeyForUser(
       localsToTokenOrKey(res),
       id,
       apiKeyId,
       req.body,
       res.locals
     );
-    return respond(RESOURCE_UPDATED);
+    return { ...respond(RESOURCE_UPDATED), updated };
   }
 
   @Delete(":apiKeyId")

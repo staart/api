@@ -117,14 +117,14 @@ export class OrganizationWebhooksController {
       },
       { id, webhookId }
     );
-    await updateWebhookForUser(
+    const updated = await updateWebhookForUser(
       localsToTokenOrKey(res),
       id,
       webhookId,
       req.body,
       res.locals
     );
-    return respond(RESOURCE_UPDATED);
+    return { ...respond(RESOURCE_UPDATED), updated };
   }
 
   @Delete(":webhookId")
