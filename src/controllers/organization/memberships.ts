@@ -56,8 +56,12 @@ export class OrganizationMembershipsController {
     joiValidate(
       {
         organizationId: Joi.string().required(),
-        newMemberName: Joi.string().min(6).required(),
-        newMemberEmail: Joi.string().email().required(),
+        newMemberName: Joi.string()
+          .min(6)
+          .required(),
+        newMemberEmail: Joi.string()
+          .email()
+          .required(),
         role: Joi.number(),
       },
       {
@@ -100,7 +104,7 @@ export class OrganizationMembershipsController {
   @Middleware(
     validator(
       {
-        role: Joi.number().min(1).max(5),
+        role: Joi.string().allow(["OWNER", "ADMIN", "RESELLER", "MEMBER"]),
       },
       "body"
     )
