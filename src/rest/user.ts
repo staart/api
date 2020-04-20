@@ -23,6 +23,7 @@ import {
   getUserBestEmail,
   resendEmailVerification,
   getUserById,
+  createEmail,
 } from "../services/user.service";
 import { can } from "../helpers/authorization";
 import { trackEvent } from "../helpers/tracking";
@@ -678,9 +679,7 @@ export const addEmailToUserForUser = async (
   const emailExistsAlready =
     (await prisma.emails.findMany({ where: { email } })).length !== 0;
   if (emailExistsAlready) throw new Error(EMAIL_EXISTS);
-  const result = await prisma.emails.create({
-    data: { email, user: { connect: { id: parseInt(userId) } } },
-  });
+  const result = await createEmail(parseInt(userId), email, true);
   trackEvent(
     { userId, type: EventType.EMAIL_CREATED, data: { email } },
     locals
