@@ -42,12 +42,19 @@ export class UserEmailsController {
     joiValidate(
       {
         id: Joi.string().required(),
-        email: Joi.string().email().required(),
+        email: Joi.string()
+          .email()
+          .required(),
       },
       { id, email }
     );
-    await addEmailToUserForUser(res.locals.token.id, id, email, res.locals);
-    return respond(RESOURCE_CREATED);
+    const added = await addEmailToUserForUser(
+      res.locals.token.id,
+      id,
+      email,
+      res.locals
+    );
+    return { ...respond(RESOURCE_CREATED), added };
   }
 
   @Get(":emailId")

@@ -66,13 +66,13 @@ export class OrganizationDomainsController {
   async putUserDomains(req: Request, res: Response) {
     const id = await organizationUsernameToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    await createDomainForUser(
+    const added = await createDomainForUser(
       localsToTokenOrKey(res),
       id,
       req.body,
       res.locals
     );
-    return respond(RESOURCE_CREATED);
+    return { ...respond(RESOURCE_CREATED), added };
   }
 
   @Get(":domainId")

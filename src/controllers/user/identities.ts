@@ -1,4 +1,9 @@
-import { RESOURCE_DELETED, RESOURCE_SUCCESS, respond } from "@staart/messages";
+import {
+  RESOURCE_DELETED,
+  RESOURCE_SUCCESS,
+  respond,
+  RESOURCE_CREATED,
+} from "@staart/messages";
 import {
   ClassMiddleware,
   Controller,
@@ -42,7 +47,12 @@ export class UserIdentitiesController {
   async createUserIdentity(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    return createUserIdentityForUser(res.locals.token.id, id, req.body);
+    const added = await createUserIdentityForUser(
+      res.locals.token.id,
+      id,
+      req.body
+    );
+    return { ...respond(RESOURCE_CREATED), added };
   }
 
   @Post(":service")

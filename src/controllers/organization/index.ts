@@ -63,8 +63,12 @@ export class OrganizationController {
     )
   )
   async put(req: Request, res: Response) {
-    await newOrganizationForUser(res.locals.token.id, req.body, res.locals);
-    return respond(RESOURCE_CREATED);
+    const added = await newOrganizationForUser(
+      res.locals.token.id,
+      req.body,
+      res.locals
+    );
+    return { ...respond(RESOURCE_CREATED), added };
   }
 
   @Get(":id")

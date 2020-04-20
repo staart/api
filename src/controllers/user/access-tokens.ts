@@ -62,13 +62,13 @@ export class UserAccessTokensController {
   async putUserAccessTokens(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    await createAccessTokenForUser(
+    const added = await createAccessTokenForUser(
       res.locals.token.id,
       id,
       req.body,
       res.locals
     );
-    return respond(RESOURCE_CREATED);
+    return { ...respond(RESOURCE_CREATED), added };
   }
 
   @Get(":accessTokenId")
