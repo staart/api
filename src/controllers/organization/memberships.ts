@@ -104,7 +104,9 @@ export class OrganizationMembershipsController {
   @Middleware(
     validator(
       {
-        role: Joi.string().allow(["OWNER", "ADMIN", "RESELLER", "MEMBER"]),
+        role: Joi.string()
+          .allow("OWNER", "ADMIN", "RESELLER", "MEMBER")
+          .only(),
       },
       "body"
     )

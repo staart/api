@@ -55,22 +55,22 @@ export class UserController {
         primaryEmail: Joi.string(),
         countryCode: Joi.string().length(2),
         password: Joi.string().min(6),
-        gender: Joi.string().allow(["MALE", "FEMALE", "NONBINARY", "UNKNOWN"]),
+        gender: Joi.string()
+          .allow("MALE", "FEMALE", "NONBINARY", "UNKNOWN")
+          .only(),
         preferredLanguage: Joi.string()
           .min(2)
           .max(5),
         timezone: Joi.string(),
-        notificationEmails: Joi.string().allow([
-          "ACCOUNT",
-          "UPDATES",
-          "PROMOTIONS",
-        ]),
-        prefersReducedMotion: Joi.string().allow(["NO_PREFERENCE", "REDUCE"]),
-        prefersColorScheme: Joi.string().allow([
-          "NO_PREFERENCE",
-          "LIGHT",
-          "DARK",
-        ]),
+        notificationEmails: Joi.string()
+          .allow("ACCOUNT", "UPDATES", "PROMOTIONS")
+          .only(),
+        prefersReducedMotion: Joi.string()
+          .allow("NO_PREFERENCE", "REDUCE")
+          .only(),
+        prefersColorScheme: Joi.string()
+          .allow("NO_PREFERENCE", "LIGHT", "DARK")
+          .only(),
         profilePicture: Joi.string(),
         checkLocationOnLogin: Joi.boolean(),
       },
