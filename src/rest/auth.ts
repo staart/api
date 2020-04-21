@@ -36,7 +36,12 @@ import {
   getUserById,
   createEmail,
 } from "../services/user.service";
-import { usersCreateInput, MembershipRole, users } from "@prisma/client";
+import {
+  usersCreateInput,
+  MembershipRole,
+  users,
+  backup_codes,
+} from "@prisma/client";
 import { getDomainByDomainName } from "../services/organization.service";
 import { PartialBy } from "../helpers/utils";
 
@@ -96,13 +101,16 @@ export const login2FA = async (code: number, token: string, locals: Locals) => {
   if (!secret) throw new Error(NOT_ENABLED_2FA);
   if (authenticator.check(code.toString(), secret))
     return postLoginTokens(user, locals);
-  const backupCodes = await prisma.backup_codes.findMany({
-    where: { userId: user.id, code: code.toString() },
-    first: 1,
+  const allBackupCodes = await prisma.backup_codes.findMany({
+    where: { userId: user.id },
   });
-  if (backupCodes.length && !backupCodes[0].isUsed) {
+  let usedBackupCode: backup_codes | undefined = undefined;
+  for await (const backupCode of allBackupCodes)
+    if (await compare(backupCode.code, code.toString()))
+      usedBackupCode = backupCode;
+  if (usedBackupCode && !usedBackupCode.isUsed)
     await prisma.backup_codes.update({
-      where: { id: backupCodes[0].id },
+      where: { id: usedBackupCode.id },
       data: { isUsed: true },
     });
     return postLoginTokens(user, locals);

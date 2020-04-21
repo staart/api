@@ -21,7 +21,6 @@ import { prisma } from "../helpers/prisma";
 import {
   users,
   access_tokens,
-  emailsCreateInput,
   access_tokensCreateInput,
   sessionsUpdateInput,
   usersCreateInput,
@@ -213,7 +212,7 @@ export const createBackupCodes = async (userId: string | number, count = 1) => {
     codes.push(code);
     await prisma.backup_codes.create({
       data: {
-        code,
+        code: await hash(code, 8),
         user: { connect: { id: parseInt(userId) } },
         createdAt: now,
         updatedAt: now,

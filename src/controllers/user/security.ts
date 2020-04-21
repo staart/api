@@ -17,7 +17,6 @@ import {
   disable2FAForUser,
   enable2FAForUser,
   getAllDataForUser,
-  getBackupCodesForUser,
   regenerateBackupCodesForUser,
   updatePasswordForUser,
   verify2FAForUser,
@@ -103,6 +102,10 @@ export class UserSecurityController {
   async getRegenerateBackupCodes(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    return regenerateBackupCodesForUser(res.locals.token.id, id);
+    const backupCodes = await regenerateBackupCodesForUser(
+      res.locals.token.id,
+      id
+    );
+    return { ...respond(RESOURCE_SUCCESS), backupCodes };
   }
 }

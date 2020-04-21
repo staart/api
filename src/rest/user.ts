@@ -283,17 +283,6 @@ export const disable2FAForUser = async (
   });
 };
 
-export const getBackupCodesForUser = async (
-  tokenUserId: string,
-  userId: string
-) => {
-  if (
-    !(await can(tokenUserId, UserScopes.READ_USER_BACKUP_CODES, "user", userId))
-  )
-    throw new Error(INSUFFICIENT_PERMISSION);
-  return prisma.backup_codes.findMany({ where: { userId: parseInt(userId) } });
-};
-
 export const regenerateBackupCodesForUser = async (
   tokenUserId: string,
   userId: string
@@ -308,8 +297,7 @@ export const regenerateBackupCodesForUser = async (
   )
     throw new Error(INSUFFICIENT_PERMISSION);
   await prisma.backup_codes.deleteMany({ where: { userId: parseInt(userId) } });
-  await createBackupCodes(userId, 10);
-  return prisma.backup_codes.findMany({ where: { userId: parseInt(userId) } });
+  return createBackupCodes(userId, 10);
 };
 
 export const getUserAccessTokensForUser = async (
