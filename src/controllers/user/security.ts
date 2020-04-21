@@ -30,8 +30,12 @@ export class UserSecurityController {
   @Middleware(
     validator(
       {
-        oldPassword: Joi.string().min(6).required(),
-        newPassword: Joi.string().min(6).required(),
+        oldPassword: Joi.string()
+          .min(6)
+          .required(),
+        newPassword: Joi.string()
+          .min(6)
+          .required(),
       },
       "body"
     )
@@ -77,12 +81,14 @@ export class UserSecurityController {
     joiValidate(
       {
         id: Joi.string().required(),
-        code: Joi.number().min(5).required(),
+        code: Joi.number()
+          .min(5)
+          .required(),
       },
       { id, code }
     );
-    await verify2FAForUser(res.locals.token.id, id, code);
-    return respond(RESOURCE_SUCCESS);
+    const backupCodes = await verify2FAForUser(res.locals.token.id, id, code);
+    return { ...respond(RESOURCE_SUCCESS), backupCodes };
   }
 
   @Delete("2fa")

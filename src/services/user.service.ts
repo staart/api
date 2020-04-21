@@ -207,17 +207,20 @@ export const checkApprovedLocation = async (
 export const createBackupCodes = async (userId: string | number, count = 1) => {
   if (typeof userId === "number") userId = userId.toString();
   const now = new Date();
+  const codes: string[] = [];
   for await (const _ of Array.from(Array(count).keys())) {
+    const code = randomInt(100000, 999999).toString();
+    codes.push(code);
     await prisma.backup_codes.create({
       data: {
-        code: randomInt(100000, 999999).toString(),
+        code,
         user: { connect: { id: parseInt(userId) } },
         createdAt: now,
         updatedAt: now,
       },
     });
   }
-  return;
+  return codes;
 };
 
 /**

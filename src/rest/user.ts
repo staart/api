@@ -259,11 +259,12 @@ export const verify2FAForUser = async (
   if (!secret) throw new Error(NOT_ENABLED_2FA);
   if (!authenticator.check(verificationCode.toString(), secret))
     throw new Error(INVALID_2FA_TOKEN);
-  await createBackupCodes(userId, 10);
-  return prisma.users.update({
+  const codes = await createBackupCodes(userId, 10);
+  await prisma.users.update({
     where: { id: parseInt(userId) },
     data: { twoFactorEnabled: true },
   });
+  return codes;
 };
 
 export const disable2FAForUser = async (
