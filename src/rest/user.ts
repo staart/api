@@ -696,13 +696,13 @@ export const deleteEmailFromUserForUser = async (
   if (!(await can(tokenUserId, UserScopes.DELETE_USER_EMAILS, "user", userId)))
     throw new Error(INSUFFICIENT_PERMISSION);
   const email = await prisma.emails.findOne({
-    where: { id: parseInt(userId) },
+    where: { id: parseInt(emailId) },
   });
   if (!email) throw new Error(RESOURCE_NOT_FOUND);
   if (email.userId !== parseInt(userId))
     throw new Error(INSUFFICIENT_PERMISSION);
   const verifiedEmails = await prisma.emails.findMany({
-    where: { id: parseInt(userId) },
+    where: { id: parseInt(emailId) },
   });
   if (verifiedEmails.length === 1 && email.isVerified)
     throw new Error(EMAIL_CANNOT_DELETE);
