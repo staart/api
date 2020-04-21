@@ -99,13 +99,6 @@ export class UserSecurityController {
     return respond(RESOURCE_SUCCESS);
   }
 
-  @Get("backup-codes")
-  async getBackupCodes(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
-    joiValidate({ id: Joi.string().required() }, { id });
-    return getBackupCodesForUser(res.locals.token.id, id);
-  }
-
   @Get("backup-codes/regenerate")
   async getRegenerateBackupCodes(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
