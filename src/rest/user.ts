@@ -149,7 +149,7 @@ export const deleteUserForUser = async (
       where: { userId: parseInt(updateUserId) },
     });
     const originalUser = await getUserById(updateUserId);
-    await prisma.users.deleteMany({ where: { id: parseInt(updateUserId) } });
+    await prisma.users.delete({ where: { id: parseInt(updateUserId) } });
     await deleteItemFromCache(
       `cache_getUserById_${originalUser.id}`,
       `cache_getUserByUsername_${originalUser.username}`
