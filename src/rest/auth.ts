@@ -154,7 +154,13 @@ export const register = async (
         : {}),
     })
   ).id;
-  if (email) await createEmail(userId, email, !emailVerified);
+  if (email) {
+    const newEmail = await createEmail(userId, email, !emailVerified);
+    await prisma.users.update({
+      where: { id: userId },
+      data: { primaryEmail: newEmail.id },
+    });
+  }
   if (locals) await addApprovedLocation(userId, locals.ipAddress);
   return { userId };
 };
