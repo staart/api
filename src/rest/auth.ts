@@ -108,7 +108,7 @@ export const login2FA = async (code: number, token: string, locals: Locals) => {
   for await (const backupCode of allBackupCodes)
     if (await compare(backupCode.code, code.toString()))
       usedBackupCode = backupCode;
-  if (usedBackupCode && !usedBackupCode.isUsed)
+  if (usedBackupCode && !usedBackupCode.isUsed) {
     await prisma.backup_codes.update({
       where: { id: usedBackupCode.id },
       data: { isUsed: true },
