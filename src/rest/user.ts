@@ -13,7 +13,7 @@ import {
   CANNOT_UPDATE_SOLE_OWNER,
   MEMBERSHIP_NOT_FOUND,
 } from "@staart/errors";
-import { compare } from "@staart/text";
+import { compare, hash } from "@staart/text";
 import { authenticator } from "otplib";
 import { toDataURL } from "qrcode";
 import { SERVICE_2FA } from "../config";
@@ -116,7 +116,7 @@ export const updatePasswordForUser = async (
     const correctPassword = await compare(oldPassword, user.password);
     if (!correctPassword) throw new Error(INCORRECT_PASSWORD);
     const result = await prisma.users.update({
-      data: { password: newPassword },
+      data: { password: await hash(newPassword, 8) },
       where: { id: parseInt(updateUserId) },
     });
     trackEvent(
