@@ -30,8 +30,8 @@ export class UserSecurityController {
     validator(
       {
         oldPassword: Joi.string()
-          .min(6)
-          .required(),
+          .allow("")
+          .optional(),
         newPassword: Joi.string()
           .min(6)
           .required(),

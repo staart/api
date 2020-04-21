@@ -112,9 +112,10 @@ export const updatePasswordForUser = async (
     await can(tokenUserId, UserScopes.CHANGE_PASSWORD, "user", updateUserId)
   ) {
     const user = await getUserById(updateUserId);
-    if (!user.password) throw new Error(MISSING_PASSWORD);
-    const correctPassword = await compare(oldPassword, user.password);
-    if (!correctPassword) throw new Error(INCORRECT_PASSWORD);
+    if (user.password) {
+      const correctPassword = await compare(oldPassword, user.password);
+      if (!correctPassword) throw new Error(INCORRECT_PASSWORD);
+    }
     const result = await prisma.users.update({
       data: { password: await hash(newPassword, 8) },
       where: { id: parseInt(updateUserId) },
