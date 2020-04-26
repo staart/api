@@ -8,7 +8,9 @@ import { elasticSearchIndex } from "./helpers/elasticsearch";
 import { receiveEmailMessage } from "./helpers/mail";
 import { prisma } from "./helpers/prisma";
 import { elasticSearchEnabled } from "@staart/elasticsearch";
+import { getProductPricing } from "@staart/payments";
 
+let numberOfFailedTests = 0;
 interface Test {
   name: string;
   test(): Promise<void>;
@@ -32,6 +34,14 @@ class Database implements Test {
   name = "Database connection";
   async test() {
     await prisma.users.findMany({ first: 1 });
+  }
+}
+
+class Stripe implements Test {
+  name = "Stripe";
+  async test() {
+    const prices = await getProductPricing();
+    success(`Got ${prices.data.length} pricing plans`);
   }
 }
 
@@ -84,6 +94,7 @@ const runTests = async () => {
     RedisQueue,
     Database,
     Email,
+    Stripe,
     ElasticSearch,
   ]) {
     const testClass = new TestClass();
@@ -91,12 +102,19 @@ const runTests = async () => {
       await testClass.test();
       success(testClass.name, "Test passed");
     } catch (error) {
+      numberOfFailedTests += 1;
       logError(testClass.name, "Test failed", 1);
+      console.log(error);
     }
   }
 };
 
 console.log();
 runTests()
-  .then(() => success("All service tests passed"))
+  .then(() =>
+    numberOfFailedTests === 0
+      ? success("All service tests passed")
+      : logError("Service tests", "All service tests passed", 1)
+  )
   .catch((error) => console.log("ERROR", error));
+  
