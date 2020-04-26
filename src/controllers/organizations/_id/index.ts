@@ -17,40 +17,19 @@ import {
   Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
-import { authHandler, validator } from "../../_staart/helpers/middleware";
+import { authHandler, validator } from "../../../_staart/helpers/middleware";
 import {
   localsToTokenOrKey,
   organizationUsernameToId,
-} from "../../_staart/helpers/utils";
+} from "../../../_staart/helpers/utils";
 import {
   deleteOrganizationForUser,
   getAllOrganizationDataForUser,
   getOrganizationForUser,
   newOrganizationForUser,
   updateOrganizationForUser,
-} from "../../_staart/rest/organization";
-import { OrganizationApiKeysController } from "./api-keys";
-import { OrganizationBillingController } from "./billing";
-import { OrganizationDomainsController } from "./domains";
-import { OrganizationInvoicesController } from "./invoices";
-import { OrganizationMembershipsController } from "./memberships";
-import { OrganizationSourcesController } from "./sources";
-import { OrganizationSubscriptionsController } from "./subscriptions";
-import { OrganizationWebhooksController } from "./webhooks";
-import { OrganizationTransactionsController } from "./transactions";
+} from "../../../_staart/rest/organization";
 
-@Controller("organizations")
-@ChildControllers([
-  new OrganizationApiKeysController(),
-  new OrganizationBillingController(),
-  new OrganizationDomainsController(),
-  new OrganizationInvoicesController(),
-  new OrganizationMembershipsController(),
-  new OrganizationSourcesController(),
-  new OrganizationSubscriptionsController(),
-  new OrganizationWebhooksController(),
-  new OrganizationTransactionsController(),
-])
 @ClassMiddleware(authHandler)
 export class OrganizationController {
   @Put()

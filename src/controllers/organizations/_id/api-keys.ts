@@ -16,11 +16,11 @@ import {
   Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
-import { authHandler, validator } from "../../_staart/helpers/middleware";
+import { authHandler, validator } from "../../../_staart/helpers/middleware";
 import {
   localsToTokenOrKey,
   organizationUsernameToId,
-} from "../../_staart/helpers/utils";
+} from "../../../_staart/helpers/utils";
 import {
   createApiKeyForUser,
   deleteApiKeyForUser,
@@ -28,9 +28,8 @@ import {
   getOrganizationApiKeyLogsForUser,
   getOrganizationApiKeysForUser,
   updateApiKeyForUser,
-} from "../../_staart/rest/organization";
+} from "../../../_staart/rest/organization";
 
-@Controller(":id/api-keys")
 @ClassMiddleware(authHandler)
 export class OrganizationApiKeysController {
   @Get()

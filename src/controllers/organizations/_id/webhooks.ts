@@ -16,20 +16,19 @@ import {
   Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
-import { authHandler, validator } from "../../_staart/helpers/middleware";
+import { authHandler, validator } from "../../../_staart/helpers/middleware";
 import {
   localsToTokenOrKey,
   organizationUsernameToId,
-} from "../../_staart/helpers/utils";
+} from "../../../_staart/helpers/utils";
 import {
   createWebhookForUser,
   deleteWebhookForUser,
   getOrganizationWebhookForUser,
   getOrganizationWebhooksForUser,
   updateWebhookForUser,
-} from "../../_staart/rest/organization";
+} from "../../../_staart/rest/organization";
 
-@Controller(":id/webhooks")
 @ClassMiddleware(authHandler)
 export class OrganizationWebhooksController {
   @Get()

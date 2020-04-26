@@ -11,8 +11,8 @@ import {
   Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
-import { authHandler, validator } from "../../_staart/helpers/middleware";
-import { userUsernameToId } from "../../_staart/helpers/utils";
+import { authHandler, validator } from "../../../_staart/helpers/middleware";
+import { userUsernameToId } from "../../../_staart/helpers/utils";
 import {
   disable2FAForUser,
   enable2FAForUser,
@@ -20,7 +20,7 @@ import {
   regenerateBackupCodesForUser,
   updatePasswordForUser,
   verify2FAForUser,
-} from "../../_staart/rest/user";
+} from "../../../_staart/rest/user";
 
 @Controller(":id")
 @ClassMiddleware(authHandler)

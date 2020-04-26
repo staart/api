@@ -11,39 +11,24 @@ import {
   Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
-import { authHandler, validator } from "../../_staart/helpers/middleware";
-import { userUsernameToId } from "../../_staart/helpers/utils";
+import { authHandler, validator } from "../../../_staart/helpers/middleware";
+import { userUsernameToId } from "../../../_staart/helpers/utils";
 import {
   deleteUserForUser,
   getUserFromIdForUser,
   updateUserForUser,
-} from "../../_staart/rest/user";
-import { UserAccessTokensController } from "./access-tokens";
-import { UserEmailsController } from "./emails";
-import { UserIdentitiesController } from "./identities";
-import { UserMembershipsController } from "./memberships";
-import { UserSecurityController } from "./security";
-import { UserSessionsController } from "./sessions";
+} from "../../../_staart/rest/user";
 
-@Controller("users")
-@ChildControllers([
-  new UserMembershipsController(),
-  new UserEmailsController(),
-  new UserSecurityController(),
-  new UserAccessTokensController(),
-  new UserSessionsController(),
-  new UserIdentitiesController(),
-])
 @ClassMiddleware(authHandler)
 export class UserController {
-  @Get(":id")
+  @Get()
   async get(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
     return getUserFromIdForUser(id, res.locals.token.id);
   }
 
-  @Patch(":id")
+  @Patch()
   @Middleware(
     validator(
       {
@@ -87,7 +72,7 @@ export class UserController {
     return { ...respond(RESOURCE_UPDATED), updated };
   }
 
-  @Delete(":id")
+  @Delete()
   async delete(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });

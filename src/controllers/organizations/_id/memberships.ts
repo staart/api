@@ -16,21 +16,20 @@ import {
   Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
-import { authHandler, validator } from "../../_staart/helpers/middleware";
+import { authHandler, validator } from "../../../_staart/helpers/middleware";
 import {
   localsToTokenOrKey,
   organizationUsernameToId,
-} from "../../_staart/helpers/utils";
+} from "../../../_staart/helpers/utils";
 import {
   deleteOrganizationMembershipForUser,
   getOrganizationMembershipForUser,
   getOrganizationMembershipsForUser,
   inviteMemberToOrganization,
   updateOrganizationMembershipForUser,
-} from "../../_staart/rest/organization";
+} from "../../../_staart/rest/organization";
 import { MembershipRole } from "@prisma/client";
 
-@Controller(":id/memberships")
 @ClassMiddleware(authHandler)
 export class OrganizationMembershipsController {
   @Get()

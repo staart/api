@@ -13,7 +13,6 @@ import {
   getServerLogsForUser,
 } from "../../_staart/rest/admin";
 
-@Controller("admin")
 @ClassMiddleware(authHandler)
 export class AdminController {
   @Get("organizations")

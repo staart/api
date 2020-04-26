@@ -9,16 +9,15 @@ import {
   Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
-import { authHandler } from "../../_staart/helpers/middleware";
-import { userUsernameToId } from "../../_staart/helpers/utils";
+import { authHandler } from "../../../_staart/helpers/middleware";
+import { userUsernameToId } from "../../../_staart/helpers/utils";
 import {
   getMembershipsForUser,
   getMembershipDetailsForUser,
   deleteMembershipForUser,
   updateMembershipForUser,
-} from "../../_staart/rest/user";
+} from "../../../_staart/rest/user";
 
-@Controller(":id/memberships")
 @ClassMiddleware(authHandler)
 export class UserMembershipsController {
   @Get()

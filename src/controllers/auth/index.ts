@@ -35,7 +35,6 @@ import {
 import { AuthOAuthController } from "./oauth";
 import { addInvitationCredits } from "../../_staart/rest/user";
 
-@Controller("auth")
 @ChildControllers([new AuthOAuthController()])
 export class AuthController {
   @Post("register")

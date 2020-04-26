@@ -18,11 +18,11 @@ import {
   Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
-import { authHandler, validator } from "../../_staart/helpers/middleware";
+import { authHandler, validator } from "../../../_staart/helpers/middleware";
 import {
   localsToTokenOrKey,
   organizationUsernameToId,
-} from "../../_staart/helpers/utils";
+} from "../../../_staart/helpers/utils";
 import {
   createDomainForUser,
   deleteDomainForUser,
@@ -30,9 +30,8 @@ import {
   getOrganizationDomainsForUser,
   updateDomainForUser,
   verifyDomainForUser,
-} from "../../_staart/rest/organization";
+} from "../../../_staart/rest/organization";
 
-@Controller(":id/domains")
 @ClassMiddleware(authHandler)
 export class OrganizationDomainsController {
   @Get()
