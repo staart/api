@@ -6,12 +6,12 @@ import {
   Request,
   Response,
 } from "@staart/server";
-import { authHandler } from "../../helpers/middleware";
+import { authHandler } from "../../_staart/helpers/middleware";
 import {
   getAllOrganizationForUser,
   getAllUsersForUser,
   getServerLogsForUser,
-} from "../../rest/admin";
+} from "../../_staart/rest/admin";
 
 @Controller("admin")
 @ClassMiddleware(authHandler)

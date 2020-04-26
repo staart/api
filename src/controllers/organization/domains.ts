@@ -18,11 +18,11 @@ import {
   Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
-import { authHandler, validator } from "../../helpers/middleware";
+import { authHandler, validator } from "../../_staart/helpers/middleware";
 import {
   localsToTokenOrKey,
   organizationUsernameToId,
-} from "../../helpers/utils";
+} from "../../_staart/helpers/utils";
 import {
   createDomainForUser,
   deleteDomainForUser,
@@ -30,7 +30,7 @@ import {
   getOrganizationDomainsForUser,
   updateDomainForUser,
   verifyDomainForUser,
-} from "../../rest/organization";
+} from "../../_staart/rest/organization";
 
 @Controller(":id/domains")
 @ClassMiddleware(authHandler)
@@ -147,9 +147,7 @@ export class OrganizationDomainsController {
       {
         id: Joi.string().required(),
         domainId: Joi.string().required(),
-        method: Joi.string()
-          .allow("file", "dns")
-          .only(),
+        method: Joi.string().allow("file", "dns").only(),
       },
       { id, domainId, method }
     );

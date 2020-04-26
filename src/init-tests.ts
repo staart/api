@@ -4,9 +4,9 @@ import redis from "@staart/redis";
 import systemInfo from "systeminformation";
 import pkg from "../package.json";
 import { ELASTIC_INSTANCES_INDEX, TEST_EMAIL } from "./config";
-import { elasticSearchIndex } from "./helpers/elasticsearch";
-import { receiveEmailMessage } from "./helpers/mail";
-import { prisma } from "./helpers/prisma";
+import { elasticSearchIndex } from "./_staart/helpers/elasticsearch";
+import { receiveEmailMessage } from "./_staart/helpers/mail";
+import { prisma } from "./_staart/helpers/prisma";
 import { elasticSearchEnabled } from "@staart/elasticsearch";
 import { getProductPricing } from "@staart/payments";
 

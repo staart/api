@@ -8,13 +8,13 @@ import {
   Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
-import { authHandler } from "../../helpers/middleware";
-import { userUsernameToId } from "../../helpers/utils";
+import { authHandler } from "../../_staart/helpers/middleware";
+import { userUsernameToId } from "../../_staart/helpers/utils";
 import {
   deleteSessionForUser,
   getUserSessionForUser,
   getUserSessionsForUser,
-} from "../../rest/user";
+} from "../../_staart/rest/user";
 
 @Controller(":id/sessions")
 @ClassMiddleware(authHandler)

@@ -16,18 +16,18 @@ import {
   Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
-import { authHandler, validator } from "../../helpers/middleware";
+import { authHandler, validator } from "../../_staart/helpers/middleware";
 import {
   localsToTokenOrKey,
   organizationUsernameToId,
-} from "../../helpers/utils";
+} from "../../_staart/helpers/utils";
 import {
   deleteOrganizationMembershipForUser,
   getOrganizationMembershipForUser,
   getOrganizationMembershipsForUser,
   inviteMemberToOrganization,
   updateOrganizationMembershipForUser,
-} from "../../rest/organization";
+} from "../../_staart/rest/organization";
 import { MembershipRole } from "@prisma/client";
 
 @Controller(":id/memberships")
@@ -56,12 +56,8 @@ export class OrganizationMembershipsController {
     joiValidate(
       {
         organizationId: Joi.string().required(),
-        newMemberName: Joi.string()
-          .min(6)
-          .required(),
-        newMemberEmail: Joi.string()
-          .email()
-          .required(),
+        newMemberName: Joi.string().min(6).required(),
+        newMemberEmail: Joi.string().email().required(),
         role: Joi.number(),
       },
       {
@@ -104,9 +100,7 @@ export class OrganizationMembershipsController {
   @Middleware(
     validator(
       {
-        role: Joi.string()
-          .allow("OWNER", "ADMIN", "RESELLER", "MEMBER")
-          .only(),
+        role: Joi.string().allow("OWNER", "ADMIN", "RESELLER", "MEMBER").only(),
       },
       "body"
     )

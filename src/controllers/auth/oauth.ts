@@ -9,16 +9,16 @@ import {
 } from "@staart/server";
 import { stringify } from "querystring";
 import { BASE_URL, FRONTEND_URL } from "../../config";
-import { LoginResponse } from "../../helpers/jwt";
-import { safeRedirect } from "../../helpers/utils";
-import { Tokens } from "../../interfaces/enum";
+import { LoginResponse } from "../../_staart/helpers/jwt";
+import { safeRedirect } from "../../_staart/helpers/utils";
+import { Tokens } from "../../_staart/interfaces/enum";
 import {
   facebook,
   github,
   google,
   microsoft,
   salesforce,
-} from "../../rest/oauth";
+} from "../../_staart/rest/oauth";
 
 const OAuthRedirector = (action: RequestHandler) => (
   ...args: [Request, Response, NextFunction]

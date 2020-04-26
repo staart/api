@@ -11,8 +11,8 @@ import {
   Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
-import { authHandler, validator } from "../../helpers/middleware";
-import { userUsernameToId } from "../../helpers/utils";
+import { authHandler, validator } from "../../_staart/helpers/middleware";
+import { userUsernameToId } from "../../_staart/helpers/utils";
 import {
   disable2FAForUser,
   enable2FAForUser,
@@ -20,7 +20,7 @@ import {
   regenerateBackupCodesForUser,
   updatePasswordForUser,
   verify2FAForUser,
-} from "../../rest/user";
+} from "../../_staart/rest/user";
 
 @Controller(":id")
 @ClassMiddleware(authHandler)
@@ -29,12 +29,8 @@ export class UserSecurityController {
   @Middleware(
     validator(
       {
-        oldPassword: Joi.string()
-          .allow("")
-          .optional(),
-        newPassword: Joi.string()
-          .min(6)
-          .required(),
+        oldPassword: Joi.string().allow("").optional(),
+        newPassword: Joi.string().min(6).required(),
       },
       "body"
     )
@@ -80,9 +76,7 @@ export class UserSecurityController {
     joiValidate(
       {
         id: Joi.string().required(),
-        code: Joi.number()
-          .min(5)
-          .required(),
+        code: Joi.number().min(5).required(),
       },
       { id, code }
     );

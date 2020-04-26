@@ -15,15 +15,15 @@ import {
   Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
-import { authHandler } from "../../helpers/middleware";
-import { userUsernameToId } from "../../helpers/utils";
+import { authHandler } from "../../_staart/helpers/middleware";
+import { userUsernameToId } from "../../_staart/helpers/utils";
 import {
   getAllEmailsForUser,
   addEmailToUserForUser,
   getEmailForUser,
   resendEmailVerificationForUser,
   deleteEmailFromUserForUser,
-} from "../../rest/user";
+} from "../../_staart/rest/user";
 
 @Controller(":id/emails")
 @ClassMiddleware(authHandler)
@@ -42,9 +42,7 @@ export class UserEmailsController {
     joiValidate(
       {
         id: Joi.string().required(),
-        email: Joi.string()
-          .email()
-          .required(),
+        email: Joi.string().email().required(),
       },
       { id, email }
     );

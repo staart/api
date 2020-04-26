@@ -11,13 +11,13 @@ import {
   Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
-import { authHandler, validator } from "../../helpers/middleware";
-import { userUsernameToId } from "../../helpers/utils";
+import { authHandler, validator } from "../../_staart/helpers/middleware";
+import { userUsernameToId } from "../../_staart/helpers/utils";
 import {
   deleteUserForUser,
   getUserFromIdForUser,
   updateUserForUser,
-} from "../../rest/user";
+} from "../../_staart/rest/user";
 import { UserAccessTokensController } from "./access-tokens";
 import { UserEmailsController } from "./emails";
 import { UserIdentitiesController } from "./identities";
@@ -62,9 +62,7 @@ export class UserController {
         notificationEmails: Joi.string()
           .allow("ACCOUNT", "UPDATES", "PROMOTIONS")
           .only(),
-        prefersLanguage: Joi.string()
-          .min(2)
-          .max(5),
+        prefersLanguage: Joi.string().min(2).max(5),
         prefersReducedMotion: Joi.string()
           .allow("NO_PREFERENCE", "REDUCE")
           .only(),

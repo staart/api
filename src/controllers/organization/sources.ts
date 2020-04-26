@@ -15,18 +15,18 @@ import {
   Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
-import { authHandler } from "../../helpers/middleware";
+import { authHandler } from "../../_staart/helpers/middleware";
 import {
   localsToTokenOrKey,
   organizationUsernameToId,
-} from "../../helpers/utils";
+} from "../../_staart/helpers/utils";
 import {
   createOrganizationSourceForUser,
   deleteOrganizationSourceForUser,
   getOrganizationSourceForUser,
   getOrganizationSourcesForUser,
   updateOrganizationSourceForUser,
-} from "../../rest/organization";
+} from "../../_staart/rest/organization";
 
 @Controller(":id/sources")
 @ClassMiddleware(authHandler)

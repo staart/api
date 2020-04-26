@@ -7,7 +7,7 @@ import {
   rateLimitHandler,
   speedLimitHandler,
   trackingHandler,
-} from "./helpers/middleware";
+} from "./_staart/helpers/middleware";
 
 @Controller("v1")
 class RootController {

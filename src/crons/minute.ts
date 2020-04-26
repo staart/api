@@ -5,16 +5,16 @@ import { ELASTIC_EVENTS_INDEX, ELASTIC_LOGS_INDEX } from "../config";
 import {
   elasticSearchIndex,
   receiveElasticSearchMessage,
-} from "../helpers/elasticsearch";
-import { receiveEmailMessage } from "../helpers/mail";
+} from "../_staart/helpers/elasticsearch";
+import { receiveEmailMessage } from "../_staart/helpers/mail";
 import {
   clearSecurityEventsData,
   clearTrackingData,
   getSecurityEvents,
   getTrackingData,
-} from "../helpers/tracking";
-import { IdValues } from "../helpers/utils";
-import { receiveWebhookMessage } from "../helpers/webhooks";
+} from "../_staart/helpers/tracking";
+import { IdValues } from "../_staart/helpers/utils";
+import { receiveWebhookMessage } from "../_staart/helpers/webhooks";
 
 /**
  * We run this cron job every minute in production
