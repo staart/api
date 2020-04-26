@@ -71,7 +71,7 @@
     "@staart/mustache-markdown": "^3.0.2",
     "@staart/payments": "^3.2.0",
     "@staart/redis": "^2.2.1",
-    "@staart/scripts": "^1.13.2",
+    "@staart/scripts": "^1.14.2",
     "@staart/server": "^2.7.0",
     "@staart/text": "^2.2.2",
     "@staart/validate": "^3.0.1",
