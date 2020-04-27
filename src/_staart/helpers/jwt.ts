@@ -118,6 +118,12 @@ export const emailVerificationToken = (id: string) =>
   generateToken({ id }, TOKEN_EXPIRY_EMAIL_VERIFICATION, Tokens.EMAIL_VERIFY);
 
 /**
+ * Generate a new email verification JWT
+ */
+export const resendEmailVerificationToken = (id: string) =>
+  generateToken({ id }, TOKEN_EXPIRY_EMAIL_VERIFICATION, Tokens.EMAIL_RESEND);
+
+/**
  * Generate a new password reset JWT
  */
 export const passwordResetToken = (id: number) =>

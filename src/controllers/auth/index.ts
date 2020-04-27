@@ -31,6 +31,7 @@ import {
   updatePassword,
   validateRefreshToken,
   verifyEmail,
+  resendEmailVerificationWithToken,
 } from "../../_staart/rest/auth";
 import { AuthOAuthController } from "./oauth";
 import { addInvitationCredits } from "../../_staart/rest/user";
@@ -66,7 +67,7 @@ export class AuthController {
     delete user.invitedByUser;
     if (user.role === "ADMIN") delete user.role;
     delete user.membershipRole;
-    const { userId } = await register(
+    const { userId, resendToken } = await register(
       user,
       res.locals,
       email,
@@ -75,7 +76,7 @@ export class AuthController {
     );
     if (invitedByUser)
       await addInvitationCredits(invitedByUser, userId.toString());
-    return respond(RESOURCE_CREATED);
+    return { ...respond(RESOURCE_CREATED), resendToken };
   }
 
   @Post("login")
@@ -176,6 +177,20 @@ export class AuthController {
       { token, password }
     );
     await updatePassword(token, password, res.locals);
+    return respond(RESOURCE_UPDATED);
+  }
+  @Post("resend-verification")
+  @Middleware(
+    validator(
+      {
+        token: Joi.string().required(),
+      },
+      "body"
+    )
+  )
+  async resendEmail(req: Request, res: Response) {
+    const token = req.body.token;
+    await resendEmailVerificationWithToken(token);
     return respond(RESOURCE_UPDATED);
   }
 

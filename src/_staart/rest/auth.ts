@@ -21,6 +21,7 @@ import {
   postLoginTokens,
   TokenResponse,
   verifyToken,
+  resendEmailVerificationToken,
 } from "../helpers/jwt";
 import { mail } from "../helpers/mail";
 import { trackEvent } from "../helpers/tracking";
@@ -35,6 +36,7 @@ import {
   addApprovedLocation,
   getUserById,
   createEmail,
+  resendEmailVerification,
 } from "../services/user.service";
 import {
   usersCreateInput,
@@ -162,15 +164,17 @@ export const register = async (
         : {}),
     })
   ).id;
+  let resendToken: string | undefined = undefined;
   if (email) {
     const newEmail = await createEmail(userId, email, !emailVerified);
     await prisma.users.update({
       where: { id: userId },
       data: { primaryEmail: newEmail.id },
     });
+    resendToken = await resendEmailVerificationToken(newEmail.id.toString());
   }
   if (locals) await addApprovedLocation(userId, locals.ipAddress);
-  return { userId };
+  return { userId, resendToken };
 };
 
 export const sendPasswordReset = async (email: string, locals?: Locals) => {
@@ -285,4 +289,10 @@ export const approveLocation = async (token: string, locals: Locals) => {
     ipAddress,
     locals
   );
+};
+
+export const resendEmailVerificationWithToken = async (token: string) => {
+  const data = await verifyToken<{ id: string }>(token, Tokens.EMAIL_RESEND);
+  if (!data.id) throw new Error(USER_NOT_FOUND);
+  return resendEmailVerification(data.id);
 };

@@ -44,6 +44,7 @@ export const receiveEmailMessage = async () => {
     try {
       await safeSendEmail(to, template, data);
     } catch (error) {
+      console.log(error);
       await redisQueue.sendMessageAsync({
         qname: MAIL_QUEUE,
         message: JSON.stringify({
@@ -77,7 +78,16 @@ const safeSendEmail = async (to: string, template: string, data: any = {}) => {
   const result = render(
     (
       await readFile(
-        join(__dirname, "..", "..", "..", "src", "templates", `${template}.md`)
+        join(
+          __dirname,
+          "..",
+          "..",
+          "..",
+          "..",
+          "src",
+          "templates",
+          `${template}.md`
+        )
       )
     ).toString(),
     { ...data, frontendUrl: FRONTEND_URL }

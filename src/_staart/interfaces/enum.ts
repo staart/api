@@ -44,6 +44,7 @@ export enum Tokens {
   REFRESH = "refresh",
   PASSWORD_RESET = "password-reset",
   EMAIL_VERIFY = "email-verify",
+  EMAIL_RESEND = "email-resend",
   APPROVE_LOCATION = "approve-location",
   COUPON = "coupon",
 }
