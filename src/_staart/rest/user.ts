@@ -13,10 +13,10 @@ import {
   CANNOT_UPDATE_SOLE_OWNER,
   MEMBERSHIP_NOT_FOUND,
 } from "@staart/errors";
-import { compare, hash } from "@staart/text";
+import { compare, hash, randomString } from "@staart/text";
 import { authenticator } from "otplib";
 import { toDataURL } from "qrcode";
-import { SERVICE_2FA } from "../../config";
+import { SERVICE_2FA, TOKEN_EXPIRY_API_KEY_MAX } from "../../config";
 import {
   createBackupCodes,
   getUserPrimaryEmail,
@@ -383,10 +383,14 @@ export const createAccessTokenForUser = async (
 ) => {
   if (
     await can(tokenUserId, UserScopes.CREATE_USER_ACCESS_TOKENS, "user", userId)
-  )
+  ) {
+    accessToken.jwtAccessToken = randomString({ length: 20 });
+    accessToken.expiresAt =
+      accessToken.expiresAt || new Date(TOKEN_EXPIRY_API_KEY_MAX);
     return prisma.access_tokens.create({
       data: { ...accessToken, user: { connect: { id: parseInt(userId) } } },
     });
+  }
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
