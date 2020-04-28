@@ -54,6 +54,7 @@ export class UserAccessTokensController {
         scopes: Joi.string(),
         name: Joi.string(),
         description: Joi.string(),
+        expiresAt: Joi.string(),
       },
       "body"
     )
@@ -96,6 +97,7 @@ export class UserAccessTokensController {
         scopes: Joi.string().allow(),
         name: Joi.string().allow(),
         description: Joi.string().allow(),
+        expiresAt: Joi.string().allow(),
       },
       "body"
     )
