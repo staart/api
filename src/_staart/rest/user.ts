@@ -447,40 +447,15 @@ export const deleteAccessTokenForUser = async (
 export const getUserSessionsForUser = async (
   tokenUserId: string,
   userId: string,
-  {
-    select,
-    include,
-    orderBy,
-    skip,
-    after,
-    before,
-    first,
-    last,
-  }: {
-    select?: sessionsSelect;
-    include?: sessionsInclude;
-    orderBy?: sessionsOrderByInput;
-    skip?: number;
-    after?: sessionsWhereUniqueInput;
-    before?: sessionsWhereUniqueInput;
-    first?: number;
-    last?: number;
-  }
+  queryParams: any
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER_SESSION, "user", userId))
     return paginatedResult(
       await prisma.sessions.findMany({
         where: { userId: parseInt(userId) },
-        select,
-        include,
-        orderBy,
-        skip,
-        after,
-        before,
-        first,
-        last,
+        ...queryParamsToSelect(queryParams),
       }),
-      { first, last }
+      { first: queryParams.first, last: queryParams.last }
     );
   throw new Error(INSUFFICIENT_PERMISSION);
 };

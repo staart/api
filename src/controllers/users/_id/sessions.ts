@@ -22,15 +22,7 @@ export class UserSessionsController {
   async getUserSessions(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    const sessionParams = { ...req.query };
-    joiValidate(
-      {
-        start: Joi.string(),
-        itemsPerPage: Joi.number(),
-      },
-      sessionParams
-    );
-    return getUserSessionsForUser(res.locals.token.id, id, sessionParams);
+    return getUserSessionsForUser(res.locals.token.id, id, req.query);
   }
 
   @Get(":sessionId")

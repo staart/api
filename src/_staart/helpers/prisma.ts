@@ -14,16 +14,50 @@ cleanup(() => {
 
 export const queryParamsToSelect = (queryParams: any) => {
   const data: any = {};
-  const select = queryParams.select;
-  if (typeof select === "string") {
-    select
-      .split(",")
-      .map((i) => i.trim())
-      .forEach((i) => {
-        data.select = data.select || {};
-        data.select[i] = true;
-      });
+
+  ["first", "last", "skip"].forEach((i: string) => {
+    if (
+      typeof queryParams[i] === "string" &&
+      !isNaN(parseInt(queryParams[i]))
+    ) {
+      data[i] = parseInt(queryParams[i]);
+    }
+  });
+
+  ["before", "after"].forEach((i: string) => {
+    if (
+      typeof queryParams[i] === "string" &&
+      !isNaN(parseInt(queryParams[i]))
+    ) {
+      data[i] = {
+        id: parseInt(queryParams[i]),
+      };
+    }
+  });
+
+  ["select", "include"].forEach((i: string) => {
+    if (typeof queryParams[i] === "string") {
+      queryParams[i]
+        .split(",")
+        .map((j: string) => j.trim())
+        .forEach((j: string) => {
+          data[i] = data[i] || {};
+          data[i][j] = true;
+        });
+    }
+  });
+
+  const orderBy = queryParams.orderBy;
+  if (typeof orderBy === "string") {
+    const orders = orderBy.split(",").map((i: string) => i.trim());
+    orders.forEach((order) => {
+      data.orderBy = data.orderBy || {};
+      data.orderBy[order.split(":")[0]] =
+        order.includes(":") && order.split(":")[1] === "desc" ? "desc" : "asc";
+    });
   }
+
+  console.log(data);
   return data;
 };
 
