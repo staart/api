@@ -137,7 +137,8 @@ export class OrganizationMembershipsController {
     await deleteOrganizationMembershipForUser(
       localsToTokenOrKey(res),
       organizationId,
-      membershipId
+      membershipId,
+      res.locals
     );
     return respond(RESOURCE_DELETED);
   }

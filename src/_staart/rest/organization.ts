@@ -146,9 +146,7 @@ export const deleteOrganizationForUser = async (
   locals: Locals
 ) => {
   if (await can(userId, OrgScopes.DELETE_ORG, "organization", organizationId)) {
-    const organizationDetails = await getOrganizationById(
-      typeof userId === "object" ? userId.organizationId : userId
-    );
+    const organizationDetails = await getOrganizationById(organizationId);
     await deleteItemFromCache(
       `cache_getOrganizationById_${organizationDetails.id}`,
       `cache_getOrganizationByUsername_${organizationDetails.username}`
@@ -689,10 +687,16 @@ export const updateOrganizationMembershipForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
+/**
+ * Delete an organization membership for user
+ * If an organization has only one member, the user,
+ * Delete the entire organization, not just the membership
+ */
 export const deleteOrganizationMembershipForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
-  membershipId: string
+  membershipId: string,
+  locals: Locals
 ) => {
   if (
     await can(
@@ -705,7 +709,8 @@ export const deleteOrganizationMembershipForUser = async (
     const members = await prisma.memberships.findMany({
       where: { organizationId: parseInt(organizationId) },
     });
-    if (members.length === 1) throw new Error(CANNOT_DELETE_SOLE_MEMBER);
+    if (members.length === 1)
+      return deleteOrganizationForUser(userId, organizationId, locals);
     return prisma.memberships.delete({ where: { id: parseInt(membershipId) } });
   }
   throw new Error(INSUFFICIENT_PERMISSION);

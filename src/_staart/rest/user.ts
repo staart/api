@@ -27,6 +27,7 @@ import {
 } from "../services/user.service";
 import { can } from "../helpers/authorization";
 import { trackEvent } from "../helpers/tracking";
+import { deleteOrganizationForUser } from "./organization";
 import { EventType, UserScopes, Templates } from "../interfaces/enum";
 import { Locals } from "../interfaces/general";
 import { mail } from "../helpers/mail";
@@ -671,14 +672,18 @@ export const deleteMembershipForUser = async (
     const organizationMembers = await prisma.memberships.findMany({
       where: { organizationId: membership.organizationId },
     });
+    if (organizationMembers.length === 1)
+      return deleteOrganizationForUser(
+        tokenUserId,
+        String(membership.organizationId),
+        locals
+      );
     if (membership.role === "OWNER") {
       const currentMembers = organizationMembers.filter(
         (member) => member.role === "OWNER"
       );
       if (currentMembers.length < 2) throw new Error(CANNOT_DELETE_SOLE_OWNER);
     }
-    if (organizationMembers.length === 1)
-      throw new Error(CANNOT_DELETE_SOLE_MEMBER);
     trackEvent(
       {
         userId: membershipId,
