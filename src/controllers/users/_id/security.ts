@@ -22,7 +22,6 @@ import {
   verify2FAForUser,
 } from "../../../_staart/rest/user";
 
-@Controller(":id")
 @ClassMiddleware(authHandler)
 export class UserSecurityController {
   @Put("password")

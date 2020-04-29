@@ -94,10 +94,10 @@ export class UserAccessTokensController {
   @Middleware(
     validator(
       {
-        scopes: Joi.string().allow(),
-        name: Joi.string().allow(),
-        description: Joi.string().allow(),
-        expiresAt: Joi.string().allow(),
+        scopes: Joi.string().allow(null),
+        name: Joi.string().allow(null),
+        description: Joi.string().allow(null),
+        expiresAt: Joi.string(),
       },
       "body"
     )
