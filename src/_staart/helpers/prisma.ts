@@ -57,7 +57,6 @@ export const queryParamsToSelect = (queryParams: any) => {
     });
   }
 
-  console.log(data);
   return data;
 };
 

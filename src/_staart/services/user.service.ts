@@ -44,13 +44,19 @@ import {
  */
 export const getBestUsernameForUser = async (name: string) => {
   let result: string;
-  if (name.split(" ")[0].length) {
-    result = slugify(name.split(" ")[0]);
-    if (!(await prisma.users.findMany({ where: { username: result } })).length)
+  if (name.split(" ")[0].trim().length) {
+    result = slugify(name.split(" ")[0].trim());
+    if (
+      result &&
+      !(await prisma.users.findMany({ where: { username: result } })).length
+    )
       return result;
   }
-  result = slugify(name);
-  if (!(await prisma.users.findMany({ where: { username: result } })).length)
+  result = slugify(name.trim());
+  if (
+    result &&
+    !(await prisma.users.findMany({ where: { username: result } })).length
+  )
     return result;
 
   let available = false;

@@ -107,7 +107,7 @@ export const newOrganizationForUser = async (
   organization: organizationsCreateInput,
   locals: Locals
 ) => {
-  if (!organization.name) {
+  if (!(organization.name || "").trim()) {
     const user = await getUserById(userId);
     organization.name = user.name;
   }
