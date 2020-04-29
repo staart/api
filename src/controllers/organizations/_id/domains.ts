@@ -38,18 +38,10 @@ export class OrganizationDomainsController {
   async getUserDomains(req: Request, res: Response) {
     const id = await organizationUsernameToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    const domainParams = { ...req.query };
-    joiValidate(
-      {
-        start: Joi.string(),
-        itemsPerPage: Joi.number(),
-      },
-      domainParams
-    );
     return getOrganizationDomainsForUser(
       localsToTokenOrKey(res),
       id,
-      domainParams
+      req.query
     );
   }
 

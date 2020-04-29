@@ -36,18 +36,10 @@ export class OrganizationApiKeysController {
   async getUserApiKeys(req: Request, res: Response) {
     const id = await organizationUsernameToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    const apiKeyParams = { ...req.query };
-    joiValidate(
-      {
-        start: Joi.string(),
-        itemsPerPage: Joi.number(),
-      },
-      apiKeyParams
-    );
     return getOrganizationApiKeysForUser(
       localsToTokenOrKey(res),
       id,
-      apiKeyParams
+      req.query
     );
   }
 

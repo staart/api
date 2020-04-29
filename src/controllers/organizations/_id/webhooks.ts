@@ -35,18 +35,10 @@ export class OrganizationWebhooksController {
   async getOrganizationWebhooks(req: Request, res: Response) {
     const id = await organizationUsernameToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    const webhookParams = { ...req.query };
-    joiValidate(
-      {
-        start: Joi.string(),
-        itemsPerPage: Joi.number(),
-      },
-      webhookParams
-    );
     return getOrganizationWebhooksForUser(
       localsToTokenOrKey(res),
       id,
-      webhookParams
+      req.query
     );
   }
 

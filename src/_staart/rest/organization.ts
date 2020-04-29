@@ -50,7 +50,11 @@ import { queueWebhook } from "../helpers/webhooks";
 import { OrgScopes, Templates, Webhooks, Tokens } from "../interfaces/enum";
 import { KeyValue, Locals } from "../interfaces/general";
 import { register } from "./auth";
-import { prisma, paginatedResult } from "../helpers/prisma";
+import {
+  prisma,
+  paginatedResult,
+  queryParamsToSelect,
+} from "../helpers/prisma";
 import {
   organizationsCreateInput,
   organizationsUpdateInput,
@@ -624,25 +628,7 @@ export const getAllOrganizationDataForUser = async (
 export const getOrganizationMembershipsForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
-  {
-    select,
-    include,
-    orderBy,
-    skip,
-    after,
-    before,
-    first,
-    last,
-  }: {
-    select?: membershipsSelect;
-    include?: membershipsInclude;
-    orderBy?: membershipsOrderByInput;
-    skip?: number;
-    after?: membershipsWhereUniqueInput;
-    before?: membershipsWhereUniqueInput;
-    first?: number;
-    last?: number;
-  }
+  queryParams: any
 ) => {
   if (
     await can(
@@ -655,16 +641,9 @@ export const getOrganizationMembershipsForUser = async (
     return paginatedResult(
       await prisma.memberships.findMany({
         where: { organizationId: parseInt(organizationId) },
-        select,
-        include,
-        orderBy,
-        skip,
-        after,
-        before,
-        first,
-        last,
+        ...queryParamsToSelect(queryParams),
       }),
-      { first, last }
+      { first: queryParams.first, last: queryParams.last }
     );
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -826,25 +805,7 @@ export const inviteMemberToOrganization = async (
 export const getOrganizationApiKeysForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
-  {
-    select,
-    include,
-    orderBy,
-    skip,
-    after,
-    before,
-    first,
-    last,
-  }: {
-    select?: api_keysSelect;
-    include?: api_keysInclude;
-    orderBy?: api_keysOrderByInput;
-    skip?: number;
-    after?: api_keysWhereUniqueInput;
-    before?: api_keysWhereUniqueInput;
-    first?: number;
-    last?: number;
-  }
+  queryParams: any
 ) => {
   if (
     await can(
@@ -857,16 +818,9 @@ export const getOrganizationApiKeysForUser = async (
     return paginatedResult(
       await prisma.api_keys.findMany({
         where: { organizationId: parseInt(organizationId) },
-        select,
-        include,
-        orderBy,
-        skip,
-        after,
-        before,
-        first,
-        last,
+        ...queryParamsToSelect(queryParams),
       }),
-      { first, last }
+      { first: queryParams.first, last: queryParams.last }
     );
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -995,25 +949,7 @@ export const deleteApiKeyForUser = async (
 export const getOrganizationDomainsForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
-  {
-    select,
-    include,
-    orderBy,
-    skip,
-    after,
-    before,
-    first,
-    last,
-  }: {
-    select?: domainsSelect;
-    include?: domainsInclude;
-    orderBy?: domainsOrderByInput;
-    skip?: number;
-    after?: domainsWhereUniqueInput;
-    before?: domainsWhereUniqueInput;
-    first?: number;
-    last?: number;
-  }
+  queryParams: any
 ) => {
   if (
     await can(
@@ -1026,16 +962,9 @@ export const getOrganizationDomainsForUser = async (
     return paginatedResult(
       await prisma.domains.findMany({
         where: { organizationId: parseInt(organizationId) },
-        select,
-        include,
-        orderBy,
-        skip,
-        after,
-        before,
-        first,
-        last,
+        ...queryParamsToSelect(queryParams),
       }),
-      { first, last }
+      { first: queryParams.first, last: queryParams.last }
     );
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -1210,25 +1139,7 @@ export const verifyDomainForUser = async (
 export const getOrganizationWebhooksForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
-  {
-    select,
-    include,
-    orderBy,
-    skip,
-    after,
-    before,
-    first,
-    last,
-  }: {
-    select?: webhooksSelect;
-    include?: webhooksInclude;
-    orderBy?: webhooksOrderByInput;
-    skip?: number;
-    after?: webhooksWhereUniqueInput;
-    before?: webhooksWhereUniqueInput;
-    first?: number;
-    last?: number;
-  }
+  queryParams: any
 ) => {
   if (
     await can(
@@ -1241,16 +1152,9 @@ export const getOrganizationWebhooksForUser = async (
     return paginatedResult(
       await prisma.webhooks.findMany({
         where: { organizationId: parseInt(organizationId) },
-        select,
-        include,
-        orderBy,
-        skip,
-        after,
-        before,
-        first,
-        last,
+        ...queryParamsToSelect(queryParams),
       }),
-      { first, last }
+      { first: queryParams.first, last: queryParams.last }
     );
   throw new Error(INSUFFICIENT_PERMISSION);
 };

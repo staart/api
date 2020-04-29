@@ -32,25 +32,7 @@ import {
 
 @ClassMiddleware(authHandler)
 export class OrganizationController {
-  @Put()
-  @Middleware(
-    validator(
-      {
-        name: Joi.string().required(),
-      },
-      "body"
-    )
-  )
-  async put(req: Request, res: Response) {
-    const added = await newOrganizationForUser(
-      res.locals.token.id,
-      req.body,
-      res.locals
-    );
-    return { ...respond(RESOURCE_CREATED), added };
-  }
-
-  @Get(":id")
+  @Get()
   async get(req: Request, res: Response) {
     const id = await organizationUsernameToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
@@ -61,7 +43,7 @@ export class OrganizationController {
     return organization;
   }
 
-  @Patch(":id")
+  @Patch()
   @Middleware(
     validator(
       {
@@ -88,7 +70,7 @@ export class OrganizationController {
     return { ...respond(RESOURCE_UPDATED, { resource: "Team" }), updated };
   }
 
-  @Delete(":id")
+  @Delete()
   async delete(req: Request, res: Response) {
     const organizationId = await organizationUsernameToId(req.params.id);
     joiValidate(
@@ -103,7 +85,7 @@ export class OrganizationController {
     return respond(RESOURCE_DELETED);
   }
 
-  @Get(":id/data")
+  @Get("data")
   async getData(req: Request, res: Response) {
     const organizationId = await organizationUsernameToId(req.params.id);
     joiValidate(

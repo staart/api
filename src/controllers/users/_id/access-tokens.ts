@@ -32,19 +32,7 @@ export class UserAccessTokensController {
   async getUserAccessTokens(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    const accessTokenParams = { ...req.query };
-    joiValidate(
-      {
-        start: Joi.string(),
-        itemsPerPage: Joi.number(),
-      },
-      accessTokenParams
-    );
-    return getUserAccessTokensForUser(
-      res.locals.token.id,
-      id,
-      accessTokenParams
-    );
+    return getUserAccessTokensForUser(res.locals.token.id, id, req.query);
   }
 
   @Put()

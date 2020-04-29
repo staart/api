@@ -31,15 +31,7 @@ export class UserIdentitiesController {
   async getUserIdentities(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    const identityParams = { ...req.query };
-    joiValidate(
-      {
-        start: Joi.string(),
-        itemsPerPage: Joi.number(),
-      },
-      identityParams
-    );
-    return getUserIdentitiesForUser(res.locals.token.id, id, identityParams);
+    return getUserIdentitiesForUser(res.locals.token.id, id, req.query);
   }
 
   @Put()

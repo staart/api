@@ -202,42 +202,18 @@ export const deleteUserForUser = async (
 export const getMembershipsForUser = async (
   tokenUserId: string,
   dataUserId: string,
-  {
-    select,
-    include,
-    orderBy,
-    skip,
-    after,
-    before,
-    first,
-    last,
-  }: {
-    select?: membershipsSelect;
-    include?: membershipsInclude;
-    orderBy?: membershipsOrderByInput;
-    skip?: number;
-    after?: membershipsWhereUniqueInput;
-    before?: membershipsWhereUniqueInput;
-    first?: number;
-    last?: number;
-  }
+  queryParams: any
 ) => {
   if (
     await can(tokenUserId, UserScopes.READ_USER_MEMBERSHIPS, "user", dataUserId)
   )
     return paginatedResult(
       await prisma.memberships.findMany({
+        ...queryParamsToSelect(queryParams),
         where: { userId: parseInt(dataUserId) },
-        include: { organization: true, ...include },
-        select,
-        orderBy,
-        skip,
-        after,
-        before,
-        first,
-        last,
+        include: { organization: true },
       }),
-      { first, last }
+      { first: queryParams.first, last: queryParams.last }
     );
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -339,25 +315,7 @@ export const regenerateBackupCodesForUser = async (
 export const getUserAccessTokensForUser = async (
   tokenUserId: string,
   userId: string,
-  {
-    select,
-    include,
-    orderBy,
-    skip,
-    after,
-    before,
-    first,
-    last,
-  }: {
-    select?: access_tokensSelect;
-    include?: access_tokensInclude;
-    orderBy?: access_tokensOrderByInput;
-    skip?: number;
-    after?: access_tokensWhereUniqueInput;
-    before?: access_tokensWhereUniqueInput;
-    first?: number;
-    last?: number;
-  }
+  queryParams: any
 ) => {
   if (
     await can(tokenUserId, UserScopes.READ_USER_ACCESS_TOKENS, "user", userId)
@@ -365,16 +323,9 @@ export const getUserAccessTokensForUser = async (
     return paginatedResult(
       await prisma.access_tokens.findMany({
         where: { userId: parseInt(userId) },
-        select,
-        include,
-        orderBy,
-        skip,
-        after,
-        before,
-        first,
-        last,
+        ...queryParamsToSelect(queryParams),
       }),
-      { first, last }
+      { first: queryParams.first, last: queryParams.last }
     );
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -485,40 +436,15 @@ export const deleteSessionForUser = async (
 export const getUserIdentitiesForUser = async (
   tokenUserId: string,
   userId: string,
-  {
-    select,
-    include,
-    orderBy,
-    skip,
-    after,
-    before,
-    first,
-    last,
-  }: {
-    select?: identitiesSelect;
-    include?: identitiesInclude;
-    orderBy?: identitiesOrderByInput;
-    skip?: number;
-    after?: identitiesWhereUniqueInput;
-    before?: identitiesWhereUniqueInput;
-    first?: number;
-    last?: number;
-  }
+  queryParams: any
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER_IDENTITY, "user", userId))
     return paginatedResult(
       await prisma.identities.findMany({
         where: { userId: parseInt(userId) },
-        select,
-        include,
-        orderBy,
-        skip,
-        after,
-        before,
-        first,
-        last,
+        ...queryParamsToSelect(queryParams),
       }),
-      { first, last }
+      { first: queryParams.first, last: queryParams.last }
     );
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -605,40 +531,15 @@ export const addInvitationCredits = async (
 export const getAllEmailsForUser = async (
   tokenUserId: string,
   userId: string,
-  {
-    select,
-    include,
-    orderBy,
-    skip,
-    after,
-    before,
-    first,
-    last,
-  }: {
-    select?: emailsSelect;
-    include?: emailsInclude;
-    orderBy?: emailsOrderByInput;
-    skip?: number;
-    after?: emailsWhereUniqueInput;
-    before?: emailsWhereUniqueInput;
-    first?: number;
-    last?: number;
-  }
+  queryParams: any
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER_EMAILS, "user", userId)) {
     return paginatedResult(
       await prisma.emails.findMany({
         where: { userId: parseInt(userId) },
-        select,
-        include,
-        orderBy,
-        skip,
-        after,
-        before,
-        first,
-        last,
+        ...queryParamsToSelect(queryParams),
       }),
-      { first, last }
+      { first: queryParams.first, last: queryParams.last }
     );
   }
   throw new Error(INSUFFICIENT_PERMISSION);
