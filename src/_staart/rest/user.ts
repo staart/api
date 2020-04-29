@@ -30,6 +30,7 @@ import { trackEvent } from "../helpers/tracking";
 import { EventType, UserScopes, Templates } from "../interfaces/enum";
 import { Locals } from "../interfaces/general";
 import { mail } from "../helpers/mail";
+import { deleteCustomer } from "@staart/payments";
 import { couponCodeJwt } from "../helpers/jwt";
 import { prisma, paginatedResult } from "../helpers/prisma";
 import {
@@ -139,6 +140,27 @@ export const deleteUserForUser = async (
   locals: Locals
 ) => {
   if (await can(tokenUserId, UserScopes.DELETE_USER, "user", updateUserId)) {
+    const organizationsToDelete = await prisma.organizations.findMany({
+      select: {
+        stripeCustomerId: true,
+      },
+      where: {
+        memberships: {
+          every: { userId: parseInt(updateUserId) },
+        },
+      },
+    });
+    for await (const organization of organizationsToDelete) {
+      if (organization.stripeCustomerId)
+        await deleteCustomer(organization.stripeCustomerId);
+    }
+    await prisma.organizations.deleteMany({
+      where: {
+        memberships: {
+          every: { userId: parseInt(updateUserId) },
+        },
+      },
+    });
     await prisma.emails.deleteMany({
       where: { userId: parseInt(updateUserId) },
     });
