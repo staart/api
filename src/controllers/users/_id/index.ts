@@ -25,7 +25,7 @@ export class UserController {
   async get(req: Request, res: Response) {
     const id = await userUsernameToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    return getUserFromIdForUser(id, res.locals.token.id);
+    return getUserFromIdForUser(id, res.locals.token.id, req.query);
   }
 
   @Patch()

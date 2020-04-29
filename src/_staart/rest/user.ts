@@ -32,7 +32,11 @@ import { Locals } from "../interfaces/general";
 import { mail } from "../helpers/mail";
 import { deleteCustomer } from "@staart/payments";
 import { couponCodeJwt } from "../helpers/jwt";
-import { prisma, paginatedResult } from "../helpers/prisma";
+import {
+  prisma,
+  paginatedResult,
+  queryParamsToSelect,
+} from "../helpers/prisma";
 import {
   users,
   membershipsSelect,
@@ -67,10 +71,14 @@ import { deleteItemFromCache } from "../helpers/cache";
 
 export const getUserFromIdForUser = async (
   userId: string,
-  tokenUserId: string
+  tokenUserId: string,
+  queryParams: any
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER, "user", userId)) {
-    const user = await getUserById(userId);
+    const user = await prisma.users.findOne({
+      ...queryParamsToSelect(queryParams),
+      where: { id: parseInt(userId) },
+    });
     if (user) return user;
     throw new Error(USER_NOT_FOUND);
   }
@@ -89,6 +97,7 @@ export const updateUserForUser = async (
       data,
       where: { id: parseInt(updateUserId) },
     });
+    await deleteItemFromCache(`cache_getUserById_${updateUserId}`);
     trackEvent(
       {
         userId: tokenUserId,
@@ -121,6 +130,7 @@ export const updatePasswordForUser = async (
       data: { password: await hash(newPassword, 8) },
       where: { id: parseInt(updateUserId) },
     });
+    await deleteItemFromCache(`cache_getUserById_${updateUserId}`);
     trackEvent(
       {
         userId: tokenUserId,
@@ -174,7 +184,7 @@ export const deleteUserForUser = async (
     await prisma.users.delete({ where: { id: parseInt(updateUserId) } });
     await deleteItemFromCache(
       `cache_getUserById_${originalUser.id}`,
-      `cache_getUserByUsername_${originalUser.username}`
+      `cache_getUserIdByUsername_${originalUser.username}`
     );
     trackEvent(
       {
@@ -260,6 +270,7 @@ export const enable2FAForUser = async (tokenUserId: string, userId: string) => {
     where: { id: parseInt(userId) },
     data: { twoFactorSecret: secret },
   });
+  await deleteItemFromCache(`cache_getUserById_${userId}`);
   const authPath = authenticator.keyuri(`user-${userId}`, SERVICE_2FA, secret);
   const qrCode = await toDataURL(authPath);
   return { qrCode };
@@ -272,7 +283,6 @@ export const verify2FAForUser = async (
 ) => {
   if (!(await can(tokenUserId, UserScopes.ENABLE_USER_2FA, "user", userId)))
     throw new Error(INSUFFICIENT_PERMISSION);
-  // const secret = (await getUser(userId, true)).twoFactorSecret as string;
   const secret = (
     await prisma.users.findOne({
       select: { twoFactorSecret: true },
@@ -287,6 +297,7 @@ export const verify2FAForUser = async (
     where: { id: parseInt(userId) },
     data: { twoFactorEnabled: true },
   });
+  await deleteItemFromCache(`cache_getUserById_${userId}`);
   return codes;
 };
 
@@ -297,13 +308,15 @@ export const disable2FAForUser = async (
   if (!(await can(tokenUserId, UserScopes.DISABLE_USER_2FA, "user", userId)))
     throw new Error(INSUFFICIENT_PERMISSION);
   await prisma.backup_codes.deleteMany({ where: { userId: parseInt(userId) } });
-  return prisma.users.update({
+  const result = prisma.users.update({
     where: { id: parseInt(userId) },
     data: {
       twoFactorEnabled: false,
       twoFactorSecret: null,
     },
   });
+  await deleteItemFromCache(`cache_getUserById_${userId}`);
+  return result;
 };
 
 export const regenerateBackupCodesForUser = async (
@@ -731,6 +744,7 @@ export const deleteEmailFromUserForUser = async (
       where: { id: parseInt(userId) },
       data: { primaryEmail: nextVerifiedEmail.id },
     });
+    await deleteItemFromCache(`cache_getUserById_${userId}`);
   }
   const result = await prisma.emails.delete({
     where: { id: parseInt(emailId) },

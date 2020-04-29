@@ -121,10 +121,7 @@ export const getUserByEmail = async (email: string, secureOrigin = false) => {
  */
 export const updateUser = async (id: string, user: KeyValue) => {
   const originalUser = await getUserById(id);
-  await deleteItemFromCache(
-    `cache_getUserById_${originalUser.id}`,
-    `cache_getUserByUsername_${originalUser.username}`
-  );
+  await deleteItemFromCache(`cache_getUserById_${originalUser.id}`);
   if (user.password) user.password = await hash(user.password, 8);
   // If you're updating your primary email, your Gravatar should reflect it
   if (user.primaryEmail) {
@@ -155,7 +152,11 @@ export const updateUser = async (id: string, user: KeyValue) => {
     )
       throw new Error(USERNAME_EXISTS);
   }
-  return await prisma.users.update({ data: user, where: { id: parseInt(id) } });
+  const result = await prisma.users.update({
+    data: user,
+    where: { id: parseInt(id) },
+  });
+  return result;
 };
 
 /**
@@ -393,24 +394,6 @@ export const getUserById = async (id: number | string) => {
     return await getItemFromCache<users>(key);
   } catch (error) {
     const user = await prisma.users.findOne({ where: { id: parseInt(id) } });
-    if (user) {
-      await setItemInCache(key, user);
-      return user;
-    }
-    throw new Error(USER_NOT_FOUND);
-  }
-};
-
-/**
- * Get a user object from its username
- * @param username - User's username
- */
-export const getUserByUsername = async (username: string) => {
-  const key = `cache_getUserByUsername_${username}`;
-  try {
-    return await getItemFromCache<users>(key);
-  } catch (error) {
-    const user = await prisma.users.findOne({ where: { username } });
     if (user) {
       await setItemInCache(key, user);
       return user;

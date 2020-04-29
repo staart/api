@@ -23,6 +23,7 @@ import {
   verifyToken,
   resendEmailVerificationToken,
 } from "../helpers/jwt";
+import { deleteItemFromCache } from "../helpers/cache";
 import { mail } from "../helpers/mail";
 import { trackEvent } from "../helpers/tracking";
 import { EventType, Templates, Tokens, UserScopes } from "../interfaces/enum";
@@ -171,6 +172,7 @@ export const register = async (
       where: { id: userId },
       data: { primaryEmail: newEmail.id },
     });
+    await deleteItemFromCache(`cache_getUserById_${userId}`);
     resendToken = await resendEmailVerificationToken(newEmail.id.toString());
   }
   if (locals) await addApprovedLocation(userId, locals.ipAddress);
@@ -240,6 +242,7 @@ export const updatePassword = async (
     where: { id: parseInt(userId) },
     data: { password: await hash(password, 8) },
   });
+  await deleteItemFromCache(`cache_getUserById_${userId}`);
   trackEvent(
     {
       userId,

@@ -12,6 +12,21 @@ cleanup(() => {
   prisma.disconnect().then(() => success("Disconnected database connection"));
 });
 
+export const queryParamsToSelect = (queryParams: any) => {
+  const data: any = {};
+  const select = queryParams.select;
+  if (typeof select === "string") {
+    select
+      .split(",")
+      .map((i) => i.trim())
+      .forEach((i) => {
+        data.select = data.select || {};
+        data.select[i] = true;
+      });
+  }
+  return data;
+};
+
 export const paginatedResult = <T>(
   data: T,
   { first, last }: { first?: number; last?: number }
