@@ -202,6 +202,8 @@ export const checkApprovedLocation = async (
 
 /**
  * Create 2FA backup codes for user
+ * We generate 6-digit backup codes for a user
+ * and save the hashed version in the database
  * @param count - Number of backup codes to create
  */
 export const createBackupCodes = async (userId: string | number, count = 1) => {

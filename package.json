@@ -73,7 +73,7 @@
     "@staart/redis": "^2.2.1",
     "@staart/scripts": "^1.15.2",
     "@staart/server": "^2.7.0",
-    "@staart/text": "^2.2.2",
+    "@staart/text": "^2.3.0",
     "@staart/validate": "^3.0.1",
     "axios": "^0.19.2",
     "client-oauth2": "^4.2.5",
