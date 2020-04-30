@@ -7,6 +7,7 @@ import {
   DOMAIN_MISSING_FILE,
   DOMAIN_UNABLE_TO_VERIFY,
   INSUFFICIENT_PERMISSION,
+  MEMBERSHIP_NOT_FOUND,
   STRIPE_NO_CUSTOMER,
   USER_IS_MEMBER_ALREADY,
   USER_NOT_FOUND,
@@ -644,11 +645,24 @@ export const updateOrganizationMembershipForUser = async (
       "organization",
       organizationId
     )
-  )
+  ) {
+    if (data.role) {
+      const currentMembership = await prisma.memberships.findOne({
+        where: { id: parseInt(membershipId) },
+      });
+      if (!currentMembership) throw new Error(MEMBERSHIP_NOT_FOUND);
+      if (currentMembership.role === "OWNER" && data.role !== "OWNER") {
+        const members = await prisma.memberships.findMany({
+          where: { organizationId: parseInt(organizationId), role: "OWNER" },
+        });
+        if (members.length === 1) throw new Error(CANNOT_DELETE_SOLE_MEMBER);
+      }
+    }
     return prisma.memberships.update({
       where: { id: parseInt(membershipId) },
       data,
     });
+  }
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
