@@ -91,6 +91,7 @@ import {
   getOrganizationById,
   createOrganization,
 } from "../services/organization.service";
+import { randomString } from "@staart/text";
 import { fireSingleWebhook } from "../helpers/webhooks";
 import { getUserById } from "../services/user.service";
 import { deleteItemFromCache } from "../helpers/cache";
@@ -995,6 +996,7 @@ export const createDomainForUser = async (
     const result = await prisma.domains.create({
       data: {
         ...domain,
+        verificationCode: await randomString({ length: 25 }),
         isVerified: false,
         organization: {
           connect: {
