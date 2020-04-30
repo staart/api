@@ -142,13 +142,12 @@ export class OrganizationDomainsController {
       },
       { id, domainId, method }
     );
-    await verifyDomainForUser(
+    return await verifyDomainForUser(
       localsToTokenOrKey(res),
       id,
       domainId,
       method,
       res.locals
     );
-    return respond(RESOURCE_SUCCESS);
   }
 }
