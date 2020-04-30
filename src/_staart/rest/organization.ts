@@ -100,9 +100,7 @@ export const getOrganizationForUser = async (
   organizationId: string
 ) => {
   if (await can(userId, OrgScopes.READ_ORG, "organization", organizationId))
-    return getOrganizationById(
-      typeof userId === "object" ? userId.organizationId : userId
-    );
+    return getOrganizationById(organizationId);
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -127,9 +125,7 @@ export const updateOrganizationForUser = async (
   if (await can(userId, OrgScopes.UPDATE_ORG, "organization", organizationId)) {
     const result = await prisma.organizations.update({
       where: {
-        id: parseInt(
-          typeof userId === "object" ? userId.organizationId : userId
-        ),
+        id: parseInt(organizationId),
       },
       data,
     });
@@ -155,9 +151,7 @@ export const deleteOrganizationForUser = async (
       await deleteCustomer(organizationDetails.stripeCustomerId);
     await prisma.organizations.delete({
       where: {
-        id: parseInt(
-          typeof userId === "object" ? userId.organizationId : userId
-        ),
+        id: parseInt(organizationId),
       },
     });
     queueWebhook(organizationId, Webhooks.DELETE_ORGANIZATION);
@@ -179,9 +173,7 @@ export const getOrganizationBillingForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganizationById(
-      typeof userId === "object" ? userId.organizationId : userId
-    );
+    const organization = await getOrganizationById(organizationId);
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
       return getCustomer(organization.stripeCustomerId);
@@ -204,9 +196,7 @@ export const updateOrganizationBillingForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganizationById(
-      typeof userId === "object" ? userId.organizationId : userId
-    );
+    const organization = await getOrganizationById(organizationId);
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     let result;
     if (organization.stripeCustomerId) {
@@ -218,9 +208,7 @@ export const updateOrganizationBillingForUser = async (
         (organizationId: string, data: organizationsUpdateInput) =>
           prisma.organizations.update({
             where: {
-              id: parseInt(
-                typeof userId === "object" ? userId.organizationId : userId
-              ),
+              id: parseInt(organizationId),
             },
             data,
           })
@@ -249,9 +237,7 @@ export const getOrganizationInvoicesForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganizationById(
-      typeof userId === "object" ? userId.organizationId : userId
-    );
+    const organization = await getOrganizationById(organizationId);
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
       return getInvoices(organization.stripeCustomerId, params);
@@ -273,9 +259,7 @@ export const getOrganizationInvoiceForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganizationById(
-      typeof userId === "object" ? userId.organizationId : userId
-    );
+    const organization = await getOrganizationById(organizationId);
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
       return getInvoice(organization.stripeCustomerId, invoiceId);
@@ -297,9 +281,7 @@ export const getOrganizationSourcesForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganizationById(
-      typeof userId === "object" ? userId.organizationId : userId
-    );
+    const organization = await getOrganizationById(organizationId);
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
       return getSources(organization.stripeCustomerId, params);
@@ -321,9 +303,7 @@ export const getOrganizationSourceForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganizationById(
-      typeof userId === "object" ? userId.organizationId : userId
-    );
+    const organization = await getOrganizationById(organizationId);
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
       return getSource(organization.stripeCustomerId, sourceId);
@@ -345,9 +325,7 @@ export const getOrganizationSubscriptionsForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganizationById(
-      typeof userId === "object" ? userId.organizationId : userId
-    );
+    const organization = await getOrganizationById(organizationId);
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
       return getSubscriptions(organization.stripeCustomerId, params);
@@ -369,9 +347,7 @@ export const getOrganizationSubscriptionForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganizationById(
-      typeof userId === "object" ? userId.organizationId : userId
-    );
+    const organization = await getOrganizationById(organizationId);
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
       return getSubscription(organization.stripeCustomerId, subscriptionId);
@@ -395,9 +371,7 @@ export const updateOrganizationSubscriptionForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganizationById(
-      typeof userId === "object" ? userId.organizationId : userId
-    );
+    const organization = await getOrganizationById(organizationId);
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId) {
       const result = await updateSubscription(
@@ -435,9 +409,7 @@ export const createOrganizationSubscriptionForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganizationById(
-      typeof userId === "object" ? userId.organizationId : userId
-    );
+    const organization = await getOrganizationById(organizationId);
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId) {
       const result = await createSubscription(
@@ -485,9 +457,7 @@ export const deleteOrganizationSourceForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganizationById(
-      typeof userId === "object" ? userId.organizationId : userId
-    );
+    const organization = await getOrganizationById(organizationId);
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId) {
       const result = await deleteSource(
@@ -525,9 +495,7 @@ export const updateOrganizationSourceForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganizationById(
-      typeof userId === "object" ? userId.organizationId : userId
-    );
+    const organization = await getOrganizationById(organizationId);
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId) {
       const result = await updateSource(
@@ -561,9 +529,7 @@ export const createOrganizationSourceForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganizationById(
-      typeof userId === "object" ? userId.organizationId : userId
-    );
+    const organization = await getOrganizationById(organizationId);
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId) {
       const result = await createSource(organization.stripeCustomerId, card);
@@ -593,9 +559,7 @@ export const getAllOrganizationDataForUser = async (
   ) {
     const organization = await prisma.organizations.findOne({
       where: {
-        id: parseInt(
-          typeof userId === "object" ? userId.organizationId : userId
-        ),
+        id: parseInt(organizationId),
       },
       include: {
         api_keys: true,
@@ -732,9 +696,7 @@ export const inviteMemberToOrganization = async (
       organizationId
     )
   ) {
-    const organization = await getOrganizationById(
-      typeof userId === "object" ? userId.organizationId : userId
-    );
+    const organization = await getOrganizationById(organizationId);
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.onlyAllowDomain) {
       const emailDomain = newMemberEmail.split("@")[1];
@@ -913,9 +875,7 @@ export const createApiKeyForUser = async (
         ...apiKey,
         organization: {
           connect: {
-            id: parseInt(
-              typeof userId === "object" ? userId.organizationId : userId
-            ),
+            id: parseInt(organizationId),
           },
         },
       },
@@ -1038,9 +998,7 @@ export const createDomainForUser = async (
         isVerified: false,
         organization: {
           connect: {
-            id: parseInt(
-              typeof userId === "object" ? userId.organizationId : userId
-            ),
+            id: parseInt(organizationId),
           },
         },
       },
@@ -1226,9 +1184,7 @@ export const createWebhookForUser = async (
         ...webhook,
         organization: {
           connect: {
-            id: parseInt(
-              typeof userId === "object" ? userId.organizationId : userId
-            ),
+            id: parseInt(organizationId),
           },
         },
       },
@@ -1296,9 +1252,7 @@ export const applyCouponToOrganizationForUser = async (
     } catch (error) {
       throw new Error(INVALID_INPUT);
     }
-    const organization = await getOrganizationById(
-      typeof userId === "object" ? userId.organizationId : userId
-    );
+    const organization = await getOrganizationById(organizationId);
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (amount && currency && organization.stripeCustomerId) {
       const result = await createCustomerBalanceTransaction(
@@ -1330,9 +1284,7 @@ export const getOrganizationTransactionsForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganizationById(
-      typeof userId === "object" ? userId.organizationId : userId
-    );
+    const organization = await getOrganizationById(organizationId);
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
       return getCustomBalanceTransactions(
@@ -1357,9 +1309,7 @@ export const getOrganizationTransactionForUser = async (
       organizationId
     )
   ) {
-    const organization = await getOrganizationById(
-      typeof userId === "object" ? userId.organizationId : userId
-    );
+    const organization = await getOrganizationById(organizationId);
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     if (organization.stripeCustomerId)
       return getCustomBalanceTransaction(
