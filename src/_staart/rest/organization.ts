@@ -570,7 +570,7 @@ export const getAllOrganizationDataForUser = async (
     });
     if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
     return {
-      organization,
+      ...organization,
       ...(organization.stripeCustomerId
         ? {
             billing: await getCustomer(organization.stripeCustomerId),

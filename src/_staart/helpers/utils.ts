@@ -1,6 +1,7 @@
 import { Request, Response } from "@staart/server";
 import { isMatch } from "@staart/text";
 import { Joi, joiValidate } from "@staart/validate";
+import { ORGANIZATION_NOT_FOUND, USER_NOT_FOUND } from "@staart/errors";
 import dns from "dns";
 import { Tokens } from "../interfaces/enum";
 import { ApiKeyResponse } from "./jwt";
@@ -25,29 +26,32 @@ export const deleteSensitiveInfoUser = (user: users) => {
 };
 
 export const organizationUsernameToId = async (id: string) => {
-  if (!id.match(/^-{0,1}\d+$/)) {
-    return (await getOrganizationById(id)).id.toString();
-  } else {
-    return parseInt(id).toString();
-  }
+  const result = (
+    await prisma.organizations.findOne({
+      select: { id: true },
+      where: {
+        username: id,
+      },
+    })
+  )?.id.toString();
+  if (result) return result;
+  throw new Error(ORGANIZATION_NOT_FOUND);
 };
 
 export const userUsernameToId = async (id: string, tokenUserId?: string) => {
   if (id === "me" && tokenUserId) {
     return String(tokenUserId);
-  } else if (!id.match(/^-{0,1}\d+$/)) {
-    return (
-      (
-        await prisma.users.findOne({
-          select: { id: true },
-          where: {
-            username: id,
-          },
-        })
-      )?.id.toString() || parseInt(id).toString()
-    );
   } else {
-    return parseInt(id).toString();
+    const result = (
+      await prisma.users.findOne({
+        select: { id: true },
+        where: {
+          username: id,
+        },
+      })
+    )?.id.toString();
+    if (result) return result;
+    throw new Error(USER_NOT_FOUND);
   }
 };
 
