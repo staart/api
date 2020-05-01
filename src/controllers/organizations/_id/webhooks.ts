@@ -47,7 +47,7 @@ export class OrganizationWebhooksController {
     validator(
       {
         event: Joi.string().required(),
-        url: Joi.string().required(),
+        url: Joi.string().uri().required(),
         contentType: Joi.string(),
         secret: Joi.string().allow(),
         isActive: Joi.boolean(),
@@ -90,7 +90,7 @@ export class OrganizationWebhooksController {
     validator(
       {
         event: Joi.string(),
-        url: Joi.string(),
+        url: Joi.string().uri(),
         contentType: Joi.string(),
         secret: Joi.string(),
         isActive: Joi.boolean(),

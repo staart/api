@@ -110,6 +110,8 @@ export class OrganizationSubscriptionsController {
         cancel_at_period_end: Joi.boolean(),
         coupon: Joi.string(),
         default_source: Joi.string(),
+        items: Joi.array(),
+        proration_behavior: Joi.string(),
       },
       data
     );
