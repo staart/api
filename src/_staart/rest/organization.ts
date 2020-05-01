@@ -36,7 +36,7 @@ import {
   getCustomBalanceTransaction,
 } from "@staart/payments";
 import axios from "axios";
-import { JWT_ISSUER } from "../../config";
+import { JWT_ISSUER, TOKEN_EXPIRY_API_KEY_MAX } from "../../config";
 import { can } from "../helpers/authorization";
 import {
   ApiKeyResponse,
@@ -885,6 +885,8 @@ export const createApiKeyForUser = async (
       organizationId
     )
   ) {
+    apiKey.jwtApiKey = randomString({ length: 20 });
+    apiKey.expiresAt = apiKey.expiresAt || new Date(TOKEN_EXPIRY_API_KEY_MAX);
     const result = await prisma.api_keys.create({
       data: {
         ...apiKey,

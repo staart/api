@@ -86,11 +86,11 @@ export class OrganizationApiKeysController {
   @Middleware(
     validator(
       {
-        scopes: Joi.string().allow(),
-        ipRestrictions: Joi.string().allow(),
-        referrerRestrictions: Joi.string().allow(),
-        name: Joi.string().allow(),
-        description: Joi.string().allow(),
+        scopes: Joi.string().allow(null),
+        ipRestrictions: Joi.string().allow(null),
+        referrerRestrictions: Joi.string().allow(null),
+        name: Joi.string().allow(null),
+        description: Joi.string().allow(null),
       },
       "body"
     )
