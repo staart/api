@@ -1,6 +1,6 @@
 {
   "name": "@staart/api",
-  "version": "2.16.0",
+  "version": "2.17.0",
   "publishConfig": {
     "tag": "next"
   },
