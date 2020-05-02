@@ -3,16 +3,31 @@ import { RESOURCE_CREATED, respond } from "@staart/messages";
 import {
   ClassMiddleware,
   Middleware,
+  Delete,
+  Patch,
   Put,
   Request,
   Response,
 } from "@staart/server";
 import { Joi } from "@staart/validate";
 import { authHandler, validator } from "../../_staart/helpers/middleware";
-import { generateCouponForUser } from "../../_staart/rest/admin";
+import {
+  getAllCouponsForUser,
+  getCouponForUser,
+  updateCouponForUser,
+  deleteCouponForUser,
+  generateCouponForUser,
+} from "../../_staart/rest/admin";
 
 @ClassMiddleware(authHandler)
 export class AdminCouponController {
+  @Get()
+  async getCoupons(req: Request, res: Response) {
+    const userId = res.locals.token.id;
+    if (!userId) throw new Error(MISSING_FIELD);
+    return getAllCouponsForUser(userId, req.query);
+  }
+
   @Put()
   @Middleware(
     validator(
@@ -30,5 +45,37 @@ export class AdminCouponController {
     if (!userId) throw new Error(MISSING_FIELD);
     const added = await generateCouponForUser(userId, req.body);
     return { ...respond(RESOURCE_CREATED), added };
+  }
+
+  @Get(":id")
+  async getCoupon(req: Request, res: Response) {
+    const userId = res.locals.token.id;
+    if (!userId) throw new Error(MISSING_FIELD);
+    return getCouponForUser(userId, req.params.id);
+  }
+
+  @Patch(":id")
+  @Middleware(
+    validator(
+      {
+        amount: Joi.number(),
+        currency: Joi.string().min(3).max(3),
+        description: Joi.string().allow(null),
+        jwt: Joi.boolean(),
+      },
+      "body"
+    )
+  )
+  async updateCoupon(req: Request, res: Response) {
+    const userId = res.locals.token.id;
+    if (!userId) throw new Error(MISSING_FIELD);
+    return updateCouponForUser(userId, req.params.id, req.body);
+  }
+
+  @Delete(":id")
+  async deleteCoupon(req: Request, res: Response) {
+    const userId = res.locals.token.id;
+    if (!userId) throw new Error(MISSING_FIELD);
+    return deleteCouponForUser(userId, req.params.id);
   }
 }

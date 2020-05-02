@@ -7,7 +7,11 @@ import { ms } from "@staart/text";
 import { ELASTIC_LOGS_INDEX } from "../../config";
 import { can } from "../helpers/authorization";
 import { SudoScopes } from "../interfaces/enum";
-import { prisma, paginatedResult } from "../helpers/prisma";
+import {
+  prisma,
+  paginatedResult,
+  queryParamsToSelect,
+} from "../helpers/prisma";
 import { couponCodeJwt } from "../helpers/jwt";
 import {
   organizationsSelect,
@@ -18,6 +22,7 @@ import {
   usersInclude,
   usersOrderByInput,
   usersWhereUniqueInput,
+  coupon_codesUpdateInput,
 } from "@prisma/client";
 
 export const getAllOrganizationForUser = async (
@@ -98,13 +103,56 @@ export const getAllUsersForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
+export const getAllCouponsForUser = async (
+  tokenUserId: string,
+  queryParams: any
+) => {
+  if (await can(tokenUserId, SudoScopes.READ, "sudo"))
+    return paginatedResult(
+      await prisma.coupon_codes.findMany(queryParamsToSelect(queryParams)),
+      { first: queryParams.first, last: queryParams.last }
+    );
+  throw new Error(INSUFFICIENT_PERMISSION);
+};
+
+export const getCouponForUser = async (
+  tokenUserId: string,
+  couponId: string
+) => {
+  if (await can(tokenUserId, SudoScopes.READ, "sudo"))
+    return prisma.coupon_codes.findOne({ where: { id: parseInt(couponId) } });
+  throw new Error(INSUFFICIENT_PERMISSION);
+};
+
+export const updateCouponForUser = async (
+  tokenUserId: string,
+  couponId: string,
+  data: coupon_codesUpdateInput
+) => {
+  if (await can(tokenUserId, SudoScopes.READ, "sudo"))
+    return prisma.coupon_codes.update({
+      data,
+      where: { id: parseInt(couponId) },
+    });
+  throw new Error(INSUFFICIENT_PERMISSION);
+};
+
+export const deleteCouponForUser = async (
+  tokenUserId: string,
+  couponId: string
+) => {
+  if (await can(tokenUserId, SudoScopes.READ, "sudo"))
+    return prisma.coupon_codes.delete({ where: { id: parseInt(couponId) } });
+  throw new Error(INSUFFICIENT_PERMISSION);
+};
+
 export const generateCouponForUser = async (tokenUserId: string, body: any) => {
   if (!(await can(tokenUserId, SudoScopes.READ, "sudo")))
     throw new Error(INSUFFICIENT_PERMISSION);
   if (body.jwt)
     return couponCodeJwt(body.amount, body.currency, body.description);
   return prisma.coupon_codes.create({
-    data: {},
+    data: body,
   });
 };
 
