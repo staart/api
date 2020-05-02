@@ -12,6 +12,7 @@ import {
   paginatedResult,
   queryParamsToSelect,
 } from "../helpers/prisma";
+import { getEvents } from "@staart/payments";
 import { couponCodeJwt } from "../helpers/jwt";
 import {
   organizationsSelect,
@@ -103,6 +104,15 @@ export const generateCouponForUser = async (tokenUserId: string, body: any) => {
   return prisma.coupon_codes.create({
     data: body,
   });
+};
+
+export const getPaymentEventsForUser = async (
+  tokenUserId: string,
+  body: any
+) => {
+  if (!(await can(tokenUserId, SudoScopes.READ, "sudo")))
+    throw new Error(INSUFFICIENT_PERMISSION);
+  return getEvents(body);
 };
 
 /**

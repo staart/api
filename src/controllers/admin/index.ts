@@ -15,6 +15,7 @@ import {
   getAllUsersForUser,
   getServerLogsForUser,
   generateCouponForUser,
+  getPaymentEventsForUser,
 } from "../../_staart/rest/admin";
 
 @ClassMiddleware(authHandler)
@@ -38,6 +39,13 @@ export class AdminController {
     const userId = res.locals.token.id;
     if (!userId) throw new Error(MISSING_FIELD);
     return getServerLogsForUser(userId, req.query);
+  }
+
+  @Get("payment-events")
+  async getPaymentEvents(req: Request, res: Response) {
+    const userId = res.locals.token.id;
+    if (!userId) throw new Error(MISSING_FIELD);
+    return getPaymentEventsForUser(userId, req.query);
   }
 
   @Get("info")
