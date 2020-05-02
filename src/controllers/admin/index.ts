@@ -40,24 +40,6 @@ export class AdminController {
     return getServerLogsForUser(userId, req.query);
   }
 
-  @Put("coupon")
-  @Middleware(
-    validator(
-      {
-        amount: Joi.number().required(),
-        currency: Joi.string().min(3).max(3).required(),
-        description: Joi.string(),
-      },
-      "body"
-    )
-  )
-  async createCoupon(req: Request, res: Response) {
-    const userId = res.locals.token.id;
-    if (!userId) throw new Error(MISSING_FIELD);
-    const couponCode = await generateCouponForUser(userId, req.body);
-    return { couponCode };
-  }
-
   @Get("info")
   async info() {
     return {

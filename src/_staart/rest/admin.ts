@@ -3,7 +3,7 @@ import {
   elasticSearch,
 } from "@staart/elasticsearch";
 import { INSUFFICIENT_PERMISSION } from "@staart/errors";
-import { ms } from "@staart/text";
+import { ms, randomString } from "@staart/text";
 import { ELASTIC_LOGS_INDEX } from "../../config";
 import { can } from "../helpers/authorization";
 import { SudoScopes } from "../interfaces/enum";
@@ -27,78 +27,24 @@ import {
 
 export const getAllOrganizationForUser = async (
   tokenUserId: string,
-  {
-    select,
-    include,
-    orderBy,
-    skip,
-    after,
-    before,
-    first,
-    last,
-  }: {
-    select?: organizationsSelect;
-    include?: organizationsInclude;
-    orderBy?: organizationsOrderByInput;
-    skip?: number;
-    after?: organizationsWhereUniqueInput;
-    before?: organizationsWhereUniqueInput;
-    first?: number;
-    last?: number;
-  }
+  queryParams: any
 ) => {
   if (await can(tokenUserId, SudoScopes.READ, "sudo"))
     return paginatedResult(
-      await prisma.organizations.findMany({
-        select,
-        include,
-        orderBy,
-        skip,
-        after,
-        before,
-        first,
-        last,
-      }),
-      { first, last }
+      await prisma.organizations.findMany(queryParamsToSelect(queryParams)),
+      { first: queryParams.first, last: queryParams.last }
     );
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
 export const getAllUsersForUser = async (
   tokenUserId: string,
-  {
-    select,
-    include,
-    orderBy,
-    skip,
-    after,
-    before,
-    first,
-    last,
-  }: {
-    select?: usersSelect;
-    include?: usersInclude;
-    orderBy?: usersOrderByInput;
-    skip?: number;
-    after?: usersWhereUniqueInput;
-    before?: usersWhereUniqueInput;
-    first?: number;
-    last?: number;
-  }
+  queryParams: any
 ) => {
   if (await can(tokenUserId, SudoScopes.READ, "sudo"))
     return paginatedResult(
-      await prisma.users.findMany({
-        select,
-        include,
-        orderBy,
-        skip,
-        after,
-        before,
-        first,
-        last,
-      }),
-      { first, last }
+      await prisma.users.findMany(queryParamsToSelect(queryParams)),
+      { first: queryParams.first, last: queryParams.last }
     );
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -151,6 +97,9 @@ export const generateCouponForUser = async (tokenUserId: string, body: any) => {
     throw new Error(INSUFFICIENT_PERMISSION);
   if (body.jwt)
     return couponCodeJwt(body.amount, body.currency, body.description);
+  delete body.jwt;
+  body.code =
+    body.code || randomString({ length: 10, type: "distinguishable" });
   return prisma.coupon_codes.create({
     data: body,
   });
