@@ -34,10 +34,14 @@ export class AdminCouponController {
   @Middleware(
     validator(
       {
+        code: Joi.string(),
+        teamRestrictions: Joi.string(),
         amount: Joi.number().required(),
         currency: Joi.string().min(3).max(3).required(),
         description: Joi.string(),
         jwt: Joi.boolean(),
+        expiresAt: Joi.any(),
+        maxUses: Joi.number(),
       },
       "body"
     )
@@ -60,9 +64,13 @@ export class AdminCouponController {
   @Middleware(
     validator(
       {
+        code: Joi.string(),
         amount: Joi.number(),
         currency: Joi.string().min(3).max(3),
         description: Joi.string().allow(null),
+        expiresAt: Joi.any().allow(null),
+        teamRestrictions: Joi.string().allow(null),
+        maxUses: Joi.number().allow(null),
         jwt: Joi.boolean(),
       },
       "body"
