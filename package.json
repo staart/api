@@ -69,7 +69,7 @@
     "@staart/mail": "^2.0.3",
     "@staart/messages": "^2.1.2",
     "@staart/mustache-markdown": "^3.0.2",
-    "@staart/payments": "^3.3.0",
+    "@staart/payments": "^3.3.1",
     "@staart/redis": "^2.2.1",
     "@staart/scripts": "^1.15.2",
     "@staart/server": "^2.7.0",
