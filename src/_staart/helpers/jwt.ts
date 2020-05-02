@@ -108,8 +108,16 @@ export const verifyToken = <T>(token: string, subject: Tokens): Promise<T> =>
 export const couponCodeJwt = (
   amount: number,
   currency: string,
-  description?: string
-) => generateToken({ amount, currency, description }, "30d", Tokens.COUPON);
+  description?: string,
+  expiresAt?: string
+) =>
+  generateToken(
+    { amount, currency, description },
+    expiresAt
+      ? (new Date(expiresAt).getTime() - new Date().getTime()) / 1000
+      : "30d",
+    Tokens.COUPON
+  );
 
 /**
  * Generate a new email verification JWT
