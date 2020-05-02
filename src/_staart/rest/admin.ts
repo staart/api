@@ -8,6 +8,7 @@ import { ELASTIC_LOGS_INDEX } from "../../config";
 import { can } from "../helpers/authorization";
 import { SudoScopes } from "../interfaces/enum";
 import { prisma, paginatedResult } from "../helpers/prisma";
+import { couponCodeJwt } from "../helpers/jwt";
 import {
   organizationsSelect,
   organizationsInclude,
@@ -95,6 +96,19 @@ export const getAllUsersForUser = async (
       { first, last }
     );
   throw new Error(INSUFFICIENT_PERMISSION);
+};
+
+export const generateCouponForUser = async (
+  tokenUserId: string,
+  {
+    amount,
+    currency,
+    description,
+  }: { amount: number; currency: string; description?: string }
+) => {
+  if (!(await can(tokenUserId, SudoScopes.READ, "sudo")))
+    throw new Error(INSUFFICIENT_PERMISSION);
+  return couponCodeJwt(amount, currency, description);
 };
 
 /**

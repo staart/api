@@ -3,14 +3,18 @@ import {
   ClassMiddleware,
   Controller,
   Get,
+  Put,
+  Middleware,
   Request,
   Response,
 } from "@staart/server";
-import { authHandler } from "../../_staart/helpers/middleware";
+import { authHandler, validator } from "../../_staart/helpers/middleware";
+import { Joi } from "@staart/validate";
 import {
   getAllOrganizationForUser,
   getAllUsersForUser,
   getServerLogsForUser,
+  generateCouponForUser,
 } from "../../_staart/rest/admin";
 
 @ClassMiddleware(authHandler)
@@ -34,6 +38,24 @@ export class AdminController {
     const userId = res.locals.token.id;
     if (!userId) throw new Error(MISSING_FIELD);
     return getServerLogsForUser(userId, req.query);
+  }
+
+  @Put("coupon")
+  @Middleware(
+    validator(
+      {
+        amount: Joi.number().required(),
+        currency: Joi.string().min(3).max(3).required(),
+        description: Joi.string(),
+      },
+      "body"
+    )
+  )
+  async createCoupon(req: Request, res: Response) {
+    const userId = res.locals.token.id;
+    if (!userId) throw new Error(MISSING_FIELD);
+    const couponCode = await generateCouponForUser(userId, req.body);
+    return { couponCode };
   }
 
   @Get("info")
