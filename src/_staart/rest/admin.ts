@@ -98,17 +98,14 @@ export const getAllUsersForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const generateCouponForUser = async (
-  tokenUserId: string,
-  {
-    amount,
-    currency,
-    description,
-  }: { amount: number; currency: string; description?: string }
-) => {
+export const generateCouponForUser = async (tokenUserId: string, body: any) => {
   if (!(await can(tokenUserId, SudoScopes.READ, "sudo")))
     throw new Error(INSUFFICIENT_PERMISSION);
-  return couponCodeJwt(amount, currency, description);
+  if (body.jwt)
+    return couponCodeJwt(body.amount, body.currency, body.description);
+  return prisma.coupon_codes.create({
+    data: {},
+  });
 };
 
 /**

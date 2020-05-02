@@ -1,4 +1,5 @@
 import { MISSING_FIELD } from "@staart/errors";
+import { RESOURCE_CREATED, respond } from "@staart/messages";
 import {
   ClassMiddleware,
   Middleware,
@@ -19,6 +20,7 @@ export class AdminCouponController {
         amount: Joi.number().required(),
         currency: Joi.string().min(3).max(3).required(),
         description: Joi.string(),
+        jwt: Joi.boolean(),
       },
       "body"
     )
@@ -26,7 +28,7 @@ export class AdminCouponController {
   async createCoupon(req: Request, res: Response) {
     const userId = res.locals.token.id;
     if (!userId) throw new Error(MISSING_FIELD);
-    const couponCode = await generateCouponForUser(userId, req.body);
-    return { couponCode };
+    const added = await generateCouponForUser(userId, req.body);
+    return { ...respond(RESOURCE_CREATED), added };
   }
 }
