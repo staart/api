@@ -39,7 +39,7 @@
     "@types/cron": "^1.7.2",
     "@types/fs-extra": "^8.1.0",
     "@types/geolite2": "^2.0.0",
-    "@types/hapi__joi": "^16.0.12",
+    "@types/hapi__joi": "^17.1.0",
     "@types/jest": "^25.2.1",
     "@types/jsonwebtoken": "^8.3.9",
     "@types/mysql": "^2.15.10",
