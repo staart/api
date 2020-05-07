@@ -89,7 +89,7 @@
     "random-int": "^2.0.1",
     "randomcolor": "^0.5.4",
     "snyk": "^1.317.0",
-    "systeminformation": "^4.24.1"
+    "systeminformation": "^4.24.2"
   },
   "files": [
     "setup"
