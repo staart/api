@@ -66,7 +66,7 @@
     "@staart/disposable-email": "^2.0.2",
     "@staart/elasticsearch": "^2.2.2",
     "@staart/errors": "^2.1.1",
-    "@staart/mail": "^2.0.3",
+    "@staart/mail": "^2.1.0",
     "@staart/messages": "^2.1.2",
     "@staart/mustache-markdown": "^3.0.2",
     "@staart/payments": "^3.3.1",
