@@ -54,7 +54,7 @@
     "dotenv": "^8.2.0",
     "jest": "^25.5.4",
     "semantic-release": "^17.0.7",
-    "semantic-release-gitmoji": "^1.3.3",
+    "semantic-release-gitmoji": "^1.3.4",
     "ts-jest": "^25.5.1",
     "typescript": "^3.9.2",
     "yaml": "^1.10.0"
