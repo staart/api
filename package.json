@@ -61,7 +61,7 @@
   },
   "dependencies": {
     "@prisma/client": "^2.0.0-beta.6",
-    "@sentry/node": "^5.16.0",
+    "@sentry/node": "^5.16.1",
     "@staart/config": "^1.0.0",
     "@staart/disposable-email": "^2.0.2",
     "@staart/elasticsearch": "^2.2.2",
