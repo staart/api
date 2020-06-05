@@ -88,7 +88,7 @@
     "qrcode": "^1.4.4",
     "random-int": "^2.0.1",
     "randomcolor": "^0.5.4",
-    "snyk": "^1.335.0",
+    "snyk": "^1.336.0",
     "systeminformation": "^4.26.6"
   },
   "files": [
