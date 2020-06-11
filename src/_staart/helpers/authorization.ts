@@ -208,7 +208,7 @@ export const can = async (
   /**
    * Now, `user` is of type "users", "ApiKeyResponse", or "AccessTokenResponse"
    * and `requestFromType` will tell us what type it is
-   * We fidn what the correct target is
+   * We find what the correct target is
    */
   if (typeof target === "string") {
     if (targetType === "membership") {
