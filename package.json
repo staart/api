@@ -76,7 +76,7 @@
     "@staart/text": "^2.3.0",
     "@staart/validate": "^3.0.1",
     "axios": "^0.19.2",
-    "client-oauth2": "^4.3.0",
+    "client-oauth2": "^4.3.1",
     "cron": "^1.8.2",
     "fs-extra": "^9.0.1",
     "geolite2-redist": "^1.0.7",
