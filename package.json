@@ -60,7 +60,7 @@
     "yaml": "^1.10.0"
   },
   "dependencies": {
-    "@prisma/client": "^2.2.1",
+    "@prisma/client": "^2.2.2",
     "@sentry/node": "^5.19.2",
     "@staart/config": "^1.0.0",
     "@staart/disposable-email": "^2.0.2",
