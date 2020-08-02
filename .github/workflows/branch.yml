@@ -1,8 +1,5 @@
 name: Node CI
-on:
-  push:
-    branches-ignore:
-      - master
+on: [push]
 jobs:
   release:
     name: Build and test
