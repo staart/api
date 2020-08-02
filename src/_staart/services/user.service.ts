@@ -69,7 +69,7 @@ export const getBestUsernameForUser = async (name: string) => {
 };
 
 /**
- * Check if an organization username is available
+ * Check if an group username is available
  */
 export const checkUserUsernameAvailability = async (username: string) => {
   return (

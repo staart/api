@@ -20,7 +20,7 @@ import {
 
 @ClassMiddleware(authHandler)
 export class AdminController {
-  @Get("organizations")
+  @Get("groups")
   async getOrganizations(req: Request, res: Response) {
     const userId = res.locals.token.id;
     if (!userId) throw new Error(MISSING_FIELD);

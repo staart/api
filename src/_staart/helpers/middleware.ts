@@ -181,7 +181,7 @@ export const rateLimitHandler = async (
   if (apiKey) {
     try {
       const details = await verifyToken<ApiKeyResponse>(apiKey, Tokens.API_KEY);
-      if (details.organizationId) {
+      if (details.groupId) {
         res.setHeader("X-Rate-Limit-Type", "api-key");
         return rateLimiter(req, res, next);
       }
@@ -203,7 +203,7 @@ export const speedLimitHandler = async (
   if (apiKey) {
     try {
       const details = await verifyToken<ApiKeyResponse>(apiKey, Tokens.API_KEY);
-      if (details.organizationId) {
+      if (details.groupId) {
         res.setHeader("X-Rate-Limit-Type", "api-key");
         return next();
       }

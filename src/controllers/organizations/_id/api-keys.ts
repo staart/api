@@ -19,7 +19,7 @@ import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../../_staart/helpers/middleware";
 import {
   localsToTokenOrKey,
-  organizationUsernameToId,
+  groupUsernameToId,
 } from "../../../_staart/helpers/utils";
 import {
   createApiKeyForUser,
@@ -28,13 +28,13 @@ import {
   getOrganizationApiKeyLogsForUser,
   getOrganizationApiKeysForUser,
   updateApiKeyForUser,
-} from "../../../_staart/rest/organization";
+} from "../../../_staart/rest/group";
 
 @ClassMiddleware(authHandler)
 export class OrganizationApiKeysController {
   @Get()
   async getUserApiKeys(req: Request, res: Response) {
-    const id = await organizationUsernameToId(req.params.id);
+    const id = await groupUsernameToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
     return getOrganizationApiKeysForUser(
       localsToTokenOrKey(res),
@@ -57,7 +57,7 @@ export class OrganizationApiKeysController {
     )
   )
   async putUserApiKeys(req: Request, res: Response) {
-    const id = await organizationUsernameToId(req.params.id);
+    const id = await groupUsernameToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
     const added = await createApiKeyForUser(
       localsToTokenOrKey(res),
@@ -70,7 +70,7 @@ export class OrganizationApiKeysController {
 
   @Get(":apiKeyId")
   async getUserApiKey(req: Request, res: Response) {
-    const id = await organizationUsernameToId(req.params.id);
+    const id = await groupUsernameToId(req.params.id);
     const apiKeyId = req.params.apiKeyId;
     joiValidate(
       {
@@ -96,7 +96,7 @@ export class OrganizationApiKeysController {
     )
   )
   async patchUserApiKey(req: Request, res: Response) {
-    const id = await organizationUsernameToId(req.params.id);
+    const id = await groupUsernameToId(req.params.id);
     const apiKeyId = req.params.apiKeyId;
     joiValidate(
       {
@@ -117,7 +117,7 @@ export class OrganizationApiKeysController {
 
   @Delete(":apiKeyId")
   async deleteUserApiKey(req: Request, res: Response) {
-    const id = await organizationUsernameToId(req.params.id);
+    const id = await groupUsernameToId(req.params.id);
     const apiKeyId = req.params.apiKeyId;
     joiValidate(
       {
@@ -137,7 +137,7 @@ export class OrganizationApiKeysController {
 
   @Get(":apiKeyId/logs")
   async getUserApiKeyLogs(req: Request, res: Response) {
-    const id = await organizationUsernameToId(req.params.id);
+    const id = await groupUsernameToId(req.params.id);
     const apiKeyId = req.params.apiKeyId;
     joiValidate(
       {

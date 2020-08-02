@@ -10,23 +10,20 @@ import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../../_staart/helpers/middleware";
 import {
   localsToTokenOrKey,
-  organizationUsernameToId,
+  groupUsernameToId,
 } from "../../../_staart/helpers/utils";
 import {
   getOrganizationTransactionForUser,
   getOrganizationTransactionsForUser,
   applyCouponToOrganizationForUser,
-} from "../../../_staart/rest/organization";
+} from "../../../_staart/rest/group";
 
 @ClassMiddleware(authHandler)
 export class OrganizationTransactionsController {
   @Get()
   async getTransactions(req: Request, res: Response) {
-    const organizationId = await organizationUsernameToId(req.params.id);
-    joiValidate(
-      { organizationId: Joi.string().required() },
-      { organizationId }
-    );
+    const groupId = await groupUsernameToId(req.params.id);
+    joiValidate({ groupId: Joi.string().required() }, { groupId });
     const transactionParams = { ...req.query };
     joiValidate(
       {
@@ -37,43 +34,43 @@ export class OrganizationTransactionsController {
     );
     return getOrganizationTransactionsForUser(
       localsToTokenOrKey(res),
-      organizationId,
+      groupId,
       transactionParams
     );
   }
 
   @Put()
   async applyCoupon(req: Request, res: Response) {
-    const organizationId = await organizationUsernameToId(req.params.id);
+    const groupId = await groupUsernameToId(req.params.id);
     const couponCode = req.body.couponCode;
     joiValidate(
       {
-        organizationId: Joi.string().required(),
+        groupId: Joi.string().required(),
         couponCode: Joi.string().required(),
       },
-      { organizationId, couponCode }
+      { groupId, couponCode }
     );
     return applyCouponToOrganizationForUser(
       localsToTokenOrKey(res),
-      organizationId,
+      groupId,
       couponCode
     );
   }
 
   @Get(":transactionId")
   async getTransaction(req: Request, res: Response) {
-    const organizationId = await organizationUsernameToId(req.params.id);
+    const groupId = await groupUsernameToId(req.params.id);
     const transactionId = req.params.transactionId;
     joiValidate(
       {
-        organizationId: Joi.string().required(),
+        groupId: Joi.string().required(),
         transactionId: Joi.string().required(),
       },
-      { organizationId, transactionId }
+      { groupId, transactionId }
     );
     return getOrganizationTransactionForUser(
       localsToTokenOrKey(res),
-      organizationId,
+      groupId,
       transactionId
     );
   }

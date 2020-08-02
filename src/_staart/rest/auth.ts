@@ -45,7 +45,7 @@ import {
   users,
   backup_codes,
 } from "@prisma/client";
-import { getDomainByDomainName } from "../services/organization.service";
+import { getDomainByDomainName } from "../services/group.service";
 import { PartialBy } from "../helpers/utils";
 
 export const validateRefreshToken = async (token: string, locals: Locals) => {
@@ -125,7 +125,7 @@ export const register = async (
   _user: PartialBy<PartialBy<usersCreateInput, "nickname">, "username">,
   locals?: Locals,
   email?: string,
-  organizationId?: string,
+  groupId?: string,
   role?: MembershipRole,
   emailVerified = false
 ) => {
@@ -140,23 +140,23 @@ export const register = async (
   if (user.username && !(await checkUserUsernameAvailability(user.username)))
     throw new Error(USERNAME_EXISTS);
   user.username = user.username || (await getBestUsernameForUser(user.name));
-  if (!organizationId && email) {
+  if (!groupId && email) {
     let domain = "";
     try {
       domain = email.split("@")[1];
       const domainDetails = await getDomainByDomainName(domain);
-      organizationId = domainDetails.organizationId.toString();
+      groupId = domainDetails.groupId.toString();
     } catch (error) {}
   }
   const userId = (
     await createUser({
       ...user,
-      ...(organizationId
+      ...(groupId
         ? {
             memberships: {
               create: {
-                organization: {
-                  connect: { id: parseInt(organizationId) },
+                group: {
+                  connect: { id: parseInt(groupId) },
                 },
                 role,
               },

@@ -62,7 +62,7 @@ export class AuthController {
     const user = req.body;
     const email = req.body.email;
     const invitedByUser = req.body.invitedByUser;
-    delete user.organizationId;
+    delete user.groupId;
     delete user.email;
     delete user.invitedByUser;
     if (user.role === "ADMIN") delete user.role;
@@ -71,7 +71,7 @@ export class AuthController {
       user,
       res.locals,
       email,
-      req.body.organizationId,
+      req.body.groupId,
       req.body.membershipRole
     );
     if (invitedByUser)

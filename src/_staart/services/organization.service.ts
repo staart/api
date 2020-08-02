@@ -26,12 +26,12 @@ import { apiKeyToken, invalidateToken } from "../helpers/jwt";
 import { KeyValue } from "../interfaces/general";
 import { prisma } from "../helpers/prisma";
 import {
-  organizationsCreateInput,
-  organizationsUpdateInput,
+  groupsCreateInput,
+  groupsUpdateInput,
   apiKeysCreateInput,
   apiKeysUpdateInput,
   domainsCreateInput,
-  organizations,
+  groups,
 } from "@prisma/client";
 import {
   getItemFromCache,
@@ -40,14 +40,14 @@ import {
 } from "../helpers/cache";
 
 /**
- * Check if an organization username is available
+ * Check if an group username is available
  */
 export const checkOrganizationUsernameAvailability = async (
   username: string
 ) => {
   return (
     (
-      await prisma.organizations.findMany({
+      await prisma.groups.findMany({
         where: { username },
       })
     ).length === 0
@@ -66,33 +66,31 @@ const getBestUsernameForOrganization = async (name: string) => {
 };
 
 /*
- * Create a new organization for a user
+ * Create a new group for a user
  */
 export const createOrganization = async (
-  organization: organizationsCreateInput,
+  group: groupsCreateInput,
   ownerId: string
 ) => {
-  if (!organization.name) throw new Error(INVALID_INPUT);
-  organization.name = capitalizeFirstAndLastLetter(organization.name);
-  organization.username = await getBestUsernameForOrganization(
-    organization.name
-  );
+  if (!group.name) throw new Error(INVALID_INPUT);
+  group.name = capitalizeFirstAndLastLetter(group.name);
+  group.username = await getBestUsernameForOrganization(group.name);
   const backgroundColor = randomColor({
     luminosity: "dark",
     format: "hex",
   }).replace("#", "");
-  organization.profilePicture = `https://ui-avatars.com/api/?name=${encodeURIComponent(
-    (organization.name || "XX").substring(0, 2).toUpperCase()
+  group.profilePicture = `https://ui-avatars.com/api/?name=${encodeURIComponent(
+    (group.name || "XX").substring(0, 2).toUpperCase()
   )}&background=${backgroundColor}&color=fff`;
   try {
-    const result = await prisma.organizations.create({
-      data: organization,
+    const result = await prisma.groups.create({
+      data: group,
     });
     await prisma.memberships.create({
       data: {
         role: "OWNER",
         user: { connect: { id: parseInt(ownerId) } },
-        organization: { connect: { id: result.id } },
+        group: { connect: { id: result.id } },
       },
     });
     return result;
@@ -103,11 +101,11 @@ export const createOrganization = async (
 };
 
 /*
- * Update an organization
+ * Update an group
  */
 export const updateOrganization = async (
   id: string | number,
-  organization: organizationsUpdateInput
+  group: groupsUpdateInput
 ) => {
   if (typeof id === "number") id = id.toString();
   const originalOrganization = await getOrganizationById(id);
@@ -117,11 +115,11 @@ export const updateOrganization = async (
   );
   if (!originalOrganization) throw new Error(ORGANIZATION_NOT_FOUND);
   if (
-    organization.username &&
+    group.username &&
     originalOrganization.username &&
-    organization.username !== originalOrganization.username
+    group.username !== originalOrganization.username
   ) {
-    const currentOwners = await prisma.organizations.findMany({
+    const currentOwners = await prisma.groups.findMany({
       where: { username: originalOrganization.username },
     });
     if (currentOwners.length) {
@@ -129,8 +127,8 @@ export const updateOrganization = async (
       if (currentOwnerId !== parseInt(id)) throw new Error(USERNAME_EXISTS);
     }
   }
-  return prisma.organizations.update({
-    data: organization,
+  return prisma.groups.update({
+    data: group,
     where: { id: parseInt(id) },
   });
 };
@@ -212,12 +210,11 @@ export const getDomainByDomainName = async (domain: string) => {
 };
 
 export const refreshOrganizationProfilePicture = async (
-  organizationId: string | number
+  groupId: string | number
 ) => {
-  if (typeof organizationId === "number")
-    organizationId = organizationId.toString();
+  if (typeof groupId === "number") groupId = groupId.toString();
   const domains = await prisma.domains.findMany({
-    where: { organizationId: parseInt(organizationId) },
+    where: { groupId: parseInt(groupId) },
     orderBy: { updatedAt: "desc" },
   });
   if (domains.length) {
@@ -229,29 +226,29 @@ export const refreshOrganizationProfilePicture = async (
       domainIcons.data.url &&
       domainIcons.data.url !== "http://unavatar.now.sh/fallback.png"
     )
-      return prisma.organizations.update({
+      return prisma.groups.update({
         data: { profilePicture: domainIcons.data.url },
-        where: { id: parseInt(organizationId) },
+        where: { id: parseInt(groupId) },
       });
   }
-  const organization = await prisma.organizations.findOne({
-    where: { id: parseInt(organizationId) },
+  const group = await prisma.groups.findOne({
+    where: { id: parseInt(groupId) },
     select: { name: true, username: true },
   });
-  if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
+  if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
   const backgroundColor = randomColor({
     luminosity: "dark",
     format: "hex",
   }).replace("#", "");
   const profilePicture = `https://ui-avatars.com/api/?name=${encodeURIComponent(
-    organization.name || organization.username || "XX"
+    group.name || group.username || "XX"
   ).replace(
     /^([a-zA-Z0-9 _-]+)$/gi,
     ""
   )}&background=${backgroundColor}&color=fff`;
-  return prisma.organizations.update({
+  return prisma.groups.update({
     data: { profilePicture },
-    where: { id: parseInt(organizationId) },
+    where: { id: parseInt(groupId) },
   });
 };
 
@@ -263,7 +260,7 @@ export const createDomain = async (domain: domainsCreateInput) => {
     length: 32,
   })}`;
   const response = await prisma.domains.create({ data: domain });
-  await refreshOrganizationProfilePicture(response.organizationId);
+  await refreshOrganizationProfilePicture(response.groupId);
   return response;
 };
 
@@ -279,41 +276,41 @@ export const checkDomainAvailability = async (username: string) => {
 };
 
 /**
- * Get a organization object from its ID
+ * Get a group object from its ID
  * @param id - User ID
  */
 export const getOrganizationById = async (id: number | string) => {
   if (typeof id === "number") id = id.toString();
   const key = `cache_getOrganizationById_${id}`;
   try {
-    return await getItemFromCache<organizations>(key);
+    return await getItemFromCache<groups>(key);
   } catch (error) {
-    const organization = await prisma.organizations.findOne({
+    const group = await prisma.groups.findOne({
       where: { id: parseInt(id) },
     });
-    if (organization) {
-      await setItemInCache(key, organization);
-      return organization;
+    if (group) {
+      await setItemInCache(key, group);
+      return group;
     }
     throw new Error(ORGANIZATION_NOT_FOUND);
   }
 };
 
 /**
- * Get a organization object from its username
+ * Get a group object from its username
  * @param username - User's username
  */
 export const getOrganizationByUsername = async (username: string) => {
   const key = `cache_getOrganizationByUsername_${username}`;
   try {
-    return await getItemFromCache<organizations>(key);
+    return await getItemFromCache<groups>(key);
   } catch (error) {
-    const organization = await prisma.organizations.findOne({
+    const group = await prisma.groups.findOne({
       where: { username },
     });
-    if (organization) {
-      await setItemInCache(key, organization);
-      return organization;
+    if (group) {
+      await setItemInCache(key, group);
+      return group;
     }
     throw new Error(ORGANIZATION_NOT_FOUND);
   }

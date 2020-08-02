@@ -33,7 +33,7 @@ export interface Event {
   date?: Date;
   ipAddress?: string;
   userAgent?: string;
-  organizationId?: number | string;
+  groupId?: number | string;
   userId?: number | string;
   type?: string;
   data?: any;

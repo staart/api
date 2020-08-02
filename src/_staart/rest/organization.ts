@@ -57,8 +57,8 @@ import {
   queryParamsToSelect,
 } from "../helpers/prisma";
 import {
-  organizationsCreateInput,
-  organizationsUpdateInput,
+  groupsCreateInput,
+  groupsUpdateInput,
   membershipsInclude,
   membershipsSelect,
   membershipsOrderByInput,
@@ -91,7 +91,7 @@ import {
   checkDomainAvailability,
   getOrganizationById,
   createOrganization,
-} from "../services/organization.service";
+} from "../services/group.service";
 import { randomString } from "@staart/text";
 import { fireSingleWebhook } from "../helpers/webhooks";
 import { getUserById } from "../services/user.service";
@@ -99,40 +99,40 @@ import { deleteItemFromCache } from "../helpers/cache";
 
 export const getOrganizationForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string
+  groupId: string
 ) => {
-  if (await can(userId, OrgScopes.READ_ORG, "organization", organizationId))
-    return getOrganizationById(organizationId);
+  if (await can(userId, OrgScopes.READ_ORG, "group", groupId))
+    return getOrganizationById(groupId);
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
 export const newOrganizationForUser = async (
   userId: string,
-  organization: organizationsCreateInput,
+  group: groupsCreateInput,
   locals: Locals
 ) => {
-  if (!(organization.name || "").trim()) {
+  if (!(group.name || "").trim()) {
     const user = await getUserById(userId);
-    organization.name = user.name;
+    group.name = user.name;
   }
-  return createOrganization(organization, userId);
+  return createOrganization(group, userId);
 };
 
 export const updateOrganizationForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
-  data: organizationsUpdateInput,
+  groupId: string,
+  data: groupsUpdateInput,
   locals: Locals
 ) => {
-  if (await can(userId, OrgScopes.UPDATE_ORG, "organization", organizationId)) {
-    const result = await prisma.organizations.update({
+  if (await can(userId, OrgScopes.UPDATE_ORG, "group", groupId)) {
+    const result = await prisma.groups.update({
       where: {
-        id: parseInt(organizationId),
+        id: parseInt(groupId),
       },
       data,
     });
-    queueWebhook(organizationId, Webhooks.UPDATE_ORGANIZATION, data);
-    trackEvent({ organizationId, type: Webhooks.UPDATE_ORGANIZATION }, locals);
+    queueWebhook(groupId, Webhooks.UPDATE_ORGANIZATION, data);
+    trackEvent({ groupId, type: Webhooks.UPDATE_ORGANIZATION }, locals);
     return result;
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -140,24 +140,24 @@ export const updateOrganizationForUser = async (
 
 export const deleteOrganizationForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   locals: Locals
 ) => {
-  if (await can(userId, OrgScopes.DELETE_ORG, "organization", organizationId)) {
-    const organizationDetails = await getOrganizationById(organizationId);
+  if (await can(userId, OrgScopes.DELETE_ORG, "group", groupId)) {
+    const groupDetails = await getOrganizationById(groupId);
     await deleteItemFromCache(
-      `cache_getOrganizationById_${organizationDetails.id}`,
-      `cache_getOrganizationByUsername_${organizationDetails.username}`
+      `cache_getOrganizationById_${groupDetails.id}`,
+      `cache_getOrganizationByUsername_${groupDetails.username}`
     );
-    if (organizationDetails.stripeCustomerId)
-      await deleteCustomer(organizationDetails.stripeCustomerId);
-    await prisma.organizations.delete({
+    if (groupDetails.stripeCustomerId)
+      await deleteCustomer(groupDetails.stripeCustomerId);
+    await prisma.groups.delete({
       where: {
-        id: parseInt(organizationId),
+        id: parseInt(groupId),
       },
     });
-    queueWebhook(organizationId, Webhooks.DELETE_ORGANIZATION);
-    trackEvent({ organizationId, type: Webhooks.DELETE_ORGANIZATION }, locals);
+    queueWebhook(groupId, Webhooks.DELETE_ORGANIZATION);
+    trackEvent({ groupId, type: Webhooks.DELETE_ORGANIZATION }, locals);
     return;
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -165,20 +165,12 @@ export const deleteOrganizationForUser = async (
 
 export const getOrganizationBillingForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string
+  groupId: string
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.READ_ORG_BILLING,
-      "organization",
-      organizationId
-    )
-  ) {
-    const organization = await getOrganizationById(organizationId);
-    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (organization.stripeCustomerId)
-      return getCustomer(organization.stripeCustomerId);
+  if (await can(userId, OrgScopes.READ_ORG_BILLING, "group", groupId)) {
+    const group = await getOrganizationById(groupId);
+    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+    if (group.stripeCustomerId) return getCustomer(group.stripeCustomerId);
     throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -186,41 +178,31 @@ export const getOrganizationBillingForUser = async (
 
 export const updateOrganizationBillingForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   data: any,
   locals: Locals
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.UPDATE_ORG_BILLING,
-      "organization",
-      organizationId
-    )
-  ) {
-    const organization = await getOrganizationById(organizationId);
-    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
+  if (await can(userId, OrgScopes.UPDATE_ORG_BILLING, "group", groupId)) {
+    const group = await getOrganizationById(groupId);
+    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
     let result;
-    if (organization.stripeCustomerId) {
-      result = await updateCustomer(organization.stripeCustomerId, data);
+    if (group.stripeCustomerId) {
+      result = await updateCustomer(group.stripeCustomerId, data);
     } else {
       result = await createCustomer(
-        organizationId,
+        groupId,
         data,
-        (organizationId: string, data: organizationsUpdateInput) =>
-          prisma.organizations.update({
+        (groupId: string, data: groupsUpdateInput) =>
+          prisma.groups.update({
             where: {
-              id: parseInt(organizationId),
+              id: parseInt(groupId),
             },
             data,
           })
       );
     }
-    queueWebhook(organizationId, Webhooks.UPDATE_ORGANIZATION_BILLING, data);
-    trackEvent(
-      { organizationId, type: Webhooks.UPDATE_ORGANIZATION_BILLING },
-      locals
-    );
+    queueWebhook(groupId, Webhooks.UPDATE_ORGANIZATION_BILLING, data);
+    trackEvent({ groupId, type: Webhooks.UPDATE_ORGANIZATION_BILLING }, locals);
     return result;
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -228,21 +210,14 @@ export const updateOrganizationBillingForUser = async (
 
 export const getOrganizationInvoicesForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   params: KeyValue
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.READ_ORG_INVOICES,
-      "organization",
-      organizationId
-    )
-  ) {
-    const organization = await getOrganizationById(organizationId);
-    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (organization.stripeCustomerId)
-      return getInvoices(organization.stripeCustomerId, params);
+  if (await can(userId, OrgScopes.READ_ORG_INVOICES, "group", groupId)) {
+    const group = await getOrganizationById(groupId);
+    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+    if (group.stripeCustomerId)
+      return getInvoices(group.stripeCustomerId, params);
     throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -250,21 +225,14 @@ export const getOrganizationInvoicesForUser = async (
 
 export const getOrganizationInvoiceForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   invoiceId: string
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.READ_ORG_INVOICES,
-      "organization",
-      organizationId
-    )
-  ) {
-    const organization = await getOrganizationById(organizationId);
-    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (organization.stripeCustomerId)
-      return getInvoice(organization.stripeCustomerId, invoiceId);
+  if (await can(userId, OrgScopes.READ_ORG_INVOICES, "group", groupId)) {
+    const group = await getOrganizationById(groupId);
+    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+    if (group.stripeCustomerId)
+      return getInvoice(group.stripeCustomerId, invoiceId);
     throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -272,21 +240,14 @@ export const getOrganizationInvoiceForUser = async (
 
 export const getOrganizationSourcesForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   params: KeyValue
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.READ_ORG_SOURCES,
-      "organization",
-      organizationId
-    )
-  ) {
-    const organization = await getOrganizationById(organizationId);
-    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (organization.stripeCustomerId)
-      return getSources(organization.stripeCustomerId, params);
+  if (await can(userId, OrgScopes.READ_ORG_SOURCES, "group", groupId)) {
+    const group = await getOrganizationById(groupId);
+    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+    if (group.stripeCustomerId)
+      return getSources(group.stripeCustomerId, params);
     throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -294,21 +255,14 @@ export const getOrganizationSourcesForUser = async (
 
 export const getOrganizationSourceForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   sourceId: string
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.READ_ORG_SOURCES,
-      "organization",
-      organizationId
-    )
-  ) {
-    const organization = await getOrganizationById(organizationId);
-    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (organization.stripeCustomerId)
-      return getSource(organization.stripeCustomerId, sourceId);
+  if (await can(userId, OrgScopes.READ_ORG_SOURCES, "group", groupId)) {
+    const group = await getOrganizationById(groupId);
+    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+    if (group.stripeCustomerId)
+      return getSource(group.stripeCustomerId, sourceId);
     throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -316,21 +270,14 @@ export const getOrganizationSourceForUser = async (
 
 export const getOrganizationSubscriptionsForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   params: KeyValue
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.READ_ORG_SUBSCRIPTIONS,
-      "organization",
-      organizationId
-    )
-  ) {
-    const organization = await getOrganizationById(organizationId);
-    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (organization.stripeCustomerId)
-      return getSubscriptions(organization.stripeCustomerId, params);
+  if (await can(userId, OrgScopes.READ_ORG_SUBSCRIPTIONS, "group", groupId)) {
+    const group = await getOrganizationById(groupId);
+    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+    if (group.stripeCustomerId)
+      return getSubscriptions(group.stripeCustomerId, params);
     throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -338,21 +285,14 @@ export const getOrganizationSubscriptionsForUser = async (
 
 export const getOrganizationSubscriptionForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   subscriptionId: string
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.READ_ORG_SUBSCRIPTIONS,
-      "organization",
-      organizationId
-    )
-  ) {
-    const organization = await getOrganizationById(organizationId);
-    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (organization.stripeCustomerId)
-      return getSubscription(organization.stripeCustomerId, subscriptionId);
+  if (await can(userId, OrgScopes.READ_ORG_SUBSCRIPTIONS, "group", groupId)) {
+    const group = await getOrganizationById(groupId);
+    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+    if (group.stripeCustomerId)
+      return getSubscription(group.stripeCustomerId, subscriptionId);
     throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -360,34 +300,23 @@ export const getOrganizationSubscriptionForUser = async (
 
 export const updateOrganizationSubscriptionForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   subscriptionId: string,
   data: KeyValue,
   locals?: Locals
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.UPDATE_ORG_SUBSCRIPTIONS,
-      "organization",
-      organizationId
-    )
-  ) {
-    const organization = await getOrganizationById(organizationId);
-    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (organization.stripeCustomerId) {
+  if (await can(userId, OrgScopes.UPDATE_ORG_SUBSCRIPTIONS, "group", groupId)) {
+    const group = await getOrganizationById(groupId);
+    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+    if (group.stripeCustomerId) {
       const result = await updateSubscription(
-        organization.stripeCustomerId,
+        group.stripeCustomerId,
         subscriptionId,
         data
       );
-      queueWebhook(
-        organizationId,
-        Webhooks.UPDATE_ORGANIZATION_SUBSCRIPTION,
-        data
-      );
+      queueWebhook(groupId, Webhooks.UPDATE_ORGANIZATION_SUBSCRIPTION, data);
       trackEvent(
-        { organizationId, type: Webhooks.UPDATE_ORGANIZATION_SUBSCRIPTION },
+        { groupId, type: Webhooks.UPDATE_ORGANIZATION_SUBSCRIPTION },
         locals
       );
       return result;
@@ -399,32 +328,18 @@ export const updateOrganizationSubscriptionForUser = async (
 
 export const createOrganizationSubscriptionForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   params: { plan: string; [index: string]: any },
   locals?: Locals
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.CREATE_ORG_SUBSCRIPTIONS,
-      "organization",
-      organizationId
-    )
-  ) {
-    const organization = await getOrganizationById(organizationId);
-    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (organization.stripeCustomerId) {
-      const result = await createSubscription(
-        organization.stripeCustomerId,
-        params
-      );
-      queueWebhook(
-        organizationId,
-        Webhooks.CREATE_ORGANIZATION_SUBSCRIPTION,
-        params
-      );
+  if (await can(userId, OrgScopes.CREATE_ORG_SUBSCRIPTIONS, "group", groupId)) {
+    const group = await getOrganizationById(groupId);
+    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+    if (group.stripeCustomerId) {
+      const result = await createSubscription(group.stripeCustomerId, params);
+      queueWebhook(groupId, Webhooks.CREATE_ORGANIZATION_SUBSCRIPTION, params);
       trackEvent(
-        { organizationId, type: Webhooks.CREATE_ORGANIZATION_SUBSCRIPTION },
+        { groupId, type: Webhooks.CREATE_ORGANIZATION_SUBSCRIPTION },
         locals
       );
       return result;
@@ -436,43 +351,27 @@ export const createOrganizationSubscriptionForUser = async (
 
 export const getOrganizationPricingPlansForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string
+  groupId: string
 ) => {
-  if (
-    await can(userId, OrgScopes.READ_ORG_PLANS, "organization", organizationId)
-  )
+  if (await can(userId, OrgScopes.READ_ORG_PLANS, "group", groupId))
     return getProductPricing();
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
 export const deleteOrganizationSourceForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   sourceId: string,
   locals?: Locals
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.DELETE_ORG_SOURCES,
-      "organization",
-      organizationId
-    )
-  ) {
-    const organization = await getOrganizationById(organizationId);
-    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (organization.stripeCustomerId) {
-      const result = await deleteSource(
-        organization.stripeCustomerId,
-        sourceId
-      );
-      queueWebhook(
-        organizationId,
-        Webhooks.DELETE_ORGANIZATION_SOURCE,
-        sourceId
-      );
+  if (await can(userId, OrgScopes.DELETE_ORG_SOURCES, "group", groupId)) {
+    const group = await getOrganizationById(groupId);
+    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+    if (group.stripeCustomerId) {
+      const result = await deleteSource(group.stripeCustomerId, sourceId);
+      queueWebhook(groupId, Webhooks.DELETE_ORGANIZATION_SOURCE, sourceId);
       trackEvent(
-        { organizationId, type: Webhooks.DELETE_ORGANIZATION_SOURCE },
+        { groupId, type: Webhooks.DELETE_ORGANIZATION_SOURCE },
         locals
       );
       return result;
@@ -484,30 +383,19 @@ export const deleteOrganizationSourceForUser = async (
 
 export const updateOrganizationSourceForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   sourceId: string,
   data: any,
   locals?: Locals
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.UPDATE_ORG_SOURCES,
-      "organization",
-      organizationId
-    )
-  ) {
-    const organization = await getOrganizationById(organizationId);
-    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (organization.stripeCustomerId) {
-      const result = await updateSource(
-        organization.stripeCustomerId,
-        sourceId,
-        data
-      );
-      queueWebhook(organizationId, Webhooks.UPDATE_ORGANIZATION_SOURCE, data);
+  if (await can(userId, OrgScopes.UPDATE_ORG_SOURCES, "group", groupId)) {
+    const group = await getOrganizationById(groupId);
+    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+    if (group.stripeCustomerId) {
+      const result = await updateSource(group.stripeCustomerId, sourceId, data);
+      queueWebhook(groupId, Webhooks.UPDATE_ORGANIZATION_SOURCE, data);
       trackEvent(
-        { organizationId, type: Webhooks.UPDATE_ORGANIZATION_SOURCE },
+        { groupId, type: Webhooks.UPDATE_ORGANIZATION_SOURCE },
         locals
       );
       return result;
@@ -519,25 +407,18 @@ export const updateOrganizationSourceForUser = async (
 
 export const createOrganizationSourceForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   card: any,
   locals?: Locals
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.CREATE_ORG_SOURCES,
-      "organization",
-      organizationId
-    )
-  ) {
-    const organization = await getOrganizationById(organizationId);
-    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (organization.stripeCustomerId) {
-      const result = await createSource(organization.stripeCustomerId, card);
-      queueWebhook(organizationId, Webhooks.CREATE_ORGANIZATION_SOURCE, card);
+  if (await can(userId, OrgScopes.CREATE_ORG_SOURCES, "group", groupId)) {
+    const group = await getOrganizationById(groupId);
+    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+    if (group.stripeCustomerId) {
+      const result = await createSource(group.stripeCustomerId, card);
+      queueWebhook(groupId, Webhooks.CREATE_ORGANIZATION_SOURCE, card);
       trackEvent(
-        { organizationId, type: Webhooks.CREATE_ORGANIZATION_SOURCE },
+        { groupId, type: Webhooks.CREATE_ORGANIZATION_SOURCE },
         locals
       );
       return result;
@@ -549,19 +430,12 @@ export const createOrganizationSourceForUser = async (
 
 export const getAllOrganizationDataForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string
+  groupId: string
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.READ_ORG_TRANSACTIONS,
-      "organization",
-      organizationId
-    )
-  ) {
-    const organization = await prisma.organizations.findOne({
+  if (await can(userId, OrgScopes.READ_ORG_TRANSACTIONS, "group", groupId)) {
+    const group = await prisma.groups.findOne({
       where: {
-        id: parseInt(organizationId),
+        id: parseInt(groupId),
       },
       include: {
         apiKeys: true,
@@ -570,18 +444,15 @@ export const getAllOrganizationDataForUser = async (
         webhooks: true,
       },
     });
-    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
+    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
     return {
-      ...organization,
-      ...(organization.stripeCustomerId
+      ...group,
+      ...(group.stripeCustomerId
         ? {
-            billing: await getCustomer(organization.stripeCustomerId),
-            subscriptions: await getSubscriptions(
-              organization.stripeCustomerId,
-              {}
-            ),
-            invoices: await getInvoices(organization.stripeCustomerId, {}),
-            sources: await getSources(organization.stripeCustomerId, {}),
+            billing: await getCustomer(group.stripeCustomerId),
+            subscriptions: await getSubscriptions(group.stripeCustomerId, {}),
+            invoices: await getInvoices(group.stripeCustomerId, {}),
+            sources: await getSources(group.stripeCustomerId, {}),
           }
         : {}),
     };
@@ -591,20 +462,13 @@ export const getAllOrganizationDataForUser = async (
 
 export const getOrganizationMembershipsForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   queryParams: any
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.READ_ORG_MEMBERSHIPS,
-      "organization",
-      organizationId
-    )
-  )
+  if (await can(userId, OrgScopes.READ_ORG_MEMBERSHIPS, "group", groupId))
     return paginatedResult(
       await prisma.memberships.findMany({
-        where: { organizationId: parseInt(organizationId) },
+        where: { groupId: parseInt(groupId) },
         ...queryParamsToSelect(queryParams),
       }),
       { first: queryParams.first, last: queryParams.last }
@@ -614,17 +478,10 @@ export const getOrganizationMembershipsForUser = async (
 
 export const getOrganizationMembershipForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   membershipId: string
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.READ_ORG_MEMBERSHIPS,
-      "organization",
-      organizationId
-    )
-  )
+  if (await can(userId, OrgScopes.READ_ORG_MEMBERSHIPS, "group", groupId))
     return prisma.memberships.findOne({
       where: { id: parseInt(membershipId) },
       include: { user: true },
@@ -634,18 +491,11 @@ export const getOrganizationMembershipForUser = async (
 
 export const updateOrganizationMembershipForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   membershipId: string,
   data: membershipsUpdateInput
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.UPDATE_ORG_MEMBERSHIPS,
-      "organization",
-      organizationId
-    )
-  ) {
+  if (await can(userId, OrgScopes.UPDATE_ORG_MEMBERSHIPS, "group", groupId)) {
     if (data.role) {
       const currentMembership = await prisma.memberships.findOne({
         where: { id: parseInt(membershipId) },
@@ -653,7 +503,7 @@ export const updateOrganizationMembershipForUser = async (
       if (!currentMembership) throw new Error(MEMBERSHIP_NOT_FOUND);
       if (currentMembership.role === "OWNER" && data.role !== "OWNER") {
         const members = await prisma.memberships.findMany({
-          where: { organizationId: parseInt(organizationId), role: "OWNER" },
+          where: { groupId: parseInt(groupId), role: "OWNER" },
         });
         if (members.length === 1) throw new Error(CANNOT_DELETE_SOLE_MEMBER);
       }
@@ -667,29 +517,22 @@ export const updateOrganizationMembershipForUser = async (
 };
 
 /**
- * Delete an organization membership for user
- * If an organization has only one member, the user,
- * Delete the entire organization, not just the membership
+ * Delete an group membership for user
+ * If an group has only one member, the user,
+ * Delete the entire group, not just the membership
  */
 export const deleteOrganizationMembershipForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   membershipId: string,
   locals: Locals
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.DELETE_ORG_MEMBERSHIPS,
-      "organization",
-      organizationId
-    )
-  ) {
+  if (await can(userId, OrgScopes.DELETE_ORG_MEMBERSHIPS, "group", groupId)) {
     const members = await prisma.memberships.findMany({
-      where: { organizationId: parseInt(organizationId) },
+      where: { groupId: parseInt(groupId) },
     });
     if (members.length === 1)
-      return deleteOrganizationForUser(userId, organizationId, locals);
+      return deleteOrganizationForUser(userId, groupId, locals);
     return prisma.memberships.delete({ where: { id: parseInt(membershipId) } });
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -697,28 +540,20 @@ export const deleteOrganizationMembershipForUser = async (
 
 export const inviteMemberToOrganization = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   newMemberName: string,
   newMemberEmail: string,
   role: MembershipRole,
   locals: Locals
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.CREATE_ORG_MEMBERSHIPS,
-      "organization",
-      organizationId
-    )
-  ) {
-    const organization = await getOrganizationById(organizationId);
-    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (organization.onlyAllowDomain) {
+  if (await can(userId, OrgScopes.CREATE_ORG_MEMBERSHIPS, "group", groupId)) {
+    const group = await getOrganizationById(groupId);
+    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+    if (group.onlyAllowDomain) {
       const emailDomain = newMemberEmail.split("@")[1];
       try {
         const domainDetails = await getDomainByDomainName(emailDomain);
-        if (domainDetails.organizationId !== parseInt(organizationId))
-          throw new Error();
+        if (domainDetails.groupId !== parseInt(groupId)) throw new Error();
       } catch (error) {
         throw new Error(CANNOT_INVITE_DOMAIN);
       }
@@ -742,7 +577,7 @@ export const inviteMemberToOrganization = async (
           await prisma.memberships.findMany({
             where: {
               userId: newUser.id,
-              organizationId: parseInt(organizationId),
+              groupId: parseInt(groupId),
             },
           })
         ).length !== 0;
@@ -751,7 +586,7 @@ export const inviteMemberToOrganization = async (
       await prisma.memberships.create({
         data: {
           user: { connect: { id: newUser.id } },
-          organization: { connect: { id: parseInt(organizationId) } },
+          group: { connect: { id: parseInt(groupId) } },
           role,
         },
       });
@@ -760,7 +595,7 @@ export const inviteMemberToOrganization = async (
         { name: newMemberName },
         locals,
         newMemberEmail,
-        organizationId,
+        groupId,
         role
       );
       createdUserId = newAccount.userId;
@@ -773,7 +608,7 @@ export const inviteMemberToOrganization = async (
       const userDetails = await getUserById(createdUserId);
       mail(newMemberEmail, Templates.INVITED_TO_TEAM, {
         ...userDetails,
-        team: organization.name,
+        team: group.name,
         inviter,
       })
         .then(() => {})
@@ -786,20 +621,13 @@ export const inviteMemberToOrganization = async (
 
 export const getOrganizationApiKeysForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   queryParams: any
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.READ_ORG_API_KEYS,
-      "organization",
-      organizationId
-    )
-  )
+  if (await can(userId, OrgScopes.READ_ORG_API_KEYS, "group", groupId))
     return paginatedResult(
       await prisma.apiKeys.findMany({
-        where: { organizationId: parseInt(organizationId) },
+        where: { groupId: parseInt(groupId) },
         ...queryParamsToSelect(queryParams),
       }),
       { first: queryParams.first, last: queryParams.last }
@@ -809,63 +637,42 @@ export const getOrganizationApiKeysForUser = async (
 
 export const getOrganizationApiKeyForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   apiKeyId: string
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.READ_ORG_API_KEYS,
-      "organization",
-      organizationId
-    )
-  )
+  if (await can(userId, OrgScopes.READ_ORG_API_KEYS, "group", groupId))
     return prisma.apiKeys.findOne({ where: { id: parseInt(apiKeyId) } });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
 export const getOrganizationApiKeyLogsForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   apiKeyId: string,
   query: {
     range?: string;
     from?: string;
   }
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.READ_ORG_API_KEY_LOGS,
-      "organization",
-      organizationId
-    )
-  )
+  if (await can(userId, OrgScopes.READ_ORG_API_KEY_LOGS, "group", groupId))
     return getApiKeyLogs(apiKeyId, query);
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
 export const updateApiKeyForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   apiKeyId: string,
   data: apiKeysUpdateInput,
   locals: Locals
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.UPDATE_ORG_API_KEYS,
-      "organization",
-      organizationId
-    )
-  ) {
+  if (await can(userId, OrgScopes.UPDATE_ORG_API_KEYS, "group", groupId)) {
     const result = await prisma.apiKeys.update({
       where: { id: parseInt(apiKeyId) },
       data,
     });
-    queueWebhook(organizationId, Webhooks.UPDATE_API_KEY, data);
-    trackEvent({ organizationId, type: Webhooks.UPDATE_API_KEY }, locals);
+    queueWebhook(groupId, Webhooks.UPDATE_API_KEY, data);
+    trackEvent({ groupId, type: Webhooks.UPDATE_API_KEY }, locals);
     return result;
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -873,32 +680,25 @@ export const updateApiKeyForUser = async (
 
 export const createApiKeyForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   apiKey: apiKeysCreateInput,
   locals: Locals
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.CREATE_ORG_API_KEYS,
-      "organization",
-      organizationId
-    )
-  ) {
+  if (await can(userId, OrgScopes.CREATE_ORG_API_KEYS, "group", groupId)) {
     apiKey.jwtApiKey = randomString({ length: 20 });
     apiKey.expiresAt = apiKey.expiresAt || new Date(TOKEN_EXPIRY_API_KEY_MAX);
     const result = await prisma.apiKeys.create({
       data: {
         ...apiKey,
-        organization: {
+        group: {
           connect: {
-            id: parseInt(organizationId),
+            id: parseInt(groupId),
           },
         },
       },
     });
-    queueWebhook(organizationId, Webhooks.CREATE_API_KEY, apiKey);
-    trackEvent({ organizationId, type: Webhooks.CREATE_API_KEY }, locals);
+    queueWebhook(groupId, Webhooks.CREATE_API_KEY, apiKey);
+    trackEvent({ groupId, type: Webhooks.CREATE_API_KEY }, locals);
     return result;
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -906,23 +706,16 @@ export const createApiKeyForUser = async (
 
 export const deleteApiKeyForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   apiKeyId: string,
   locals: Locals
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.DELETE_ORG_API_KEYS,
-      "organization",
-      organizationId
-    )
-  ) {
+  if (await can(userId, OrgScopes.DELETE_ORG_API_KEYS, "group", groupId)) {
     const result = await prisma.apiKeys.delete({
       where: { id: parseInt(apiKeyId) },
     });
-    queueWebhook(organizationId, Webhooks.DELETE_API_KEY, apiKeyId);
-    trackEvent({ organizationId, type: Webhooks.DELETE_API_KEY }, locals);
+    queueWebhook(groupId, Webhooks.DELETE_API_KEY, apiKeyId);
+    trackEvent({ groupId, type: Webhooks.DELETE_API_KEY }, locals);
     return result;
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -930,20 +723,13 @@ export const deleteApiKeyForUser = async (
 
 export const getOrganizationDomainsForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   queryParams: any
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.READ_ORG_DOMAINS,
-      "organization",
-      organizationId
-    )
-  )
+  if (await can(userId, OrgScopes.READ_ORG_DOMAINS, "group", groupId))
     return paginatedResult(
       await prisma.domains.findMany({
-        where: { organizationId: parseInt(organizationId) },
+        where: { groupId: parseInt(groupId) },
         ...queryParamsToSelect(queryParams),
       }),
       { first: queryParams.first, last: queryParams.last }
@@ -953,42 +739,28 @@ export const getOrganizationDomainsForUser = async (
 
 export const getOrganizationDomainForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   domainId: string
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.READ_ORG_DOMAINS,
-      "organization",
-      organizationId
-    )
-  )
+  if (await can(userId, OrgScopes.READ_ORG_DOMAINS, "group", groupId))
     return prisma.domains.findOne({ where: { id: parseInt(domainId) } });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
 export const updateDomainForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   domainId: string,
   data: domainsUpdateInput,
   locals: Locals
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.UPDATE_ORG_DOMAINS,
-      "organization",
-      organizationId
-    )
-  ) {
+  if (await can(userId, OrgScopes.UPDATE_ORG_DOMAINS, "group", groupId)) {
     const result = await prisma.domains.update({
       where: { id: parseInt(domainId) },
       data,
     });
-    queueWebhook(organizationId, Webhooks.UPDATE_DOMAIN, data);
-    trackEvent({ organizationId, type: Webhooks.UPDATE_DOMAIN }, locals);
+    queueWebhook(groupId, Webhooks.UPDATE_DOMAIN, data);
+    trackEvent({ groupId, type: Webhooks.UPDATE_DOMAIN }, locals);
     return result;
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -996,33 +768,26 @@ export const updateDomainForUser = async (
 
 export const createDomainForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   domain: domainsCreateInput,
   locals: Locals
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.CREATE_ORG_DOMAINS,
-      "organization",
-      organizationId
-    )
-  ) {
+  if (await can(userId, OrgScopes.CREATE_ORG_DOMAINS, "group", groupId)) {
     await checkDomainAvailability(domain.domain);
     const result = await prisma.domains.create({
       data: {
         ...domain,
         verificationCode: await randomString({ length: 25 }),
         isVerified: false,
-        organization: {
+        group: {
           connect: {
-            id: parseInt(organizationId),
+            id: parseInt(groupId),
           },
         },
       },
     });
-    queueWebhook(organizationId, Webhooks.CREATE_DOMAIN, domain);
-    trackEvent({ organizationId, type: Webhooks.CREATE_DOMAIN }, locals);
+    queueWebhook(groupId, Webhooks.CREATE_DOMAIN, domain);
+    trackEvent({ groupId, type: Webhooks.CREATE_DOMAIN }, locals);
     return result;
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -1030,23 +795,16 @@ export const createDomainForUser = async (
 
 export const deleteDomainForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   domainId: string,
   locals: Locals
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.DELETE_ORG_DOMAINS,
-      "organization",
-      organizationId
-    )
-  ) {
+  if (await can(userId, OrgScopes.DELETE_ORG_DOMAINS, "group", groupId)) {
     const result = await prisma.domains.delete({
       where: { id: parseInt(domainId) },
     });
-    queueWebhook(organizationId, Webhooks.DELETE_DOMAIN, domainId);
-    trackEvent({ organizationId, type: Webhooks.DELETE_DOMAIN }, locals);
+    queueWebhook(groupId, Webhooks.DELETE_DOMAIN, domainId);
+    trackEvent({ groupId, type: Webhooks.DELETE_DOMAIN }, locals);
     return result;
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -1054,19 +812,12 @@ export const deleteDomainForUser = async (
 
 export const verifyDomainForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   domainId: string,
   method: "dns" | "file",
   locals: Locals
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.VERIFY_ORG_DOMAINS,
-      "organization",
-      organizationId
-    )
-  ) {
+  if (await can(userId, OrgScopes.VERIFY_ORG_DOMAINS, "group", groupId)) {
     const domain = await prisma.domains.findOne({
       where: { id: parseInt(domainId) },
     });
@@ -1085,11 +836,11 @@ export const verifyDomainForUser = async (
             where: { id: parseInt(domainId) },
             data: { isVerified: true },
           });
-          queueWebhook(organizationId, Webhooks.VERIFY_DOMAIN, {
+          queueWebhook(groupId, Webhooks.VERIFY_DOMAIN, {
             domainId,
             method,
           });
-          trackEvent({ organizationId, type: Webhooks.VERIFY_DOMAIN }, locals);
+          trackEvent({ groupId, type: Webhooks.VERIFY_DOMAIN }, locals);
           return result;
         }
       } catch (error) {
@@ -1102,11 +853,11 @@ export const verifyDomainForUser = async (
           where: { id: parseInt(domainId) },
           data: { isVerified: true },
         });
-        queueWebhook(organizationId, Webhooks.VERIFY_DOMAIN, {
+        queueWebhook(groupId, Webhooks.VERIFY_DOMAIN, {
           domainId,
           method,
         });
-        trackEvent({ organizationId, type: Webhooks.VERIFY_DOMAIN }, locals);
+        trackEvent({ groupId, type: Webhooks.VERIFY_DOMAIN }, locals);
         return result;
       } else {
         throw new Error(DOMAIN_MISSING_DNS);
@@ -1119,20 +870,13 @@ export const verifyDomainForUser = async (
 
 export const getOrganizationWebhooksForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   queryParams: any
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.READ_ORG_WEBHOOKS,
-      "organization",
-      organizationId
-    )
-  )
+  if (await can(userId, OrgScopes.READ_ORG_WEBHOOKS, "group", groupId))
     return paginatedResult(
       await prisma.webhooks.findMany({
-        where: { organizationId: parseInt(organizationId) },
+        where: { groupId: parseInt(groupId) },
         ...queryParamsToSelect(queryParams),
       }),
       { first: queryParams.first, last: queryParams.last }
@@ -1142,42 +886,28 @@ export const getOrganizationWebhooksForUser = async (
 
 export const getOrganizationWebhookForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   webhookId: string
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.READ_ORG_WEBHOOKS,
-      "organization",
-      organizationId
-    )
-  )
+  if (await can(userId, OrgScopes.READ_ORG_WEBHOOKS, "group", groupId))
     return prisma.webhooks.findOne({ where: { id: parseInt(webhookId) } });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
 export const updateWebhookForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   webhookId: string,
   data: webhooksUpdateInput,
   locals: Locals
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.UPDATE_ORG_WEBHOOKS,
-      "organization",
-      organizationId
-    )
-  ) {
+  if (await can(userId, OrgScopes.UPDATE_ORG_WEBHOOKS, "group", groupId)) {
     const result = await prisma.webhooks.update({
       where: { id: parseInt(webhookId) },
       data,
     });
-    queueWebhook(organizationId, Webhooks.UPDATE_WEBHOOK, data);
-    trackEvent({ organizationId, type: Webhooks.UPDATE_WEBHOOK }, locals);
+    queueWebhook(groupId, Webhooks.UPDATE_WEBHOOK, data);
+    trackEvent({ groupId, type: Webhooks.UPDATE_WEBHOOK }, locals);
     return result;
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -1185,24 +915,17 @@ export const updateWebhookForUser = async (
 
 export const createWebhookForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   webhook: webhooksCreateInput,
   locals: Locals
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.DELETE_ORG_WEBHOOKS,
-      "organization",
-      organizationId
-    )
-  ) {
+  if (await can(userId, OrgScopes.DELETE_ORG_WEBHOOKS, "group", groupId)) {
     const result = await prisma.webhooks.create({
       data: {
         ...webhook,
-        organization: {
+        group: {
           connect: {
-            id: parseInt(organizationId),
+            id: parseInt(groupId),
           },
         },
       },
@@ -1210,8 +933,8 @@ export const createWebhookForUser = async (
     fireSingleWebhook(result, Webhooks.TEST_WEBHOOK)
       .then(() => {})
       .catch(() => {});
-    queueWebhook(organizationId, Webhooks.CREATE_WEBHOOK, webhook);
-    trackEvent({ organizationId, type: Webhooks.CREATE_WEBHOOK }, locals);
+    queueWebhook(groupId, Webhooks.CREATE_WEBHOOK, webhook);
+    trackEvent({ groupId, type: Webhooks.CREATE_WEBHOOK }, locals);
     return result;
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -1219,23 +942,16 @@ export const createWebhookForUser = async (
 
 export const deleteWebhookForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   webhookId: string,
   locals: Locals
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.CREATE_ORG_WEBHOOKS,
-      "organization",
-      organizationId
-    )
-  ) {
+  if (await can(userId, OrgScopes.CREATE_ORG_WEBHOOKS, "group", groupId)) {
     const result = prisma.webhooks.delete({
       where: { id: parseInt(webhookId) },
     });
-    queueWebhook(organizationId, Webhooks.DELETE_WEBHOOK, webhookId);
-    trackEvent({ organizationId, type: Webhooks.DELETE_WEBHOOK }, locals);
+    queueWebhook(groupId, Webhooks.DELETE_WEBHOOK, webhookId);
+    trackEvent({ groupId, type: Webhooks.DELETE_WEBHOOK }, locals);
     return result;
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -1243,17 +959,10 @@ export const deleteWebhookForUser = async (
 
 export const applyCouponToOrganizationForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   coupon: string
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.CREATE_ORG_TRANSACTIONS,
-      "organization",
-      organizationId
-    )
-  ) {
+  if (await can(userId, OrgScopes.CREATE_ORG_TRANSACTIONS, "group", groupId)) {
     let amount: number | undefined = undefined;
     let currency: string | undefined = undefined;
     let description: string | undefined = undefined;
@@ -1270,11 +979,11 @@ export const applyCouponToOrganizationForUser = async (
     } catch (error) {
       throw new Error(INVALID_INPUT);
     }
-    const organization = await getOrganizationById(organizationId);
-    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (amount && currency && organization.stripeCustomerId) {
+    const group = await getOrganizationById(groupId);
+    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+    if (amount && currency && group.stripeCustomerId) {
       const result = await createCustomerBalanceTransaction(
-        organization.stripeCustomerId,
+        group.stripeCustomerId,
         {
           amount,
           currency,
@@ -1291,24 +1000,14 @@ export const applyCouponToOrganizationForUser = async (
 
 export const getOrganizationTransactionsForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   params: KeyValue
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.READ_ORG_TRANSACTIONS,
-      "organization",
-      organizationId
-    )
-  ) {
-    const organization = await getOrganizationById(organizationId);
-    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (organization.stripeCustomerId)
-      return getCustomBalanceTransactions(
-        organization.stripeCustomerId,
-        params
-      );
+  if (await can(userId, OrgScopes.READ_ORG_TRANSACTIONS, "group", groupId)) {
+    const group = await getOrganizationById(groupId);
+    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+    if (group.stripeCustomerId)
+      return getCustomBalanceTransactions(group.stripeCustomerId, params);
     throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -1316,24 +1015,14 @@ export const getOrganizationTransactionsForUser = async (
 
 export const getOrganizationTransactionForUser = async (
   userId: string | ApiKeyResponse,
-  organizationId: string,
+  groupId: string,
   transactionId: string
 ) => {
-  if (
-    await can(
-      userId,
-      OrgScopes.READ_ORG_TRANSACTIONS,
-      "organization",
-      organizationId
-    )
-  ) {
-    const organization = await getOrganizationById(organizationId);
-    if (!organization) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (organization.stripeCustomerId)
-      return getCustomBalanceTransaction(
-        organization.stripeCustomerId,
-        transactionId
-      );
+  if (await can(userId, OrgScopes.READ_ORG_TRANSACTIONS, "group", groupId)) {
+    const group = await getOrganizationById(groupId);
+    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+    if (group.stripeCustomerId)
+      return getCustomBalanceTransaction(group.stripeCustomerId, transactionId);
     throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);

@@ -21,7 +21,7 @@ import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../../_staart/helpers/middleware";
 import {
   localsToTokenOrKey,
-  organizationUsernameToId,
+  groupUsernameToId,
 } from "../../../_staart/helpers/utils";
 import {
   createDomainForUser,
@@ -30,13 +30,13 @@ import {
   getOrganizationDomainsForUser,
   updateDomainForUser,
   verifyDomainForUser,
-} from "../../../_staart/rest/organization";
+} from "../../../_staart/rest/group";
 
 @ClassMiddleware(authHandler)
 export class OrganizationDomainsController {
   @Get()
   async getUserDomains(req: Request, res: Response) {
-    const id = await organizationUsernameToId(req.params.id);
+    const id = await groupUsernameToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
     return getOrganizationDomainsForUser(
       localsToTokenOrKey(res),
@@ -55,7 +55,7 @@ export class OrganizationDomainsController {
     )
   )
   async putUserDomains(req: Request, res: Response) {
-    const id = await organizationUsernameToId(req.params.id);
+    const id = await groupUsernameToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
     const added = await createDomainForUser(
       localsToTokenOrKey(res),
@@ -68,7 +68,7 @@ export class OrganizationDomainsController {
 
   @Get(":domainId")
   async getUserDomain(req: Request, res: Response) {
-    const id = await organizationUsernameToId(req.params.id);
+    const id = await groupUsernameToId(req.params.id);
     const domainId = req.params.domainId;
     joiValidate(
       {
@@ -90,7 +90,7 @@ export class OrganizationDomainsController {
     )
   )
   async patchUserDomain(req: Request, res: Response) {
-    const id = await organizationUsernameToId(req.params.id);
+    const id = await groupUsernameToId(req.params.id);
     const domainId = req.params.domainId;
     joiValidate(
       {
@@ -111,7 +111,7 @@ export class OrganizationDomainsController {
 
   @Delete(":domainId")
   async deleteUserDomain(req: Request, res: Response) {
-    const id = await organizationUsernameToId(req.params.id);
+    const id = await groupUsernameToId(req.params.id);
     const domainId = req.params.domainId;
     joiValidate(
       {
@@ -131,7 +131,7 @@ export class OrganizationDomainsController {
 
   @Post(":domainId/verify")
   async verifyOrganizationDomain(req: Request, res: Response) {
-    const id = await organizationUsernameToId(req.params.id);
+    const id = await groupUsernameToId(req.params.id);
     const domainId = req.params.domainId;
     const method = req.body.method || req.query.method;
     joiValidate(

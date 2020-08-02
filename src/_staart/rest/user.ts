@@ -27,7 +27,7 @@ import {
 } from "../services/user.service";
 import { can } from "../helpers/authorization";
 import { trackEvent } from "../helpers/tracking";
-import { deleteOrganizationForUser } from "./organization";
+import { deleteOrganizationForUser } from "./group";
 import { EventType, UserScopes, Templates } from "../interfaces/enum";
 import { Locals } from "../interfaces/general";
 import { mail } from "../helpers/mail";
@@ -151,7 +151,7 @@ export const deleteUserForUser = async (
   locals: Locals
 ) => {
   if (await can(tokenUserId, UserScopes.DELETE_USER, "user", updateUserId)) {
-    const organizationsToDelete = await prisma.organizations.findMany({
+    const groupsToDelete = await prisma.groups.findMany({
       select: {
         stripeCustomerId: true,
       },
@@ -161,11 +161,10 @@ export const deleteUserForUser = async (
         },
       },
     });
-    for await (const organization of organizationsToDelete) {
-      if (organization.stripeCustomerId)
-        await deleteCustomer(organization.stripeCustomerId);
+    for await (const group of groupsToDelete) {
+      if (group.stripeCustomerId) await deleteCustomer(group.stripeCustomerId);
     }
-    await prisma.organizations.deleteMany({
+    await prisma.groups.deleteMany({
       where: {
         memberships: {
           every: { userId: parseInt(updateUserId) },
@@ -212,7 +211,7 @@ export const getMembershipsForUser = async (
       await prisma.memberships.findMany({
         ...queryParamsToSelect(queryParams),
         where: { userId: parseInt(dataUserId) },
-        include: { organization: true },
+        include: { group: true },
       }),
       { first: queryParams.first, last: queryParams.last }
     );
@@ -647,7 +646,7 @@ export const getMembershipDetailsForUser = async (
   )
     return prisma.memberships.findOne({
       where: { id: parseInt(membershipId) },
-      include: { user: true, organization: true },
+      include: { user: true, group: true },
     });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -669,17 +668,17 @@ export const deleteMembershipForUser = async (
       membership
     )
   ) {
-    const organizationMembers = await prisma.memberships.findMany({
-      where: { organizationId: membership.organizationId },
+    const groupMembers = await prisma.memberships.findMany({
+      where: { groupId: membership.groupId },
     });
-    if (organizationMembers.length === 1)
+    if (groupMembers.length === 1)
       return deleteOrganizationForUser(
         tokenUserId,
-        String(membership.organizationId),
+        String(membership.groupId),
         locals
       );
     if (membership.role === "OWNER") {
-      const currentMembers = organizationMembers.filter(
+      const currentMembers = groupMembers.filter(
         (member) => member.role === "OWNER"
       );
       if (currentMembers.length < 2) throw new Error(CANNOT_DELETE_SOLE_OWNER);
@@ -716,10 +715,10 @@ export const updateMembershipForUser = async (
     if (!membership) throw new Error(MEMBERSHIP_NOT_FOUND);
     if (data.role !== membership.role) {
       if (membership.role === "OWNER") {
-        const organizationMembers = await prisma.memberships.findMany({
-          where: { organizationId: membership.organizationId },
+        const groupMembers = await prisma.memberships.findMany({
+          where: { groupId: membership.groupId },
         });
-        const currentMembers = organizationMembers.filter(
+        const currentMembers = groupMembers.filter(
           (member) => member.role === "OWNER"
         );
         if (currentMembers.length < 2)

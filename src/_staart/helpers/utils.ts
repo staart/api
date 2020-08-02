@@ -7,7 +7,7 @@ import { Tokens } from "../interfaces/enum";
 import { ApiKeyResponse } from "./jwt";
 import { users } from "@prisma/client";
 import { prisma } from "../helpers/prisma";
-import { getOrganizationById } from "../services/organization.service";
+import { getOrganizationById } from "../services/group.service";
 import { getUserById } from "../services/user.service";
 
 /**
@@ -25,9 +25,9 @@ export const deleteSensitiveInfoUser = (user: users) => {
   return user;
 };
 
-export const organizationUsernameToId = async (id: string) => {
+export const groupUsernameToId = async (id: string) => {
   const result = (
-    await prisma.organizations.findOne({
+    await prisma.groups.findOne({
       select: { id: true },
       where: {
         username: id,
@@ -114,7 +114,7 @@ export const readOnlyValues = [
   "id",
   "jwtApiKey",
   "userId",
-  "organizationId",
+  "groupId",
 ];
 
 /**
@@ -123,7 +123,7 @@ export const readOnlyValues = [
 export const IdValues = [
   "id",
   "userId",
-  "organizationId",
+  "groupId",
   "primaryEmail",
   "apiKeyId",
   "apiKeyOrganizationId",

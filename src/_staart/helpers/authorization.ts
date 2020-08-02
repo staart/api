@@ -7,14 +7,14 @@ import { OrgScopes, Tokens, UserScopes, SudoScopes } from "../interfaces/enum";
 import { ApiKeyResponse, AccessTokenResponse } from "./jwt";
 import {
   users,
-  organizations,
+  groups,
   memberships,
   accessTokens,
   apiKeys,
 } from "@prisma/client";
 import { prisma } from "./prisma";
 import { getUserById } from "../services/user.service";
-import { getOrganizationById } from "../services/organization.service";
+import { getOrganizationById } from "../services/group.service";
 
 /**
  * Whether a user can perform an action on another user
@@ -44,7 +44,7 @@ const canUserUser = async (user: users, action: UserScopes, target: users) => {
   });
 
   similarMemberships.forEach((similarMembership) => {
-    // A user can read another user in the same organization, as long as they're not a basic member
+    // A user can read another user in the same group, as long as they're not a basic member
     if (action === UserScopes.READ_USER)
       if (userMemberships[similarMembership].role) allowed = true;
   });
@@ -53,7 +53,7 @@ const canUserUser = async (user: users, action: UserScopes, target: users) => {
 };
 
 /**
- * Whether an access token can perform an action for an organization
+ * Whether an access token can perform an action for an group
  */
 const canAccessTokenUser = (
   accessToken: accessTokens,
@@ -70,33 +70,31 @@ const canAccessTokenUser = (
 };
 
 /**
- * Whether a user can perform an action on an organization
+ * Whether a user can perform an action on an group
  */
 const canUserOrganization = async (
   user: users,
   action: OrgScopes,
-  target: organizations
+  target: groups
 ) => {
   // A super user can do anything
   if (user.role === "SUDO") return true;
 
   const memberships = await prisma.memberships.findMany({ where: { user } });
-  const targetMemberships = memberships.filter(
-    (m) => m.organizationId === target.id
-  );
+  const targetMemberships = memberships.filter((m) => m.groupId === target.id);
 
   let allowed = false;
   targetMemberships.forEach((membership) => {
-    // An organization owner can do anything
+    // An group owner can do anything
     if (membership.role === "OWNER") allowed = true;
 
-    // An organization admin can do anything too
+    // An group admin can do anything too
     if (membership.role === "ADMIN") allowed = true;
 
-    // An organization reseller can do anything too
+    // An group reseller can do anything too
     if (membership.role === "RESELLER") allowed = true;
 
-    // An organization member can read, not edit/delete/invite
+    // An group member can read, not edit/delete/invite
     if (
       membership.role === "MEMBER" &&
       (action === OrgScopes.READ_ORG ||
@@ -130,7 +128,7 @@ const canUserMembership = async (
   memberships.forEach((membership) => {
     // An admin, owner, or reseller can edit
     if (
-      membership.organizationId === target.organizationId &&
+      membership.groupId === target.groupId &&
       (membership.role === "OWNER" ||
         membership.role === "ADMIN" ||
         membership.role === "RESELLER")
@@ -139,7 +137,7 @@ const canUserMembership = async (
 
     // Another member can view
     if (
-      membership.organizationId === target.organizationId &&
+      membership.groupId === target.groupId &&
       membership.role === "MEMBER" &&
       action === OrgScopes.READ_ORG_MEMBERSHIPS
     )
@@ -160,15 +158,15 @@ const canUserSudo = async (user: users, action: SudoScopes) => {
 };
 
 /**
- * Whether an API key can perform an action for an organization
+ * Whether an API key can perform an action for an group
  */
 const canApiKeyOrganization = (
   apiKey: apiKeys,
   action: OrgScopes,
-  target: organizations
+  target: groups
 ) => {
-  // An API key can only work in its own organization
-  if (apiKey.organizationId !== target.id) return false;
+  // An API key can only work in its own group
+  if (apiKey.groupId !== target.id) return false;
 
   // If it has no scopes, it has no permissions
   if (!apiKey.scopes) return false;
@@ -184,8 +182,8 @@ const canApiKeyOrganization = (
 export const can = async (
   user: string | users | ApiKeyResponse | AccessTokenResponse,
   action: OrgScopes | UserScopes | SudoScopes,
-  targetType: "user" | "organization" | "membership" | "sudo",
-  target?: string | users | organizations | memberships
+  targetType: "user" | "group" | "membership" | "sudo",
+  target?: string | users | groups | memberships
 ) => {
   let requestFromType: "users" | "apiKeys" | "accessTokens" = "users";
 
@@ -217,9 +215,9 @@ export const can = async (
       });
       if (!membership) throw new Error(USER_NOT_FOUND);
       target = membership;
-    } else if (targetType === "organization") {
-      const organization = await getOrganizationById(target);
-      target = organization;
+    } else if (targetType === "group") {
+      const group = await getOrganizationById(target);
+      target = group;
     } else {
       // Target is a user
       if (requestFromType === "users" && user.id === parseInt(target)) {
@@ -240,7 +238,7 @@ export const can = async (
     return canApiKeyOrganization(
       apiKeyDetails,
       action as OrgScopes,
-      target as organizations
+      target as groups
     );
   } else if (requestFromType === "accessTokens") {
     const accessTokenDetails = await prisma.accessTokens.findOne({
@@ -261,11 +259,11 @@ export const can = async (
         action as UserScopes | OrgScopes,
         target as memberships
       );
-    } else if (targetType === "organization") {
+    } else if (targetType === "group") {
       return canUserOrganization(
         user as users,
         action as OrgScopes,
-        target as organizations
+        target as groups
       );
     }
   }

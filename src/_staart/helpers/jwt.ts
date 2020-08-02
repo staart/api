@@ -74,7 +74,7 @@ export interface TokenResponse {
 }
 export interface ApiKeyResponse {
   id: string;
-  organizationId: string;
+  groupId: string;
   scopes: string;
   jti: string;
   sub: Tokens.API_KEY;

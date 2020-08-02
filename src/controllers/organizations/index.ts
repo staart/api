@@ -18,7 +18,7 @@ import {
 } from "@staart/server";
 import { Joi } from "@staart/validate";
 import { authHandler, validator } from "../../_staart/helpers/middleware";
-import { newOrganizationForUser } from "../../_staart/rest/organization";
+import { newOrganizationForUser } from "../../_staart/rest/group";
 
 @ClassMiddleware(authHandler)
 export class OrganizationController {

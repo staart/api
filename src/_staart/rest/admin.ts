@@ -15,10 +15,10 @@ import {
 import { getEvents } from "@staart/payments";
 import { couponCodeJwt } from "../helpers/jwt";
 import {
-  organizationsSelect,
-  organizationsInclude,
-  organizationsOrderByInput,
-  organizationsWhereUniqueInput,
+  groupsSelect,
+  groupsInclude,
+  groupsOrderByInput,
+  groupsWhereUniqueInput,
   usersSelect,
   usersInclude,
   usersOrderByInput,
@@ -32,7 +32,7 @@ export const getAllOrganizationForUser = async (
 ) => {
   if (await can(tokenUserId, SudoScopes.READ, "sudo"))
     return paginatedResult(
-      await prisma.organizations.findMany(queryParamsToSelect(queryParams)),
+      await prisma.groups.findMany(queryParamsToSelect(queryParams)),
       { first: queryParams.first, last: queryParams.last }
     );
   throw new Error(INSUFFICIENT_PERMISSION);

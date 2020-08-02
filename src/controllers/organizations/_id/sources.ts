@@ -18,7 +18,7 @@ import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../../_staart/helpers/middleware";
 import {
   localsToTokenOrKey,
-  organizationUsernameToId,
+  groupUsernameToId,
 } from "../../../_staart/helpers/utils";
 import {
   createOrganizationSourceForUser,
@@ -26,17 +26,14 @@ import {
   getOrganizationSourceForUser,
   getOrganizationSourcesForUser,
   updateOrganizationSourceForUser,
-} from "../../../_staart/rest/organization";
+} from "../../../_staart/rest/group";
 
 @ClassMiddleware(authHandler)
 export class OrganizationSourcesController {
   @Get()
   async getSources(req: Request, res: Response) {
-    const organizationId = await organizationUsernameToId(req.params.id);
-    joiValidate(
-      { organizationId: Joi.string().required() },
-      { organizationId }
-    );
+    const groupId = await groupUsernameToId(req.params.id);
+    joiValidate({ groupId: Joi.string().required() }, { groupId });
     const subscriptionParams = { ...req.query };
     joiValidate(
       {
@@ -47,21 +44,18 @@ export class OrganizationSourcesController {
     );
     return getOrganizationSourcesForUser(
       localsToTokenOrKey(res),
-      organizationId,
+      groupId,
       subscriptionParams
     );
   }
 
   @Put()
   async putSources(req: Request, res: Response) {
-    const organizationId = await organizationUsernameToId(req.params.id);
-    joiValidate(
-      { organizationId: Joi.string().required() },
-      { organizationId }
-    );
+    const groupId = await groupUsernameToId(req.params.id);
+    joiValidate({ groupId: Joi.string().required() }, { groupId });
     await createOrganizationSourceForUser(
       localsToTokenOrKey(res),
-      organizationId,
+      groupId,
       req.body,
       res.locals
     );
@@ -70,18 +64,18 @@ export class OrganizationSourcesController {
 
   @Get(":sourceId")
   async getSource(req: Request, res: Response) {
-    const organizationId = await organizationUsernameToId(req.params.id);
+    const groupId = await groupUsernameToId(req.params.id);
     const sourceId = req.params.sourceId;
     joiValidate(
       {
-        organizationId: Joi.string().required(),
+        groupId: Joi.string().required(),
         sourceId: Joi.string().required(),
       },
-      { organizationId, sourceId }
+      { groupId, sourceId }
     );
     return getOrganizationSourceForUser(
       localsToTokenOrKey(res),
-      organizationId,
+      groupId,
       sourceId
     );
   }
@@ -89,17 +83,17 @@ export class OrganizationSourcesController {
   @Patch(":sourceId")
   async patchSource(req: Request, res: Response) {
     const sourceId = req.params.sourceId;
-    const organizationId = await organizationUsernameToId(req.params.id);
+    const groupId = await groupUsernameToId(req.params.id);
     joiValidate(
       {
-        organizationId: Joi.string().required(),
+        groupId: Joi.string().required(),
         sourceId: Joi.string().required(),
       },
-      { organizationId, sourceId }
+      { groupId, sourceId }
     );
     const updated = await updateOrganizationSourceForUser(
       localsToTokenOrKey(res),
-      organizationId,
+      groupId,
       sourceId,
       req.body,
       res.locals
@@ -110,17 +104,17 @@ export class OrganizationSourcesController {
   @Delete(":sourceId")
   async deleteSource(req: Request, res: Response) {
     const sourceId = req.params.sourceId;
-    const organizationId = await organizationUsernameToId(req.params.id);
+    const groupId = await groupUsernameToId(req.params.id);
     joiValidate(
       {
-        organizationId: Joi.string().required(),
+        groupId: Joi.string().required(),
         sourceId: Joi.string().required(),
       },
-      { organizationId, sourceId }
+      { groupId, sourceId }
     );
     await deleteOrganizationSourceForUser(
       localsToTokenOrKey(res),
-      organizationId,
+      groupId,
       sourceId,
       res.locals
     );

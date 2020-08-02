@@ -20,7 +20,7 @@ import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../../_staart/helpers/middleware";
 import {
   localsToTokenOrKey,
-  organizationUsernameToId,
+  groupUsernameToId,
 } from "../../../_staart/helpers/utils";
 import {
   deleteOrganizationForUser,
@@ -28,19 +28,16 @@ import {
   getOrganizationForUser,
   newOrganizationForUser,
   updateOrganizationForUser,
-} from "../../../_staart/rest/organization";
+} from "../../../_staart/rest/group";
 
 @ClassMiddleware(authHandler)
 export class OrganizationController {
   @Get()
   async get(req: Request, res: Response) {
-    const id = await organizationUsernameToId(req.params.id);
+    const id = await groupUsernameToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    const organization = await getOrganizationForUser(
-      localsToTokenOrKey(res),
-      id
-    );
-    return organization;
+    const group = await getOrganizationForUser(localsToTokenOrKey(res), id);
+    return group;
   }
 
   @Patch()
@@ -59,7 +56,7 @@ export class OrganizationController {
     )
   )
   async patch(req: Request, res: Response) {
-    const id = await organizationUsernameToId(req.params.id);
+    const id = await groupUsernameToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
     const updated = await updateOrganizationForUser(
       localsToTokenOrKey(res),
@@ -72,29 +69,16 @@ export class OrganizationController {
 
   @Delete()
   async delete(req: Request, res: Response) {
-    const organizationId = await organizationUsernameToId(req.params.id);
-    joiValidate(
-      { organizationId: Joi.string().required() },
-      { organizationId }
-    );
-    await deleteOrganizationForUser(
-      res.locals.token.id,
-      organizationId,
-      res.locals
-    );
+    const groupId = await groupUsernameToId(req.params.id);
+    joiValidate({ groupId: Joi.string().required() }, { groupId });
+    await deleteOrganizationForUser(res.locals.token.id, groupId, res.locals);
     return respond(RESOURCE_DELETED);
   }
 
   @Get("data")
   async getData(req: Request, res: Response) {
-    const organizationId = await organizationUsernameToId(req.params.id);
-    joiValidate(
-      { organizationId: Joi.string().required() },
-      { organizationId }
-    );
-    return getAllOrganizationDataForUser(
-      localsToTokenOrKey(res),
-      organizationId
-    );
+    const groupId = await groupUsernameToId(req.params.id);
+    joiValidate({ groupId: Joi.string().required() }, { groupId });
+    return getAllOrganizationDataForUser(localsToTokenOrKey(res), groupId);
   }
 }
