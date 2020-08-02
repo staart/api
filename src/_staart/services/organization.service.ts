@@ -28,8 +28,8 @@ import { prisma } from "../helpers/prisma";
 import {
   organizationsCreateInput,
   organizationsUpdateInput,
-  api_keysCreateInput,
-  api_keysUpdateInput,
+  apiKeysCreateInput,
+  apiKeysUpdateInput,
   domainsCreateInput,
   organizations,
 } from "@prisma/client";
@@ -177,10 +177,10 @@ export const getApiKeyLogs = async (apiKeyId: string, query: KeyValue) => {
 /**
  * Create an API key
  */
-export const createApiKey = async (apiKey: api_keysCreateInput) => {
+export const createApiKey = async (apiKey: apiKeysCreateInput) => {
   apiKey.expiresAt = apiKey.expiresAt || new Date(TOKEN_EXPIRY_API_KEY_MAX);
   apiKey.jwtApiKey = await apiKeyToken(apiKey);
-  return prisma.api_keys.create({ data: apiKey });
+  return prisma.apiKeys.create({ data: apiKey });
 };
 
 /**
@@ -188,15 +188,15 @@ export const createApiKey = async (apiKey: api_keysCreateInput) => {
  */
 export const updateApiKey = async (
   apiKeyId: string,
-  data: api_keysUpdateInput
+  data: apiKeysUpdateInput
 ) => {
-  const apiKey = await prisma.api_keys.findOne({
+  const apiKey = await prisma.apiKeys.findOne({
     where: { id: parseInt(apiKeyId) },
   });
   if (!apiKey) throw new Error(RESOURCE_NOT_FOUND);
   if (apiKey.jwtApiKey) await invalidateToken(apiKey.jwtApiKey);
   data.jwtApiKey = await apiKeyToken({ ...apiKey, ...data });
-  return prisma.api_keys.update({ data, where: { id: parseInt(apiKeyId) } });
+  return prisma.apiKeys.update({ data, where: { id: parseInt(apiKeyId) } });
 };
 
 /**

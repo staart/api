@@ -29,11 +29,11 @@ import {
   removeFalsyValues,
 } from "./utils";
 import {
-  access_tokensCreateInput,
-  access_tokensUpdateInput,
+  accessTokensCreateInput,
+  accessTokensUpdateInput,
   users,
-  api_keysCreateInput,
-  api_keysUpdateInput,
+  apiKeysCreateInput,
+  apiKeysUpdateInput,
 } from "@prisma/client";
 import { prisma } from "./prisma";
 import {
@@ -153,7 +153,7 @@ export const twoFactorToken = (user: users) =>
  * Generate an API key JWT
  */
 export const apiKeyToken = (
-  apiKey: api_keysCreateInput | api_keysUpdateInput
+  apiKey: apiKeysCreateInput | apiKeysUpdateInput
 ) => {
   const createApiKey = { ...removeFalsyValues(apiKey) };
   delete createApiKey.createdAt;
@@ -174,7 +174,7 @@ export const apiKeyToken = (
  * Generate an access token
  */
 export const accessToken = (
-  accessToken: access_tokensCreateInput | access_tokensUpdateInput
+  accessToken: accessTokensCreateInput | accessTokensUpdateInput
 ) => {
   const createAccessToken = { ...removeFalsyValues(accessToken) };
   delete createAccessToken.createdAt;

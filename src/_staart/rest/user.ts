@@ -44,12 +44,12 @@ import {
   membershipsInclude,
   membershipsOrderByInput,
   membershipsWhereUniqueInput,
-  access_tokensSelect,
-  access_tokensInclude,
-  access_tokensOrderByInput,
-  access_tokensWhereUniqueInput,
-  access_tokensUpdateInput,
-  access_tokensCreateInput,
+  accessTokensSelect,
+  accessTokensInclude,
+  accessTokensOrderByInput,
+  accessTokensWhereUniqueInput,
+  accessTokensUpdateInput,
+  accessTokensCreateInput,
   sessionsSelect,
   sessionsInclude,
   sessionsOrderByInput,
@@ -229,7 +229,7 @@ export const getAllDataForUser = async (
     where: { id: parseInt(userId) },
     include: {
       emails: true,
-      access_tokens: true,
+      accessTokens: true,
       approved_locations: true,
       backup_codes: true,
       identities: true,
@@ -322,7 +322,7 @@ export const getUserAccessTokensForUser = async (
     await can(tokenUserId, UserScopes.READ_USER_ACCESS_TOKENS, "user", userId)
   )
     return paginatedResult(
-      await prisma.access_tokens.findMany({
+      await prisma.accessTokens.findMany({
         where: { userId: parseInt(userId) },
         ...queryParamsToSelect(queryParams),
       }),
@@ -339,7 +339,7 @@ export const getUserAccessTokenForUser = async (
   if (
     await can(tokenUserId, UserScopes.READ_USER_ACCESS_TOKENS, "user", userId)
   )
-    return prisma.access_tokens.findOne({
+    return prisma.accessTokens.findOne({
       where: { id: parseInt(accessTokenId) },
     });
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -349,13 +349,13 @@ export const updateAccessTokenForUser = async (
   tokenUserId: string,
   userId: string,
   accessTokenId: string,
-  data: access_tokensUpdateInput,
+  data: accessTokensUpdateInput,
   locals: Locals
 ) => {
   if (
     await can(tokenUserId, UserScopes.UPDATE_USER_ACCESS_TOKENS, "user", userId)
   )
-    return prisma.access_tokens.update({
+    return prisma.accessTokens.update({
       where: { id: parseInt(accessTokenId) },
       data,
     });
@@ -365,7 +365,7 @@ export const updateAccessTokenForUser = async (
 export const createAccessTokenForUser = async (
   tokenUserId: string,
   userId: string,
-  accessToken: access_tokensCreateInput,
+  accessToken: accessTokensCreateInput,
   locals: Locals
 ) => {
   if (
@@ -374,7 +374,7 @@ export const createAccessTokenForUser = async (
     accessToken.jwtAccessToken = randomString({ length: 20 });
     accessToken.expiresAt =
       accessToken.expiresAt || new Date(TOKEN_EXPIRY_API_KEY_MAX);
-    return prisma.access_tokens.create({
+    return prisma.accessTokens.create({
       data: { ...accessToken, user: { connect: { id: parseInt(userId) } } },
     });
   }
@@ -390,7 +390,7 @@ export const deleteAccessTokenForUser = async (
   if (
     await can(tokenUserId, UserScopes.DELETE_USER_ACCESS_TOKENS, "user", userId)
   )
-    return prisma.access_tokens.delete({
+    return prisma.accessTokens.delete({
       where: { id: parseInt(accessTokenId) },
     });
   throw new Error(INSUFFICIENT_PERMISSION);

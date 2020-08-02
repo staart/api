@@ -20,8 +20,8 @@ import { KeyValue } from "../interfaces/general";
 import { prisma } from "../helpers/prisma";
 import {
   users,
-  access_tokens,
-  access_tokensCreateInput,
+  accessTokens,
+  accessTokensCreateInput,
   sessionsUpdateInput,
   usersCreateInput,
 } from "@prisma/client";
@@ -234,10 +234,10 @@ export const createBackupCodes = async (userId: string | number, count = 1) => {
 /**
  * Create an API key
  */
-export const createAccessToken = async (data: access_tokensCreateInput) => {
+export const createAccessToken = async (data: accessTokensCreateInput) => {
   data.expiresAt = data.expiresAt || new Date(TOKEN_EXPIRY_API_KEY_MAX);
   data.jwtAccessToken = await accessToken(data);
-  return prisma.access_tokens.create({ data });
+  return prisma.accessTokens.create({ data });
 };
 
 /**
@@ -245,16 +245,16 @@ export const createAccessToken = async (data: access_tokensCreateInput) => {
  */
 export const updateAccessToken = async (
   accessTokenId: string,
-  data: access_tokens
+  data: accessTokens
 ) => {
-  const newAccessToken = await prisma.access_tokens.findOne({
+  const newAccessToken = await prisma.accessTokens.findOne({
     where: { id: parseInt(accessTokenId) },
   });
   if (!newAccessToken) throw new Error(RESOURCE_NOT_FOUND);
   if (newAccessToken.jwtAccessToken)
     await invalidateToken(newAccessToken.jwtAccessToken);
   data.jwtAccessToken = await accessToken({ ...newAccessToken, ...data });
-  return prisma.access_tokens.update({
+  return prisma.accessTokens.update({
     data,
     where: { id: parseInt(accessTokenId) },
   });
@@ -264,13 +264,13 @@ export const updateAccessToken = async (
  * Delete an API key
  */
 export const deleteAccessToken = async (accessTokenId: string) => {
-  const currentAccessToken = await prisma.access_tokens.findOne({
+  const currentAccessToken = await prisma.accessTokens.findOne({
     where: { id: parseInt(accessTokenId) },
   });
   if (!currentAccessToken) throw new Error(RESOURCE_NOT_FOUND);
   if (currentAccessToken.jwtAccessToken)
     await invalidateToken(currentAccessToken.jwtAccessToken);
-  return prisma.access_tokens.delete({
+  return prisma.accessTokens.delete({
     where: { id: parseInt(accessTokenId) },
   });
 };

@@ -66,12 +66,12 @@ import {
   membershipsUpdateInput,
   users,
   MembershipRole,
-  api_keysSelect,
-  api_keysInclude,
-  api_keysOrderByInput,
-  api_keysWhereUniqueInput,
-  api_keysUpdateInput,
-  api_keysCreateInput,
+  apiKeysSelect,
+  apiKeysInclude,
+  apiKeysOrderByInput,
+  apiKeysWhereUniqueInput,
+  apiKeysUpdateInput,
+  apiKeysCreateInput,
   webhooksCreateInput,
   domainsSelect,
   domainsInclude,
@@ -564,7 +564,7 @@ export const getAllOrganizationDataForUser = async (
         id: parseInt(organizationId),
       },
       include: {
-        api_keys: true,
+        apiKeys: true,
         domains: true,
         memberships: true,
         webhooks: true,
@@ -798,7 +798,7 @@ export const getOrganizationApiKeysForUser = async (
     )
   )
     return paginatedResult(
-      await prisma.api_keys.findMany({
+      await prisma.apiKeys.findMany({
         where: { organizationId: parseInt(organizationId) },
         ...queryParamsToSelect(queryParams),
       }),
@@ -820,7 +820,7 @@ export const getOrganizationApiKeyForUser = async (
       organizationId
     )
   )
-    return prisma.api_keys.findOne({ where: { id: parseInt(apiKeyId) } });
+    return prisma.apiKeys.findOne({ where: { id: parseInt(apiKeyId) } });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -849,7 +849,7 @@ export const updateApiKeyForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
   apiKeyId: string,
-  data: api_keysUpdateInput,
+  data: apiKeysUpdateInput,
   locals: Locals
 ) => {
   if (
@@ -860,7 +860,7 @@ export const updateApiKeyForUser = async (
       organizationId
     )
   ) {
-    const result = await prisma.api_keys.update({
+    const result = await prisma.apiKeys.update({
       where: { id: parseInt(apiKeyId) },
       data,
     });
@@ -874,7 +874,7 @@ export const updateApiKeyForUser = async (
 export const createApiKeyForUser = async (
   userId: string | ApiKeyResponse,
   organizationId: string,
-  apiKey: api_keysCreateInput,
+  apiKey: apiKeysCreateInput,
   locals: Locals
 ) => {
   if (
@@ -887,7 +887,7 @@ export const createApiKeyForUser = async (
   ) {
     apiKey.jwtApiKey = randomString({ length: 20 });
     apiKey.expiresAt = apiKey.expiresAt || new Date(TOKEN_EXPIRY_API_KEY_MAX);
-    const result = await prisma.api_keys.create({
+    const result = await prisma.apiKeys.create({
       data: {
         ...apiKey,
         organization: {
@@ -918,7 +918,7 @@ export const deleteApiKeyForUser = async (
       organizationId
     )
   ) {
-    const result = await prisma.api_keys.delete({
+    const result = await prisma.apiKeys.delete({
       where: { id: parseInt(apiKeyId) },
     });
     queueWebhook(organizationId, Webhooks.DELETE_API_KEY, apiKeyId);

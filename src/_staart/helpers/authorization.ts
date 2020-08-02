@@ -9,8 +9,8 @@ import {
   users,
   organizations,
   memberships,
-  access_tokens,
-  api_keys,
+  accessTokens,
+  apiKeys,
 } from "@prisma/client";
 import { prisma } from "./prisma";
 import { getUserById } from "../services/user.service";
@@ -56,7 +56,7 @@ const canUserUser = async (user: users, action: UserScopes, target: users) => {
  * Whether an access token can perform an action for an organization
  */
 const canAccessTokenUser = (
-  accessToken: access_tokens,
+  accessToken: accessTokens,
   action: UserScopes,
   target: users
 ) => {
@@ -163,7 +163,7 @@ const canUserSudo = async (user: users, action: SudoScopes) => {
  * Whether an API key can perform an action for an organization
  */
 const canApiKeyOrganization = (
-  apiKey: api_keys,
+  apiKey: apiKeys,
   action: OrgScopes,
   target: organizations
 ) => {
@@ -187,7 +187,7 @@ export const can = async (
   targetType: "user" | "organization" | "membership" | "sudo",
   target?: string | users | organizations | memberships
 ) => {
-  let requestFromType: "users" | "api_keys" | "access_tokens" = "users";
+  let requestFromType: "users" | "apiKeys" | "accessTokens" = "users";
 
   /**
    * First, we figure out what the first parameter is
@@ -195,9 +195,9 @@ export const can = async (
    */
   if (typeof user === "object") {
     if ((user as ApiKeyResponse).sub === Tokens.API_KEY) {
-      requestFromType = "api_keys";
+      requestFromType = "apiKeys";
     } else if ((user as AccessTokenResponse).sub === Tokens.ACCESS_TOKEN) {
-      requestFromType = "access_tokens";
+      requestFromType = "accessTokens";
     }
   } else {
     const result = await getUserById(user);
@@ -232,8 +232,8 @@ export const can = async (
     }
   }
 
-  if (requestFromType === "api_keys") {
-    const apiKeyDetails = await prisma.api_keys.findOne({
+  if (requestFromType === "apiKeys") {
+    const apiKeyDetails = await prisma.apiKeys.findOne({
       where: { id: parseInt((user as ApiKeyResponse).id) },
     });
     if (!apiKeyDetails || !target) throw new Error(INVALID_TOKEN);
@@ -242,8 +242,8 @@ export const can = async (
       action as OrgScopes,
       target as organizations
     );
-  } else if (requestFromType === "access_tokens") {
-    const accessTokenDetails = await prisma.access_tokens.findOne({
+  } else if (requestFromType === "accessTokens") {
+    const accessTokenDetails = await prisma.accessTokens.findOne({
       where: { id: parseInt((user as ApiKeyResponse).id) },
     });
     if (!accessTokenDetails || !target) throw new Error(INVALID_TOKEN);

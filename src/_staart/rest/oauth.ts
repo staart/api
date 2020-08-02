@@ -88,7 +88,7 @@ export const github = {
     clientSecret: GITHUB_CLIENT_SECRET,
     redirectUri: getRedirectUri("github"),
     authorizationUri: "https://github.com/login/oauth/authorize",
-    accessTokenUri: "https://github.com/login/oauth/access_token",
+    accessTokenUri: "https://github.com/login/oauth/accessToken",
     scopes: ["read:user", "user:email"],
   }),
   callback: async (url: string, locals: Locals) => {
@@ -109,14 +109,14 @@ export const facebook = {
     clientSecret: FACEBOOK_CLIENT_SECRET,
     redirectUri: getRedirectUri("facebook"),
     authorizationUri: "https://www.facebook.com/v3.3/dialog/oauth",
-    accessTokenUri: "https://graph.facebook.com/v3.3/oauth/access_token",
+    accessTokenUri: "https://graph.facebook.com/v3.3/oauth/accessToken",
     scopes: ["email"],
   }),
   callback: async (url: string, locals: Locals) => {
     const token = (await facebook.client.code.getToken(url)).accessToken;
     const data = (
       await axios.get(
-        `https://graph.facebook.com/v3.3/me?fields=name,email&access_token=${token}`
+        `https://graph.facebook.com/v3.3/me?fields=name,email&accessToken=${token}`
       )
     ).data;
     return loginWithOAuth2Service("facebook", data.name, data.email, locals);
