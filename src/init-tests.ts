@@ -7,7 +7,6 @@ import { prisma } from "./_staart/helpers/prisma";
 import { elasticSearchEnabled } from "@staart/elasticsearch";
 import { getProductPricing } from "@staart/payments";
 import { redis } from "@staart/redis";
-import systemInfo from "systeminformation";
 import pkg from "../package.json";
 
 let numberOfFailedTests = 0;
@@ -19,7 +18,7 @@ interface Test {
 class Redis implements Test {
   name = "Redis";
   async test() {
-    await redis.set(pkg.name, systemInfo.time().current);
+    await redis.set(pkg.name, "redis");
     await redis.del(pkg.name);
   }
 }
@@ -54,7 +53,6 @@ class Email implements Test {
       subject: "Test from Staart",
       message: `This is an example email to test your Staart email configuration.\n\n${JSON.stringify(
         {
-          time: systemInfo.time(),
           package: {
             name: pkg.name,
             version: pkg.version,
