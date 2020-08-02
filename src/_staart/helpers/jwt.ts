@@ -6,7 +6,7 @@ import {
   UNVERIFIED_EMAIL,
   USER_NOT_FOUND,
 } from "@staart/errors";
-import redis from "@staart/redis";
+import { redis } from "@staart/redis";
 import { ipRangeCheck, randomString } from "@staart/text";
 import { decode, sign, verify } from "jsonwebtoken";
 import {

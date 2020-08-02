@@ -6,7 +6,7 @@ import { receiveEmailMessage } from "./_staart/helpers/mail";
 import { prisma } from "./_staart/helpers/prisma";
 import { elasticSearchEnabled } from "@staart/elasticsearch";
 import { getProductPricing } from "@staart/payments";
-import redis from "@staart/redis";
+import { redis } from "@staart/redis";
 import systemInfo from "systeminformation";
 import pkg from "../package.json";
 
