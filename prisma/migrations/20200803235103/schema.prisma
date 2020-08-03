@@ -1,0 +1,247 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource mysql {
+  provider = "mysql"
+  url = "***"
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  NONBINARY
+  UNKNOWN
+}
+
+enum NotificationEmails {
+  ACCOUNT
+  UPDATES
+  PROMOTIONS
+}
+
+enum PrefersColorScheme {
+  NO_PREFERENCE
+  LIGHT
+  DARK
+}
+
+enum PrefersReducedMotion {
+  NO_PREFERENCE
+  REDUCE
+}
+
+enum UserRole {
+  SUDO
+  USER
+}
+
+enum MembershipRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum IdentityType {
+  GOOGLE
+  APPLE
+  SLACK
+}
+
+model users {
+  checkLocationOnLogin Boolean              @default(false)
+  countryCode          String               @default("us")
+  createdAt            DateTime             @default(now())
+  gender               Gender               @default(UNKNOWN)
+  id                   Int                  @default(autoincrement()) @id
+  name                 String
+  notificationEmails   NotificationEmails   @default(ACCOUNT)
+  password             String?
+  prefersLanguage      String               @default("en-us")
+  prefersColorScheme   PrefersColorScheme   @default(NO_PREFERENCE)
+  prefersReducedMotion PrefersReducedMotion @default(NO_PREFERENCE)
+  prefersEmail         emails               @relation("userPrefersEmail", fields: [prefersEmailId], references: [id])
+  prefersEmailId       Int
+  profilePictureUrl    String               @default("https://unavatar.now.sh/fallback.png")
+  role                 UserRole             @default(USER)
+  timezone             String               @default("America/Los_Angeles")
+  twoFactorEnabled     Boolean              @default(false)
+  twoFactorSecret      String?
+  attributes           Json?
+  updatedAt            DateTime             @updatedAt
+  emails               emails[]             @relation("userEmails")
+  accessTokens         accessTokens[]       @relation("userAccessTokens")
+  approvedLocations    approvedLocations[]  @relation("userApprovedLocations")
+  backupCodes          backupCodes[]        @relation("userBackupCodes")
+  identities           identities[]         @relation("userIdentities")
+  memberships          memberships[]        @relation("userMemberships")
+  sessions             sessions[]           @relation("userSessions")
+}
+
+model groups {
+  autoJoinDomain    Boolean       @default(false)
+  createdAt         DateTime      @default(now())
+  forceTwoFactor    Boolean       @default(false)
+  id                Int           @default(autoincrement()) @id
+  ipRestrictions    String?
+  name              String
+  onlyAllowDomain   Boolean       @default(false)
+  profilePictureUrl String        @default("https://unavatar.now.sh/fallback.png")
+  attributes        Json?
+  updatedAt         DateTime      @updatedAt
+  apiKeys           apiKeys[]     @relation("groupApiKeys")
+  domains           domains[]     @relation("groupDomains")
+  memberships       memberships[] @relation("groupMemberships")
+  webhooks          webhooks[]    @relation("groupWebhooks")
+}
+
+model emails {
+  createdAt  DateTime @default(now())
+  email      String
+  id         Int      @default(autoincrement()) @id
+  isVerified Boolean  @default(false)
+  updatedAt  DateTime @updatedAt
+  user       users    @relation("userEmails", fields: [userId], references: [id])
+  userId     Int
+
+  @@index([userId], name: "userId")
+  users users[] @relation("userPrefersEmail")
+}
+
+model accessTokens {
+  createdAt   DateTime @default(now())
+  description String?
+  expiresAt   DateTime
+  id          Int      @default(autoincrement()) @id
+  accessToken String
+  name        String?
+  scopes      Json?
+  updatedAt   DateTime @updatedAt
+  user        users    @relation("userAccessTokens", fields: [userId], references: [id])
+  userId      Int
+
+  @@index([userId], name: "userId")
+}
+
+model apiKeys {
+  createdAt            DateTime @default(now())
+  description          String?
+  expiresAt            DateTime
+  id                   Int      @default(autoincrement()) @id
+  ipRestrictions       Json?
+  apiKey               String
+  name                 String?
+  group                groups   @relation("groupApiKeys", fields: [groupId], references: [id])
+  groupId              Int
+  referrerRestrictions String?
+  scopes               Json?
+  updatedAt            DateTime @updatedAt
+}
+
+model approvedLocations {
+  createdAt DateTime @default(now())
+  id        Int      @default(autoincrement()) @id
+  subnet    String
+  user      users    @relation("userApprovedLocations", fields: [userId], references: [id])
+  userId    Int
+}
+
+model backupCodes {
+  id        Int      @default(autoincrement()) @id
+  code      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isUsed    Boolean  @default(false)
+  user      users    @relation("userBackupCodes", fields: [userId], references: [id])
+  userId    Int
+
+  @@index([userId], name: "userId")
+}
+
+model couponCodes {
+  id               Int       @default(autoincrement()) @id
+  code             String
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  expiresAt        DateTime?
+  maxUses          Int       @default(1000)
+  usedCount        Int       @default(0)
+  teamRestrictions String?
+  amount           Int
+  currency         String
+  description      String?
+}
+
+model domains {
+  createdAt        DateTime @default(now())
+  domain           String
+  id               Int      @default(autoincrement()) @id
+  isVerified       Boolean  @default(false)
+  group            groups   @relation("groupDomains", fields: [groupId], references: [id])
+  groupId          Int
+  updatedAt        DateTime @updatedAt
+  verificationCode String
+
+  @@index([groupId], name: "groupId")
+}
+
+model identities {
+  createdAt DateTime     @default(now())
+  id        Int          @default(autoincrement()) @id
+  loginName String
+  type      IdentityType
+  updatedAt DateTime     @updatedAt
+  user      users        @relation("userIdentities", fields: [userId], references: [id])
+  userId    Int
+
+  @@index([userId], name: "userId")
+}
+
+model memberships {
+  createdAt DateTime       @default(now())
+  id        Int            @default(autoincrement()) @id
+  group     groups         @relation("groupMemberships", fields: [groupId], references: [id])
+  groupId   Int
+  role      MembershipRole @default(MEMBER)
+  updatedAt DateTime       @updatedAt
+  user      users          @relation("userMemberships", fields: [userId], references: [id])
+  userId    Int
+
+  @@index([groupId], name: "groupId")
+  @@index([userId], name: "userId")
+}
+
+model sessions {
+  createdAt       DateTime @default(now())
+  id              Int      @default(autoincrement()) @id
+  ipAddress       String
+  token           String
+  updatedAt       DateTime @updatedAt
+  userAgent       String
+  city            String?
+  region          String?
+  timezone        String?
+  countryCode     String?
+  browser         String?
+  operatingSystem String?
+  user            users    @relation("userSessions", fields: [userId], references: [id])
+  userId          Int
+
+  @@index([userId], name: "userId")
+}
+
+model webhooks {
+  contentType String    @default("application/json")
+  createdAt   DateTime  @default(now())
+  event       String
+  id          Int       @default(autoincrement()) @id
+  isActive    Boolean   @default(false)
+  lastFiredAt DateTime?
+  group       groups    @relation("groupWebhooks", fields: [groupId], references: [id])
+  groupId     Int
+  secret      String?
+  updatedAt   DateTime  @updatedAt
+  url         String
+
+  @@index([groupId], name: "groupId")
+}
