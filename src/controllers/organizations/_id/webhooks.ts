@@ -24,22 +24,18 @@ import {
 import {
   createWebhookForUser,
   deleteWebhookForUser,
-  getOrganizationWebhookForUser,
-  getOrganizationWebhooksForUser,
+  getGroupWebhookForUser,
+  getGroupWebhooksForUser,
   updateWebhookForUser,
 } from "../../../_staart/rest/group";
 
 @ClassMiddleware(authHandler)
-export class OrganizationWebhooksController {
+export class GroupWebhooksController {
   @Get()
-  async getOrganizationWebhooks(req: Request, res: Response) {
+  async getGroupWebhooks(req: Request, res: Response) {
     const id = await groupUsernameToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    return getOrganizationWebhooksForUser(
-      localsToTokenOrKey(res),
-      id,
-      req.query
-    );
+    return getGroupWebhooksForUser(localsToTokenOrKey(res), id, req.query);
   }
 
   @Put()
@@ -55,7 +51,7 @@ export class OrganizationWebhooksController {
       "body"
     )
   )
-  async putOrganizationWebhooks(req: Request, res: Response) {
+  async putGroupWebhooks(req: Request, res: Response) {
     const id = await groupUsernameToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
     const added = await createWebhookForUser(
@@ -68,7 +64,7 @@ export class OrganizationWebhooksController {
   }
 
   @Get(":webhookId")
-  async getOrganizationWebhook(req: Request, res: Response) {
+  async getGroupWebhook(req: Request, res: Response) {
     const id = await groupUsernameToId(req.params.id);
     const webhookId = req.params.webhookId;
     joiValidate(
@@ -78,11 +74,7 @@ export class OrganizationWebhooksController {
       },
       { id, webhookId }
     );
-    return getOrganizationWebhookForUser(
-      localsToTokenOrKey(res),
-      id,
-      webhookId
-    );
+    return getGroupWebhookForUser(localsToTokenOrKey(res), id, webhookId);
   }
 
   @Patch(":webhookId")
@@ -98,7 +90,7 @@ export class OrganizationWebhooksController {
       "body"
     )
   )
-  async patchOrganizationWebhook(req: Request, res: Response) {
+  async patchGroupWebhook(req: Request, res: Response) {
     const id = await groupUsernameToId(req.params.id);
     const webhookId = req.params.webhookId;
     joiValidate(
@@ -119,7 +111,7 @@ export class OrganizationWebhooksController {
   }
 
   @Delete(":webhookId")
-  async deleteOrganizationWebhook(req: Request, res: Response) {
+  async deleteGroupWebhook(req: Request, res: Response) {
     const id = await groupUsernameToId(req.params.id);
     const webhookId = req.params.webhookId;
     joiValidate(

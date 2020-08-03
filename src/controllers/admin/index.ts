@@ -11,7 +11,7 @@ import {
 import { authHandler, validator } from "../../_staart/helpers/middleware";
 import { Joi } from "@staart/validate";
 import {
-  getAllOrganizationForUser,
+  getAllGroupForUser,
   getAllUsersForUser,
   getServerLogsForUser,
   generateCouponForUser,
@@ -21,10 +21,10 @@ import {
 @ClassMiddleware(authHandler)
 export class AdminController {
   @Get("groups")
-  async getOrganizations(req: Request, res: Response) {
+  async getGroups(req: Request, res: Response) {
     const userId = res.locals.token.id;
     if (!userId) throw new Error(MISSING_FIELD);
-    return getAllOrganizationForUser(userId, req.query);
+    return getAllGroupForUser(userId, req.query);
   }
 
   @Get("users")

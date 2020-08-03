@@ -7,7 +7,7 @@ import { Tokens } from "../interfaces/enum";
 import { ApiKeyResponse } from "./jwt";
 import { users } from "@prisma/client";
 import { prisma } from "../helpers/prisma";
-import { getOrganizationById } from "../services/group.service";
+import { getGroupById } from "../services/group.service";
 import { getUserById } from "../services/user.service";
 
 /**
@@ -126,7 +126,7 @@ export const IdValues = [
   "groupId",
   "primaryEmail",
   "apiKeyId",
-  "apiKeyOrganizationId",
+  "apiKeyGroupId",
 ];
 
 export const removeFalsyValues = (value: any) => {

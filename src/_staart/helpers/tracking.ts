@@ -47,7 +47,7 @@ export const trackUrl = async (req: Request, res: Response) => {
         Tokens.API_KEY
       );
       trackingObject.apiKeyId = token.id;
-      trackingObject.apiKeyOrganizationId = token.groupId;
+      trackingObject.apiKeyGroupId = token.groupId;
       trackingObject.apiKeyJti = token.jti;
       delete trackingObject.apiKey;
     } catch (error) {

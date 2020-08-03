@@ -89,24 +89,24 @@ import {
   getDomainByDomainName,
   getApiKeyLogs,
   checkDomainAvailability,
-  getOrganizationById,
-  createOrganization,
+  getGroupById,
+  createGroup,
 } from "../services/group.service";
 import { randomString } from "@staart/text";
 import { fireSingleWebhook } from "../helpers/webhooks";
 import { getUserById } from "../services/user.service";
 import { deleteItemFromCache } from "../helpers/cache";
 
-export const getOrganizationForUser = async (
+export const getGroupForUser = async (
   userId: string | ApiKeyResponse,
   groupId: string
 ) => {
   if (await can(userId, OrgScopes.READ_ORG, "group", groupId))
-    return getOrganizationById(groupId);
+    return getGroupById(groupId);
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const newOrganizationForUser = async (
+export const newGroupForUser = async (
   userId: string,
   group: groupsCreateInput,
   locals: Locals
@@ -115,10 +115,10 @@ export const newOrganizationForUser = async (
     const user = await getUserById(userId);
     group.name = user.name;
   }
-  return createOrganization(group, userId);
+  return createGroup(group, userId);
 };
 
-export const updateOrganizationForUser = async (
+export const updateGroupForUser = async (
   userId: string | ApiKeyResponse,
   groupId: string,
   data: groupsUpdateInput,
@@ -138,16 +138,16 @@ export const updateOrganizationForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const deleteOrganizationForUser = async (
+export const deleteGroupForUser = async (
   userId: string | ApiKeyResponse,
   groupId: string,
   locals: Locals
 ) => {
   if (await can(userId, OrgScopes.DELETE_ORG, "group", groupId)) {
-    const groupDetails = await getOrganizationById(groupId);
+    const groupDetails = await getGroupById(groupId);
     await deleteItemFromCache(
-      `cache_getOrganizationById_${groupDetails.id}`,
-      `cache_getOrganizationByUsername_${groupDetails.username}`
+      `cache_getGroupById_${groupDetails.id}`,
+      `cache_getGroupByUsername_${groupDetails.username}`
     );
     if (groupDetails.stripeCustomerId)
       await deleteCustomer(groupDetails.stripeCustomerId);
@@ -163,12 +163,12 @@ export const deleteOrganizationForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const getOrganizationBillingForUser = async (
+export const getGroupBillingForUser = async (
   userId: string | ApiKeyResponse,
   groupId: string
 ) => {
   if (await can(userId, OrgScopes.READ_ORG_BILLING, "group", groupId)) {
-    const group = await getOrganizationById(groupId);
+    const group = await getGroupById(groupId);
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
     if (group.stripeCustomerId) return getCustomer(group.stripeCustomerId);
     throw new Error(STRIPE_NO_CUSTOMER);
@@ -176,14 +176,14 @@ export const getOrganizationBillingForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const updateOrganizationBillingForUser = async (
+export const updateGroupBillingForUser = async (
   userId: string | ApiKeyResponse,
   groupId: string,
   data: any,
   locals: Locals
 ) => {
   if (await can(userId, OrgScopes.UPDATE_ORG_BILLING, "group", groupId)) {
-    const group = await getOrganizationById(groupId);
+    const group = await getGroupById(groupId);
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
     let result;
     if (group.stripeCustomerId) {
@@ -208,13 +208,13 @@ export const updateOrganizationBillingForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const getOrganizationInvoicesForUser = async (
+export const getGroupInvoicesForUser = async (
   userId: string | ApiKeyResponse,
   groupId: string,
   params: KeyValue
 ) => {
   if (await can(userId, OrgScopes.READ_ORG_INVOICES, "group", groupId)) {
-    const group = await getOrganizationById(groupId);
+    const group = await getGroupById(groupId);
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
     if (group.stripeCustomerId)
       return getInvoices(group.stripeCustomerId, params);
@@ -223,13 +223,13 @@ export const getOrganizationInvoicesForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const getOrganizationInvoiceForUser = async (
+export const getGroupInvoiceForUser = async (
   userId: string | ApiKeyResponse,
   groupId: string,
   invoiceId: string
 ) => {
   if (await can(userId, OrgScopes.READ_ORG_INVOICES, "group", groupId)) {
-    const group = await getOrganizationById(groupId);
+    const group = await getGroupById(groupId);
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
     if (group.stripeCustomerId)
       return getInvoice(group.stripeCustomerId, invoiceId);
@@ -238,13 +238,13 @@ export const getOrganizationInvoiceForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const getOrganizationSourcesForUser = async (
+export const getGroupSourcesForUser = async (
   userId: string | ApiKeyResponse,
   groupId: string,
   params: KeyValue
 ) => {
   if (await can(userId, OrgScopes.READ_ORG_SOURCES, "group", groupId)) {
-    const group = await getOrganizationById(groupId);
+    const group = await getGroupById(groupId);
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
     if (group.stripeCustomerId)
       return getSources(group.stripeCustomerId, params);
@@ -253,13 +253,13 @@ export const getOrganizationSourcesForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const getOrganizationSourceForUser = async (
+export const getGroupSourceForUser = async (
   userId: string | ApiKeyResponse,
   groupId: string,
   sourceId: string
 ) => {
   if (await can(userId, OrgScopes.READ_ORG_SOURCES, "group", groupId)) {
-    const group = await getOrganizationById(groupId);
+    const group = await getGroupById(groupId);
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
     if (group.stripeCustomerId)
       return getSource(group.stripeCustomerId, sourceId);
@@ -268,13 +268,13 @@ export const getOrganizationSourceForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const getOrganizationSubscriptionsForUser = async (
+export const getGroupSubscriptionsForUser = async (
   userId: string | ApiKeyResponse,
   groupId: string,
   params: KeyValue
 ) => {
   if (await can(userId, OrgScopes.READ_ORG_SUBSCRIPTIONS, "group", groupId)) {
-    const group = await getOrganizationById(groupId);
+    const group = await getGroupById(groupId);
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
     if (group.stripeCustomerId)
       return getSubscriptions(group.stripeCustomerId, params);
@@ -283,13 +283,13 @@ export const getOrganizationSubscriptionsForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const getOrganizationSubscriptionForUser = async (
+export const getGroupSubscriptionForUser = async (
   userId: string | ApiKeyResponse,
   groupId: string,
   subscriptionId: string
 ) => {
   if (await can(userId, OrgScopes.READ_ORG_SUBSCRIPTIONS, "group", groupId)) {
-    const group = await getOrganizationById(groupId);
+    const group = await getGroupById(groupId);
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
     if (group.stripeCustomerId)
       return getSubscription(group.stripeCustomerId, subscriptionId);
@@ -298,7 +298,7 @@ export const getOrganizationSubscriptionForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const updateOrganizationSubscriptionForUser = async (
+export const updateGroupSubscriptionForUser = async (
   userId: string | ApiKeyResponse,
   groupId: string,
   subscriptionId: string,
@@ -306,7 +306,7 @@ export const updateOrganizationSubscriptionForUser = async (
   locals?: Locals
 ) => {
   if (await can(userId, OrgScopes.UPDATE_ORG_SUBSCRIPTIONS, "group", groupId)) {
-    const group = await getOrganizationById(groupId);
+    const group = await getGroupById(groupId);
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
     if (group.stripeCustomerId) {
       const result = await updateSubscription(
@@ -326,14 +326,14 @@ export const updateOrganizationSubscriptionForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const createOrganizationSubscriptionForUser = async (
+export const createGroupSubscriptionForUser = async (
   userId: string | ApiKeyResponse,
   groupId: string,
   params: { plan: string; [index: string]: any },
   locals?: Locals
 ) => {
   if (await can(userId, OrgScopes.CREATE_ORG_SUBSCRIPTIONS, "group", groupId)) {
-    const group = await getOrganizationById(groupId);
+    const group = await getGroupById(groupId);
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
     if (group.stripeCustomerId) {
       const result = await createSubscription(group.stripeCustomerId, params);
@@ -349,7 +349,7 @@ export const createOrganizationSubscriptionForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const getOrganizationPricingPlansForUser = async (
+export const getGroupPricingPlansForUser = async (
   userId: string | ApiKeyResponse,
   groupId: string
 ) => {
@@ -358,14 +358,14 @@ export const getOrganizationPricingPlansForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const deleteOrganizationSourceForUser = async (
+export const deleteGroupSourceForUser = async (
   userId: string | ApiKeyResponse,
   groupId: string,
   sourceId: string,
   locals?: Locals
 ) => {
   if (await can(userId, OrgScopes.DELETE_ORG_SOURCES, "group", groupId)) {
-    const group = await getOrganizationById(groupId);
+    const group = await getGroupById(groupId);
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
     if (group.stripeCustomerId) {
       const result = await deleteSource(group.stripeCustomerId, sourceId);
@@ -381,7 +381,7 @@ export const deleteOrganizationSourceForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const updateOrganizationSourceForUser = async (
+export const updateGroupSourceForUser = async (
   userId: string | ApiKeyResponse,
   groupId: string,
   sourceId: string,
@@ -389,7 +389,7 @@ export const updateOrganizationSourceForUser = async (
   locals?: Locals
 ) => {
   if (await can(userId, OrgScopes.UPDATE_ORG_SOURCES, "group", groupId)) {
-    const group = await getOrganizationById(groupId);
+    const group = await getGroupById(groupId);
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
     if (group.stripeCustomerId) {
       const result = await updateSource(group.stripeCustomerId, sourceId, data);
@@ -405,14 +405,14 @@ export const updateOrganizationSourceForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const createOrganizationSourceForUser = async (
+export const createGroupSourceForUser = async (
   userId: string | ApiKeyResponse,
   groupId: string,
   card: any,
   locals?: Locals
 ) => {
   if (await can(userId, OrgScopes.CREATE_ORG_SOURCES, "group", groupId)) {
-    const group = await getOrganizationById(groupId);
+    const group = await getGroupById(groupId);
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
     if (group.stripeCustomerId) {
       const result = await createSource(group.stripeCustomerId, card);
@@ -428,7 +428,7 @@ export const createOrganizationSourceForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const getAllOrganizationDataForUser = async (
+export const getAllGroupDataForUser = async (
   userId: string | ApiKeyResponse,
   groupId: string
 ) => {
@@ -460,7 +460,7 @@ export const getAllOrganizationDataForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const getOrganizationMembershipsForUser = async (
+export const getGroupMembershipsForUser = async (
   userId: string | ApiKeyResponse,
   groupId: string,
   queryParams: any
@@ -476,7 +476,7 @@ export const getOrganizationMembershipsForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const getOrganizationMembershipForUser = async (
+export const getGroupMembershipForUser = async (
   userId: string | ApiKeyResponse,
   groupId: string,
   membershipId: string
@@ -489,7 +489,7 @@ export const getOrganizationMembershipForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const updateOrganizationMembershipForUser = async (
+export const updateGroupMembershipForUser = async (
   userId: string | ApiKeyResponse,
   groupId: string,
   membershipId: string,
@@ -521,7 +521,7 @@ export const updateOrganizationMembershipForUser = async (
  * If an group has only one member, the user,
  * Delete the entire group, not just the membership
  */
-export const deleteOrganizationMembershipForUser = async (
+export const deleteGroupMembershipForUser = async (
   userId: string | ApiKeyResponse,
   groupId: string,
   membershipId: string,
@@ -532,13 +532,13 @@ export const deleteOrganizationMembershipForUser = async (
       where: { groupId: parseInt(groupId) },
     });
     if (members.length === 1)
-      return deleteOrganizationForUser(userId, groupId, locals);
+      return deleteGroupForUser(userId, groupId, locals);
     return prisma.memberships.delete({ where: { id: parseInt(membershipId) } });
   }
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const inviteMemberToOrganization = async (
+export const inviteMemberToGroup = async (
   userId: string | ApiKeyResponse,
   groupId: string,
   newMemberName: string,
@@ -547,7 +547,7 @@ export const inviteMemberToOrganization = async (
   locals: Locals
 ) => {
   if (await can(userId, OrgScopes.CREATE_ORG_MEMBERSHIPS, "group", groupId)) {
-    const group = await getOrganizationById(groupId);
+    const group = await getGroupById(groupId);
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
     if (group.onlyAllowDomain) {
       const emailDomain = newMemberEmail.split("@")[1];
@@ -619,7 +619,7 @@ export const inviteMemberToOrganization = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const getOrganizationApiKeysForUser = async (
+export const getGroupApiKeysForUser = async (
   userId: string | ApiKeyResponse,
   groupId: string,
   queryParams: any
@@ -635,7 +635,7 @@ export const getOrganizationApiKeysForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const getOrganizationApiKeyForUser = async (
+export const getGroupApiKeyForUser = async (
   userId: string | ApiKeyResponse,
   groupId: string,
   apiKeyId: string
@@ -645,7 +645,7 @@ export const getOrganizationApiKeyForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const getOrganizationApiKeyLogsForUser = async (
+export const getGroupApiKeyLogsForUser = async (
   userId: string | ApiKeyResponse,
   groupId: string,
   apiKeyId: string,
@@ -721,7 +721,7 @@ export const deleteApiKeyForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const getOrganizationDomainsForUser = async (
+export const getGroupDomainsForUser = async (
   userId: string | ApiKeyResponse,
   groupId: string,
   queryParams: any
@@ -737,7 +737,7 @@ export const getOrganizationDomainsForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const getOrganizationDomainForUser = async (
+export const getGroupDomainForUser = async (
   userId: string | ApiKeyResponse,
   groupId: string,
   domainId: string
@@ -868,7 +868,7 @@ export const verifyDomainForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const getOrganizationWebhooksForUser = async (
+export const getGroupWebhooksForUser = async (
   userId: string | ApiKeyResponse,
   groupId: string,
   queryParams: any
@@ -884,7 +884,7 @@ export const getOrganizationWebhooksForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const getOrganizationWebhookForUser = async (
+export const getGroupWebhookForUser = async (
   userId: string | ApiKeyResponse,
   groupId: string,
   webhookId: string
@@ -957,7 +957,7 @@ export const deleteWebhookForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const applyCouponToOrganizationForUser = async (
+export const applyCouponToGroupForUser = async (
   userId: string | ApiKeyResponse,
   groupId: string,
   coupon: string
@@ -979,7 +979,7 @@ export const applyCouponToOrganizationForUser = async (
     } catch (error) {
       throw new Error(INVALID_INPUT);
     }
-    const group = await getOrganizationById(groupId);
+    const group = await getGroupById(groupId);
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
     if (amount && currency && group.stripeCustomerId) {
       const result = await createCustomerBalanceTransaction(
@@ -998,13 +998,13 @@ export const applyCouponToOrganizationForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const getOrganizationTransactionsForUser = async (
+export const getGroupTransactionsForUser = async (
   userId: string | ApiKeyResponse,
   groupId: string,
   params: KeyValue
 ) => {
   if (await can(userId, OrgScopes.READ_ORG_TRANSACTIONS, "group", groupId)) {
-    const group = await getOrganizationById(groupId);
+    const group = await getGroupById(groupId);
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
     if (group.stripeCustomerId)
       return getCustomBalanceTransactions(group.stripeCustomerId, params);
@@ -1013,13 +1013,13 @@ export const getOrganizationTransactionsForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const getOrganizationTransactionForUser = async (
+export const getGroupTransactionForUser = async (
   userId: string | ApiKeyResponse,
   groupId: string,
   transactionId: string
 ) => {
   if (await can(userId, OrgScopes.READ_ORG_TRANSACTIONS, "group", groupId)) {
-    const group = await getOrganizationById(groupId);
+    const group = await getGroupById(groupId);
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
     if (group.stripeCustomerId)
       return getCustomBalanceTransaction(group.stripeCustomerId, transactionId);

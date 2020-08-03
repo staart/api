@@ -27,7 +27,7 @@ import {
 } from "../services/user.service";
 import { can } from "../helpers/authorization";
 import { trackEvent } from "../helpers/tracking";
-import { deleteOrganizationForUser } from "./group";
+import { deleteGroupForUser } from "./group";
 import { EventType, UserScopes, Templates } from "../interfaces/enum";
 import { Locals } from "../interfaces/general";
 import { mail } from "../helpers/mail";
@@ -672,7 +672,7 @@ export const deleteMembershipForUser = async (
       where: { groupId: membership.groupId },
     });
     if (groupMembers.length === 1)
-      return deleteOrganizationForUser(
+      return deleteGroupForUser(
         tokenUserId,
         String(membership.groupId),
         locals

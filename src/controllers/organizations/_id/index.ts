@@ -23,20 +23,20 @@ import {
   groupUsernameToId,
 } from "../../../_staart/helpers/utils";
 import {
-  deleteOrganizationForUser,
-  getAllOrganizationDataForUser,
-  getOrganizationForUser,
-  newOrganizationForUser,
-  updateOrganizationForUser,
+  deleteGroupForUser,
+  getAllGroupDataForUser,
+  getGroupForUser,
+  newGroupForUser,
+  updateGroupForUser,
 } from "../../../_staart/rest/group";
 
 @ClassMiddleware(authHandler)
-export class OrganizationController {
+export class GroupController {
   @Get()
   async get(req: Request, res: Response) {
     const id = await groupUsernameToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    const group = await getOrganizationForUser(localsToTokenOrKey(res), id);
+    const group = await getGroupForUser(localsToTokenOrKey(res), id);
     return group;
   }
 
@@ -58,7 +58,7 @@ export class OrganizationController {
   async patch(req: Request, res: Response) {
     const id = await groupUsernameToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    const updated = await updateOrganizationForUser(
+    const updated = await updateGroupForUser(
       localsToTokenOrKey(res),
       id,
       req.body,
@@ -71,7 +71,7 @@ export class OrganizationController {
   async delete(req: Request, res: Response) {
     const groupId = await groupUsernameToId(req.params.id);
     joiValidate({ groupId: Joi.string().required() }, { groupId });
-    await deleteOrganizationForUser(res.locals.token.id, groupId, res.locals);
+    await deleteGroupForUser(res.locals.token.id, groupId, res.locals);
     return respond(RESOURCE_DELETED);
   }
 
@@ -79,6 +79,6 @@ export class OrganizationController {
   async getData(req: Request, res: Response) {
     const groupId = await groupUsernameToId(req.params.id);
     joiValidate({ groupId: Joi.string().required() }, { groupId });
-    return getAllOrganizationDataForUser(localsToTokenOrKey(res), groupId);
+    return getAllGroupDataForUser(localsToTokenOrKey(res), groupId);
   }
 }

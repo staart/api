@@ -22,21 +22,21 @@ import {
   groupUsernameToId,
 } from "../../../_staart/helpers/utils";
 import {
-  deleteOrganizationMembershipForUser,
-  getOrganizationMembershipForUser,
-  getOrganizationMembershipsForUser,
-  inviteMemberToOrganization,
-  updateOrganizationMembershipForUser,
+  deleteGroupMembershipForUser,
+  getGroupMembershipForUser,
+  getGroupMembershipsForUser,
+  inviteMemberToGroup,
+  updateGroupMembershipForUser,
 } from "../../../_staart/rest/group";
 import { MembershipRole } from "@prisma/client";
 
 @ClassMiddleware(authHandler)
-export class OrganizationMembershipsController {
+export class GroupMembershipsController {
   @Get()
   async getMemberships(req: Request, res: Response) {
     const groupId = await groupUsernameToId(req.params.id);
     joiValidate({ groupId: Joi.string().required() }, { groupId });
-    return getOrganizationMembershipsForUser(
+    return getGroupMembershipsForUser(
       localsToTokenOrKey(res),
       groupId,
       req.query
@@ -63,7 +63,7 @@ export class OrganizationMembershipsController {
         role,
       }
     );
-    await inviteMemberToOrganization(
+    await inviteMemberToGroup(
       localsToTokenOrKey(res),
       groupId,
       newMemberName,
@@ -85,7 +85,7 @@ export class OrganizationMembershipsController {
       },
       { groupId, membershipId }
     );
-    return getOrganizationMembershipForUser(
+    return getGroupMembershipForUser(
       localsToTokenOrKey(res),
       groupId,
       membershipId
@@ -111,7 +111,7 @@ export class OrganizationMembershipsController {
       },
       { groupId, membershipId }
     );
-    const updated = await updateOrganizationMembershipForUser(
+    const updated = await updateGroupMembershipForUser(
       localsToTokenOrKey(res),
       groupId,
       membershipId,
@@ -131,7 +131,7 @@ export class OrganizationMembershipsController {
       },
       { groupId, membershipId }
     );
-    await deleteOrganizationMembershipForUser(
+    await deleteGroupMembershipForUser(
       localsToTokenOrKey(res),
       groupId,
       membershipId,

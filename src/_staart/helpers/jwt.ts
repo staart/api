@@ -150,27 +150,6 @@ export const twoFactorToken = (user: users) =>
   generateToken({ id: user.id }, TOKEN_EXPIRY_LOGIN, Tokens.TWO_FACTOR);
 
 /**
- * Generate an API key JWT
- */
-export const apiKeyToken = (
-  apiKey: apiKeysCreateInput | apiKeysUpdateInput
-) => {
-  const createApiKey = { ...removeFalsyValues(apiKey) };
-  delete createApiKey.createdAt;
-  delete createApiKey.jwtApiKey;
-  delete createApiKey.updatedAt;
-  delete createApiKey.name;
-  delete createApiKey.description;
-  delete createApiKey.expiresAt;
-  return generateToken(
-    createApiKey,
-    (apiKey.expiresAt
-      ? new Date(apiKey.expiresAt).getTime()
-      : TOKEN_EXPIRY_API_KEY_MAX) - new Date().getTime(),
-    Tokens.API_KEY
-  );
-};
-/**
  * Generate an access token
  */
 export const accessToken = (

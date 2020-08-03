@@ -26,23 +26,19 @@ import {
 import {
   createDomainForUser,
   deleteDomainForUser,
-  getOrganizationDomainForUser,
-  getOrganizationDomainsForUser,
+  getGroupDomainForUser,
+  getGroupDomainsForUser,
   updateDomainForUser,
   verifyDomainForUser,
 } from "../../../_staart/rest/group";
 
 @ClassMiddleware(authHandler)
-export class OrganizationDomainsController {
+export class GroupDomainsController {
   @Get()
   async getUserDomains(req: Request, res: Response) {
     const id = await groupUsernameToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    return getOrganizationDomainsForUser(
-      localsToTokenOrKey(res),
-      id,
-      req.query
-    );
+    return getGroupDomainsForUser(localsToTokenOrKey(res), id, req.query);
   }
 
   @Put()
@@ -77,7 +73,7 @@ export class OrganizationDomainsController {
       },
       { id, domainId }
     );
-    return getOrganizationDomainForUser(localsToTokenOrKey(res), id, domainId);
+    return getGroupDomainForUser(localsToTokenOrKey(res), id, domainId);
   }
 
   @Patch(":domainId")
@@ -130,7 +126,7 @@ export class OrganizationDomainsController {
   }
 
   @Post(":domainId/verify")
-  async verifyOrganizationDomain(req: Request, res: Response) {
+  async verifyGroupDomain(req: Request, res: Response) {
     const id = await groupUsernameToId(req.params.id);
     const domainId = req.params.domainId;
     const method = req.body.method || req.query.method;

@@ -15,14 +15,14 @@ import {
   groupUsernameToId,
 } from "../../../_staart/helpers/utils";
 import {
-  createOrganizationSubscriptionForUser,
-  getOrganizationSubscriptionForUser,
-  getOrganizationSubscriptionsForUser,
-  updateOrganizationSubscriptionForUser,
+  createGroupSubscriptionForUser,
+  getGroupSubscriptionForUser,
+  getGroupSubscriptionsForUser,
+  updateGroupSubscriptionForUser,
 } from "../../../_staart/rest/group";
 
 @ClassMiddleware(authHandler)
-export class OrganizationSubscriptionsController {
+export class GroupSubscriptionsController {
   @Get()
   async getSubscriptions(req: Request, res: Response) {
     const groupId = await groupUsernameToId(req.params.id);
@@ -38,7 +38,7 @@ export class OrganizationSubscriptionsController {
       },
       subscriptionParams
     );
-    return getOrganizationSubscriptionsForUser(
+    return getGroupSubscriptionsForUser(
       localsToTokenOrKey(res),
       groupId,
       subscriptionParams
@@ -59,7 +59,7 @@ export class OrganizationSubscriptionsController {
       },
       subscriptionParams
     );
-    await createOrganizationSubscriptionForUser(
+    await createGroupSubscriptionForUser(
       localsToTokenOrKey(res),
       groupId,
       subscriptionParams,
@@ -79,7 +79,7 @@ export class OrganizationSubscriptionsController {
       },
       { groupId, subscriptionId }
     );
-    return getOrganizationSubscriptionForUser(
+    return getGroupSubscriptionForUser(
       localsToTokenOrKey(res),
       groupId,
       subscriptionId
@@ -109,7 +109,7 @@ export class OrganizationSubscriptionsController {
       },
       data
     );
-    await updateOrganizationSubscriptionForUser(
+    await updateGroupSubscriptionForUser(
       localsToTokenOrKey(res),
       groupId,
       subscriptionId,

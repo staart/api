@@ -13,13 +13,13 @@ import {
   groupUsernameToId,
 } from "../../../_staart/helpers/utils";
 import {
-  getOrganizationTransactionForUser,
-  getOrganizationTransactionsForUser,
-  applyCouponToOrganizationForUser,
+  getGroupTransactionForUser,
+  getGroupTransactionsForUser,
+  applyCouponToGroupForUser,
 } from "../../../_staart/rest/group";
 
 @ClassMiddleware(authHandler)
-export class OrganizationTransactionsController {
+export class GroupTransactionsController {
   @Get()
   async getTransactions(req: Request, res: Response) {
     const groupId = await groupUsernameToId(req.params.id);
@@ -32,7 +32,7 @@ export class OrganizationTransactionsController {
       },
       transactionParams
     );
-    return getOrganizationTransactionsForUser(
+    return getGroupTransactionsForUser(
       localsToTokenOrKey(res),
       groupId,
       transactionParams
@@ -50,7 +50,7 @@ export class OrganizationTransactionsController {
       },
       { groupId, couponCode }
     );
-    return applyCouponToOrganizationForUser(
+    return applyCouponToGroupForUser(
       localsToTokenOrKey(res),
       groupId,
       couponCode
@@ -68,7 +68,7 @@ export class OrganizationTransactionsController {
       },
       { groupId, transactionId }
     );
-    return getOrganizationTransactionForUser(
+    return getGroupTransactionForUser(
       localsToTokenOrKey(res),
       groupId,
       transactionId

@@ -13,25 +13,25 @@ import {
   groupUsernameToId,
 } from "../../../_staart/helpers/utils";
 import {
-  getOrganizationBillingForUser,
-  getOrganizationPricingPlansForUser,
-  updateOrganizationBillingForUser,
+  getGroupBillingForUser,
+  getGroupPricingPlansForUser,
+  updateGroupBillingForUser,
 } from "../../../_staart/rest/group";
 
 @ClassMiddleware(authHandler)
-export class OrganizationBillingController {
+export class GroupBillingController {
   @Get()
   async getBilling(req: Request, res: Response) {
     const groupId = await groupUsernameToId(req.params.id);
     joiValidate({ groupId: Joi.string().required() }, { groupId });
-    return getOrganizationBillingForUser(localsToTokenOrKey(res), groupId);
+    return getGroupBillingForUser(localsToTokenOrKey(res), groupId);
   }
 
   @Patch()
   async patchBilling(req: Request, res: Response) {
     const groupId = await groupUsernameToId(req.params.id);
     joiValidate({ groupId: Joi.string().required() }, { groupId });
-    await updateOrganizationBillingForUser(
+    await updateGroupBillingForUser(
       localsToTokenOrKey(res),
       groupId,
       req.body,
@@ -49,6 +49,6 @@ export class OrganizationBillingController {
       },
       { groupId }
     );
-    return getOrganizationPricingPlansForUser(localsToTokenOrKey(res), groupId);
+    return getGroupPricingPlansForUser(localsToTokenOrKey(res), groupId);
   }
 }

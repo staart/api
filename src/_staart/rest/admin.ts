@@ -26,7 +26,7 @@ import {
   coupon_codesUpdateInput,
 } from "@prisma/client";
 
-export const getAllOrganizationForUser = async (
+export const getAllGroupForUser = async (
   tokenUserId: string,
   queryParams: any
 ) => {

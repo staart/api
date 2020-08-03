@@ -24,23 +24,19 @@ import {
 import {
   createApiKeyForUser,
   deleteApiKeyForUser,
-  getOrganizationApiKeyForUser,
-  getOrganizationApiKeyLogsForUser,
-  getOrganizationApiKeysForUser,
+  getGroupApiKeyForUser,
+  getGroupApiKeyLogsForUser,
+  getGroupApiKeysForUser,
   updateApiKeyForUser,
 } from "../../../_staart/rest/group";
 
 @ClassMiddleware(authHandler)
-export class OrganizationApiKeysController {
+export class GroupApiKeysController {
   @Get()
   async getUserApiKeys(req: Request, res: Response) {
     const id = await groupUsernameToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    return getOrganizationApiKeysForUser(
-      localsToTokenOrKey(res),
-      id,
-      req.query
-    );
+    return getGroupApiKeysForUser(localsToTokenOrKey(res), id, req.query);
   }
 
   @Put()
@@ -79,7 +75,7 @@ export class OrganizationApiKeysController {
       },
       { id, apiKeyId }
     );
-    return getOrganizationApiKeyForUser(localsToTokenOrKey(res), id, apiKeyId);
+    return getGroupApiKeyForUser(localsToTokenOrKey(res), id, apiKeyId);
   }
 
   @Patch(":apiKeyId")
@@ -146,7 +142,7 @@ export class OrganizationApiKeysController {
       },
       { id, apiKeyId }
     );
-    return getOrganizationApiKeyLogsForUser(
+    return getGroupApiKeyLogsForUser(
       localsToTokenOrKey(res),
       id,
       apiKeyId,

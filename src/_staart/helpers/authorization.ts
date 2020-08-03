@@ -14,7 +14,7 @@ import {
 } from "@prisma/client";
 import { prisma } from "./prisma";
 import { getUserById } from "../services/user.service";
-import { getOrganizationById } from "../services/group.service";
+import { getGroupById } from "../services/group.service";
 
 /**
  * Whether a user can perform an action on another user
@@ -72,11 +72,7 @@ const canAccessTokenUser = (
 /**
  * Whether a user can perform an action on an group
  */
-const canUserOrganization = async (
-  user: users,
-  action: OrgScopes,
-  target: groups
-) => {
+const canUserGroup = async (user: users, action: OrgScopes, target: groups) => {
   // A super user can do anything
   if (user.role === "SUDO") return true;
 
@@ -160,11 +156,7 @@ const canUserSudo = async (user: users, action: SudoScopes) => {
 /**
  * Whether an API key can perform an action for an group
  */
-const canApiKeyOrganization = (
-  apiKey: apiKeys,
-  action: OrgScopes,
-  target: groups
-) => {
+const canApiKeyGroup = (apiKey: apiKeys, action: OrgScopes, target: groups) => {
   // An API key can only work in its own group
   if (apiKey.groupId !== target.id) return false;
 
@@ -216,7 +208,7 @@ export const can = async (
       if (!membership) throw new Error(USER_NOT_FOUND);
       target = membership;
     } else if (targetType === "group") {
-      const group = await getOrganizationById(target);
+      const group = await getGroupById(target);
       target = group;
     } else {
       // Target is a user
@@ -235,11 +227,7 @@ export const can = async (
       where: { id: parseInt((user as ApiKeyResponse).id) },
     });
     if (!apiKeyDetails || !target) throw new Error(INVALID_TOKEN);
-    return canApiKeyOrganization(
-      apiKeyDetails,
-      action as OrgScopes,
-      target as groups
-    );
+    return canApiKeyGroup(apiKeyDetails, action as OrgScopes, target as groups);
   } else if (requestFromType === "accessTokens") {
     const accessTokenDetails = await prisma.accessTokens.findOne({
       where: { id: parseInt((user as ApiKeyResponse).id) },
@@ -260,11 +248,7 @@ export const can = async (
         target as memberships
       );
     } else if (targetType === "group") {
-      return canUserOrganization(
-        user as users,
-        action as OrgScopes,
-        target as groups
-      );
+      return canUserGroup(user as users, action as OrgScopes, target as groups);
     }
   }
 

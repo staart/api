@@ -21,15 +21,15 @@ import {
   groupUsernameToId,
 } from "../../../_staart/helpers/utils";
 import {
-  createOrganizationSourceForUser,
-  deleteOrganizationSourceForUser,
-  getOrganizationSourceForUser,
-  getOrganizationSourcesForUser,
-  updateOrganizationSourceForUser,
+  createGroupSourceForUser,
+  deleteGroupSourceForUser,
+  getGroupSourceForUser,
+  getGroupSourcesForUser,
+  updateGroupSourceForUser,
 } from "../../../_staart/rest/group";
 
 @ClassMiddleware(authHandler)
-export class OrganizationSourcesController {
+export class GroupSourcesController {
   @Get()
   async getSources(req: Request, res: Response) {
     const groupId = await groupUsernameToId(req.params.id);
@@ -42,7 +42,7 @@ export class OrganizationSourcesController {
       },
       subscriptionParams
     );
-    return getOrganizationSourcesForUser(
+    return getGroupSourcesForUser(
       localsToTokenOrKey(res),
       groupId,
       subscriptionParams
@@ -53,7 +53,7 @@ export class OrganizationSourcesController {
   async putSources(req: Request, res: Response) {
     const groupId = await groupUsernameToId(req.params.id);
     joiValidate({ groupId: Joi.string().required() }, { groupId });
-    await createOrganizationSourceForUser(
+    await createGroupSourceForUser(
       localsToTokenOrKey(res),
       groupId,
       req.body,
@@ -73,11 +73,7 @@ export class OrganizationSourcesController {
       },
       { groupId, sourceId }
     );
-    return getOrganizationSourceForUser(
-      localsToTokenOrKey(res),
-      groupId,
-      sourceId
-    );
+    return getGroupSourceForUser(localsToTokenOrKey(res), groupId, sourceId);
   }
 
   @Patch(":sourceId")
@@ -91,7 +87,7 @@ export class OrganizationSourcesController {
       },
       { groupId, sourceId }
     );
-    const updated = await updateOrganizationSourceForUser(
+    const updated = await updateGroupSourceForUser(
       localsToTokenOrKey(res),
       groupId,
       sourceId,
@@ -112,7 +108,7 @@ export class OrganizationSourcesController {
       },
       { groupId, sourceId }
     );
-    await deleteOrganizationSourceForUser(
+    await deleteGroupSourceForUser(
       localsToTokenOrKey(res),
       groupId,
       sourceId,

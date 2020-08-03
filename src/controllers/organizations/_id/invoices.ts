@@ -12,12 +12,12 @@ import {
   groupUsernameToId,
 } from "../../../_staart/helpers/utils";
 import {
-  getOrganizationInvoiceForUser,
-  getOrganizationInvoicesForUser,
+  getGroupInvoiceForUser,
+  getGroupInvoicesForUser,
 } from "../../../_staart/rest/group";
 
 @ClassMiddleware(authHandler)
-export class OrganizationInvoicesController {
+export class GroupInvoicesController {
   @Get()
   async getInvoices(req: Request, res: Response) {
     const groupId = await groupUsernameToId(req.params.id);
@@ -33,7 +33,7 @@ export class OrganizationInvoicesController {
       },
       subscriptionParams
     );
-    return getOrganizationInvoicesForUser(
+    return getGroupInvoicesForUser(
       localsToTokenOrKey(res),
       groupId,
       subscriptionParams
@@ -51,10 +51,6 @@ export class OrganizationInvoicesController {
       },
       { groupId, invoiceId }
     );
-    return getOrganizationInvoiceForUser(
-      localsToTokenOrKey(res),
-      groupId,
-      invoiceId
-    );
+    return getGroupInvoiceForUser(localsToTokenOrKey(res), groupId, invoiceId);
   }
 }
