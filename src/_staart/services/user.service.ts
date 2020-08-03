@@ -7,9 +7,7 @@ import {
 import {
   anonymizeIpAddress,
   capitalizeFirstAndLastLetter,
-  createSlug,
   hash,
-  slugify,
 } from "@staart/text";
 import { createHash } from "crypto";
 import randomInt from "random-int";
@@ -24,6 +22,7 @@ import {
   accessTokensCreateInput,
   sessionsUpdateInput,
   usersCreateInput,
+  PrefersReducedMotion,
 } from "@prisma/client";
 import { decode } from "jsonwebtoken";
 import { emailVerificationToken } from "../helpers/jwt";
@@ -37,66 +36,16 @@ import {
 } from "../helpers/cache";
 
 /**
- * Get the best available username for a user
- * For example, if the user's name is "Anand Chowdhary"
- * Usernames: "anand", "anand-chowdhary", "anand-chowdhary-a29hi3q"
- * @param name - Name of user
- */
-export const getBestUsernameForUser = async (name: string) => {
-  let result: string;
-  if (name.split(" ")[0].trim().length) {
-    result = slugify(name.split(" ")[0].trim());
-    if (
-      result &&
-      !(await prisma.users.findMany({ where: { username: result } })).length
-    )
-      return result;
-  }
-  result = slugify(name.trim());
-  if (
-    result &&
-    !(await prisma.users.findMany({ where: { username: result } })).length
-  )
-    return result;
-
-  let available = false;
-  while (!available) {
-    result = createSlug(name);
-    if (!(await prisma.users.findMany({ where: { username: result } })).length)
-      available = true;
-  }
-  return result;
-};
-
-/**
- * Check if an group username is available
- */
-export const checkUserUsernameAvailability = async (username: string) => {
-  return (
-    (
-      await prisma.users.findMany({
-        where: { username },
-      })
-    ).length === 0
-  );
-};
-
-/**
  * Create a new user
  */
-export const createUser = async (
-  _user: PartialBy<usersCreateInput, "nickname">
-) => {
-  const user: usersCreateInput = { nickname: "", ..._user };
+export const createUser = async (user: usersCreateInput) => {
   user.name = capitalizeFirstAndLastLetter(user.name);
-  user.nickname = user.nickname || user.name.split(" ")[0];
   user.password = user.password ? await hash(user.password, 8) : null;
-  user.profilePicture =
-    user.profilePicture ||
+  user.profilePictureUrl =
+    user.profilePictureUrl ||
     `https://api.adorable.io/avatars/285/${createHash("md5")
       .update(user.name)
       .digest("hex")}.png`;
-  // Create user
   const result = await prisma.users.create({
     data: user,
   });
@@ -129,9 +78,8 @@ export const updateUser = async (id: string, user: KeyValue) => {
   const originalUser = await getUserById(id);
   await deleteItemFromCache(`cache_getUserById_${originalUser.id}`);
   if (user.password) user.password = await hash(user.password, 8);
-  // If you're updating your primary email, your Gravatar should reflect it
   if (user.primaryEmail) {
-    if ((originalUser.profilePicture || "").includes("api.adorable.io")) {
+    if ((originalUser.profilePictureUrl || "").includes("api.adorable.io")) {
       const emailDetails = await prisma.emails.findOne({
         where: { id: user.primaryEmail },
       });
@@ -146,17 +94,6 @@ export const updateUser = async (id: string, user: KeyValue) => {
             .digest("hex")}.png`
         )}`;
     }
-  }
-  // If you're updating your username, make sure it's available
-  if (user.username) {
-    const currentOwnerOfUsername = await prisma.users.findMany({
-      where: { username: user.username },
-    });
-    if (
-      currentOwnerOfUsername.length &&
-      currentOwnerOfUsername[0].id !== originalUser.id
-    )
-      throw new Error(USERNAME_EXISTS);
   }
   const result = await prisma.users.update({
     data: user,
@@ -175,7 +112,7 @@ export const addApprovedLocation = async (
 ) => {
   if (typeof userId === "number") userId = userId.toString();
   const subnet = anonymizeIpAddress(ipAddress);
-  return prisma.approved_locations.create({
+  return prisma.approvedLocations.create({
     data: {
       user: { connect: { id: parseInt(userId) } },
       subnet,
@@ -199,7 +136,7 @@ export const checkApprovedLocation = async (
   const subnet = anonymizeIpAddress(ipAddress);
   return (
     (
-      await prisma.approved_locations.findMany({
+      await prisma.approvedLocations.findMany({
         where: { userId: parseInt(userId), subnet },
       })
     ).length !== 0
@@ -219,7 +156,7 @@ export const createBackupCodes = async (userId: string | number, count = 1) => {
   for await (const _ of Array.from(Array(count).keys())) {
     const code = randomInt(100000, 999999).toString();
     codes.push(code);
-    await prisma.backup_codes.create({
+    await prisma.backupCodes.create({
       data: {
         code: await hash(code, 8),
         user: { connect: { id: parseInt(userId) } },
@@ -236,7 +173,7 @@ export const createBackupCodes = async (userId: string | number, count = 1) => {
  */
 export const createAccessToken = async (data: accessTokensCreateInput) => {
   data.expiresAt = data.expiresAt || new Date(TOKEN_EXPIRY_API_KEY_MAX);
-  data.jwtAccessToken = await accessToken(data);
+  data.accessToken = await accessToken(data);
   return prisma.accessTokens.create({ data });
 };
 
@@ -251,9 +188,6 @@ export const updateAccessToken = async (
     where: { id: parseInt(accessTokenId) },
   });
   if (!newAccessToken) throw new Error(RESOURCE_NOT_FOUND);
-  if (newAccessToken.jwtAccessToken)
-    await invalidateToken(newAccessToken.jwtAccessToken);
-  data.jwtAccessToken = await accessToken({ ...newAccessToken, ...data });
   return prisma.accessTokens.update({
     data,
     where: { id: parseInt(accessTokenId) },
@@ -268,8 +202,6 @@ export const deleteAccessToken = async (accessTokenId: string) => {
     where: { id: parseInt(accessTokenId) },
   });
   if (!currentAccessToken) throw new Error(RESOURCE_NOT_FOUND);
-  if (currentAccessToken.jwtAccessToken)
-    await invalidateToken(currentAccessToken.jwtAccessToken);
   return prisma.accessTokens.delete({
     where: { id: parseInt(accessTokenId) },
   });
@@ -281,36 +213,14 @@ export const deleteAccessToken = async (accessTokenId: string) => {
  */
 export const getUserPrimaryEmail = async (userId: string | number) => {
   if (typeof userId === "number") userId = userId.toString();
-  const primaryEmailId = (
+  const prefersEmail = (
     await prisma.users.findOne({
-      select: { primaryEmail: true },
+      select: { prefersEmail: true },
       where: { id: parseInt(userId) },
     })
-  )?.primaryEmail;
-  if (!primaryEmailId) throw new Error(MISSING_PRIMARY_EMAIL);
-  const primaryEmail = await prisma.emails.findOne({
-    where: { id: primaryEmailId },
-  });
-  if (!primaryEmail) throw new Error(MISSING_PRIMARY_EMAIL);
-  return primaryEmail;
-};
-
-/**
- * Get the best email to contact a user
- * @param userId - User ID
- */
-export const getUserBestEmail = async (userId: string | number) => {
-  if (typeof userId === "number") userId = userId.toString();
-  try {
-    return await getUserPrimaryEmail(userId);
-  } catch (error) {}
-  const emails = await prisma.emails.findMany({
-    where: { userId: parseInt(userId) },
-    orderBy: { isVerified: "desc" },
-    first: 1,
-  });
-  if (!emails.length) throw new Error(RESOURCE_NOT_FOUND);
-  return emails[0];
+  )?.prefersEmail;
+  if (!prefersEmail) throw new Error(MISSING_PRIMARY_EMAIL);
+  return prefersEmail;
 };
 
 /**
@@ -331,7 +241,7 @@ export const updateSessionByJwt = async (
     }
   } catch (error) {}
   const currentSession = await prisma.sessions.findMany({
-    where: { jwtToken: sessionJwt, userId },
+    where: { token: sessionJwt, userId },
   });
   if (!currentSession.length) throw new Error(RESOURCE_NOT_FOUND);
   return prisma.sessions.update({ where: { id: currentSession[0].id }, data });

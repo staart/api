@@ -177,7 +177,7 @@ export const deleteUserForUser = async (
     await prisma.memberships.deleteMany({
       where: { userId: parseInt(updateUserId) },
     });
-    await prisma.approved_locations.deleteMany({
+    await prisma.approvedLocations.deleteMany({
       where: { userId: parseInt(updateUserId) },
     });
     const originalUser = await getUserById(updateUserId);
@@ -229,8 +229,8 @@ export const getAllDataForUser = async (
     include: {
       emails: true,
       accessTokens: true,
-      approved_locations: true,
-      backup_codes: true,
+      approvedLocations: true,
+      backupCodes: true,
       identities: true,
       memberships: true,
       sessions: true,
@@ -283,7 +283,7 @@ export const disable2FAForUser = async (
 ) => {
   if (!(await can(tokenUserId, UserScopes.DISABLE_USER_2FA, "user", userId)))
     throw new Error(INSUFFICIENT_PERMISSION);
-  await prisma.backup_codes.deleteMany({ where: { userId: parseInt(userId) } });
+  await prisma.backupCodes.deleteMany({ where: { userId: parseInt(userId) } });
   const result = prisma.users.update({
     where: { id: parseInt(userId) },
     data: {
@@ -308,7 +308,7 @@ export const regenerateBackupCodesForUser = async (
     ))
   )
     throw new Error(INSUFFICIENT_PERMISSION);
-  await prisma.backup_codes.deleteMany({ where: { userId: parseInt(userId) } });
+  await prisma.backupCodes.deleteMany({ where: { userId: parseInt(userId) } });
   return createBackupCodes(userId, 10);
 };
 
@@ -370,7 +370,7 @@ export const createAccessTokenForUser = async (
   if (
     await can(tokenUserId, UserScopes.CREATE_USER_ACCESS_TOKENS, "user", userId)
   ) {
-    accessToken.jwtAccessToken = randomString({ length: 20 });
+    accessToken.accessToken = randomString({ length: 20 });
     accessToken.expiresAt =
       accessToken.expiresAt || new Date(TOKEN_EXPIRY_API_KEY_MAX);
     return prisma.accessTokens.create({

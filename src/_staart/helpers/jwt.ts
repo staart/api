@@ -157,7 +157,7 @@ export const accessToken = (
 ) => {
   const createAccessToken = { ...removeFalsyValues(accessToken) };
   delete createAccessToken.createdAt;
-  delete createAccessToken.jwtAccessToken;
+  delete createAccessToken.accessToken;
   delete createAccessToken.updatedAt;
   delete createAccessToken.name;
   delete createAccessToken.description;
