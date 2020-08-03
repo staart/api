@@ -1,74 +1,53 @@
 import {
-  INCORRECT_PASSWORD,
-  EMAIL_CANNOT_DELETE,
-  INSUFFICIENT_PERMISSION,
-  INVALID_2FA_TOKEN,
-  MISSING_PASSWORD,
-  NOT_ENABLED_2FA,
-  USER_NOT_FOUND,
-  EMAIL_EXISTS,
-  RESOURCE_NOT_FOUND,
-  CANNOT_DELETE_SOLE_MEMBER,
+  accessTokensCreateInput,
+  accessTokensUpdateInput,
+  identitiesCreateInput,
+  membershipsUpdateInput,
+  users,
+} from "@prisma/client";
+import { checkIfDisposableEmail } from "@staart/disposable-email";
+import {
   CANNOT_DELETE_SOLE_OWNER,
   CANNOT_UPDATE_SOLE_OWNER,
+  EMAIL_CANNOT_DELETE,
+  EMAIL_EXISTS,
+  INCORRECT_PASSWORD,
+  INSUFFICIENT_PERMISSION,
+  INVALID_2FA_TOKEN,
   MEMBERSHIP_NOT_FOUND,
+  NOT_ENABLED_2FA,
+  RESOURCE_NOT_FOUND,
+  USER_NOT_FOUND,
 } from "@staart/errors";
+import { deleteCustomer } from "@staart/payments";
 import { compare, hash, randomString } from "@staart/text";
 import { authenticator } from "otplib";
 import { toDataURL } from "qrcode";
-import { SERVICE_2FA, TOKEN_EXPIRY_API_KEY_MAX } from "../../config";
 import {
-  createBackupCodes,
-  getUserPrimaryEmail,
-  getUserBestEmail,
-  resendEmailVerification,
-  getUserById,
-  createEmail,
-} from "../services/user.service";
+  ALLOW_DISPOSABLE_EMAILS,
+  SERVICE_2FA,
+  TOKEN_EXPIRY_API_KEY_MAX,
+} from "../../config";
 import { can } from "../helpers/authorization";
-import { trackEvent } from "../helpers/tracking";
-import { deleteGroupForUser } from "./group";
-import { EventType, UserScopes, Templates } from "../interfaces/enum";
-import { Locals } from "../interfaces/general";
+import { deleteItemFromCache } from "../helpers/cache";
+import { ApiKeyResponse, couponCodeJwt } from "../helpers/jwt";
 import { mail } from "../helpers/mail";
-import { deleteCustomer } from "@staart/payments";
-import { couponCodeJwt } from "../helpers/jwt";
 import {
-  prisma,
   paginatedResult,
+  prisma,
   queryParamsToSelect,
 } from "../helpers/prisma";
+import { trackEvent } from "../helpers/tracking";
+import { EventType, Templates, UserScopes } from "../interfaces/enum";
+import { Locals } from "../interfaces/general";
 import {
-  users,
-  membershipsSelect,
-  membershipsInclude,
-  membershipsOrderByInput,
-  membershipsWhereUniqueInput,
-  accessTokensSelect,
-  accessTokensInclude,
-  accessTokensOrderByInput,
-  accessTokensWhereUniqueInput,
-  accessTokensUpdateInput,
-  accessTokensCreateInput,
-  sessionsSelect,
-  sessionsInclude,
-  sessionsOrderByInput,
-  sessionsWhereUniqueInput,
-  identitiesSelect,
-  identitiesInclude,
-  identitiesOrderByInput,
-  identitiesWhereUniqueInput,
-  identitiesCreateInput,
-  emailsSelect,
-  emailsInclude,
-  emailsOrderByInput,
-  emailsWhereUniqueInput,
-  membershipsUpdateInput,
-} from "@prisma/client";
-import { ALLOW_DISPOSABLE_EMAILS } from "../../config";
-import { checkIfDisposableEmail } from "@staart/disposable-email";
-import { ApiKeyResponse } from "../helpers/jwt";
-import { deleteItemFromCache } from "../helpers/cache";
+  createBackupCodes,
+  createEmail,
+  getUserById,
+  getUserPrimaryEmail,
+  resendEmailVerification,
+} from "../services/user.service";
+import { deleteGroupForUser } from "./group";
 
 export const getUserFromIdForUser = async (
   userId: string,
@@ -153,7 +132,7 @@ export const deleteUserForUser = async (
   if (await can(tokenUserId, UserScopes.DELETE_USER, "user", updateUserId)) {
     const groupsToDelete = await prisma.groups.findMany({
       select: {
-        stripeCustomerId: true,
+        attributes: true,
       },
       where: {
         memberships: {
@@ -162,7 +141,12 @@ export const deleteUserForUser = async (
       },
     });
     for await (const group of groupsToDelete) {
-      if (group.stripeCustomerId) await deleteCustomer(group.stripeCustomerId);
+      if (
+        typeof group.attributes === "object" &&
+        !Array.isArray(group.attributes) &&
+        typeof group.attributes?.stripeCustomerId === "string"
+      )
+        await deleteCustomer(group.attributes?.stripeCustomerId);
     }
     await prisma.groups.deleteMany({
       where: {
@@ -182,10 +166,7 @@ export const deleteUserForUser = async (
     });
     const originalUser = await getUserById(updateUserId);
     await prisma.users.delete({ where: { id: parseInt(updateUserId) } });
-    await deleteItemFromCache(
-      `cache_getUserById_${originalUser.id}`,
-      `cache_getUserIdByUsername_${originalUser.username}`
-    );
+    await deleteItemFromCache(`cache_getUserById_${originalUser.id}`);
     trackEvent(
       {
         userId: tokenUserId,
@@ -497,35 +478,35 @@ export const addInvitationCredits = async (
   invitedBy: string,
   newUserId: string
 ) => {
-  const invitedByUserId = (
-    await prisma.users.findOne({
-      select: { username: true },
-      where: { id: parseInt(invitedBy) },
-    })
-  )?.username;
-  if (!invitedByUserId) return;
-  const invitedByDetails = await getUserById(invitedByUserId);
-  if (!invitedByDetails) return;
-  const invitedByEmail = await getUserPrimaryEmail(invitedByUserId);
-  const newUserEmail = await getUserBestEmail(newUserId);
-  const newUserDetails = await getUserById(newUserId);
-  if (!newUserDetails) return;
-  const emailData = {
-    invitedByName: invitedByDetails.name,
-    invitedByCode: await couponCodeJwt(
-      500,
-      "usd",
-      `Invite credits from ${newUserDetails.name}`
-    ),
-    newUserName: newUserDetails.name,
-    newUserCode: await couponCodeJwt(
-      500,
-      "usd",
-      `Invite credits from ${invitedByDetails.name}`
-    ),
-  };
-  await mail(invitedByEmail.email, Templates.CREDITS_INVITED_BY, emailData);
-  await mail(newUserEmail.email, Templates.CREDITS_NEW_USER, emailData);
+  // const invitedByUserId = (
+  //   await prisma.users.findOne({
+  //     select: { username: true },
+  //     where: { id: parseInt(invitedBy) },
+  //   })
+  // )?.username;
+  // if (!invitedByUserId) return;
+  // const invitedByDetails = await getUserById(invitedByUserId);
+  // if (!invitedByDetails) return;
+  // const invitedByEmail = await getUserPrimaryEmail(invitedByUserId);
+  // const newUserEmail = await getUserBestEmail(newUserId);
+  // const newUserDetails = await getUserById(newUserId);
+  // if (!newUserDetails) return;
+  // const emailData = {
+  //   invitedByName: invitedByDetails.name,
+  //   invitedByCode: await couponCodeJwt(
+  //     500,
+  //     "usd",
+  //     `Invite credits from ${newUserDetails.name}`
+  //   ),
+  //   newUserName: newUserDetails.name,
+  //   newUserCode: await couponCodeJwt(
+  //     500,
+  //     "usd",
+  //     `Invite credits from ${invitedByDetails.name}`
+  //   ),
+  // };
+  // await mail(invitedByEmail.email, Templates.CREDITS_INVITED_BY, emailData);
+  // await mail(newUserEmail.email, Templates.CREDITS_NEW_USER, emailData);
 };
 
 export const getAllEmailsForUser = async (
@@ -618,7 +599,7 @@ export const deleteEmailFromUserForUser = async (
     )[0];
     await prisma.users.update({
       where: { id: parseInt(userId) },
-      data: { primaryEmail: nextVerifiedEmail.id },
+      data: { prefersEmail: { connect: { id: nextVerifiedEmail.id } } },
     });
     await deleteItemFromCache(`cache_getUserById_${userId}`);
   }

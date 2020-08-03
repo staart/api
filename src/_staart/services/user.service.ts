@@ -1,8 +1,14 @@
 import {
-  USERNAME_EXISTS,
-  USER_NOT_FOUND,
-  RESOURCE_NOT_FOUND,
+  accessTokens,
+  accessTokensCreateInput,
+  sessionsUpdateInput,
+  users,
+  usersCreateInput,
+} from "@prisma/client";
+import {
   MISSING_PRIMARY_EMAIL,
+  RESOURCE_NOT_FOUND,
+  USER_NOT_FOUND,
 } from "@staart/errors";
 import {
   anonymizeIpAddress,
@@ -10,30 +16,21 @@ import {
   hash,
 } from "@staart/text";
 import { createHash } from "crypto";
+import { decode } from "jsonwebtoken";
 import randomInt from "random-int";
 import { TOKEN_EXPIRY_API_KEY_MAX } from "../../config";
-import { accessToken, invalidateToken } from "../helpers/jwt";
-import { deleteSensitiveInfoUser, PartialBy } from "../helpers/utils";
-import { KeyValue } from "../interfaces/general";
-import { prisma } from "../helpers/prisma";
 import {
-  users,
-  accessTokens,
-  accessTokensCreateInput,
-  sessionsUpdateInput,
-  usersCreateInput,
-  PrefersReducedMotion,
-} from "@prisma/client";
-import { decode } from "jsonwebtoken";
-import { emailVerificationToken } from "../helpers/jwt";
-import { mail } from "../helpers/mail";
-import { Templates } from "../interfaces/enum";
-import { sendNewPassword } from "../rest/auth";
-import {
+  deleteItemFromCache,
   getItemFromCache,
   setItemInCache,
-  deleteItemFromCache,
 } from "../helpers/cache";
+import { accessToken, emailVerificationToken } from "../helpers/jwt";
+import { mail } from "../helpers/mail";
+import { prisma } from "../helpers/prisma";
+import { deleteSensitiveInfoUser } from "../helpers/utils";
+import { Templates } from "../interfaces/enum";
+import { KeyValue } from "../interfaces/general";
+import { sendNewPassword } from "../rest/auth";
 
 /**
  * Create a new user
