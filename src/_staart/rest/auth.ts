@@ -1,52 +1,48 @@
+import {
+  backupCodes,
+  MembershipRole,
+  users,
+  usersCreateInput,
+} from "@prisma/client";
 import { checkIfDisposableEmail } from "@staart/disposable-email";
 import {
+  EMAIL_EXISTS,
   INSUFFICIENT_PERMISSION,
   INVALID_2FA_TOKEN,
   INVALID_LOGIN,
   MISSING_PASSWORD,
   NOT_ENABLED_2FA,
   RESOURCE_NOT_FOUND,
-  USERNAME_EXISTS,
   USER_NOT_FOUND,
-  EMAIL_EXISTS,
 } from "@staart/errors";
 import { compare, hash } from "@staart/text";
 import { authenticator } from "otplib";
 import { ALLOW_DISPOSABLE_EMAILS } from "../../config";
 import { can } from "../helpers/authorization";
+import { deleteItemFromCache } from "../helpers/cache";
 import {
   checkInvalidatedToken,
   getLoginResponse,
   passwordResetToken,
   postLoginTokens,
+  resendEmailVerificationToken,
   TokenResponse,
   verifyToken,
-  resendEmailVerificationToken,
 } from "../helpers/jwt";
-import { deleteItemFromCache } from "../helpers/cache";
 import { mail } from "../helpers/mail";
+import { prisma } from "../helpers/prisma";
 import { trackEvent } from "../helpers/tracking";
 import { EventType, Templates, Tokens, UserScopes } from "../interfaces/enum";
 import { Locals } from "../interfaces/general";
-import { prisma } from "../helpers/prisma";
+import { getDomainByDomainName } from "../services/group.service";
 import {
-  getUserByEmail,
-  checkUserUsernameAvailability,
-  getBestUsernameForUser,
-  createUser,
   addApprovedLocation,
-  getUserById,
   createEmail,
+  createUser,
+  getUserByEmail,
+  getUserById,
   resendEmailVerification,
 } from "../services/user.service";
-import {
-  usersCreateInput,
-  MembershipRole,
-  users,
-  backupCodes,
-} from "@prisma/client";
-import { getDomainByDomainName } from "../services/group.service";
-import { PartialBy } from "../helpers/utils";
 
 export const validateRefreshToken = async (token: string, locals: Locals) => {
   await checkInvalidatedToken(token);
@@ -61,7 +57,7 @@ export const invalidateRefreshToken = async (token: string, locals: Locals) => {
   const data = await verifyToken<{ id: string }>(token, Tokens.REFRESH);
   if (!data.id) throw new Error(USER_NOT_FOUND);
   await prisma.sessions.deleteMany({
-    where: { jwtToken: token, userId: parseInt(data.id) },
+    where: { token, userId: parseInt(data.id) },
   });
   return;
 };
@@ -122,14 +118,13 @@ export const login2FA = async (code: number, token: string, locals: Locals) => {
 };
 
 export const register = async (
-  _user: PartialBy<PartialBy<usersCreateInput, "nickname">, "username">,
+  user: usersCreateInput,
   locals?: Locals,
   email?: string,
   groupId?: string,
   role?: MembershipRole,
   emailVerified = false
 ) => {
-  const user: usersCreateInput = { username: "", nickname: "", ..._user };
   if (email) {
     const isNewEmail =
       (await prisma.emails.findMany({ where: { email, isVerified: true } }))
@@ -137,9 +132,6 @@ export const register = async (
     if (!isNewEmail) throw new Error(EMAIL_EXISTS);
     if (!ALLOW_DISPOSABLE_EMAILS) checkIfDisposableEmail(email);
   }
-  if (user.username && !(await checkUserUsernameAvailability(user.username)))
-    throw new Error(USERNAME_EXISTS);
-  user.username = user.username || (await getBestUsernameForUser(user.name));
   if (!groupId && email) {
     let domain = "";
     try {
@@ -170,7 +162,7 @@ export const register = async (
     const newEmail = await createEmail(userId, email, !emailVerified);
     await prisma.users.update({
       where: { id: userId },
-      data: { primaryEmail: newEmail.id },
+      data: { prefersEmail: { connect: { id: newEmail.id } } },
     });
     await deleteItemFromCache(`cache_getUserById_${userId}`);
     resendToken = await resendEmailVerificationToken(newEmail.id.toString());

@@ -1,25 +1,40 @@
 import {
+  apiKeysCreateInput,
+  apiKeysUpdateInput,
+  domainsCreateInput,
+  domainsUpdateInput,
+  groupsCreateInput,
+  groupsUpdateInput,
+  MembershipRole,
+  membershipsUpdateInput,
+  users,
+  webhooksCreateInput,
+  webhooksUpdateInput,
+} from "@prisma/client";
+import {
   CANNOT_DELETE_SOLE_MEMBER,
   CANNOT_INVITE_DOMAIN,
   DOMAIN_ALREADY_VERIFIED,
-  INVALID_INPUT,
   DOMAIN_MISSING_DNS,
   DOMAIN_MISSING_FILE,
   DOMAIN_UNABLE_TO_VERIFY,
   INSUFFICIENT_PERMISSION,
+  INVALID_INPUT,
   MEMBERSHIP_NOT_FOUND,
-  STRIPE_NO_CUSTOMER,
-  USER_IS_MEMBER_ALREADY,
-  USER_NOT_FOUND,
   ORGANIZATION_NOT_FOUND,
   RESOURCE_NOT_FOUND,
+  STRIPE_NO_CUSTOMER,
+  USER_IS_MEMBER_ALREADY,
 } from "@staart/errors";
 import {
   createCustomer,
+  createCustomerBalanceTransaction,
   createSource,
   createSubscription,
   deleteCustomer,
   deleteSource,
+  getCustomBalanceTransaction,
+  getCustomBalanceTransactions,
   getCustomer,
   getInvoice,
   getInvoices,
@@ -31,71 +46,38 @@ import {
   updateCustomer,
   updateSource,
   updateSubscription,
-  createCustomerBalanceTransaction,
-  getCustomBalanceTransactions,
-  getCustomBalanceTransaction,
 } from "@staart/payments";
+import { randomString } from "@staart/text";
 import axios from "axios";
 import { JWT_ISSUER, TOKEN_EXPIRY_API_KEY_MAX } from "../../config";
 import { can } from "../helpers/authorization";
+import { deleteItemFromCache } from "../helpers/cache";
 import {
   ApiKeyResponse,
-  verifyToken,
   checkInvalidatedToken,
   invalidateToken,
+  verifyToken,
 } from "../helpers/jwt";
 import { mail } from "../helpers/mail";
-import { trackEvent } from "../helpers/tracking";
-import { dnsResolve } from "../helpers/utils";
-import { queueWebhook } from "../helpers/webhooks";
-import { OrgScopes, Templates, Webhooks, Tokens } from "../interfaces/enum";
-import { KeyValue, Locals } from "../interfaces/general";
-import { register } from "./auth";
 import {
-  prisma,
   paginatedResult,
+  prisma,
   queryParamsToSelect,
 } from "../helpers/prisma";
+import { trackEvent } from "../helpers/tracking";
+import { dnsResolve } from "../helpers/utils";
+import { fireSingleWebhook, queueWebhook } from "../helpers/webhooks";
+import { OrgScopes, Templates, Tokens, Webhooks } from "../interfaces/enum";
+import { KeyValue, Locals } from "../interfaces/general";
 import {
-  groupsCreateInput,
-  groupsUpdateInput,
-  membershipsInclude,
-  membershipsSelect,
-  membershipsOrderByInput,
-  membershipsWhereUniqueInput,
-  membershipsUpdateInput,
-  users,
-  MembershipRole,
-  apiKeysSelect,
-  apiKeysInclude,
-  apiKeysOrderByInput,
-  apiKeysWhereUniqueInput,
-  apiKeysUpdateInput,
-  apiKeysCreateInput,
-  webhooksCreateInput,
-  domainsSelect,
-  domainsInclude,
-  domainsOrderByInput,
-  domainsWhereUniqueInput,
-  domainsUpdateInput,
-  domainsCreateInput,
-  webhooksSelect,
-  webhooksInclude,
-  webhooksOrderByInput,
-  webhooksWhereUniqueInput,
-  webhooksUpdateInput,
-} from "@prisma/client";
-import {
-  getDomainByDomainName,
-  getApiKeyLogs,
   checkDomainAvailability,
-  getGroupById,
   createGroup,
+  getApiKeyLogs,
+  getDomainByDomainName,
+  getGroupById,
 } from "../services/group.service";
-import { randomString } from "@staart/text";
-import { fireSingleWebhook } from "../helpers/webhooks";
 import { getUserById } from "../services/user.service";
-import { deleteItemFromCache } from "../helpers/cache";
+import { register } from "./auth";
 
 export const getGroupForUser = async (
   userId: string | ApiKeyResponse,
@@ -145,12 +127,13 @@ export const deleteGroupForUser = async (
 ) => {
   if (await can(userId, OrgScopes.DELETE_ORG, "group", groupId)) {
     const groupDetails = await getGroupById(groupId);
-    await deleteItemFromCache(
-      `cache_getGroupById_${groupDetails.id}`,
-      `cache_getGroupByUsername_${groupDetails.username}`
-    );
-    if (groupDetails.stripeCustomerId)
-      await deleteCustomer(groupDetails.stripeCustomerId);
+    await deleteItemFromCache(`cache_getGroupById_${groupDetails.id}`);
+    if (
+      typeof groupDetails.attributes === "object" &&
+      !Array.isArray(groupDetails.attributes) &&
+      groupDetails.attributes?.stripeCustomerId === "string"
+    )
+      await deleteCustomer(groupDetails.attributes?.stripeCustomerId);
     await prisma.groups.delete({
       where: {
         id: parseInt(groupId),
@@ -170,7 +153,12 @@ export const getGroupBillingForUser = async (
   if (await can(userId, OrgScopes.READ_ORG_BILLING, "group", groupId)) {
     const group = await getGroupById(groupId);
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (group.stripeCustomerId) return getCustomer(group.stripeCustomerId);
+    if (
+      typeof group.attributes === "object" &&
+      !Array.isArray(group.attributes) &&
+      group.attributes?.stripeCustomerId === "string"
+    )
+      return getCustomer(group.attributes?.stripeCustomerId);
     throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -186,8 +174,12 @@ export const updateGroupBillingForUser = async (
     const group = await getGroupById(groupId);
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
     let result;
-    if (group.stripeCustomerId) {
-      result = await updateCustomer(group.stripeCustomerId, data);
+    if (
+      typeof group.attributes === "object" &&
+      !Array.isArray(group.attributes) &&
+      group.attributes?.stripeCustomerId === "string"
+    ) {
+      result = await updateCustomer(group.attributes?.stripeCustomerId, data);
     } else {
       result = await createCustomer(
         groupId,
@@ -216,8 +208,12 @@ export const getGroupInvoicesForUser = async (
   if (await can(userId, OrgScopes.READ_ORG_INVOICES, "group", groupId)) {
     const group = await getGroupById(groupId);
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (group.stripeCustomerId)
-      return getInvoices(group.stripeCustomerId, params);
+    if (
+      typeof group.attributes === "object" &&
+      !Array.isArray(group.attributes) &&
+      group.attributes?.stripeCustomerId === "string"
+    )
+      return getInvoices(group.attributes?.stripeCustomerId, params);
     throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -231,8 +227,12 @@ export const getGroupInvoiceForUser = async (
   if (await can(userId, OrgScopes.READ_ORG_INVOICES, "group", groupId)) {
     const group = await getGroupById(groupId);
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (group.stripeCustomerId)
-      return getInvoice(group.stripeCustomerId, invoiceId);
+    if (
+      typeof group.attributes === "object" &&
+      !Array.isArray(group.attributes) &&
+      group.attributes?.stripeCustomerId === "string"
+    )
+      return getInvoice(group.attributes?.stripeCustomerId, invoiceId);
     throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -246,8 +246,12 @@ export const getGroupSourcesForUser = async (
   if (await can(userId, OrgScopes.READ_ORG_SOURCES, "group", groupId)) {
     const group = await getGroupById(groupId);
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (group.stripeCustomerId)
-      return getSources(group.stripeCustomerId, params);
+    if (
+      typeof group.attributes === "object" &&
+      !Array.isArray(group.attributes) &&
+      group.attributes?.stripeCustomerId === "string"
+    )
+      return getSources(group.attributes?.stripeCustomerId, params);
     throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -261,8 +265,12 @@ export const getGroupSourceForUser = async (
   if (await can(userId, OrgScopes.READ_ORG_SOURCES, "group", groupId)) {
     const group = await getGroupById(groupId);
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (group.stripeCustomerId)
-      return getSource(group.stripeCustomerId, sourceId);
+    if (
+      typeof group.attributes === "object" &&
+      !Array.isArray(group.attributes) &&
+      group.attributes?.stripeCustomerId === "string"
+    )
+      return getSource(group.attributes?.stripeCustomerId, sourceId);
     throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -276,8 +284,12 @@ export const getGroupSubscriptionsForUser = async (
   if (await can(userId, OrgScopes.READ_ORG_SUBSCRIPTIONS, "group", groupId)) {
     const group = await getGroupById(groupId);
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (group.stripeCustomerId)
-      return getSubscriptions(group.stripeCustomerId, params);
+    if (
+      typeof group.attributes === "object" &&
+      !Array.isArray(group.attributes) &&
+      group.attributes?.stripeCustomerId === "string"
+    )
+      return getSubscriptions(group.attributes?.stripeCustomerId, params);
     throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -291,8 +303,15 @@ export const getGroupSubscriptionForUser = async (
   if (await can(userId, OrgScopes.READ_ORG_SUBSCRIPTIONS, "group", groupId)) {
     const group = await getGroupById(groupId);
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (group.stripeCustomerId)
-      return getSubscription(group.stripeCustomerId, subscriptionId);
+    if (
+      typeof group.attributes === "object" &&
+      !Array.isArray(group.attributes) &&
+      group.attributes?.stripeCustomerId === "string"
+    )
+      return getSubscription(
+        group.attributes?.stripeCustomerId,
+        subscriptionId
+      );
     throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -308,9 +327,13 @@ export const updateGroupSubscriptionForUser = async (
   if (await can(userId, OrgScopes.UPDATE_ORG_SUBSCRIPTIONS, "group", groupId)) {
     const group = await getGroupById(groupId);
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (group.stripeCustomerId) {
+    if (
+      typeof group.attributes === "object" &&
+      !Array.isArray(group.attributes) &&
+      group.attributes?.stripeCustomerId === "string"
+    ) {
       const result = await updateSubscription(
-        group.stripeCustomerId,
+        group.attributes?.stripeCustomerId,
         subscriptionId,
         data
       );
@@ -335,8 +358,15 @@ export const createGroupSubscriptionForUser = async (
   if (await can(userId, OrgScopes.CREATE_ORG_SUBSCRIPTIONS, "group", groupId)) {
     const group = await getGroupById(groupId);
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (group.stripeCustomerId) {
-      const result = await createSubscription(group.stripeCustomerId, params);
+    if (
+      typeof group.attributes === "object" &&
+      !Array.isArray(group.attributes) &&
+      group.attributes?.stripeCustomerId === "string"
+    ) {
+      const result = await createSubscription(
+        group.attributes?.stripeCustomerId,
+        params
+      );
       queueWebhook(groupId, Webhooks.CREATE_ORGANIZATION_SUBSCRIPTION, params);
       trackEvent(
         { groupId, type: Webhooks.CREATE_ORGANIZATION_SUBSCRIPTION },
@@ -367,8 +397,15 @@ export const deleteGroupSourceForUser = async (
   if (await can(userId, OrgScopes.DELETE_ORG_SOURCES, "group", groupId)) {
     const group = await getGroupById(groupId);
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (group.stripeCustomerId) {
-      const result = await deleteSource(group.stripeCustomerId, sourceId);
+    if (
+      typeof group.attributes === "object" &&
+      !Array.isArray(group.attributes) &&
+      group.attributes?.stripeCustomerId === "string"
+    ) {
+      const result = await deleteSource(
+        group.attributes?.stripeCustomerId,
+        sourceId
+      );
       queueWebhook(groupId, Webhooks.DELETE_ORGANIZATION_SOURCE, sourceId);
       trackEvent(
         { groupId, type: Webhooks.DELETE_ORGANIZATION_SOURCE },
@@ -391,8 +428,16 @@ export const updateGroupSourceForUser = async (
   if (await can(userId, OrgScopes.UPDATE_ORG_SOURCES, "group", groupId)) {
     const group = await getGroupById(groupId);
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (group.stripeCustomerId) {
-      const result = await updateSource(group.stripeCustomerId, sourceId, data);
+    if (
+      typeof group.attributes === "object" &&
+      !Array.isArray(group.attributes) &&
+      group.attributes?.stripeCustomerId === "string"
+    ) {
+      const result = await updateSource(
+        group.attributes?.stripeCustomerId,
+        sourceId,
+        data
+      );
       queueWebhook(groupId, Webhooks.UPDATE_ORGANIZATION_SOURCE, data);
       trackEvent(
         { groupId, type: Webhooks.UPDATE_ORGANIZATION_SOURCE },
@@ -414,8 +459,15 @@ export const createGroupSourceForUser = async (
   if (await can(userId, OrgScopes.CREATE_ORG_SOURCES, "group", groupId)) {
     const group = await getGroupById(groupId);
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (group.stripeCustomerId) {
-      const result = await createSource(group.stripeCustomerId, card);
+    if (
+      typeof group.attributes === "object" &&
+      !Array.isArray(group.attributes) &&
+      group.attributes?.stripeCustomerId === "string"
+    ) {
+      const result = await createSource(
+        group.attributes?.stripeCustomerId,
+        card
+      );
       queueWebhook(groupId, Webhooks.CREATE_ORGANIZATION_SOURCE, card);
       trackEvent(
         { groupId, type: Webhooks.CREATE_ORGANIZATION_SOURCE },
@@ -447,12 +499,17 @@ export const getAllGroupDataForUser = async (
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
     return {
       ...group,
-      ...(group.stripeCustomerId
+      ...(typeof group.attributes === "object" &&
+      !Array.isArray(group.attributes) &&
+      typeof group.attributes?.stripeCustomerId === "string"
         ? {
-            billing: await getCustomer(group.stripeCustomerId),
-            subscriptions: await getSubscriptions(group.stripeCustomerId, {}),
-            invoices: await getInvoices(group.stripeCustomerId, {}),
-            sources: await getSources(group.stripeCustomerId, {}),
+            billing: await getCustomer(group.attributes?.stripeCustomerId),
+            subscriptions: await getSubscriptions(
+              group.attributes?.stripeCustomerId,
+              {}
+            ),
+            invoices: await getInvoices(group.attributes?.stripeCustomerId, {}),
+            sources: await getSources(group.attributes?.stripeCustomerId, {}),
           }
         : {}),
     };
@@ -564,7 +621,7 @@ export const inviteMemberToGroup = async (
 
     const checkUser = await prisma.users.findMany({
       where: { emails: { some: { email: newMemberEmail } } },
-      first: 1,
+      take: 1,
     });
     if (checkUser.length) {
       newUser = checkUser[0];
@@ -592,7 +649,10 @@ export const inviteMemberToGroup = async (
       });
     } else {
       const newAccount = await register(
-        { name: newMemberName },
+        {
+          name: newMemberName,
+          prefersEmail: {},
+        },
         locals,
         newMemberEmail,
         groupId,
@@ -685,7 +745,7 @@ export const createApiKeyForUser = async (
   locals: Locals
 ) => {
   if (await can(userId, OrgScopes.CREATE_ORG_API_KEYS, "group", groupId)) {
-    apiKey.jwtApiKey = randomString({ length: 20 });
+    apiKey.apiKey = randomString({ length: 20 });
     apiKey.expiresAt = apiKey.expiresAt || new Date(TOKEN_EXPIRY_API_KEY_MAX);
     const result = await prisma.apiKeys.create({
       data: {
@@ -981,9 +1041,15 @@ export const applyCouponToGroupForUser = async (
     }
     const group = await getGroupById(groupId);
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (amount && currency && group.stripeCustomerId) {
+    if (
+      amount &&
+      currency &&
+      typeof group.attributes === "object" &&
+      !Array.isArray(group.attributes) &&
+      group.attributes?.stripeCustomerId === "string"
+    ) {
       const result = await createCustomerBalanceTransaction(
-        group.stripeCustomerId,
+        group.attributes?.stripeCustomerId,
         {
           amount,
           currency,
@@ -1006,8 +1072,15 @@ export const getGroupTransactionsForUser = async (
   if (await can(userId, OrgScopes.READ_ORG_TRANSACTIONS, "group", groupId)) {
     const group = await getGroupById(groupId);
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (group.stripeCustomerId)
-      return getCustomBalanceTransactions(group.stripeCustomerId, params);
+    if (
+      typeof group.attributes === "object" &&
+      !Array.isArray(group.attributes) &&
+      group.attributes?.stripeCustomerId === "string"
+    )
+      return getCustomBalanceTransactions(
+        group.attributes?.stripeCustomerId,
+        params
+      );
     throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -1021,8 +1094,15 @@ export const getGroupTransactionForUser = async (
   if (await can(userId, OrgScopes.READ_ORG_TRANSACTIONS, "group", groupId)) {
     const group = await getGroupById(groupId);
     if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (group.stripeCustomerId)
-      return getCustomBalanceTransaction(group.stripeCustomerId, transactionId);
+    if (
+      typeof group.attributes === "object" &&
+      !Array.isArray(group.attributes) &&
+      group.attributes?.stripeCustomerId === "string"
+    )
+      return getCustomBalanceTransaction(
+        group.attributes?.stripeCustomerId,
+        transactionId
+      );
     throw new Error(STRIPE_NO_CUSTOMER);
   }
   throw new Error(INSUFFICIENT_PERMISSION);
