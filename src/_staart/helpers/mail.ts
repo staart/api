@@ -1,5 +1,5 @@
 import { logError } from "@staart/errors";
-import { sendMail } from "@staart/mail";
+import { sendMail, Mail } from "@staart/mail";
 import { render } from "@staart/mustache-markdown";
 import { redisQueue } from "@staart/redis";
 import { readFile } from "fs-extra";
@@ -23,7 +23,11 @@ export const receiveEmailMessage = async () => {
     qname: MAIL_QUEUE,
   });
   if ("id" in result) {
-    const data = JSON.parse(result.message);
+    const data: Mail & {
+      template?: string;
+      data?: any;
+      tryNumber: number;
+    } = JSON.parse(result.message);
     if (data.tryNumber && data.tryNumber > 3) {
       logError("Email", `Unable to send email: ${data.to}`);
       return redisQueue.deleteMessageAsync({
@@ -54,54 +58,44 @@ export const receiveEmailMessage = async () => {
 /**
  * Send a new email using AWS SES or SMTP
  */
-export const mail = async ({
-  to,
-  template,
-  data,
-}: {
-  to: string;
-  template?: string;
-  data?: any;
-}) => {
+export const mail = async (
+  options: Mail & { template?: string; data?: any }
+) => {
   await setupQueue();
   await redisQueue.sendMessageAsync({
     qname: MAIL_QUEUE,
-    message: JSON.stringify({ to, template, data, tryNumber: 1 }),
+    message: JSON.stringify({ ...options, tryNumber: 1 }),
   });
 };
 
-const safeSendEmail = async ({
-  to,
-  template,
-  data,
-}: {
-  to: string;
-  template?: string;
-  data?: any;
-}) => {
-  const result = render(
-    (
-      await readFile(
-        join(
-          __dirname,
-          "..",
-          "..",
-          "..",
-          "..",
-          "src",
-          "templates",
-          `${template}.md`
+const safeSendEmail = async (
+  options: Mail & { template?: string; data?: any }
+) => {
+  options.subject = options.subject || "";
+  options.message = options.message || "";
+  if (options.template) {
+    const result = render(
+      (
+        await readFile(
+          join(
+            __dirname,
+            "..",
+            "..",
+            "..",
+            "..",
+            "src",
+            "templates",
+            `${options.template}.md`
+          )
         )
-      )
-    ).toString(),
-    { ...data, frontendUrl: FRONTEND_URL }
-  );
-  const altText = result[0];
-  const message = result[1];
-  return sendMail({
-    to: to.toString(),
-    subject: result[1].split("\n", 1)[0].replace(/<\/?[^>]+(>|$)/g, ""),
-    message,
-    altText,
-  });
+      ).toString(),
+      { ...options.data, frontendUrl: FRONTEND_URL }
+    );
+    options.altText = result[0];
+    options.message = result[1];
+    options.subject = result[1]
+      .split("\n", 1)[0]
+      .replace(/<\/?[^>]+(>|$)/g, "");
+  }
+  return sendMail(options);
 };
