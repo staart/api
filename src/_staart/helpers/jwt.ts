@@ -195,16 +195,16 @@ export const postLoginTokens = async (
   if (!user.id) throw new Error(USER_NOT_FOUND);
   const refresh = await refreshToken(user.id);
   if (!refreshTokenString) {
-    let jwtToken = refresh;
+    let token = refresh;
     try {
       const decoded = decode(refresh);
       if (decoded && typeof decoded === "object" && decoded.jti) {
-        jwtToken = decoded.jti;
+        token = decoded.jti;
       }
     } catch (error) {}
     await prisma.sessions.create({
       data: {
-        jwtToken,
+        token,
         ipAddress: locals.ipAddress || "unknown-ip-address",
         userAgent: locals.userAgent || "unknown-user-agent",
         user: { connect: { id: user.id } },
@@ -245,17 +245,17 @@ export const getLoginResponse = async (
   if (locals) {
     if (!(await checkApprovedLocation(user.id, locals.ipAddress))) {
       const location = await getGeolocationFromIp(locals.ipAddress);
-      await mail(
-        (await getUserPrimaryEmail(user.id)).email,
-        Templates.UNAPPROVED_LOCATION,
-        {
+      await mail({
+        to: (await getUserPrimaryEmail(user.id)).email,
+        template: Templates.UNAPPROVED_LOCATION,
+        data: {
           ...user,
           location: location
             ? location.city || location.region_name || location.country_code
             : "Unknown location",
           token: await approveLocationToken(user.id, locals.ipAddress),
-        }
-      );
+        },
+      });
       throw new Error(UNAPPROVED_LOCATION);
     }
   }

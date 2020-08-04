@@ -666,10 +666,14 @@ export const inviteMemberToGroup = async (
           ? (await getUserById(userId))?.name ?? "Someone"
           : "Someone";
       const userDetails = await getUserById(createdUserId);
-      mail(newMemberEmail, Templates.INVITED_TO_TEAM, {
-        ...userDetails,
-        team: group.name,
-        inviter,
+      mail({
+        to: newMemberEmail,
+        template: Templates.INVITED_TO_TEAM,
+        data: {
+          ...userDetails,
+          team: group.name,
+          inviter,
+        },
       })
         .then(() => {})
         .catch(() => {});

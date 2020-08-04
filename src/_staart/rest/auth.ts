@@ -174,7 +174,11 @@ export const register = async (
 export const sendPasswordReset = async (email: string, locals?: Locals) => {
   const user = await getUserByEmail(email);
   const token = await passwordResetToken(user.id);
-  await mail(email, Templates.PASSWORD_RESET, { name: user.name, token });
+  await mail({
+    to: email,
+    template: Templates.PASSWORD_RESET,
+    data: { name: user.name, token },
+  });
   if (locals)
     trackEvent(
       {
@@ -196,7 +200,11 @@ export const sendNewPassword = async (userId: number, email: string) => {
   if (!user.emails.filter((userEmail) => userEmail.email === email).length)
     throw new Error(RESOURCE_NOT_FOUND);
   const token = await passwordResetToken(user.id);
-  await mail(email, Templates.NEW_PASSWORD, { name: user.name, token });
+  await mail({
+    to: email,
+    template: Templates.NEW_PASSWORD,
+    data: { name: user.name, token },
+  });
   return;
 };
 

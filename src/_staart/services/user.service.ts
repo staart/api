@@ -277,7 +277,11 @@ export const sendEmailVerification = async (
 ) => {
   if (typeof id === "number") id = id.toString();
   const token = await emailVerificationToken(id);
-  await mail(email, Templates.EMAIL_VERIFY, { name: user.name, email, token });
+  await mail({
+    to: email,
+    template: Templates.EMAIL_VERIFY,
+    data: { name: user.name, email, token },
+  });
   return;
 };
 
@@ -294,7 +298,11 @@ export const resendEmailVerification = async (id: string | number) => {
   const email = emailObject.email;
   const user = await getUserById(emailObject.userId);
   if (!user) throw new Error(USER_NOT_FOUND);
-  await mail(email, Templates.EMAIL_VERIFY, { name: user.name, email, token });
+  await mail({
+    to: email,
+    template: Templates.EMAIL_VERIFY,
+    data: { name: user.name, email, token },
+  });
   return;
 };
 

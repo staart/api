@@ -23,35 +23,23 @@ export const receiveEmailMessage = async () => {
     qname: MAIL_QUEUE,
   });
   if ("id" in result) {
-    const {
-      to,
-      template,
-      data,
-      tryNumber,
-    }: {
-      to: string;
-      template: string;
-      tryNumber: number;
-      data: any;
-    } = JSON.parse(result.message);
-    if (tryNumber && tryNumber > 3) {
-      logError("Email", `Unable to send email: ${to}`);
+    const data = JSON.parse(result.message);
+    if (data.tryNumber && data.tryNumber > 3) {
+      logError("Email", `Unable to send email: ${data.to}`);
       return redisQueue.deleteMessageAsync({
         qname: MAIL_QUEUE,
         id: result.id,
       });
     }
     try {
-      await safeSendEmail(to, template, data);
+      await safeSendEmail(data);
     } catch (error) {
       console.log(error);
       await redisQueue.sendMessageAsync({
         qname: MAIL_QUEUE,
         message: JSON.stringify({
-          to,
-          template,
-          data,
-          tryNumber: tryNumber + 1,
+          ...data,
+          tryNumber: (data.tryNumber || 0) + 1,
         }),
       });
     }
@@ -66,7 +54,15 @@ export const receiveEmailMessage = async () => {
 /**
  * Send a new email using AWS SES or SMTP
  */
-export const mail = async (to: string, template: string, data: any = {}) => {
+export const mail = async ({
+  to,
+  template,
+  data,
+}: {
+  to: string;
+  template?: string;
+  data?: any;
+}) => {
   await setupQueue();
   await redisQueue.sendMessageAsync({
     qname: MAIL_QUEUE,
@@ -74,7 +70,15 @@ export const mail = async (to: string, template: string, data: any = {}) => {
   });
 };
 
-const safeSendEmail = async (to: string, template: string, data: any = {}) => {
+const safeSendEmail = async ({
+  to,
+  template,
+  data,
+}: {
+  to: string;
+  template?: string;
+  data?: any;
+}) => {
   const result = render(
     (
       await readFile(
