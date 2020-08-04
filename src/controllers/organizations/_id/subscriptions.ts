@@ -22,7 +22,7 @@ export class GroupSubscriptionsController {
   @Get()
   async getSubscriptions(req: Request, res: Response) {
     const groupId = twtToId(req.params.id);
-    joiValidate({ groupId: Joi.string().required() }, { groupId });
+    joiValidate({ groupId: Joi.number().required() }, { groupId });
     const subscriptionParams = { ...req.query };
     joiValidate(
       {
@@ -44,7 +44,7 @@ export class GroupSubscriptionsController {
   @Put()
   async putSubscriptions(req: Request, res: Response) {
     const groupId = twtToId(req.params.id);
-    joiValidate({ groupId: Joi.string().required() }, { groupId });
+    joiValidate({ groupId: Joi.number().required() }, { groupId });
     const subscriptionParams = { ...req.body };
     joiValidate(
       {
@@ -70,7 +70,7 @@ export class GroupSubscriptionsController {
     const subscriptionId = req.params.subscriptionId;
     joiValidate(
       {
-        groupId: Joi.string().required(),
+        groupId: Joi.number().required(),
         subscriptionId: Joi.string().required(),
       },
       { groupId, subscriptionId }
@@ -89,7 +89,7 @@ export class GroupSubscriptionsController {
     const data = req.body;
     joiValidate(
       {
-        groupId: Joi.string().required(),
+        groupId: Joi.number().required(),
         subscriptionId: Joi.string().required(),
       },
       { groupId, subscriptionId }

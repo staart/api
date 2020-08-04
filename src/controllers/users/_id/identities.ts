@@ -65,7 +65,7 @@ export class UserIdentitiesController {
     const identityId = twtToId(req.params.identityId);
     joiValidate(
       {
-        id: Joi.string().required(),
+        id: Joi.number().required(),
         identityId: Joi.number().required(),
       },
       { id, identityId }
@@ -79,7 +79,7 @@ export class UserIdentitiesController {
     const identityId = twtToId(req.params.identityId);
     joiValidate(
       {
-        id: Joi.string().required(),
+        id: Joi.number().required(),
         identityId: Joi.number().required(),
       },
       { id, identityId }

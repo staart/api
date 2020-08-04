@@ -31,7 +31,7 @@ export class GroupMembershipsController {
   @Get()
   async getMemberships(req: Request, res: Response) {
     const groupId = twtToId(req.params.id);
-    joiValidate({ groupId: Joi.string().required() }, { groupId });
+    joiValidate({ groupId: Joi.number().required() }, { groupId });
     return getGroupMembershipsForUser(
       localsToTokenOrKey(res),
       groupId,
@@ -47,7 +47,7 @@ export class GroupMembershipsController {
     const role = req.body.role;
     joiValidate(
       {
-        groupId: Joi.string().required(),
+        groupId: Joi.number().required(),
         newMemberName: Joi.string().min(6).required(),
         newMemberEmail: Joi.string().email().required(),
         role: Joi.number(),
@@ -76,8 +76,8 @@ export class GroupMembershipsController {
     const membershipId = twtToId(req.params.membershipId);
     joiValidate(
       {
-        groupId: Joi.string().required(),
-        membershipId: Joi.string().required(),
+        groupId: Joi.number().required(),
+        membershipId: Joi.number().required(),
       },
       { groupId, membershipId }
     );
@@ -102,8 +102,8 @@ export class GroupMembershipsController {
     const membershipId = twtToId(req.params.membershipId);
     joiValidate(
       {
-        groupId: Joi.string().required(),
-        membershipId: Joi.string().required(),
+        groupId: Joi.number().required(),
+        membershipId: Joi.number().required(),
       },
       { groupId, membershipId }
     );
@@ -122,8 +122,8 @@ export class GroupMembershipsController {
     const membershipId = twtToId(req.params.membershipId);
     joiValidate(
       {
-        groupId: Joi.string().required(),
-        membershipId: Joi.string().required(),
+        groupId: Joi.number().required(),
+        membershipId: Joi.number().required(),
       },
       { groupId, membershipId }
     );
