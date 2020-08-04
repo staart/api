@@ -138,8 +138,8 @@ export const passwordResetToken = (id: number) =>
 /**
  * Generate a new login JWT
  */
-export const loginToken = (user: users) =>
-  generateToken(user, TOKEN_EXPIRY_LOGIN, Tokens.LOGIN);
+export const loginToken = (id: number) =>
+  generateToken({ id }, TOKEN_EXPIRY_LOGIN, Tokens.LOGIN);
 
 /**
  * Generate a new login link JWT
@@ -218,10 +218,7 @@ export const postLoginTokens = async (
     await updateSessionByJwt(user.id, refreshTokenString, {});
   }
   return {
-    token: await loginToken({
-      ...deleteSensitiveInfoUser(user),
-      // email: (await getUserBestEmail(user.id)).email
-    }),
+    token: await loginToken(user.id),
     refresh: !refreshTokenString ? refresh : undefined,
   };
 };
