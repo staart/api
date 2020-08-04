@@ -89,7 +89,8 @@
     "qrcode": "^1.4.4",
     "random-int": "^2.0.1",
     "randomcolor": "^0.6.2",
-    "snyk": "^1.369.2"
+    "snyk": "^1.369.2",
+    "twt": "^1.1.0"
   },
   "files": [
     "setup"
