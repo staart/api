@@ -10,7 +10,6 @@ import {
   INSUFFICIENT_PERMISSION,
   INVALID_2FA_TOKEN,
   INVALID_LOGIN,
-  MISSING_PASSWORD,
   NOT_ENABLED_2FA,
   RESOURCE_NOT_FOUND,
   USER_NOT_FOUND,
@@ -23,6 +22,7 @@ import { deleteItemFromCache } from "../helpers/cache";
 import {
   checkInvalidatedToken,
   getLoginResponse,
+  loginLinkToken,
   passwordResetToken,
   postLoginTokens,
   resendEmailVerificationToken,
@@ -86,7 +86,11 @@ export const login = async (
     throw new Error(USER_NOT_FOUND);
   }
   if (!user.password) {
-    await mail({ template: Templates.LOGIN_LINK, data: user, to: email });
+    await mail({
+      template: Templates.LOGIN_LINK,
+      data: { ...user, token: loginLinkToken(user) },
+      to: email,
+    });
     return { success: true, message: "login-link-sent" };
   }
   const isPasswordCorrect = await compare(password, user.password);

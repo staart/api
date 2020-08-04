@@ -142,6 +142,12 @@ export const loginToken = (user: users) =>
   generateToken(user, TOKEN_EXPIRY_LOGIN, Tokens.LOGIN);
 
 /**
+ * Generate a new login link JWT
+ */
+export const loginLinkToken = (user: users) =>
+  generateToken({ id: user.id }, TOKEN_EXPIRY_LOGIN, Tokens.LOGIN_LINK);
+
+/**
  * Generate a new 2FA JWT
  */
 export const twoFactorToken = (user: users) =>

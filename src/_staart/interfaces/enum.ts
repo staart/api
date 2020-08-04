@@ -39,6 +39,7 @@ export enum Templates {
 
 export enum Tokens {
   LOGIN = "auth",
+  LOGIN_LINK = "login-link",
   API_KEY = "api-key",
   ACCESS_TOKEN = "access-token",
   TWO_FACTOR = "2fa",
