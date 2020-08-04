@@ -1,0 +1,17 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "UpdateField",
+      "model": "users",
+      "field": "prefersEmail",
+      "arity": "Optional"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "users",
+      "field": "prefersEmailId",
+      "arity": "Optional"
+    }
+  ]
+}
