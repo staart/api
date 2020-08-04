@@ -46,7 +46,7 @@ import {
 
 export const validateRefreshToken = async (token: string, locals: Locals) => {
   await checkInvalidatedToken(token);
-  const data = await verifyToken<{ id: string }>(token, Tokens.REFRESH);
+  const data = await verifyToken<{ id: number }>(token, Tokens.REFRESH);
   if (!data.id) throw new Error(USER_NOT_FOUND);
   const user = await getUserById(data.id);
   if (!user) throw new Error(USER_NOT_FOUND);
@@ -93,7 +93,7 @@ export const login = async (
 };
 
 export const login2FA = async (code: number, token: string, locals: Locals) => {
-  const data = await verifyToken<{ id: string }>(token, Tokens.TWO_FACTOR);
+  const data = await verifyToken<{ id: number }>(token, Tokens.TWO_FACTOR);
   const user = await getUserById(data.id);
   if (!user) throw new Error(USER_NOT_FOUND);
   const secret = user.twoFactorSecret;
@@ -165,7 +165,7 @@ export const register = async (
       data: { prefersEmail: { connect: { id: newEmail.id } } },
     });
     await deleteItemFromCache(`cache_getUserById_${userId}`);
-    resendToken = await resendEmailVerificationToken(newEmail.id.toString());
+    resendToken = await resendEmailVerificationToken(newEmail.id);
   }
   if (locals) await addApprovedLocation(userId, locals.ipAddress);
   return { userId, resendToken };
@@ -295,7 +295,7 @@ export const approveLocation = async (token: string, locals: Locals) => {
 };
 
 export const resendEmailVerificationWithToken = async (token: string) => {
-  const data = await verifyToken<{ id: string }>(token, Tokens.EMAIL_RESEND);
+  const data = await verifyToken<{ id: number }>(token, Tokens.EMAIL_RESEND);
   if (!data.id) throw new Error(USER_NOT_FOUND);
   return resendEmailVerification(data.id);
 };

@@ -196,7 +196,7 @@ export const can = async (
   if (typeof target === "number") {
     if (targetType === "membership") {
       const membership = await prisma.memberships.findOne({
-        where: { id: parseInt(target) },
+        where: { id: target },
       });
       if (!membership) throw new Error(USER_NOT_FOUND);
       target = membership;
@@ -205,7 +205,7 @@ export const can = async (
       target = group;
     } else {
       // Target is a user
-      if (requestFromType === "users" && user.id === parseInt(target)) {
+      if (requestFromType === "users" && user.id === target) {
         target = user as users;
       } else {
         const targetUser = await getUserById(target);
@@ -217,13 +217,13 @@ export const can = async (
 
   if (requestFromType === "apiKeys") {
     const apiKeyDetails = await prisma.apiKeys.findOne({
-      where: { id: parseInt((user as ApiKeyResponse).id) },
+      where: { id: (user as ApiKeyResponse).id },
     });
     if (!apiKeyDetails || !target) throw new Error(INVALID_TOKEN);
     return canApiKeyGroup(apiKeyDetails, action as OrgScopes, target as groups);
   } else if (requestFromType === "accessTokens") {
     const accessTokenDetails = await prisma.accessTokens.findOne({
-      where: { id: parseInt((user as ApiKeyResponse).id) },
+      where: { id: (user as ApiKeyResponse).id },
     });
     if (!accessTokenDetails || !target) throw new Error(INVALID_TOKEN);
     return canAccessTokenUser(

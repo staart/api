@@ -71,7 +71,7 @@ export const getUserByEmail = async (email: string, secureOrigin = false) => {
 /**
  * Update a user's details
  */
-export const updateUser = async (id: string, user: KeyValue) => {
+export const updateUser = async (id: number, user: KeyValue) => {
   const originalUser = await getUserById(id);
   await deleteItemFromCache(`cache_getUserById_${originalUser.id}`);
   if (user.password) user.password = await hash(user.password, 8);
@@ -94,7 +94,7 @@ export const updateUser = async (id: string, user: KeyValue) => {
   }
   const result = await prisma.users.update({
     data: user,
-    where: { id: parseInt(id) },
+    where: { id: id },
   });
   return result;
 };
@@ -104,14 +104,13 @@ export const updateUser = async (id: string, user: KeyValue) => {
  * @param ipAddress - IP address for the new location
  */
 export const addApprovedLocation = async (
-  userId: string | number,
+  userId: number,
   ipAddress: string
 ) => {
-  if (typeof userId === "number") userId = userId.toString();
   const subnet = anonymizeIpAddress(ipAddress);
   return prisma.approvedLocations.create({
     data: {
-      user: { connect: { id: parseInt(userId) } },
+      user: { connect: { id: userId } },
       subnet,
       createdAt: new Date(),
     },
@@ -123,10 +122,9 @@ export const addApprovedLocation = async (
  * @param ipAddress - IP address for checking
  */
 export const checkApprovedLocation = async (
-  userId: string | number,
+  userId: number,
   ipAddress: string
 ) => {
-  if (typeof userId === "number") userId = userId.toString();
   const user = await getUserById(userId);
   if (!user) throw new Error(USER_NOT_FOUND);
   if (!user.checkLocationOnLogin) return true;
@@ -134,7 +132,7 @@ export const checkApprovedLocation = async (
   return (
     (
       await prisma.approvedLocations.findMany({
-        where: { userId: parseInt(userId), subnet },
+        where: { userId: userId, subnet },
       })
     ).length !== 0
   );
@@ -146,8 +144,7 @@ export const checkApprovedLocation = async (
  * and save the hashed version in the database
  * @param count - Number of backup codes to create
  */
-export const createBackupCodes = async (userId: string | number, count = 1) => {
-  if (typeof userId === "number") userId = userId.toString();
+export const createBackupCodes = async (userId: number, count = 1) => {
   const now = new Date();
   const codes: string[] = [];
   for await (const _ of Array.from(Array(count).keys())) {
@@ -156,7 +153,7 @@ export const createBackupCodes = async (userId: string | number, count = 1) => {
     await prisma.backupCodes.create({
       data: {
         code: await hash(code, 8),
-        user: { connect: { id: parseInt(userId) } },
+        user: { connect: { id: userId } },
         createdAt: now,
         updatedAt: now,
       },
@@ -178,29 +175,29 @@ export const createAccessToken = async (data: accessTokensCreateInput) => {
  * Update a user's details
  */
 export const updateAccessToken = async (
-  accessTokenId: string,
+  accessTokenId: number,
   data: accessTokens
 ) => {
   const newAccessToken = await prisma.accessTokens.findOne({
-    where: { id: parseInt(accessTokenId) },
+    where: { id: accessTokenId },
   });
   if (!newAccessToken) throw new Error(RESOURCE_NOT_FOUND);
   return prisma.accessTokens.update({
     data,
-    where: { id: parseInt(accessTokenId) },
+    where: { id: accessTokenId },
   });
 };
 
 /**
  * Delete an API key
  */
-export const deleteAccessToken = async (accessTokenId: string) => {
+export const deleteAccessToken = async (accessTokenId: number) => {
   const currentAccessToken = await prisma.accessTokens.findOne({
-    where: { id: parseInt(accessTokenId) },
+    where: { id: accessTokenId },
   });
   if (!currentAccessToken) throw new Error(RESOURCE_NOT_FOUND);
   return prisma.accessTokens.delete({
-    where: { id: parseInt(accessTokenId) },
+    where: { id: accessTokenId },
   });
 };
 
@@ -208,12 +205,11 @@ export const deleteAccessToken = async (accessTokenId: string) => {
  * Get the primary email of a user
  * @param userId - User Id
  */
-export const getUserPrimaryEmail = async (userId: string | number) => {
-  if (typeof userId === "number") userId = userId.toString();
+export const getUserPrimaryEmail = async (userId: number) => {
   const prefersEmail = (
     await prisma.users.findOne({
       select: { prefersEmail: true },
-      where: { id: parseInt(userId) },
+      where: { id: userId },
     })
   )?.prefersEmail;
   if (!prefersEmail) throw new Error(MISSING_PRIMARY_EMAIL);
@@ -271,11 +267,10 @@ export const createEmail = async (
  * Send an email verification link
  */
 export const sendEmailVerification = async (
-  id: string | number,
+  id: number,
   email: string,
   user: users
 ) => {
-  if (typeof id === "number") id = id.toString();
   const token = await emailVerificationToken(id);
   await mail({
     to: email,
@@ -288,11 +283,10 @@ export const sendEmailVerification = async (
 /**
  * Resend an email verification link
  */
-export const resendEmailVerification = async (id: string | number) => {
-  if (typeof id === "number") id = id.toString();
+export const resendEmailVerification = async (id: number) => {
   const token = await emailVerificationToken(id);
   const emailObject = await prisma.emails.findOne({
-    where: { id: parseInt(id) },
+    where: { id: id },
   });
   if (!emailObject) throw new Error(RESOURCE_NOT_FOUND);
   const email = emailObject.email;
@@ -310,13 +304,12 @@ export const resendEmailVerification = async (id: string | number) => {
  * Get a user object from its ID
  * @param id - User ID
  */
-export const getUserById = async (id: number | string) => {
-  if (typeof id === "number") id = id.toString();
+export const getUserById = async (id: number) => {
   const key = `cache_getUserById_${id}`;
   try {
     return await getItemFromCache<users>(key);
   } catch (error) {
-    const user = await prisma.users.findOne({ where: { id: parseInt(id) } });
+    const user = await prisma.users.findOne({ where: { id } });
     if (user) {
       await setItemInCache(key, user);
       return user;

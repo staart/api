@@ -66,7 +66,7 @@ export class UserAccessTokensController {
   @Get(":accessTokenId")
   async getUserAccessToken(req: Request, res: Response) {
     const id = twtToId(req.params.id);
-    const accessTokenId = req.params.accessTokenId;
+    const accessTokenId = twtToId(req.params.accessTokenId);
     joiValidate(
       {
         id: Joi.string().required(),
@@ -91,7 +91,7 @@ export class UserAccessTokensController {
   )
   async patchUserAccessToken(req: Request, res: Response) {
     const id = twtToId(req.params.id);
-    const accessTokenId = req.params.accessTokenId;
+    const accessTokenId = twtToId(req.params.accessTokenId);
     joiValidate(
       {
         id: Joi.string().required(),
@@ -112,7 +112,7 @@ export class UserAccessTokensController {
   @Delete(":accessTokenId")
   async deleteUserAccessToken(req: Request, res: Response) {
     const id = twtToId(req.params.id);
-    const accessTokenId = req.params.accessTokenId;
+    const accessTokenId = twtToId(req.params.accessTokenId);
     joiValidate(
       {
         id: Joi.string().required(),

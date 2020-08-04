@@ -531,11 +531,11 @@ export const getGroupMembershipsForUser = async (
 export const getGroupMembershipForUser = async (
   userId: number | ApiKeyResponse,
   groupId: number,
-  membershipId: string
+  membershipId: number
 ) => {
   if (await can(userId, OrgScopes.READ_ORG_MEMBERSHIPS, "group", groupId))
     return prisma.memberships.findOne({
-      where: { id: parseInt(membershipId) },
+      where: { id: membershipId },
       include: { user: true },
     });
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -544,13 +544,13 @@ export const getGroupMembershipForUser = async (
 export const updateGroupMembershipForUser = async (
   userId: number | ApiKeyResponse,
   groupId: number,
-  membershipId: string,
+  membershipId: number,
   data: membershipsUpdateInput
 ) => {
   if (await can(userId, OrgScopes.UPDATE_ORG_MEMBERSHIPS, "group", groupId)) {
     if (data.role) {
       const currentMembership = await prisma.memberships.findOne({
-        where: { id: parseInt(membershipId) },
+        where: { id: membershipId },
       });
       if (!currentMembership) throw new Error(MEMBERSHIP_NOT_FOUND);
       if (currentMembership.role === "OWNER" && data.role !== "OWNER") {
@@ -561,7 +561,7 @@ export const updateGroupMembershipForUser = async (
       }
     }
     return prisma.memberships.update({
-      where: { id: parseInt(membershipId) },
+      where: { id: membershipId },
       data,
     });
   }
@@ -576,7 +576,7 @@ export const updateGroupMembershipForUser = async (
 export const deleteGroupMembershipForUser = async (
   userId: number | ApiKeyResponse,
   groupId: number,
-  membershipId: string,
+  membershipId: number,
   locals: Locals
 ) => {
   if (await can(userId, OrgScopes.DELETE_ORG_MEMBERSHIPS, "group", groupId)) {
@@ -585,7 +585,7 @@ export const deleteGroupMembershipForUser = async (
     });
     if (members.length === 1)
       return deleteGroupForUser(userId, groupId, locals);
-    return prisma.memberships.delete({ where: { id: parseInt(membershipId) } });
+    return prisma.memberships.delete({ where: { id: membershipId } });
   }
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -697,17 +697,17 @@ export const getGroupApiKeysForUser = async (
 export const getGroupApiKeyForUser = async (
   userId: number | ApiKeyResponse,
   groupId: number,
-  apiKeyId: string
+  apiKeyId: number
 ) => {
   if (await can(userId, OrgScopes.READ_ORG_API_KEYS, "group", groupId))
-    return prisma.apiKeys.findOne({ where: { id: parseInt(apiKeyId) } });
+    return prisma.apiKeys.findOne({ where: { id: apiKeyId } });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
 export const getGroupApiKeyLogsForUser = async (
   userId: number | ApiKeyResponse,
   groupId: number,
-  apiKeyId: string,
+  apiKeyId: number,
   query: {
     range?: string;
     from?: string;
@@ -721,13 +721,13 @@ export const getGroupApiKeyLogsForUser = async (
 export const updateApiKeyForUser = async (
   userId: number | ApiKeyResponse,
   groupId: number,
-  apiKeyId: string,
+  apiKeyId: number,
   data: apiKeysUpdateInput,
   locals: Locals
 ) => {
   if (await can(userId, OrgScopes.UPDATE_ORG_API_KEYS, "group", groupId)) {
     const result = await prisma.apiKeys.update({
-      where: { id: parseInt(apiKeyId) },
+      where: { id: apiKeyId },
       data,
     });
     queueWebhook(groupId, Webhooks.UPDATE_API_KEY, data);
@@ -766,12 +766,12 @@ export const createApiKeyForUser = async (
 export const deleteApiKeyForUser = async (
   userId: number | ApiKeyResponse,
   groupId: number,
-  apiKeyId: string,
+  apiKeyId: number,
   locals: Locals
 ) => {
   if (await can(userId, OrgScopes.DELETE_ORG_API_KEYS, "group", groupId)) {
     const result = await prisma.apiKeys.delete({
-      where: { id: parseInt(apiKeyId) },
+      where: { id: apiKeyId },
     });
     queueWebhook(groupId, Webhooks.DELETE_API_KEY, apiKeyId);
     trackEvent({ groupId, type: Webhooks.DELETE_API_KEY }, locals);
@@ -799,23 +799,23 @@ export const getGroupDomainsForUser = async (
 export const getGroupDomainForUser = async (
   userId: number | ApiKeyResponse,
   groupId: number,
-  domainId: string
+  domainId: number
 ) => {
   if (await can(userId, OrgScopes.READ_ORG_DOMAINS, "group", groupId))
-    return prisma.domains.findOne({ where: { id: parseInt(domainId) } });
+    return prisma.domains.findOne({ where: { id: domainId } });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
 export const updateDomainForUser = async (
   userId: number | ApiKeyResponse,
   groupId: number,
-  domainId: string,
+  domainId: number,
   data: domainsUpdateInput,
   locals: Locals
 ) => {
   if (await can(userId, OrgScopes.UPDATE_ORG_DOMAINS, "group", groupId)) {
     const result = await prisma.domains.update({
-      where: { id: parseInt(domainId) },
+      where: { id: domainId },
       data,
     });
     queueWebhook(groupId, Webhooks.UPDATE_DOMAIN, data);
@@ -855,12 +855,12 @@ export const createDomainForUser = async (
 export const deleteDomainForUser = async (
   userId: number | ApiKeyResponse,
   groupId: number,
-  domainId: string,
+  domainId: number,
   locals: Locals
 ) => {
   if (await can(userId, OrgScopes.DELETE_ORG_DOMAINS, "group", groupId)) {
     const result = await prisma.domains.delete({
-      where: { id: parseInt(domainId) },
+      where: { id: domainId },
     });
     queueWebhook(groupId, Webhooks.DELETE_DOMAIN, domainId);
     trackEvent({ groupId, type: Webhooks.DELETE_DOMAIN }, locals);
@@ -872,13 +872,13 @@ export const deleteDomainForUser = async (
 export const verifyDomainForUser = async (
   userId: number | ApiKeyResponse,
   groupId: number,
-  domainId: string,
+  domainId: number,
   method: "dns" | "file",
   locals: Locals
 ) => {
   if (await can(userId, OrgScopes.VERIFY_ORG_DOMAINS, "group", groupId)) {
     const domain = await prisma.domains.findOne({
-      where: { id: parseInt(domainId) },
+      where: { id: domainId },
     });
     if (!domain) throw new Error(RESOURCE_NOT_FOUND);
     if (domain.isVerified) throw new Error(DOMAIN_ALREADY_VERIFIED);
@@ -892,7 +892,7 @@ export const verifyDomainForUser = async (
         ).data;
         if (file.replace(/\r?\n|\r/g, "").trim() === domain.verificationCode) {
           const result = await prisma.domains.update({
-            where: { id: parseInt(domainId) },
+            where: { id: domainId },
             data: { isVerified: true },
           });
           queueWebhook(groupId, Webhooks.VERIFY_DOMAIN, {
@@ -909,7 +909,7 @@ export const verifyDomainForUser = async (
       const dns = await dnsResolve(domain.domain, "TXT");
       if (JSON.stringify(dns).includes(domain.verificationCode)) {
         const result = await prisma.domains.update({
-          where: { id: parseInt(domainId) },
+          where: { id: domainId },
           data: { isVerified: true },
         });
         queueWebhook(groupId, Webhooks.VERIFY_DOMAIN, {
@@ -946,23 +946,23 @@ export const getGroupWebhooksForUser = async (
 export const getGroupWebhookForUser = async (
   userId: number | ApiKeyResponse,
   groupId: number,
-  webhookId: string
+  webhookId: number
 ) => {
   if (await can(userId, OrgScopes.READ_ORG_WEBHOOKS, "group", groupId))
-    return prisma.webhooks.findOne({ where: { id: parseInt(webhookId) } });
+    return prisma.webhooks.findOne({ where: { id: webhookId } });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
 export const updateWebhookForUser = async (
   userId: number | ApiKeyResponse,
   groupId: number,
-  webhookId: string,
+  webhookId: number,
   data: webhooksUpdateInput,
   locals: Locals
 ) => {
   if (await can(userId, OrgScopes.UPDATE_ORG_WEBHOOKS, "group", groupId)) {
     const result = await prisma.webhooks.update({
-      where: { id: parseInt(webhookId) },
+      where: { id: webhookId },
       data,
     });
     queueWebhook(groupId, Webhooks.UPDATE_WEBHOOK, data);
@@ -1002,12 +1002,12 @@ export const createWebhookForUser = async (
 export const deleteWebhookForUser = async (
   userId: number | ApiKeyResponse,
   groupId: number,
-  webhookId: string,
+  webhookId: number,
   locals: Locals
 ) => {
   if (await can(userId, OrgScopes.CREATE_ORG_WEBHOOKS, "group", groupId)) {
     const result = prisma.webhooks.delete({
-      where: { id: parseInt(webhookId) },
+      where: { id: webhookId },
     });
     queueWebhook(groupId, Webhooks.DELETE_WEBHOOK, webhookId);
     trackEvent({ groupId, type: Webhooks.DELETE_WEBHOOK }, locals);

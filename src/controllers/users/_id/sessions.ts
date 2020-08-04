@@ -27,7 +27,7 @@ export class UserSessionsController {
   @Get(":sessionId")
   async getUserSession(req: Request, res: Response) {
     const id = twtToId(req.params.id);
-    const sessionId = req.params.sessionId;
+    const sessionId = twtToId(req.params.sessionId);
     joiValidate(
       {
         id: Joi.string().required(),
@@ -41,7 +41,7 @@ export class UserSessionsController {
   @Delete(":sessionId")
   async deleteUserSession(req: Request, res: Response) {
     const id = twtToId(req.params.id);
-    const sessionId = req.params.sessionId;
+    const sessionId = twtToId(req.params.sessionId);
     joiValidate(
       {
         id: Joi.string().required(),

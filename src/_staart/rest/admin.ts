@@ -17,7 +17,7 @@ import {
 import { SudoScopes } from "../interfaces/enum";
 
 export const getAllGroupForUser = async (
-  tokenUserId: string,
+  tokenUserId: number,
   queryParams: any
 ) => {
   if (await can(tokenUserId, SudoScopes.READ, "sudo"))
@@ -29,7 +29,7 @@ export const getAllGroupForUser = async (
 };
 
 export const getAllUsersForUser = async (
-  tokenUserId: string,
+  tokenUserId: number,
   queryParams: any
 ) => {
   if (await can(tokenUserId, SudoScopes.READ, "sudo"))
@@ -41,7 +41,7 @@ export const getAllUsersForUser = async (
 };
 
 export const getAllCouponsForUser = async (
-  tokenUserId: string,
+  tokenUserId: number,
   queryParams: any
 ) => {
   if (await can(tokenUserId, SudoScopes.READ, "sudo"))
@@ -53,7 +53,7 @@ export const getAllCouponsForUser = async (
 };
 
 export const getCouponForUser = async (
-  tokenUserId: string,
+  tokenUserId: number,
   couponId: string
 ) => {
   if (await can(tokenUserId, SudoScopes.READ, "sudo"))
@@ -62,7 +62,7 @@ export const getCouponForUser = async (
 };
 
 export const updateCouponForUser = async (
-  tokenUserId: string,
+  tokenUserId: number,
   couponId: string,
   data: couponCodesUpdateInput
 ) => {
@@ -75,7 +75,7 @@ export const updateCouponForUser = async (
 };
 
 export const deleteCouponForUser = async (
-  tokenUserId: string,
+  tokenUserId: number,
   couponId: string
 ) => {
   if (await can(tokenUserId, SudoScopes.READ, "sudo"))
@@ -83,7 +83,7 @@ export const deleteCouponForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
-export const generateCouponForUser = async (tokenUserId: string, body: any) => {
+export const generateCouponForUser = async (tokenUserId: number, body: any) => {
   if (!(await can(tokenUserId, SudoScopes.READ, "sudo")))
     throw new Error(INSUFFICIENT_PERMISSION);
   if (body.jwt)
@@ -97,7 +97,7 @@ export const generateCouponForUser = async (tokenUserId: string, body: any) => {
 };
 
 export const getPaymentEventsForUser = async (
-  tokenUserId: string,
+  tokenUserId: number,
   body: any
 ) => {
   if (!(await can(tokenUserId, SudoScopes.READ, "sudo")))
@@ -109,7 +109,7 @@ export const getPaymentEventsForUser = async (
  * Get an API key
  */
 export const getServerLogsForUser = async (
-  tokenUserId: string,
+  tokenUserId: number,
   query: {
     range?: string;
     from?: string;

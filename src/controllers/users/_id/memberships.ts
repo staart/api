@@ -29,7 +29,7 @@ export class UserMembershipsController {
   @Get(":membershipId")
   async getMembership(req: Request, res: Response) {
     const id = twtToId(req.params.id);
-    const membershipId = req.params.membershipId;
+    const membershipId = twtToId(req.params.membershipId);
     joiValidate(
       {
         id: Joi.string().required(),
@@ -43,7 +43,7 @@ export class UserMembershipsController {
   @Delete(":membershipId")
   async deleteMembership(req: Request, res: Response) {
     const id = twtToId(req.params.id);
-    const membershipId = req.params.membershipId;
+    const membershipId = twtToId(req.params.membershipId);
     joiValidate(
       {
         id: Joi.string().required(),
@@ -58,7 +58,7 @@ export class UserMembershipsController {
   @Patch(":membershipId")
   async updateMembership(req: Request, res: Response) {
     const id = twtToId(req.params.id);
-    const membershipId = req.params.membershipId;
+    const membershipId = twtToId(req.params.membershipId);
     joiValidate(
       {
         id: Joi.string().required(),

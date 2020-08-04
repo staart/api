@@ -67,11 +67,11 @@ export const generateToken = (
   });
 
 export interface TokenResponse {
-  id: string;
+  id: number;
   ipAddress?: string;
 }
 export interface ApiKeyResponse {
-  id: string;
+  id: number;
   groupId: string;
   scopes: string;
   jti: string;
@@ -81,7 +81,7 @@ export interface ApiKeyResponse {
   referrerRestrictions?: string;
 }
 export interface AccessTokenResponse {
-  id: string;
+  id: number;
   userId: string;
   scopes: string;
   jti: string;
@@ -120,13 +120,13 @@ export const couponCodeJwt = (
 /**
  * Generate a new email verification JWT
  */
-export const emailVerificationToken = (id: string) =>
+export const emailVerificationToken = (id: number) =>
   generateToken({ id }, TOKEN_EXPIRY_EMAIL_VERIFICATION, Tokens.EMAIL_VERIFY);
 
 /**
  * Generate a new email verification JWT
  */
-export const resendEmailVerificationToken = (id: string) =>
+export const resendEmailVerificationToken = (id: number) =>
   generateToken({ id }, TOKEN_EXPIRY_EMAIL_VERIFICATION, Tokens.EMAIL_RESEND);
 
 /**

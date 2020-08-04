@@ -63,24 +63,20 @@ export const createGroup = async (
 /*
  * Update an group
  */
-export const updateGroup = async (
-  id: string | number,
-  group: groupsUpdateInput
-) => {
-  if (typeof id === "number") id = id.toString();
+export const updateGroup = async (id: number, group: groupsUpdateInput) => {
   const originalGroup = await getGroupById(id);
   await deleteItemFromCache(`cache_getGroupById_${originalGroup.id}`);
   if (!originalGroup) throw new Error(ORGANIZATION_NOT_FOUND);
   return prisma.groups.update({
     data: group,
-    where: { id: parseInt(id) },
+    where: { id: id },
   });
 };
 
 /**
  * Get an API key
  */
-export const getApiKeyLogs = async (apiKeyId: string, query: KeyValue) => {
+export const getApiKeyLogs = async (apiKeyId: number, query: KeyValue) => {
   const range: string = query.range || "7d";
   const from = query.from ? parseInt(query.from) : 0;
   const result = await elasticSearch.search({
@@ -129,14 +125,14 @@ export const createApiKey = async (apiKey: apiKeysCreateInput) => {
  * Update a user's details
  */
 export const updateApiKey = async (
-  apiKeyId: string,
+  apiKeyId: number,
   data: apiKeysUpdateInput
 ) => {
   const apiKey = await prisma.apiKeys.findOne({
-    where: { id: parseInt(apiKeyId) },
+    where: { id: apiKeyId },
   });
   if (!apiKey) throw new Error(RESOURCE_NOT_FOUND);
-  return prisma.apiKeys.update({ data, where: { id: parseInt(apiKeyId) } });
+  return prisma.apiKeys.update({ data, where: { id: apiKeyId } });
 };
 
 /**
@@ -151,10 +147,9 @@ export const getDomainByDomainName = async (domain: string) => {
   throw new Error(RESOURCE_NOT_FOUND);
 };
 
-export const refreshGroupProfilePicture = async (groupId: string | number) => {
-  if (typeof groupId === "number") groupId = groupId.toString();
+export const refreshGroupProfilePicture = async (groupId: number) => {
   const domains = await prisma.domains.findMany({
-    where: { groupId: parseInt(groupId) },
+    where: { groupId: groupId },
     orderBy: { updatedAt: "desc" },
   });
   if (domains.length) {
@@ -168,11 +163,11 @@ export const refreshGroupProfilePicture = async (groupId: string | number) => {
     )
       return prisma.groups.update({
         data: { profilePictureUrl: domainIcons.data.url },
-        where: { id: parseInt(groupId) },
+        where: { id: groupId },
       });
   }
   const group = await prisma.groups.findOne({
-    where: { id: parseInt(groupId) },
+    where: { id: groupId },
     select: { name: true },
   });
   if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
@@ -188,7 +183,7 @@ export const refreshGroupProfilePicture = async (groupId: string | number) => {
   )}&background=${backgroundColor}&color=fff`;
   return prisma.groups.update({
     data: { profilePictureUrl },
-    where: { id: parseInt(groupId) },
+    where: { id: groupId },
   });
 };
 
@@ -221,14 +216,13 @@ export const checkDomainAvailability = async (username: string) => {
  * Get a group object from its ID
  * @param id - User ID
  */
-export const getGroupById = async (id: number | string) => {
-  if (typeof id === "number") id = id.toString();
+export const getGroupById = async (id: number) => {
   const key = `cache_getGroupById_${id}`;
   try {
     return await getItemFromCache<groups>(key);
   } catch (error) {
     const group = await prisma.groups.findOne({
-      where: { id: parseInt(id) },
+      where: { id },
     });
     if (group) {
       await setItemInCache(key, group);

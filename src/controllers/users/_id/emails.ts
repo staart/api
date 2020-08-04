@@ -56,7 +56,7 @@ export class UserEmailsController {
   @Get(":emailId")
   async getEmail(req: Request, res: Response) {
     const id = twtToId(req.params.id);
-    const emailId = req.params.emailId;
+    const emailId = twtToId(req.params.emailId);
     joiValidate(
       {
         id: Joi.string().required(),
@@ -70,7 +70,7 @@ export class UserEmailsController {
   @Post(":emailId/resend")
   async postResend(req: Request, res: Response) {
     const id = twtToId(req.params.id);
-    const emailId = req.params.emailId;
+    const emailId = twtToId(req.params.emailId);
     joiValidate(
       {
         id: Joi.string().required(),
@@ -85,7 +85,7 @@ export class UserEmailsController {
   @Delete(":emailId")
   async deleteEmail(req: Request, res: Response) {
     const id = twtToId(req.params.id);
-    const emailId = req.params.emailId;
+    const emailId = twtToId(req.params.emailId);
     joiValidate(
       {
         id: Joi.string().required(),

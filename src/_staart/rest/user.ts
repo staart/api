@@ -314,13 +314,13 @@ export const getUserAccessTokensForUser = async (
 export const getUserAccessTokenForUser = async (
   tokenUserId: number,
   userId: number,
-  accessTokenId: string
+  accessTokenId: number
 ) => {
   if (
     await can(tokenUserId, UserScopes.READ_USER_ACCESS_TOKENS, "user", userId)
   )
     return prisma.accessTokens.findOne({
-      where: { id: parseInt(accessTokenId) },
+      where: { id: accessTokenId },
     });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -328,7 +328,7 @@ export const getUserAccessTokenForUser = async (
 export const updateAccessTokenForUser = async (
   tokenUserId: number,
   userId: number,
-  accessTokenId: string,
+  accessTokenId: number,
   data: accessTokensUpdateInput,
   locals: Locals
 ) => {
@@ -336,7 +336,7 @@ export const updateAccessTokenForUser = async (
     await can(tokenUserId, UserScopes.UPDATE_USER_ACCESS_TOKENS, "user", userId)
   )
     return prisma.accessTokens.update({
-      where: { id: parseInt(accessTokenId) },
+      where: { id: accessTokenId },
       data,
     });
   throw new Error(INSUFFICIENT_PERMISSION);
@@ -364,14 +364,14 @@ export const createAccessTokenForUser = async (
 export const deleteAccessTokenForUser = async (
   tokenUserId: number,
   userId: number,
-  accessTokenId: string,
+  accessTokenId: number,
   locals: Locals
 ) => {
   if (
     await can(tokenUserId, UserScopes.DELETE_USER_ACCESS_TOKENS, "user", userId)
   )
     return prisma.accessTokens.delete({
-      where: { id: parseInt(accessTokenId) },
+      where: { id: accessTokenId },
     });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -395,21 +395,21 @@ export const getUserSessionsForUser = async (
 export const getUserSessionForUser = async (
   tokenUserId: number,
   userId: number,
-  sessionId: string
+  sessionId: number
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER_SESSION, "user", userId))
-    return prisma.sessions.findOne({ where: { id: parseInt(sessionId) } });
+    return prisma.sessions.findOne({ where: { id: sessionId } });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
 export const deleteSessionForUser = async (
   tokenUserId: number,
   userId: number,
-  sessionId: string,
+  sessionId: number,
   locals: Locals
 ) => {
   if (await can(tokenUserId, UserScopes.DELETE_USER_SESSION, "user", userId)) {
-    return prisma.sessions.delete({ where: { id: parseInt(sessionId) } });
+    return prisma.sessions.delete({ where: { id: sessionId } });
   }
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -455,28 +455,28 @@ export const connectUserIdentityForUser = async (
 export const getUserIdentityForUser = async (
   tokenUserId: number,
   userId: number,
-  identityId: string
+  identityId: number
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER_IDENTITY, "user", userId))
-    return prisma.identities.findOne({ where: { id: parseInt(identityId) } });
+    return prisma.identities.findOne({ where: { id: identityId } });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
 export const deleteIdentityForUser = async (
   tokenUserId: number,
   userId: number,
-  identityId: string,
+  identityId: number,
   locals: Locals
 ) => {
   if (await can(tokenUserId, UserScopes.DELETE_USER_IDENTITY, "user", userId)) {
-    return prisma.identities.delete({ where: { id: parseInt(identityId) } });
+    return prisma.identities.delete({ where: { id: identityId } });
   }
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
 export const addInvitationCredits = async (
-  invitedBy: string,
-  newUserId: string
+  invitedBy: number,
+  newUserId: number
 ) => {
   // const invitedByUserId = (
   //   await prisma.users.findOne({
@@ -529,17 +529,17 @@ export const getAllEmailsForUser = async (
 export const getEmailForUser = async (
   tokenUserId: number,
   userId: number,
-  emailId: string
+  emailId: number
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER_EMAILS, "user", userId))
-    return prisma.emails.findOne({ where: { id: parseInt(emailId) } });
+    return prisma.emails.findOne({ where: { id: emailId } });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
 export const resendEmailVerificationForUser = async (
   tokenUserId: number,
   userId: number,
-  emailId: string
+  emailId: number
 ) => {
   if (
     await can(
@@ -576,25 +576,25 @@ export const addEmailToUserForUser = async (
 export const deleteEmailFromUserForUser = async (
   tokenUserId: number,
   userId: number,
-  emailId: string,
+  emailId: number,
   locals: Locals
 ) => {
   if (!(await can(tokenUserId, UserScopes.DELETE_USER_EMAILS, "user", userId)))
     throw new Error(INSUFFICIENT_PERMISSION);
   const email = await prisma.emails.findOne({
-    where: { id: parseInt(emailId) },
+    where: { id: emailId },
   });
   if (!email) throw new Error(RESOURCE_NOT_FOUND);
   if (email.userId !== userId) throw new Error(INSUFFICIENT_PERMISSION);
   const verifiedEmails = await prisma.emails.findMany({
-    where: { id: parseInt(emailId) },
+    where: { id: emailId },
   });
   if (verifiedEmails.length === 1 && email.isVerified)
     throw new Error(EMAIL_CANNOT_DELETE);
   const currentPrimaryEmailId = (await getUserPrimaryEmail(userId)).id;
-  if (currentPrimaryEmailId === parseInt(emailId)) {
+  if (currentPrimaryEmailId === emailId) {
     const nextVerifiedEmail = verifiedEmails.filter(
-      (emailObject) => emailObject.id !== parseInt(emailId)
+      (emailObject) => emailObject.id !== emailId
     )[0];
     await prisma.users.update({
       where: { id: userId },
@@ -603,7 +603,7 @@ export const deleteEmailFromUserForUser = async (
     await deleteItemFromCache(`cache_getUserById_${userId}`);
   }
   const result = await prisma.emails.delete({
-    where: { id: parseInt(emailId) },
+    where: { id: emailId },
   });
   trackEvent(
     { userId, type: EventType.EMAIL_DELETED, data: { email: email.email } },

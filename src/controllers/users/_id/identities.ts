@@ -62,7 +62,7 @@ export class UserIdentitiesController {
   @Get(":identityId")
   async getUserIdentity(req: Request, res: Response) {
     const id = twtToId(req.params.id);
-    const identityId = req.params.identityId;
+    const identityId = twtToId(req.params.identityId);
     joiValidate(
       {
         id: Joi.string().required(),
@@ -76,7 +76,7 @@ export class UserIdentitiesController {
   @Delete(":identityId")
   async deleteUserIdentity(req: Request, res: Response) {
     const id = twtToId(req.params.id);
-    const identityId = req.params.identityId;
+    const identityId = twtToId(req.params.identityId);
     joiValidate(
       {
         id: Joi.string().required(),
