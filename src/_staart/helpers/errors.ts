@@ -1,5 +1,4 @@
-import { EXPIRED_TOKEN, INVALID_TOKEN } from "@staart/errors";
-import { warn } from "@staart/errors";
+import { EXPIRED_TOKEN, INVALID_TOKEN, warn } from "@staart/errors";
 import { ValidationError } from "@staart/validate";
 import { HTTPError } from "../interfaces/general";
 

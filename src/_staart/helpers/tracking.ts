@@ -1,6 +1,6 @@
 import { Request, Response } from "@staart/server";
 import { Tokens } from "../interfaces/enum";
-import { Locals, Event } from "../interfaces/general";
+import { Event, Locals } from "../interfaces/general";
 import { verifyToken } from "./jwt";
 
 let trackingData: Array<any> = [];

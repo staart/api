@@ -1,5 +1,5 @@
-import redis from "@staart/redis";
 import { RESOURCE_NOT_FOUND } from "@staart/errors";
+import { redis } from "@staart/redis";
 
 /**
  * Get an item from Redis cache

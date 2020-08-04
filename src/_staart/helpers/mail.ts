@@ -1,10 +1,11 @@
 import { logError } from "@staart/errors";
-import { sendMail, Mail } from "@staart/mail";
+import { Mail, sendMail } from "@staart/mail";
 import { render } from "@staart/mustache-markdown";
 import { redisQueue } from "@staart/redis";
 import { readFile } from "fs-extra";
 import { join } from "path";
 import { FRONTEND_URL, REDIS_QUEUE_PREFIX } from "../../config";
+import { PartialBy } from "../../_staart/helpers/utils";
 
 const MAIL_QUEUE = `${REDIS_QUEUE_PREFIX}outbound-emails`;
 
@@ -23,7 +24,7 @@ export const receiveEmailMessage = async () => {
     qname: MAIL_QUEUE,
   });
   if ("id" in result) {
-    const data: Mail & {
+    const data: PartialBy<PartialBy<Mail, "subject">, "message"> & {
       template?: string;
       data?: any;
       tryNumber: number;
@@ -59,7 +60,10 @@ export const receiveEmailMessage = async () => {
  * Send a new email using AWS SES or SMTP
  */
 export const mail = async (
-  options: Mail & { template?: string; data?: any }
+  options: PartialBy<PartialBy<Mail, "subject">, "message"> & {
+    template?: string;
+    data?: any;
+  }
 ) => {
   await setupQueue();
   await redisQueue.sendMessageAsync({
@@ -69,7 +73,10 @@ export const mail = async (
 };
 
 const safeSendEmail = async (
-  options: Mail & { template?: string; data?: any }
+  options: PartialBy<PartialBy<Mail, "subject">, "message"> & {
+    template?: string;
+    data?: any;
+  }
 ) => {
   options.subject = options.subject || "";
   options.message = options.message || "";
@@ -97,5 +104,10 @@ const safeSendEmail = async (
       .split("\n", 1)[0]
       .replace(/<\/?[^>]+(>|$)/g, "");
   }
-  return sendMail(options);
+  return sendMail(
+    options as Mail & {
+      template?: string;
+      data?: any;
+    }
+  );
 };

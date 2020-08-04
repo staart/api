@@ -1,4 +1,9 @@
 import {
+  accessTokensCreateInput,
+  accessTokensUpdateInput,
+  users,
+} from "@prisma/client";
+import {
   IP_RANGE_CHECK_FAIL,
   REFERRER_CHECK_FAIL,
   REVOKED_TOKEN,
@@ -21,26 +26,19 @@ import {
 } from "../../config";
 import { EventType, Templates, Tokens } from "../interfaces/enum";
 import { Locals } from "../interfaces/general";
+import {
+  checkApprovedLocation,
+  getUserPrimaryEmail,
+  updateSessionByJwt,
+} from "../services/user.service";
 import { getGeolocationFromIp } from "./location";
 import { mail } from "./mail";
+import { prisma } from "./prisma";
 import {
   deleteSensitiveInfoUser,
   includesDomainInCommaList,
   removeFalsyValues,
 } from "./utils";
-import {
-  accessTokensCreateInput,
-  accessTokensUpdateInput,
-  users,
-  apiKeysCreateInput,
-  apiKeysUpdateInput,
-} from "@prisma/client";
-import { prisma } from "./prisma";
-import {
-  updateSessionByJwt,
-  checkApprovedLocation,
-  getUserPrimaryEmail,
-} from "../services/user.service";
 
 /**
  * Generate a new JWT

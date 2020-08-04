@@ -1,14 +1,10 @@
+import { users } from "@prisma/client";
 import { Request, Response } from "@staart/server";
 import { isMatch } from "@staart/text";
 import { Joi, joiValidate } from "@staart/validate";
-import { ORGANIZATION_NOT_FOUND, USER_NOT_FOUND } from "@staart/errors";
 import dns from "dns";
 import { Tokens } from "../interfaces/enum";
 import { ApiKeyResponse } from "./jwt";
-import { users } from "@prisma/client";
-import { prisma } from "../helpers/prisma";
-import { getGroupById } from "../services/group.service";
-import { getUserById } from "../services/user.service";
 
 /**
  * Make s single property optional
@@ -23,36 +19,6 @@ export const deleteSensitiveInfoUser = (user: users) => {
   delete user.password;
   delete user.twoFactorSecret;
   return user;
-};
-
-export const groupUsernameToId = async (id: string) => {
-  const result = (
-    await prisma.groups.findOne({
-      select: { id: true },
-      where: {
-        username: id,
-      },
-    })
-  )?.id.toString();
-  if (result) return result;
-  throw new Error(ORGANIZATION_NOT_FOUND);
-};
-
-export const userUsernameToId = async (id: string, tokenUserId?: string) => {
-  if (id === "me" && tokenUserId) {
-    return String(tokenUserId);
-  } else {
-    const result = (
-      await prisma.users.findOne({
-        select: { id: true },
-        where: {
-          username: id,
-        },
-      })
-    )?.id.toString();
-    if (result) return result;
-    throw new Error(USER_NOT_FOUND);
-  }
 };
 
 export const localsToTokenOrKey = (res: Response) => {

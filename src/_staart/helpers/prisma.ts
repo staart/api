@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import { cleanup } from "@staart/server";
-import { complete, success } from "@staart/errors";
 import { getConfig } from "@staart/config";
+import { complete, success } from "@staart/errors";
+import { cleanup } from "@staart/server";
 
 export const prisma = new PrismaClient({
   log: getConfig("NODE_ENV") === "production" ? ["warn"] : ["info", "warn"],

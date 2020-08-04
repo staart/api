@@ -1,20 +1,16 @@
 import {
-  ORGANIZATION_NOT_FOUND,
-  USER_NOT_FOUND,
-  INVALID_TOKEN,
-} from "@staart/errors";
-import { OrgScopes, Tokens, UserScopes, SudoScopes } from "../interfaces/enum";
-import { ApiKeyResponse, AccessTokenResponse } from "./jwt";
-import {
-  users,
-  groups,
-  memberships,
   accessTokens,
   apiKeys,
+  groups,
+  memberships,
+  users,
 } from "@prisma/client";
-import { prisma } from "./prisma";
-import { getUserById } from "../services/user.service";
+import { INVALID_TOKEN, USER_NOT_FOUND } from "@staart/errors";
+import { OrgScopes, SudoScopes, Tokens, UserScopes } from "../interfaces/enum";
 import { getGroupById } from "../services/group.service";
+import { getUserById } from "../services/user.service";
+import { AccessTokenResponse, ApiKeyResponse } from "./jwt";
+import { prisma } from "./prisma";
 
 /**
  * Whether a user can perform an action on another user
@@ -64,7 +60,8 @@ const canAccessTokenUser = (
 
   if (!accessToken.scopes) return false;
 
-  if (accessToken.scopes.includes(action)) return true;
+  if (Array.isArray(accessToken.scopes) && accessToken.scopes.includes(action))
+    return true;
 
   return false;
 };
@@ -86,9 +83,6 @@ const canUserGroup = async (user: users, action: OrgScopes, target: groups) => {
 
     // An group admin can do anything too
     if (membership.role === "ADMIN") allowed = true;
-
-    // An group reseller can do anything too
-    if (membership.role === "RESELLER") allowed = true;
 
     // An group member can read, not edit/delete/invite
     if (
@@ -125,9 +119,7 @@ const canUserMembership = async (
     // An admin, owner, or reseller can edit
     if (
       membership.groupId === target.groupId &&
-      (membership.role === "OWNER" ||
-        membership.role === "ADMIN" ||
-        membership.role === "RESELLER")
+      (membership.role === "OWNER" || membership.role === "ADMIN")
     )
       allowed = true;
 
@@ -163,7 +155,8 @@ const canApiKeyGroup = (apiKey: apiKeys, action: OrgScopes, target: groups) => {
   // If it has no scopes, it has no permissions
   if (!apiKey.scopes) return false;
 
-  if (apiKey.scopes.includes(action)) return true;
+  if (Array.isArray(apiKey.scopes) && apiKey.scopes.includes(action))
+    return true;
 
   return false;
 };
