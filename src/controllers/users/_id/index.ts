@@ -21,8 +21,8 @@ import {
 export class UserController {
   @Get()
   async get(req: Request, res: Response) {
-    const id = twtToId(req.params.id);
-    joiValidate({ id: Joi.string().required() }, { id });
+    const id = twtToId(req.params.id, res.locals.token.id);
+    joiValidate({ id: Joi.number().required() }, { id });
     return getUserFromIdForUser(id, res.locals.token.id, req.query);
   }
 
@@ -59,8 +59,8 @@ export class UserController {
     )
   )
   async patch(req: Request, res: Response) {
-    const id = twtToId(req.params.id);
-    joiValidate({ id: Joi.string().required() }, { id });
+    const id = twtToId(req.params.id, res.locals.token.id);
+    joiValidate({ id: Joi.number().required() }, { id });
     const updated = await updateUserForUser(
       res.locals.token.id,
       id,
@@ -72,8 +72,8 @@ export class UserController {
 
   @Delete()
   async delete(req: Request, res: Response) {
-    const id = twtToId(req.params.id);
-    joiValidate({ id: Joi.string().required() }, { id });
+    const id = twtToId(req.params.id, res.locals.token.id);
+    joiValidate({ id: Joi.number().required() }, { id });
     await deleteUserForUser(res.locals.token.id, id, res.locals);
     return respond(RESOURCE_DELETED);
   }

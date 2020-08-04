@@ -28,15 +28,15 @@ import {
 export class UserIdentitiesController {
   @Get()
   async getUserIdentities(req: Request, res: Response) {
-    const id = twtToId(req.params.id);
-    joiValidate({ id: Joi.string().required() }, { id });
+    const id = twtToId(req.params.id, res.locals.token.id);
+    joiValidate({ id: Joi.number().required() }, { id });
     return getUserIdentitiesForUser(res.locals.token.id, id, req.query);
   }
 
   @Put()
   async createUserIdentity(req: Request, res: Response) {
-    const id = twtToId(req.params.id);
-    joiValidate({ id: Joi.string().required() }, { id });
+    const id = twtToId(req.params.id, res.locals.token.id);
+    joiValidate({ id: Joi.number().required() }, { id });
     const added = await createUserIdentityForUser(
       res.locals.token.id,
       id,
@@ -47,8 +47,8 @@ export class UserIdentitiesController {
 
   @Post(":service")
   async connectUserIdentity(req: Request, res: Response) {
-    const id = twtToId(req.params.id);
-    joiValidate({ id: Joi.string().required() }, { id });
+    const id = twtToId(req.params.id, res.locals.token.id);
+    joiValidate({ id: Joi.number().required() }, { id });
     const service = req.params.service;
     const url = req.body.url;
     joiValidate(
@@ -61,12 +61,12 @@ export class UserIdentitiesController {
 
   @Get(":identityId")
   async getUserIdentity(req: Request, res: Response) {
-    const id = twtToId(req.params.id);
+    const id = twtToId(req.params.id, res.locals.token.id);
     const identityId = twtToId(req.params.identityId);
     joiValidate(
       {
         id: Joi.string().required(),
-        identityId: Joi.string().required(),
+        identityId: Joi.number().required(),
       },
       { id, identityId }
     );
@@ -75,12 +75,12 @@ export class UserIdentitiesController {
 
   @Delete(":identityId")
   async deleteUserIdentity(req: Request, res: Response) {
-    const id = twtToId(req.params.id);
+    const id = twtToId(req.params.id, res.locals.token.id);
     const identityId = twtToId(req.params.identityId);
     joiValidate(
       {
         id: Joi.string().required(),
-        identityId: Joi.string().required(),
+        identityId: Joi.number().required(),
       },
       { id, identityId }
     );

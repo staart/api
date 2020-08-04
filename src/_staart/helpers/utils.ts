@@ -1,12 +1,13 @@
+import { config } from "@anandchowdhary/cosmic";
 import { users } from "@prisma/client";
 import { Request, Response } from "@staart/server";
 import { isMatch } from "@staart/text";
 import { Joi, joiValidate } from "@staart/validate";
 import dns from "dns";
-import { Tokens } from "../interfaces/enum";
 import { verify } from "twt";
+import { Tokens } from "../interfaces/enum";
+import { Locals } from "../interfaces/general";
 import { ApiKeyResponse } from "./jwt";
-import { config } from "@anandchowdhary/cosmic";
 
 /**
  * Make s single property optional
@@ -14,8 +15,10 @@ import { config } from "@anandchowdhary/cosmic";
  */
 export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
-export const twtToId = (twt: string) =>
-  parseInt(verify(twt, config("twtSecret")), 10);
+export const twtToId = (twt: string, userId?: number) =>
+  twt === "me" && userId
+    ? userId
+    : parseInt(verify(twt, config("twtSecret")), 10);
 
 /**
  * Delete any sensitive information for a user like passwords and tokens

@@ -19,19 +19,19 @@ import {
 export class UserSessionsController {
   @Get()
   async getUserSessions(req: Request, res: Response) {
-    const id = twtToId(req.params.id);
-    joiValidate({ id: Joi.string().required() }, { id });
+    const id = twtToId(req.params.id, res.locals.token.id);
+    joiValidate({ id: Joi.number().required() }, { id });
     return getUserSessionsForUser(res.locals.token.id, id, req.query);
   }
 
   @Get(":sessionId")
   async getUserSession(req: Request, res: Response) {
-    const id = twtToId(req.params.id);
+    const id = twtToId(req.params.id, res.locals.token.id);
     const sessionId = twtToId(req.params.sessionId);
     joiValidate(
       {
-        id: Joi.string().required(),
-        sessionId: Joi.string().required(),
+        id: Joi.number().required(),
+        sessionId: Joi.number().required(),
       },
       { id, sessionId }
     );
@@ -40,12 +40,12 @@ export class UserSessionsController {
 
   @Delete(":sessionId")
   async deleteUserSession(req: Request, res: Response) {
-    const id = twtToId(req.params.id);
+    const id = twtToId(req.params.id, res.locals.token.id);
     const sessionId = twtToId(req.params.sessionId);
     joiValidate(
       {
-        id: Joi.string().required(),
-        sessionId: Joi.string().required(),
+        id: Joi.number().required(),
+        sessionId: Joi.number().required(),
       },
       { id, sessionId }
     );
