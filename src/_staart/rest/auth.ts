@@ -88,7 +88,7 @@ export const login = async (
   if (!user.password) {
     await mail({
       template: Templates.LOGIN_LINK,
-      data: { ...user, token: loginLinkToken(user) },
+      data: { ...user, token: await loginLinkToken(user) },
       to: email,
     });
     return { success: true, message: "login-link-sent" };
