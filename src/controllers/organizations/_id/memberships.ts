@@ -73,7 +73,7 @@ export class GroupMembershipsController {
   @Get(":membershipId")
   async getMembership(req: Request, res: Response) {
     const groupId = twtToId(req.params.id);
-    const membershipId = req.params.membershipId;
+    const membershipId = twtToId(req.params.membershipId);
     joiValidate(
       {
         groupId: Joi.string().required(),
@@ -99,7 +99,7 @@ export class GroupMembershipsController {
   )
   async updateMembership(req: Request, res: Response) {
     const groupId = twtToId(req.params.id);
-    const membershipId = req.params.membershipId;
+    const membershipId = twtToId(req.params.membershipId);
     joiValidate(
       {
         groupId: Joi.string().required(),
@@ -119,7 +119,7 @@ export class GroupMembershipsController {
   @Delete(":membershipId")
   async deleteMembership(req: Request, res: Response) {
     const groupId = twtToId(req.params.id);
-    const membershipId = req.params.membershipId;
+    const membershipId = twtToId(req.params.membershipId);
     joiValidate(
       {
         groupId: Joi.string().required(),

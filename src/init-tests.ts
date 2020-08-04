@@ -32,7 +32,7 @@ class RedisQueue implements Test {
 class Database implements Test {
   name = "Database connection";
   async test() {
-    await prisma.users.findMany({ first: 1 });
+    await prisma.users.findMany({ take: 1 });
   }
 }
 

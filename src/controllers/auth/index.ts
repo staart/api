@@ -66,8 +66,7 @@ export class AuthController {
       req.body.groupId,
       req.body.membershipRole
     );
-    if (invitedByUser)
-      await addInvitationCredits(invitedByUser, userId.toString());
+    if (invitedByUser) await addInvitationCredits(invitedByUser, userId);
     return { ...respond(RESOURCE_CREATED), resendToken };
   }
 

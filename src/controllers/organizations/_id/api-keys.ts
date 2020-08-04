@@ -63,7 +63,7 @@ export class GroupApiKeysController {
   @Get(":apiKeyId")
   async getUserApiKey(req: Request, res: Response) {
     const id = twtToId(req.params.id);
-    const apiKeyId = req.params.apiKeyId;
+    const apiKeyId = twtToId(req.params.apiKeyId);
     joiValidate(
       {
         id: Joi.string().required(),
@@ -89,7 +89,7 @@ export class GroupApiKeysController {
   )
   async patchUserApiKey(req: Request, res: Response) {
     const id = twtToId(req.params.id);
-    const apiKeyId = req.params.apiKeyId;
+    const apiKeyId = twtToId(req.params.apiKeyId);
     joiValidate(
       {
         id: Joi.string().required(),
@@ -110,7 +110,7 @@ export class GroupApiKeysController {
   @Delete(":apiKeyId")
   async deleteUserApiKey(req: Request, res: Response) {
     const id = twtToId(req.params.id);
-    const apiKeyId = req.params.apiKeyId;
+    const apiKeyId = twtToId(req.params.apiKeyId);
     joiValidate(
       {
         id: Joi.string().required(),
@@ -130,7 +130,7 @@ export class GroupApiKeysController {
   @Get(":apiKeyId/logs")
   async getUserApiKeyLogs(req: Request, res: Response) {
     const id = twtToId(req.params.id);
-    const apiKeyId = req.params.apiKeyId;
+    const apiKeyId = twtToId(req.params.apiKeyId);
     joiValidate(
       {
         id: Joi.string().required(),

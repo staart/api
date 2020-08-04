@@ -62,7 +62,7 @@ export class GroupWebhooksController {
   @Get(":webhookId")
   async getGroupWebhook(req: Request, res: Response) {
     const id = twtToId(req.params.id);
-    const webhookId = req.params.webhookId;
+    const webhookId = twtToId(req.params.webhookId);
     joiValidate(
       {
         id: Joi.string().required(),
@@ -88,7 +88,7 @@ export class GroupWebhooksController {
   )
   async patchGroupWebhook(req: Request, res: Response) {
     const id = twtToId(req.params.id);
-    const webhookId = req.params.webhookId;
+    const webhookId = twtToId(req.params.webhookId);
     joiValidate(
       {
         id: Joi.string().required(),
@@ -109,7 +109,7 @@ export class GroupWebhooksController {
   @Delete(":webhookId")
   async deleteGroupWebhook(req: Request, res: Response) {
     const id = twtToId(req.params.id);
-    const webhookId = req.params.webhookId;
+    const webhookId = twtToId(req.params.webhookId);
     joiValidate(
       {
         id: Joi.string().required(),
