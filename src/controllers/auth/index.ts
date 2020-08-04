@@ -27,6 +27,7 @@ import {
   verifyEmail,
 } from "../../_staart/rest/auth";
 import { addInvitationCredits } from "../../_staart/rest/user";
+import { twtToId } from "../../_staart/helpers/utils";
 
 export class AuthController {
   @Post("register")
@@ -192,7 +193,7 @@ export class AuthController {
   )
   async getImpersonate(req: Request, res: Response) {
     const tokenUserId = res.locals.token.id;
-    const impersonateUserId = req.params.id;
+    const impersonateUserId = twtToId(req.params.id);
     return impersonate(tokenUserId, impersonateUserId, res.locals);
   }
 

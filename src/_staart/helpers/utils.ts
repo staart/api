@@ -30,7 +30,7 @@ export const localsToTokenOrKey = (res: Response) => {
   if (res.locals.token.sub == Tokens.API_KEY) {
     return res.locals.token as ApiKeyResponse;
   }
-  return res.locals.token.id as string;
+  return res.locals.token.id as number;
 };
 
 export const safeRedirect = (req: Request, res: Response, url: string) => {

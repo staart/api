@@ -28,14 +28,14 @@ import {
 export class UserEmailsController {
   @Get()
   async getEmails(req: Request, res: Response) {
-    const id = twtToId(req.params.id, res.locals.token.id);
+    const id = twtToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
     return getAllEmailsForUser(res.locals.token.id, id, req.query);
   }
 
   @Put()
   async putEmails(req: Request, res: Response) {
-    const id = twtToId(req.params.id, res.locals.token.id);
+    const id = twtToId(req.params.id);
     const email = req.body.email;
     joiValidate(
       {
@@ -55,7 +55,7 @@ export class UserEmailsController {
 
   @Get(":emailId")
   async getEmail(req: Request, res: Response) {
-    const id = twtToId(req.params.id, res.locals.token.id);
+    const id = twtToId(req.params.id);
     const emailId = req.params.emailId;
     joiValidate(
       {
@@ -69,7 +69,7 @@ export class UserEmailsController {
 
   @Post(":emailId/resend")
   async postResend(req: Request, res: Response) {
-    const id = twtToId(req.params.id, res.locals.token.id);
+    const id = twtToId(req.params.id);
     const emailId = req.params.emailId;
     joiValidate(
       {
@@ -84,7 +84,7 @@ export class UserEmailsController {
 
   @Delete(":emailId")
   async deleteEmail(req: Request, res: Response) {
-    const id = twtToId(req.params.id, res.locals.token.id);
+    const id = twtToId(req.params.id);
     const emailId = req.params.emailId;
     joiValidate(
       {
