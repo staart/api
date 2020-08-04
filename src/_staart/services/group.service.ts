@@ -36,7 +36,7 @@ import { KeyValue } from "../interfaces/general";
  */
 export const createGroup = async (
   group: groupsCreateInput,
-  ownerId: string
+  ownerId: number
 ) => {
   if (!group.name) throw new Error(INVALID_INPUT);
   group.name = capitalizeFirstAndLastLetter(group.name);
@@ -53,7 +53,7 @@ export const createGroup = async (
   await prisma.memberships.create({
     data: {
       role: "OWNER",
-      user: { connect: { id: parseInt(ownerId) } },
+      user: { connect: { id: ownerId } },
       group: { connect: { id: result.id } },
     },
   });

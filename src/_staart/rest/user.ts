@@ -50,14 +50,14 @@ import {
 import { deleteGroupForUser } from "./group";
 
 export const getUserFromIdForUser = async (
-  userId: string,
-  tokenUserId: string,
+  userId: number,
+  tokenUserId: number,
   queryParams: any
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER, "user", userId)) {
     const user = await prisma.users.findOne({
       ...queryParamsToSelect(queryParams),
-      where: { id: parseInt(userId) },
+      where: { id: userId },
     });
     if (user) return user;
     throw new Error(USER_NOT_FOUND);
@@ -66,8 +66,8 @@ export const getUserFromIdForUser = async (
 };
 
 export const updateUserForUser = async (
-  tokenUserId: string,
-  updateUserId: string,
+  tokenUserId: number,
+  updateUserId: number,
   data: users,
   locals: Locals
 ) => {
@@ -75,7 +75,7 @@ export const updateUserForUser = async (
   if (await can(tokenUserId, UserScopes.UPDATE_USER, "user", updateUserId)) {
     const user = await prisma.users.update({
       data,
-      where: { id: parseInt(updateUserId) },
+      where: { id: updateUserId },
     });
     await deleteItemFromCache(`cache_getUserById_${updateUserId}`);
     trackEvent(
@@ -92,8 +92,8 @@ export const updateUserForUser = async (
 };
 
 export const updatePasswordForUser = async (
-  tokenUserId: string,
-  updateUserId: string,
+  tokenUserId: number,
+  updateUserId: number,
   oldPassword: string,
   newPassword: string,
   locals: Locals
@@ -108,7 +108,7 @@ export const updatePasswordForUser = async (
     }
     const result = await prisma.users.update({
       data: { password: await hash(newPassword, 8) },
-      where: { id: parseInt(updateUserId) },
+      where: { id: updateUserId },
     });
     await deleteItemFromCache(`cache_getUserById_${updateUserId}`);
     trackEvent(
@@ -125,8 +125,8 @@ export const updatePasswordForUser = async (
 };
 
 export const deleteUserForUser = async (
-  tokenUserId: string,
-  updateUserId: string,
+  tokenUserId: number,
+  updateUserId: number,
   locals: Locals
 ) => {
   if (await can(tokenUserId, UserScopes.DELETE_USER, "user", updateUserId)) {
@@ -136,7 +136,7 @@ export const deleteUserForUser = async (
       },
       where: {
         memberships: {
-          every: { userId: parseInt(updateUserId) },
+          every: { userId: updateUserId },
         },
       },
     });
@@ -151,21 +151,21 @@ export const deleteUserForUser = async (
     await prisma.groups.deleteMany({
       where: {
         memberships: {
-          every: { userId: parseInt(updateUserId) },
+          every: { userId: updateUserId },
         },
       },
     });
     await prisma.emails.deleteMany({
-      where: { userId: parseInt(updateUserId) },
+      where: { userId: updateUserId },
     });
     await prisma.memberships.deleteMany({
-      where: { userId: parseInt(updateUserId) },
+      where: { userId: updateUserId },
     });
     await prisma.approvedLocations.deleteMany({
-      where: { userId: parseInt(updateUserId) },
+      where: { userId: updateUserId },
     });
     const originalUser = await getUserById(updateUserId);
-    await prisma.users.delete({ where: { id: parseInt(updateUserId) } });
+    await prisma.users.delete({ where: { id: updateUserId } });
     await deleteItemFromCache(`cache_getUserById_${originalUser.id}`);
     trackEvent(
       {
@@ -181,8 +181,8 @@ export const deleteUserForUser = async (
 };
 
 export const getMembershipsForUser = async (
-  tokenUserId: string,
-  dataUserId: string,
+  tokenUserId: number,
+  dataUserId: number,
   queryParams: any
 ) => {
   if (
@@ -191,7 +191,7 @@ export const getMembershipsForUser = async (
     return paginatedResult(
       await prisma.memberships.findMany({
         ...queryParamsToSelect(queryParams),
-        where: { userId: parseInt(dataUserId) },
+        where: { userId: dataUserId },
         include: { group: true },
       }),
       { first: queryParams.first, last: queryParams.last }
@@ -200,13 +200,13 @@ export const getMembershipsForUser = async (
 };
 
 export const getAllDataForUser = async (
-  tokenUserId: string,
-  userId: string
+  tokenUserId: number,
+  userId: number
 ) => {
   if (!(await can(tokenUserId, UserScopes.READ_USER, "user", userId)))
     throw new Error(INSUFFICIENT_PERMISSION);
   return prisma.users.findOne({
-    where: { id: parseInt(userId) },
+    where: { id: userId },
     include: {
       emails: true,
       accessTokens: true,
@@ -219,12 +219,12 @@ export const getAllDataForUser = async (
   });
 };
 
-export const enable2FAForUser = async (tokenUserId: string, userId: string) => {
+export const enable2FAForUser = async (tokenUserId: number, userId: number) => {
   if (!(await can(tokenUserId, UserScopes.ENABLE_USER_2FA, "user", userId)))
     throw new Error(INSUFFICIENT_PERMISSION);
   const secret = authenticator.generateSecret();
   await prisma.users.update({
-    where: { id: parseInt(userId) },
+    where: { id: userId },
     data: { twoFactorSecret: secret },
   });
   await deleteItemFromCache(`cache_getUserById_${userId}`);
@@ -234,8 +234,8 @@ export const enable2FAForUser = async (tokenUserId: string, userId: string) => {
 };
 
 export const verify2FAForUser = async (
-  tokenUserId: string,
-  userId: string,
+  tokenUserId: number,
+  userId: number,
   verificationCode: number
 ) => {
   if (!(await can(tokenUserId, UserScopes.ENABLE_USER_2FA, "user", userId)))
@@ -243,7 +243,7 @@ export const verify2FAForUser = async (
   const secret = (
     await prisma.users.findOne({
       select: { twoFactorSecret: true },
-      where: { id: parseInt(userId) },
+      where: { id: userId },
     })
   )?.twoFactorSecret;
   if (!secret) throw new Error(NOT_ENABLED_2FA);
@@ -251,7 +251,7 @@ export const verify2FAForUser = async (
     throw new Error(INVALID_2FA_TOKEN);
   const codes = await createBackupCodes(userId, 10);
   await prisma.users.update({
-    where: { id: parseInt(userId) },
+    where: { id: userId },
     data: { twoFactorEnabled: true },
   });
   await deleteItemFromCache(`cache_getUserById_${userId}`);
@@ -259,14 +259,14 @@ export const verify2FAForUser = async (
 };
 
 export const disable2FAForUser = async (
-  tokenUserId: string,
-  userId: string
+  tokenUserId: number,
+  userId: number
 ) => {
   if (!(await can(tokenUserId, UserScopes.DISABLE_USER_2FA, "user", userId)))
     throw new Error(INSUFFICIENT_PERMISSION);
-  await prisma.backupCodes.deleteMany({ where: { userId: parseInt(userId) } });
+  await prisma.backupCodes.deleteMany({ where: { userId: userId } });
   const result = prisma.users.update({
-    where: { id: parseInt(userId) },
+    where: { id: userId },
     data: {
       twoFactorEnabled: false,
       twoFactorSecret: null,
@@ -277,8 +277,8 @@ export const disable2FAForUser = async (
 };
 
 export const regenerateBackupCodesForUser = async (
-  tokenUserId: string,
-  userId: string
+  tokenUserId: number,
+  userId: number
 ) => {
   if (
     !(await can(
@@ -289,13 +289,13 @@ export const regenerateBackupCodesForUser = async (
     ))
   )
     throw new Error(INSUFFICIENT_PERMISSION);
-  await prisma.backupCodes.deleteMany({ where: { userId: parseInt(userId) } });
+  await prisma.backupCodes.deleteMany({ where: { userId: userId } });
   return createBackupCodes(userId, 10);
 };
 
 export const getUserAccessTokensForUser = async (
-  tokenUserId: string,
-  userId: string,
+  tokenUserId: number,
+  userId: number,
   queryParams: any
 ) => {
   if (
@@ -303,7 +303,7 @@ export const getUserAccessTokensForUser = async (
   )
     return paginatedResult(
       await prisma.accessTokens.findMany({
-        where: { userId: parseInt(userId) },
+        where: { userId: userId },
         ...queryParamsToSelect(queryParams),
       }),
       { first: queryParams.first, last: queryParams.last }
@@ -312,8 +312,8 @@ export const getUserAccessTokensForUser = async (
 };
 
 export const getUserAccessTokenForUser = async (
-  tokenUserId: string,
-  userId: string,
+  tokenUserId: number,
+  userId: number,
   accessTokenId: string
 ) => {
   if (
@@ -326,8 +326,8 @@ export const getUserAccessTokenForUser = async (
 };
 
 export const updateAccessTokenForUser = async (
-  tokenUserId: string,
-  userId: string,
+  tokenUserId: number,
+  userId: number,
   accessTokenId: string,
   data: accessTokensUpdateInput,
   locals: Locals
@@ -343,8 +343,8 @@ export const updateAccessTokenForUser = async (
 };
 
 export const createAccessTokenForUser = async (
-  tokenUserId: string,
-  userId: string,
+  tokenUserId: number,
+  userId: number,
   accessToken: accessTokensCreateInput,
   locals: Locals
 ) => {
@@ -355,15 +355,15 @@ export const createAccessTokenForUser = async (
     accessToken.expiresAt =
       accessToken.expiresAt || new Date(TOKEN_EXPIRY_API_KEY_MAX);
     return prisma.accessTokens.create({
-      data: { ...accessToken, user: { connect: { id: parseInt(userId) } } },
+      data: { ...accessToken, user: { connect: { id: userId } } },
     });
   }
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
 export const deleteAccessTokenForUser = async (
-  tokenUserId: string,
-  userId: string,
+  tokenUserId: number,
+  userId: number,
   accessTokenId: string,
   locals: Locals
 ) => {
@@ -377,14 +377,14 @@ export const deleteAccessTokenForUser = async (
 };
 
 export const getUserSessionsForUser = async (
-  tokenUserId: string,
-  userId: string,
+  tokenUserId: number,
+  userId: number,
   queryParams: any
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER_SESSION, "user", userId))
     return paginatedResult(
       await prisma.sessions.findMany({
-        where: { userId: parseInt(userId) },
+        where: { userId: userId },
         ...queryParamsToSelect(queryParams),
       }),
       { first: queryParams.first, last: queryParams.last }
@@ -393,8 +393,8 @@ export const getUserSessionsForUser = async (
 };
 
 export const getUserSessionForUser = async (
-  tokenUserId: string,
-  userId: string,
+  tokenUserId: number,
+  userId: number,
   sessionId: string
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER_SESSION, "user", userId))
@@ -403,8 +403,8 @@ export const getUserSessionForUser = async (
 };
 
 export const deleteSessionForUser = async (
-  tokenUserId: string,
-  userId: string,
+  tokenUserId: number,
+  userId: number,
   sessionId: string,
   locals: Locals
 ) => {
@@ -415,14 +415,14 @@ export const deleteSessionForUser = async (
 };
 
 export const getUserIdentitiesForUser = async (
-  tokenUserId: string,
-  userId: string,
+  tokenUserId: number,
+  userId: number,
   queryParams: any
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER_IDENTITY, "user", userId))
     return paginatedResult(
       await prisma.identities.findMany({
-        where: { userId: parseInt(userId) },
+        where: { userId: userId },
         ...queryParamsToSelect(queryParams),
       }),
       { first: queryParams.first, last: queryParams.last }
@@ -431,19 +431,19 @@ export const getUserIdentitiesForUser = async (
 };
 
 export const createUserIdentityForUser = async (
-  tokenUserId: string,
-  userId: string,
+  tokenUserId: number,
+  userId: number,
   identity: identitiesCreateInput
 ) => {
   if (await can(tokenUserId, UserScopes.CREATE_USER_IDENTITY, "user", userId))
     return prisma.identities.create({
-      data: { ...identity, user: { connect: { id: parseInt(userId) } } },
+      data: { ...identity, user: { connect: { id: userId } } },
     });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 export const connectUserIdentityForUser = async (
-  tokenUserId: string,
-  userId: string,
+  tokenUserId: number,
+  userId: number,
   service: string,
   url: string
 ) => {
@@ -453,8 +453,8 @@ export const connectUserIdentityForUser = async (
 };
 
 export const getUserIdentityForUser = async (
-  tokenUserId: string,
-  userId: string,
+  tokenUserId: number,
+  userId: number,
   identityId: string
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER_IDENTITY, "user", userId))
@@ -463,8 +463,8 @@ export const getUserIdentityForUser = async (
 };
 
 export const deleteIdentityForUser = async (
-  tokenUserId: string,
-  userId: string,
+  tokenUserId: number,
+  userId: number,
   identityId: string,
   locals: Locals
 ) => {
@@ -510,14 +510,14 @@ export const addInvitationCredits = async (
 };
 
 export const getAllEmailsForUser = async (
-  tokenUserId: string,
-  userId: string,
+  tokenUserId: number,
+  userId: number,
   queryParams: any
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER_EMAILS, "user", userId)) {
     return paginatedResult(
       await prisma.emails.findMany({
-        where: { userId: parseInt(userId) },
+        where: { userId: userId },
         ...queryParamsToSelect(queryParams),
       }),
       { first: queryParams.first, last: queryParams.last }
@@ -527,8 +527,8 @@ export const getAllEmailsForUser = async (
 };
 
 export const getEmailForUser = async (
-  tokenUserId: string,
-  userId: string,
+  tokenUserId: number,
+  userId: number,
   emailId: string
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER_EMAILS, "user", userId))
@@ -537,8 +537,8 @@ export const getEmailForUser = async (
 };
 
 export const resendEmailVerificationForUser = async (
-  tokenUserId: string,
-  userId: string,
+  tokenUserId: number,
+  userId: number,
   emailId: string
 ) => {
   if (
@@ -554,8 +554,8 @@ export const resendEmailVerificationForUser = async (
 };
 
 export const addEmailToUserForUser = async (
-  tokenUserId: string,
-  userId: string,
+  tokenUserId: number,
+  userId: number,
   email: string,
   locals: Locals
 ) => {
@@ -565,7 +565,7 @@ export const addEmailToUserForUser = async (
   const emailExistsAlready =
     (await prisma.emails.findMany({ where: { email } })).length !== 0;
   if (emailExistsAlready) throw new Error(EMAIL_EXISTS);
-  const result = await createEmail(parseInt(userId), email, true);
+  const result = await createEmail(userId, email, true);
   trackEvent(
     { userId, type: EventType.EMAIL_CREATED, data: { email } },
     locals
@@ -574,8 +574,8 @@ export const addEmailToUserForUser = async (
 };
 
 export const deleteEmailFromUserForUser = async (
-  tokenUserId: string,
-  userId: string,
+  tokenUserId: number,
+  userId: number,
   emailId: string,
   locals: Locals
 ) => {
@@ -585,8 +585,7 @@ export const deleteEmailFromUserForUser = async (
     where: { id: parseInt(emailId) },
   });
   if (!email) throw new Error(RESOURCE_NOT_FOUND);
-  if (email.userId !== parseInt(userId))
-    throw new Error(INSUFFICIENT_PERMISSION);
+  if (email.userId !== userId) throw new Error(INSUFFICIENT_PERMISSION);
   const verifiedEmails = await prisma.emails.findMany({
     where: { id: parseInt(emailId) },
   });
@@ -598,7 +597,7 @@ export const deleteEmailFromUserForUser = async (
       (emailObject) => emailObject.id !== parseInt(emailId)
     )[0];
     await prisma.users.update({
-      where: { id: parseInt(userId) },
+      where: { id: userId },
       data: { prefersEmail: { connect: { id: nextVerifiedEmail.id } } },
     });
     await deleteItemFromCache(`cache_getUserById_${userId}`);
@@ -614,8 +613,8 @@ export const deleteEmailFromUserForUser = async (
 };
 
 export const getMembershipDetailsForUser = async (
-  userId: string,
-  membershipId: string
+  userId: number,
+  membershipId: number
 ) => {
   if (
     await can(
@@ -626,19 +625,19 @@ export const getMembershipDetailsForUser = async (
     )
   )
     return prisma.memberships.findOne({
-      where: { id: parseInt(membershipId) },
+      where: { id: membershipId },
       include: { user: true, group: true },
     });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
 export const deleteMembershipForUser = async (
-  tokenUserId: string | ApiKeyResponse,
-  membershipId: string,
+  tokenUserId: number | ApiKeyResponse,
+  membershipId: number,
   locals: Locals
 ) => {
   const membership = await prisma.memberships.findOne({
-    where: { id: parseInt(membershipId) },
+    where: { id: membershipId },
   });
   if (!membership) throw new Error(MEMBERSHIP_NOT_FOUND);
   if (
@@ -653,11 +652,7 @@ export const deleteMembershipForUser = async (
       where: { groupId: membership.groupId },
     });
     if (groupMembers.length === 1)
-      return deleteGroupForUser(
-        tokenUserId,
-        String(membership.groupId),
-        locals
-      );
+      return deleteGroupForUser(tokenUserId, membership.groupId, locals);
     if (membership.role === "OWNER") {
       const currentMembers = groupMembers.filter(
         (member) => member.role === "OWNER"
@@ -677,8 +672,8 @@ export const deleteMembershipForUser = async (
 };
 
 export const updateMembershipForUser = async (
-  userId: string | ApiKeyResponse,
-  membershipId: string,
+  userId: number | ApiKeyResponse,
+  membershipId: number,
   data: membershipsUpdateInput,
   locals: Locals
 ) => {
@@ -691,7 +686,7 @@ export const updateMembershipForUser = async (
     )
   ) {
     const membership = await prisma.memberships.findOne({
-      where: { id: parseInt(membershipId) },
+      where: { id: membershipId },
     });
     if (!membership) throw new Error(MEMBERSHIP_NOT_FOUND);
     if (data.role !== membership.role) {
@@ -714,7 +709,7 @@ export const updateMembershipForUser = async (
       locals
     );
     return prisma.memberships.update({
-      where: { id: parseInt(membershipId) },
+      where: { id: membershipId },
       data,
     });
   }

@@ -165,16 +165,16 @@ const canApiKeyGroup = (apiKey: apiKeys, action: OrgScopes, target: groups) => {
  * Whether a user has authorization to perform an action
  */
 export const can = async (
-  user: string | users | ApiKeyResponse | AccessTokenResponse,
+  user: number | users | ApiKeyResponse | AccessTokenResponse,
   action: OrgScopes | UserScopes | SudoScopes,
   targetType: "user" | "group" | "membership" | "sudo",
-  target?: string | users | groups | memberships
+  target?: number | users | groups | memberships
 ) => {
   let requestFromType: "users" | "apiKeys" | "accessTokens" = "users";
 
   /**
    * First, we figure out what the first parameter is
-   * If it's a string, it can only be a user ID we'll convert to user
+   * If it's a number, it can only be a user ID we'll convert to user
    */
   if (typeof user === "object") {
     if ((user as ApiKeyResponse).sub === Tokens.API_KEY) {
@@ -193,7 +193,7 @@ export const can = async (
    * and `requestFromType` will tell us what type it is
    * We find what the correct target is
    */
-  if (typeof target === "string") {
+  if (typeof target === "number") {
     if (targetType === "membership") {
       const membership = await prisma.memberships.findOne({
         where: { id: parseInt(target) },

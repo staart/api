@@ -80,8 +80,8 @@ import { getUserById } from "../services/user.service";
 import { register } from "./auth";
 
 export const getGroupForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string
+  userId: number | ApiKeyResponse,
+  groupId: number
 ) => {
   if (await can(userId, OrgScopes.READ_ORG, "group", groupId))
     return getGroupById(groupId);
@@ -89,7 +89,7 @@ export const getGroupForUser = async (
 };
 
 export const newGroupForUser = async (
-  userId: string,
+  userId: number,
   group: groupsCreateInput,
   locals: Locals
 ) => {
@@ -101,15 +101,15 @@ export const newGroupForUser = async (
 };
 
 export const updateGroupForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   data: groupsUpdateInput,
   locals: Locals
 ) => {
   if (await can(userId, OrgScopes.UPDATE_ORG, "group", groupId)) {
     const result = await prisma.groups.update({
       where: {
-        id: parseInt(groupId),
+        id: groupId,
       },
       data,
     });
@@ -121,8 +121,8 @@ export const updateGroupForUser = async (
 };
 
 export const deleteGroupForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   locals: Locals
 ) => {
   if (await can(userId, OrgScopes.DELETE_ORG, "group", groupId)) {
@@ -136,7 +136,7 @@ export const deleteGroupForUser = async (
       await deleteCustomer(groupDetails.attributes?.stripeCustomerId);
     await prisma.groups.delete({
       where: {
-        id: parseInt(groupId),
+        id: groupId,
       },
     });
     queueWebhook(groupId, Webhooks.DELETE_ORGANIZATION);
@@ -147,8 +147,8 @@ export const deleteGroupForUser = async (
 };
 
 export const getGroupBillingForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string
+  userId: number | ApiKeyResponse,
+  groupId: number
 ) => {
   if (await can(userId, OrgScopes.READ_ORG_BILLING, "group", groupId)) {
     const group = await getGroupById(groupId);
@@ -165,8 +165,8 @@ export const getGroupBillingForUser = async (
 };
 
 export const updateGroupBillingForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   data: any,
   locals: Locals
 ) => {
@@ -184,13 +184,8 @@ export const updateGroupBillingForUser = async (
       result = await createCustomer(
         groupId,
         data,
-        (groupId: string, data: groupsUpdateInput) =>
-          prisma.groups.update({
-            where: {
-              id: parseInt(groupId),
-            },
-            data,
-          })
+        (groupId: number, data: groupsUpdateInput) =>
+          prisma.groups.update({ where: { id: groupId }, data })
       );
     }
     queueWebhook(groupId, Webhooks.UPDATE_ORGANIZATION_BILLING, data);
@@ -201,8 +196,8 @@ export const updateGroupBillingForUser = async (
 };
 
 export const getGroupInvoicesForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   params: KeyValue
 ) => {
   if (await can(userId, OrgScopes.READ_ORG_INVOICES, "group", groupId)) {
@@ -220,8 +215,8 @@ export const getGroupInvoicesForUser = async (
 };
 
 export const getGroupInvoiceForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   invoiceId: string
 ) => {
   if (await can(userId, OrgScopes.READ_ORG_INVOICES, "group", groupId)) {
@@ -239,8 +234,8 @@ export const getGroupInvoiceForUser = async (
 };
 
 export const getGroupSourcesForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   params: KeyValue
 ) => {
   if (await can(userId, OrgScopes.READ_ORG_SOURCES, "group", groupId)) {
@@ -258,8 +253,8 @@ export const getGroupSourcesForUser = async (
 };
 
 export const getGroupSourceForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   sourceId: string
 ) => {
   if (await can(userId, OrgScopes.READ_ORG_SOURCES, "group", groupId)) {
@@ -277,8 +272,8 @@ export const getGroupSourceForUser = async (
 };
 
 export const getGroupSubscriptionsForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   params: KeyValue
 ) => {
   if (await can(userId, OrgScopes.READ_ORG_SUBSCRIPTIONS, "group", groupId)) {
@@ -296,8 +291,8 @@ export const getGroupSubscriptionsForUser = async (
 };
 
 export const getGroupSubscriptionForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   subscriptionId: string
 ) => {
   if (await can(userId, OrgScopes.READ_ORG_SUBSCRIPTIONS, "group", groupId)) {
@@ -318,8 +313,8 @@ export const getGroupSubscriptionForUser = async (
 };
 
 export const updateGroupSubscriptionForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   subscriptionId: string,
   data: KeyValue,
   locals?: Locals
@@ -350,8 +345,8 @@ export const updateGroupSubscriptionForUser = async (
 };
 
 export const createGroupSubscriptionForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   params: { plan: string; [index: string]: any },
   locals?: Locals
 ) => {
@@ -380,8 +375,8 @@ export const createGroupSubscriptionForUser = async (
 };
 
 export const getGroupPricingPlansForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string
+  userId: number | ApiKeyResponse,
+  groupId: number
 ) => {
   if (await can(userId, OrgScopes.READ_ORG_PLANS, "group", groupId))
     return getProductPricing();
@@ -389,8 +384,8 @@ export const getGroupPricingPlansForUser = async (
 };
 
 export const deleteGroupSourceForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   sourceId: string,
   locals?: Locals
 ) => {
@@ -419,8 +414,8 @@ export const deleteGroupSourceForUser = async (
 };
 
 export const updateGroupSourceForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   sourceId: string,
   data: any,
   locals?: Locals
@@ -451,8 +446,8 @@ export const updateGroupSourceForUser = async (
 };
 
 export const createGroupSourceForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   card: any,
   locals?: Locals
 ) => {
@@ -481,13 +476,13 @@ export const createGroupSourceForUser = async (
 };
 
 export const getAllGroupDataForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string
+  userId: number | ApiKeyResponse,
+  groupId: number
 ) => {
   if (await can(userId, OrgScopes.READ_ORG_TRANSACTIONS, "group", groupId)) {
     const group = await prisma.groups.findOne({
       where: {
-        id: parseInt(groupId),
+        id: groupId,
       },
       include: {
         apiKeys: true,
@@ -518,14 +513,14 @@ export const getAllGroupDataForUser = async (
 };
 
 export const getGroupMembershipsForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   queryParams: any
 ) => {
   if (await can(userId, OrgScopes.READ_ORG_MEMBERSHIPS, "group", groupId))
     return paginatedResult(
       await prisma.memberships.findMany({
-        where: { groupId: parseInt(groupId) },
+        where: { groupId: groupId },
         ...queryParamsToSelect(queryParams),
       }),
       { first: queryParams.first, last: queryParams.last }
@@ -534,8 +529,8 @@ export const getGroupMembershipsForUser = async (
 };
 
 export const getGroupMembershipForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   membershipId: string
 ) => {
   if (await can(userId, OrgScopes.READ_ORG_MEMBERSHIPS, "group", groupId))
@@ -547,8 +542,8 @@ export const getGroupMembershipForUser = async (
 };
 
 export const updateGroupMembershipForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   membershipId: string,
   data: membershipsUpdateInput
 ) => {
@@ -560,7 +555,7 @@ export const updateGroupMembershipForUser = async (
       if (!currentMembership) throw new Error(MEMBERSHIP_NOT_FOUND);
       if (currentMembership.role === "OWNER" && data.role !== "OWNER") {
         const members = await prisma.memberships.findMany({
-          where: { groupId: parseInt(groupId), role: "OWNER" },
+          where: { groupId: groupId, role: "OWNER" },
         });
         if (members.length === 1) throw new Error(CANNOT_DELETE_SOLE_MEMBER);
       }
@@ -579,14 +574,14 @@ export const updateGroupMembershipForUser = async (
  * Delete the entire group, not just the membership
  */
 export const deleteGroupMembershipForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   membershipId: string,
   locals: Locals
 ) => {
   if (await can(userId, OrgScopes.DELETE_ORG_MEMBERSHIPS, "group", groupId)) {
     const members = await prisma.memberships.findMany({
-      where: { groupId: parseInt(groupId) },
+      where: { groupId: groupId },
     });
     if (members.length === 1)
       return deleteGroupForUser(userId, groupId, locals);
@@ -596,8 +591,8 @@ export const deleteGroupMembershipForUser = async (
 };
 
 export const inviteMemberToGroup = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   newMemberName: string,
   newMemberEmail: string,
   role: MembershipRole,
@@ -610,7 +605,7 @@ export const inviteMemberToGroup = async (
       const emailDomain = newMemberEmail.split("@")[1];
       try {
         const domainDetails = await getDomainByDomainName(emailDomain);
-        if (domainDetails.groupId !== parseInt(groupId)) throw new Error();
+        if (domainDetails.groupId !== groupId) throw new Error();
       } catch (error) {
         throw new Error(CANNOT_INVITE_DOMAIN);
       }
@@ -634,7 +629,7 @@ export const inviteMemberToGroup = async (
           await prisma.memberships.findMany({
             where: {
               userId: newUser.id,
-              groupId: parseInt(groupId),
+              groupId: groupId,
             },
           })
         ).length !== 0;
@@ -643,7 +638,7 @@ export const inviteMemberToGroup = async (
       await prisma.memberships.create({
         data: {
           user: { connect: { id: newUser.id } },
-          group: { connect: { id: parseInt(groupId) } },
+          group: { connect: { id: groupId } },
           role,
         },
       });
@@ -684,14 +679,14 @@ export const inviteMemberToGroup = async (
 };
 
 export const getGroupApiKeysForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   queryParams: any
 ) => {
   if (await can(userId, OrgScopes.READ_ORG_API_KEYS, "group", groupId))
     return paginatedResult(
       await prisma.apiKeys.findMany({
-        where: { groupId: parseInt(groupId) },
+        where: { groupId: groupId },
         ...queryParamsToSelect(queryParams),
       }),
       { first: queryParams.first, last: queryParams.last }
@@ -700,8 +695,8 @@ export const getGroupApiKeysForUser = async (
 };
 
 export const getGroupApiKeyForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   apiKeyId: string
 ) => {
   if (await can(userId, OrgScopes.READ_ORG_API_KEYS, "group", groupId))
@@ -710,8 +705,8 @@ export const getGroupApiKeyForUser = async (
 };
 
 export const getGroupApiKeyLogsForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   apiKeyId: string,
   query: {
     range?: string;
@@ -724,8 +719,8 @@ export const getGroupApiKeyLogsForUser = async (
 };
 
 export const updateApiKeyForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   apiKeyId: string,
   data: apiKeysUpdateInput,
   locals: Locals
@@ -743,8 +738,8 @@ export const updateApiKeyForUser = async (
 };
 
 export const createApiKeyForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   apiKey: apiKeysCreateInput,
   locals: Locals
 ) => {
@@ -756,7 +751,7 @@ export const createApiKeyForUser = async (
         ...apiKey,
         group: {
           connect: {
-            id: parseInt(groupId),
+            id: groupId,
           },
         },
       },
@@ -769,8 +764,8 @@ export const createApiKeyForUser = async (
 };
 
 export const deleteApiKeyForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   apiKeyId: string,
   locals: Locals
 ) => {
@@ -786,14 +781,14 @@ export const deleteApiKeyForUser = async (
 };
 
 export const getGroupDomainsForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   queryParams: any
 ) => {
   if (await can(userId, OrgScopes.READ_ORG_DOMAINS, "group", groupId))
     return paginatedResult(
       await prisma.domains.findMany({
-        where: { groupId: parseInt(groupId) },
+        where: { groupId: groupId },
         ...queryParamsToSelect(queryParams),
       }),
       { first: queryParams.first, last: queryParams.last }
@@ -802,8 +797,8 @@ export const getGroupDomainsForUser = async (
 };
 
 export const getGroupDomainForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   domainId: string
 ) => {
   if (await can(userId, OrgScopes.READ_ORG_DOMAINS, "group", groupId))
@@ -812,8 +807,8 @@ export const getGroupDomainForUser = async (
 };
 
 export const updateDomainForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   domainId: string,
   data: domainsUpdateInput,
   locals: Locals
@@ -831,8 +826,8 @@ export const updateDomainForUser = async (
 };
 
 export const createDomainForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   domain: domainsCreateInput,
   locals: Locals
 ) => {
@@ -845,7 +840,7 @@ export const createDomainForUser = async (
         isVerified: false,
         group: {
           connect: {
-            id: parseInt(groupId),
+            id: groupId,
           },
         },
       },
@@ -858,8 +853,8 @@ export const createDomainForUser = async (
 };
 
 export const deleteDomainForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   domainId: string,
   locals: Locals
 ) => {
@@ -875,8 +870,8 @@ export const deleteDomainForUser = async (
 };
 
 export const verifyDomainForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   domainId: string,
   method: "dns" | "file",
   locals: Locals
@@ -933,14 +928,14 @@ export const verifyDomainForUser = async (
 };
 
 export const getGroupWebhooksForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   queryParams: any
 ) => {
   if (await can(userId, OrgScopes.READ_ORG_WEBHOOKS, "group", groupId))
     return paginatedResult(
       await prisma.webhooks.findMany({
-        where: { groupId: parseInt(groupId) },
+        where: { groupId: groupId },
         ...queryParamsToSelect(queryParams),
       }),
       { first: queryParams.first, last: queryParams.last }
@@ -949,8 +944,8 @@ export const getGroupWebhooksForUser = async (
 };
 
 export const getGroupWebhookForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   webhookId: string
 ) => {
   if (await can(userId, OrgScopes.READ_ORG_WEBHOOKS, "group", groupId))
@@ -959,8 +954,8 @@ export const getGroupWebhookForUser = async (
 };
 
 export const updateWebhookForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   webhookId: string,
   data: webhooksUpdateInput,
   locals: Locals
@@ -978,8 +973,8 @@ export const updateWebhookForUser = async (
 };
 
 export const createWebhookForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   webhook: webhooksCreateInput,
   locals: Locals
 ) => {
@@ -989,7 +984,7 @@ export const createWebhookForUser = async (
         ...webhook,
         group: {
           connect: {
-            id: parseInt(groupId),
+            id: groupId,
           },
         },
       },
@@ -1005,8 +1000,8 @@ export const createWebhookForUser = async (
 };
 
 export const deleteWebhookForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   webhookId: string,
   locals: Locals
 ) => {
@@ -1022,8 +1017,8 @@ export const deleteWebhookForUser = async (
 };
 
 export const applyCouponToGroupForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   coupon: string
 ) => {
   if (await can(userId, OrgScopes.CREATE_ORG_TRANSACTIONS, "group", groupId)) {
@@ -1069,8 +1064,8 @@ export const applyCouponToGroupForUser = async (
 };
 
 export const getGroupTransactionsForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   params: KeyValue
 ) => {
   if (await can(userId, OrgScopes.READ_ORG_TRANSACTIONS, "group", groupId)) {
@@ -1091,8 +1086,8 @@ export const getGroupTransactionsForUser = async (
 };
 
 export const getGroupTransactionForUser = async (
-  userId: string | ApiKeyResponse,
-  groupId: string,
+  userId: number | ApiKeyResponse,
+  groupId: number,
   transactionId: string
 ) => {
   if (await can(userId, OrgScopes.READ_ORG_TRANSACTIONS, "group", groupId)) {

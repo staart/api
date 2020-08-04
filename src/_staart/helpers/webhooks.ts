@@ -19,7 +19,7 @@ const setupQueue = async () => {
 };
 
 export const queueWebhook = (
-  groupId: string,
+  groupId: number,
   webhook: Webhooks,
   data?: any
 ) => {

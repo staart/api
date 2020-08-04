@@ -121,7 +121,7 @@ export const register = async (
   user: usersCreateInput,
   locals?: Locals,
   email?: string,
-  groupId?: string,
+  groupId?: number,
   role?: MembershipRole,
   emailVerified = false
 ) => {
@@ -137,7 +137,7 @@ export const register = async (
     try {
       domain = email.split("@")[1];
       const domainDetails = await getDomainByDomainName(domain);
-      groupId = domainDetails.groupId.toString();
+      groupId = domainDetails.groupId;
     } catch (error) {}
   }
   const userId = (
@@ -148,7 +148,7 @@ export const register = async (
             memberships: {
               create: {
                 group: {
-                  connect: { id: parseInt(groupId) },
+                  connect: { id: groupId },
                 },
                 role,
               },
@@ -254,8 +254,8 @@ export const updatePassword = async (
 };
 
 export const impersonate = async (
-  tokenUserId: string,
-  impersonateUserId: string,
+  tokenUserId: number,
+  impersonateUserId: number,
   locals: Locals
 ) => {
   if (
