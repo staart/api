@@ -1,13 +1,11 @@
 import {
   RESOURCE_CREATED,
   RESOURCE_DELETED,
-  RESOURCE_SUCCESS,
   RESOURCE_UPDATED,
   respond,
 } from "@staart/messages";
 import {
   ClassMiddleware,
-  Controller,
   Delete,
   Get,
   Middleware,
@@ -20,8 +18,8 @@ import {
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../../_staart/helpers/middleware";
 import {
-  localsToTokenOrKey,
   groupUsernameToId,
+  localsToTokenOrKey,
 } from "../../../_staart/helpers/utils";
 import {
   createDomainForUser,

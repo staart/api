@@ -1,12 +1,11 @@
 import {
+  RESOURCE_CREATED,
   RESOURCE_DELETED,
   RESOURCE_SUCCESS,
   respond,
-  RESOURCE_CREATED,
 } from "@staart/messages";
 import {
   ClassMiddleware,
-  Controller,
   Delete,
   Get,
   Post,

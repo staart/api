@@ -6,7 +6,6 @@ import {
 } from "@staart/messages";
 import {
   ClassMiddleware,
-  Controller,
   Delete,
   Get,
   Post,
@@ -18,11 +17,11 @@ import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../../_staart/helpers/middleware";
 import { userUsernameToId } from "../../../_staart/helpers/utils";
 import {
-  getAllEmailsForUser,
   addEmailToUserForUser,
+  deleteEmailFromUserForUser,
+  getAllEmailsForUser,
   getEmailForUser,
   resendEmailVerificationForUser,
-  deleteEmailFromUserForUser,
 } from "../../../_staart/rest/user";
 
 @ClassMiddleware(authHandler)

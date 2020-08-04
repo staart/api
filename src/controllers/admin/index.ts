@@ -1,21 +1,11 @@
 import { MISSING_FIELD } from "@staart/errors";
-import {
-  ClassMiddleware,
-  Controller,
-  Get,
-  Put,
-  Middleware,
-  Request,
-  Response,
-} from "@staart/server";
-import { authHandler, validator } from "../../_staart/helpers/middleware";
-import { Joi } from "@staart/validate";
+import { ClassMiddleware, Get, Request, Response } from "@staart/server";
+import { authHandler } from "../../_staart/helpers/middleware";
 import {
   getAllGroupForUser,
   getAllUsersForUser,
-  getServerLogsForUser,
-  generateCouponForUser,
   getPaymentEventsForUser,
+  getServerLogsForUser,
 } from "../../_staart/rest/admin";
 
 @ClassMiddleware(authHandler)

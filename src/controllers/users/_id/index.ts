@@ -1,8 +1,6 @@
 import { RESOURCE_DELETED, RESOURCE_UPDATED, respond } from "@staart/messages";
 import {
-  ChildControllers,
   ClassMiddleware,
-  Controller,
   Delete,
   Get,
   Middleware,

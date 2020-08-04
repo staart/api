@@ -1,21 +1,14 @@
-import {
-  ClassMiddleware,
-  Controller,
-  Get,
-  Request,
-  Response,
-  Put,
-} from "@staart/server";
+import { ClassMiddleware, Get, Put, Request, Response } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../../_staart/helpers/middleware";
 import {
-  localsToTokenOrKey,
   groupUsernameToId,
+  localsToTokenOrKey,
 } from "../../../_staart/helpers/utils";
 import {
+  applyCouponToGroupForUser,
   getGroupTransactionForUser,
   getGroupTransactionsForUser,
-  applyCouponToGroupForUser,
 } from "../../../_staart/rest/group";
 
 @ClassMiddleware(authHandler)

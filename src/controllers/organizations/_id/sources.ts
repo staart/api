@@ -6,7 +6,6 @@ import {
 } from "@staart/messages";
 import {
   ClassMiddleware,
-  Controller,
   Delete,
   Get,
   Patch,
@@ -17,8 +16,8 @@ import {
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../../_staart/helpers/middleware";
 import {
-  localsToTokenOrKey,
   groupUsernameToId,
+  localsToTokenOrKey,
 } from "../../../_staart/helpers/utils";
 import {
   createGroupSourceForUser,

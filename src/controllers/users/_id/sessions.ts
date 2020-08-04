@@ -1,7 +1,6 @@
 import { RESOURCE_DELETED, respond } from "@staart/messages";
 import {
   ClassMiddleware,
-  Controller,
   Delete,
   Get,
   Request,

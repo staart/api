@@ -1,32 +1,23 @@
+import { RESOURCE_DELETED, RESOURCE_UPDATED, respond } from "@staart/messages";
 import {
-  RESOURCE_CREATED,
-  RESOURCE_DELETED,
-  RESOURCE_UPDATED,
-  respond,
-} from "@staart/messages";
-import {
-  ChildControllers,
   ClassMiddleware,
-  Controller,
   Delete,
   Get,
   Middleware,
   Patch,
-  Put,
   Request,
   Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../../_staart/helpers/middleware";
 import {
-  localsToTokenOrKey,
   groupUsernameToId,
+  localsToTokenOrKey,
 } from "../../../_staart/helpers/utils";
 import {
   deleteGroupForUser,
   getAllGroupDataForUser,
   getGroupForUser,
-  newGroupForUser,
   updateGroupForUser,
 } from "../../../_staart/rest/group";
 

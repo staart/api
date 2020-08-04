@@ -5,13 +5,7 @@ import {
   RESOURCE_UPDATED,
   respond,
 } from "@staart/messages";
-import {
-  Controller,
-  Middleware,
-  Post,
-  Request,
-  Response,
-} from "@staart/server";
+import { Middleware, Post, Request, Response } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { verifyToken } from "../../_staart/helpers/jwt";
 import {
@@ -26,11 +20,11 @@ import {
   login,
   login2FA,
   register,
+  resendEmailVerificationWithToken,
   sendPasswordReset,
   updatePassword,
   validateRefreshToken,
   verifyEmail,
-  resendEmailVerificationWithToken,
 } from "../../_staart/rest/auth";
 import { addInvitationCredits } from "../../_staart/rest/user";
 

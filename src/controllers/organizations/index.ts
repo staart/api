@@ -1,17 +1,7 @@
+import { RESOURCE_CREATED, respond } from "@staart/messages";
 import {
-  RESOURCE_CREATED,
-  RESOURCE_DELETED,
-  RESOURCE_UPDATED,
-  respond,
-} from "@staart/messages";
-import {
-  ChildControllers,
   ClassMiddleware,
-  Controller,
-  Delete,
-  Get,
   Middleware,
-  Patch,
   Put,
   Request,
   Response,

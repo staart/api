@@ -1,7 +1,6 @@
 import { RESOURCE_CREATED, RESOURCE_UPDATED, respond } from "@staart/messages";
 import {
   ClassMiddleware,
-  Controller,
   Get,
   Patch,
   Put,
@@ -11,8 +10,8 @@ import {
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../../_staart/helpers/middleware";
 import {
-  localsToTokenOrKey,
   groupUsernameToId,
+  localsToTokenOrKey,
 } from "../../../_staart/helpers/utils";
 import {
   createGroupSubscriptionForUser,

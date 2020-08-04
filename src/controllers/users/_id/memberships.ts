@@ -1,7 +1,6 @@
 import { RESOURCE_DELETED, RESOURCE_UPDATED, respond } from "@staart/messages";
 import {
   ClassMiddleware,
-  Controller,
   Delete,
   Get,
   Patch,
@@ -12,9 +11,9 @@ import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../../_staart/helpers/middleware";
 import { userUsernameToId } from "../../../_staart/helpers/utils";
 import {
-  getMembershipsForUser,
-  getMembershipDetailsForUser,
   deleteMembershipForUser,
+  getMembershipDetailsForUser,
+  getMembershipsForUser,
   updateMembershipForUser,
 } from "../../../_staart/rest/user";
 
