@@ -6,7 +6,6 @@ import {
   respond,
 } from "@staart/messages";
 import {
-  ChildControllers,
   Controller,
   Middleware,
   Post,
@@ -33,10 +32,8 @@ import {
   verifyEmail,
   resendEmailVerificationWithToken,
 } from "../../_staart/rest/auth";
-import { AuthOAuthController } from "./oauth";
 import { addInvitationCredits } from "../../_staart/rest/user";
 
-@ChildControllers([new AuthOAuthController()])
 export class AuthController {
   @Post("register")
   @Middleware(bruteForceHandler)
