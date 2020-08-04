@@ -16,10 +16,7 @@ import {
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../../_staart/helpers/middleware";
-import {
-  groupUsernameToId,
-  localsToTokenOrKey,
-} from "../../../_staart/helpers/utils";
+import { twtToId, localsToTokenOrKey } from "../../../_staart/helpers/utils";
 import {
   createApiKeyForUser,
   deleteApiKeyForUser,
@@ -33,7 +30,7 @@ import {
 export class GroupApiKeysController {
   @Get()
   async getUserApiKeys(req: Request, res: Response) {
-    const id = await groupUsernameToId(req.params.id);
+    const id = twtToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
     return getGroupApiKeysForUser(localsToTokenOrKey(res), id, req.query);
   }
@@ -52,7 +49,7 @@ export class GroupApiKeysController {
     )
   )
   async putUserApiKeys(req: Request, res: Response) {
-    const id = await groupUsernameToId(req.params.id);
+    const id = twtToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
     const added = await createApiKeyForUser(
       localsToTokenOrKey(res),
@@ -65,7 +62,7 @@ export class GroupApiKeysController {
 
   @Get(":apiKeyId")
   async getUserApiKey(req: Request, res: Response) {
-    const id = await groupUsernameToId(req.params.id);
+    const id = twtToId(req.params.id);
     const apiKeyId = req.params.apiKeyId;
     joiValidate(
       {
@@ -91,7 +88,7 @@ export class GroupApiKeysController {
     )
   )
   async patchUserApiKey(req: Request, res: Response) {
-    const id = await groupUsernameToId(req.params.id);
+    const id = twtToId(req.params.id);
     const apiKeyId = req.params.apiKeyId;
     joiValidate(
       {
@@ -112,7 +109,7 @@ export class GroupApiKeysController {
 
   @Delete(":apiKeyId")
   async deleteUserApiKey(req: Request, res: Response) {
-    const id = await groupUsernameToId(req.params.id);
+    const id = twtToId(req.params.id);
     const apiKeyId = req.params.apiKeyId;
     joiValidate(
       {
@@ -132,7 +129,7 @@ export class GroupApiKeysController {
 
   @Get(":apiKeyId/logs")
   async getUserApiKeyLogs(req: Request, res: Response) {
-    const id = await groupUsernameToId(req.params.id);
+    const id = twtToId(req.params.id);
     const apiKeyId = req.params.apiKeyId;
     joiValidate(
       {

@@ -17,10 +17,7 @@ import {
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../../_staart/helpers/middleware";
-import {
-  groupUsernameToId,
-  localsToTokenOrKey,
-} from "../../../_staart/helpers/utils";
+import { twtToId, localsToTokenOrKey } from "../../../_staart/helpers/utils";
 import {
   deleteGroupMembershipForUser,
   getGroupMembershipForUser,
@@ -33,7 +30,7 @@ import {
 export class GroupMembershipsController {
   @Get()
   async getMemberships(req: Request, res: Response) {
-    const groupId = await groupUsernameToId(req.params.id);
+    const groupId = twtToId(req.params.id);
     joiValidate({ groupId: Joi.string().required() }, { groupId });
     return getGroupMembershipsForUser(
       localsToTokenOrKey(res),
@@ -44,7 +41,7 @@ export class GroupMembershipsController {
 
   @Put()
   async putMemberships(req: Request, res: Response) {
-    const groupId = await groupUsernameToId(req.params.id);
+    const groupId = twtToId(req.params.id);
     const newMemberName = req.body.name;
     const newMemberEmail = req.body.email;
     const role = req.body.role;
@@ -75,7 +72,7 @@ export class GroupMembershipsController {
 
   @Get(":membershipId")
   async getMembership(req: Request, res: Response) {
-    const groupId = await groupUsernameToId(req.params.id);
+    const groupId = twtToId(req.params.id);
     const membershipId = req.params.membershipId;
     joiValidate(
       {
@@ -101,7 +98,7 @@ export class GroupMembershipsController {
     )
   )
   async updateMembership(req: Request, res: Response) {
-    const groupId = await groupUsernameToId(req.params.id);
+    const groupId = twtToId(req.params.id);
     const membershipId = req.params.membershipId;
     joiValidate(
       {
@@ -121,7 +118,7 @@ export class GroupMembershipsController {
 
   @Delete(":membershipId")
   async deleteMembership(req: Request, res: Response) {
-    const groupId = await groupUsernameToId(req.params.id);
+    const groupId = twtToId(req.params.id);
     const membershipId = req.params.membershipId;
     joiValidate(
       {

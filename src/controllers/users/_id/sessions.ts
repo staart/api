@@ -8,7 +8,7 @@ import {
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../../_staart/helpers/middleware";
-import { userUsernameToId } from "../../../_staart/helpers/utils";
+import { twtToId } from "../../../_staart/helpers/utils";
 import {
   deleteSessionForUser,
   getUserSessionForUser,
@@ -19,14 +19,14 @@ import {
 export class UserSessionsController {
   @Get()
   async getUserSessions(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const id = twtToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
     return getUserSessionsForUser(res.locals.token.id, id, req.query);
   }
 
   @Get(":sessionId")
   async getUserSession(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const id = twtToId(req.params.id, res.locals.token.id);
     const sessionId = req.params.sessionId;
     joiValidate(
       {
@@ -40,7 +40,7 @@ export class UserSessionsController {
 
   @Delete(":sessionId")
   async deleteUserSession(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const id = twtToId(req.params.id, res.locals.token.id);
     const sessionId = req.params.sessionId;
     joiValidate(
       {

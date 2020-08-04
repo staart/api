@@ -16,10 +16,7 @@ import {
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../../_staart/helpers/middleware";
-import {
-  groupUsernameToId,
-  localsToTokenOrKey,
-} from "../../../_staart/helpers/utils";
+import { twtToId, localsToTokenOrKey } from "../../../_staart/helpers/utils";
 import {
   createWebhookForUser,
   deleteWebhookForUser,
@@ -32,7 +29,7 @@ import {
 export class GroupWebhooksController {
   @Get()
   async getGroupWebhooks(req: Request, res: Response) {
-    const id = await groupUsernameToId(req.params.id);
+    const id = twtToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
     return getGroupWebhooksForUser(localsToTokenOrKey(res), id, req.query);
   }
@@ -51,7 +48,7 @@ export class GroupWebhooksController {
     )
   )
   async putGroupWebhooks(req: Request, res: Response) {
-    const id = await groupUsernameToId(req.params.id);
+    const id = twtToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
     const added = await createWebhookForUser(
       localsToTokenOrKey(res),
@@ -64,7 +61,7 @@ export class GroupWebhooksController {
 
   @Get(":webhookId")
   async getGroupWebhook(req: Request, res: Response) {
-    const id = await groupUsernameToId(req.params.id);
+    const id = twtToId(req.params.id);
     const webhookId = req.params.webhookId;
     joiValidate(
       {
@@ -90,7 +87,7 @@ export class GroupWebhooksController {
     )
   )
   async patchGroupWebhook(req: Request, res: Response) {
-    const id = await groupUsernameToId(req.params.id);
+    const id = twtToId(req.params.id);
     const webhookId = req.params.webhookId;
     joiValidate(
       {
@@ -111,7 +108,7 @@ export class GroupWebhooksController {
 
   @Delete(":webhookId")
   async deleteGroupWebhook(req: Request, res: Response) {
-    const id = await groupUsernameToId(req.params.id);
+    const id = twtToId(req.params.id);
     const webhookId = req.params.webhookId;
     joiValidate(
       {

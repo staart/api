@@ -1,10 +1,7 @@
 import { ClassMiddleware, Get, Put, Request, Response } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../../_staart/helpers/middleware";
-import {
-  groupUsernameToId,
-  localsToTokenOrKey,
-} from "../../../_staart/helpers/utils";
+import { twtToId, localsToTokenOrKey } from "../../../_staart/helpers/utils";
 import {
   applyCouponToGroupForUser,
   getGroupTransactionForUser,
@@ -15,7 +12,7 @@ import {
 export class GroupTransactionsController {
   @Get()
   async getTransactions(req: Request, res: Response) {
-    const groupId = await groupUsernameToId(req.params.id);
+    const groupId = twtToId(req.params.id);
     joiValidate({ groupId: Joi.string().required() }, { groupId });
     const transactionParams = { ...req.query };
     joiValidate(
@@ -34,7 +31,7 @@ export class GroupTransactionsController {
 
   @Put()
   async applyCoupon(req: Request, res: Response) {
-    const groupId = await groupUsernameToId(req.params.id);
+    const groupId = twtToId(req.params.id);
     const couponCode = req.body.couponCode;
     joiValidate(
       {
@@ -52,7 +49,7 @@ export class GroupTransactionsController {
 
   @Get(":transactionId")
   async getTransaction(req: Request, res: Response) {
-    const groupId = await groupUsernameToId(req.params.id);
+    const groupId = twtToId(req.params.id);
     const transactionId = req.params.transactionId;
     joiValidate(
       {

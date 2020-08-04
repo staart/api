@@ -9,10 +9,7 @@ import {
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../../_staart/helpers/middleware";
-import {
-  groupUsernameToId,
-  localsToTokenOrKey,
-} from "../../../_staart/helpers/utils";
+import { twtToId, localsToTokenOrKey } from "../../../_staart/helpers/utils";
 import {
   createGroupSubscriptionForUser,
   getGroupSubscriptionForUser,
@@ -24,7 +21,7 @@ import {
 export class GroupSubscriptionsController {
   @Get()
   async getSubscriptions(req: Request, res: Response) {
-    const groupId = await groupUsernameToId(req.params.id);
+    const groupId = twtToId(req.params.id);
     joiValidate({ groupId: Joi.string().required() }, { groupId });
     const subscriptionParams = { ...req.query };
     joiValidate(
@@ -46,7 +43,7 @@ export class GroupSubscriptionsController {
 
   @Put()
   async putSubscriptions(req: Request, res: Response) {
-    const groupId = await groupUsernameToId(req.params.id);
+    const groupId = twtToId(req.params.id);
     joiValidate({ groupId: Joi.string().required() }, { groupId });
     const subscriptionParams = { ...req.body };
     joiValidate(
@@ -69,7 +66,7 @@ export class GroupSubscriptionsController {
 
   @Get(":subscriptionId")
   async getSubscription(req: Request, res: Response) {
-    const groupId = await groupUsernameToId(req.params.id);
+    const groupId = twtToId(req.params.id);
     const subscriptionId = req.params.subscriptionId;
     joiValidate(
       {
@@ -87,7 +84,7 @@ export class GroupSubscriptionsController {
 
   @Patch(":subscriptionId")
   async patchSubscription(req: Request, res: Response) {
-    const groupId = await groupUsernameToId(req.params.id);
+    const groupId = twtToId(req.params.id);
     const subscriptionId = req.params.subscriptionId;
     const data = req.body;
     joiValidate(

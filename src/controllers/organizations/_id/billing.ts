@@ -1,10 +1,7 @@
 import { ClassMiddleware, Get, Patch, Request, Response } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../../_staart/helpers/middleware";
-import {
-  groupUsernameToId,
-  localsToTokenOrKey,
-} from "../../../_staart/helpers/utils";
+import { twtToId, localsToTokenOrKey } from "../../../_staart/helpers/utils";
 import {
   getGroupBillingForUser,
   getGroupPricingPlansForUser,
@@ -15,14 +12,14 @@ import {
 export class GroupBillingController {
   @Get()
   async getBilling(req: Request, res: Response) {
-    const groupId = await groupUsernameToId(req.params.id);
+    const groupId = twtToId(req.params.id);
     joiValidate({ groupId: Joi.string().required() }, { groupId });
     return getGroupBillingForUser(localsToTokenOrKey(res), groupId);
   }
 
   @Patch()
   async patchBilling(req: Request, res: Response) {
-    const groupId = await groupUsernameToId(req.params.id);
+    const groupId = twtToId(req.params.id);
     joiValidate({ groupId: Joi.string().required() }, { groupId });
     await updateGroupBillingForUser(
       localsToTokenOrKey(res),
@@ -35,7 +32,7 @@ export class GroupBillingController {
 
   @Get("pricing")
   async getPlans(req: Request, res: Response) {
-    const groupId = await groupUsernameToId(req.params.id);
+    const groupId = twtToId(req.params.id);
     joiValidate(
       {
         groupId: Joi.string().required(),

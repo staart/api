@@ -1,10 +1,7 @@
 import { ClassMiddleware, Get, Request, Response } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../../_staart/helpers/middleware";
-import {
-  groupUsernameToId,
-  localsToTokenOrKey,
-} from "../../../_staart/helpers/utils";
+import { twtToId, localsToTokenOrKey } from "../../../_staart/helpers/utils";
 import {
   getGroupInvoiceForUser,
   getGroupInvoicesForUser,
@@ -14,7 +11,7 @@ import {
 export class GroupInvoicesController {
   @Get()
   async getInvoices(req: Request, res: Response) {
-    const groupId = await groupUsernameToId(req.params.id);
+    const groupId = twtToId(req.params.id);
     joiValidate({ groupId: Joi.string().required() }, { groupId });
     const subscriptionParams = { ...req.query };
     joiValidate(
@@ -36,7 +33,7 @@ export class GroupInvoicesController {
 
   @Get(":invoiceId")
   async getInvoice(req: Request, res: Response) {
-    const groupId = await groupUsernameToId(req.params.id);
+    const groupId = twtToId(req.params.id);
     const invoiceId = req.params.invoiceId;
     joiValidate(
       {

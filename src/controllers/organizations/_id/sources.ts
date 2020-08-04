@@ -15,10 +15,7 @@ import {
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../../_staart/helpers/middleware";
-import {
-  groupUsernameToId,
-  localsToTokenOrKey,
-} from "../../../_staart/helpers/utils";
+import { twtToId, localsToTokenOrKey } from "../../../_staart/helpers/utils";
 import {
   createGroupSourceForUser,
   deleteGroupSourceForUser,
@@ -31,7 +28,7 @@ import {
 export class GroupSourcesController {
   @Get()
   async getSources(req: Request, res: Response) {
-    const groupId = await groupUsernameToId(req.params.id);
+    const groupId = twtToId(req.params.id);
     joiValidate({ groupId: Joi.string().required() }, { groupId });
     const subscriptionParams = { ...req.query };
     joiValidate(
@@ -50,7 +47,7 @@ export class GroupSourcesController {
 
   @Put()
   async putSources(req: Request, res: Response) {
-    const groupId = await groupUsernameToId(req.params.id);
+    const groupId = twtToId(req.params.id);
     joiValidate({ groupId: Joi.string().required() }, { groupId });
     await createGroupSourceForUser(
       localsToTokenOrKey(res),
@@ -63,7 +60,7 @@ export class GroupSourcesController {
 
   @Get(":sourceId")
   async getSource(req: Request, res: Response) {
-    const groupId = await groupUsernameToId(req.params.id);
+    const groupId = twtToId(req.params.id);
     const sourceId = req.params.sourceId;
     joiValidate(
       {
@@ -78,7 +75,7 @@ export class GroupSourcesController {
   @Patch(":sourceId")
   async patchSource(req: Request, res: Response) {
     const sourceId = req.params.sourceId;
-    const groupId = await groupUsernameToId(req.params.id);
+    const groupId = twtToId(req.params.id);
     joiValidate(
       {
         groupId: Joi.string().required(),
@@ -99,7 +96,7 @@ export class GroupSourcesController {
   @Delete(":sourceId")
   async deleteSource(req: Request, res: Response) {
     const sourceId = req.params.sourceId;
-    const groupId = await groupUsernameToId(req.params.id);
+    const groupId = twtToId(req.params.id);
     joiValidate(
       {
         groupId: Joi.string().required(),

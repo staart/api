@@ -9,7 +9,7 @@ import {
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../../_staart/helpers/middleware";
-import { userUsernameToId } from "../../../_staart/helpers/utils";
+import { twtToId } from "../../../_staart/helpers/utils";
 import {
   deleteMembershipForUser,
   getMembershipDetailsForUser,
@@ -21,14 +21,14 @@ import {
 export class UserMembershipsController {
   @Get()
   async getMemberships(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const id = twtToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
     return getMembershipsForUser(res.locals.token.id, id, req.query);
   }
 
   @Get(":membershipId")
   async getMembership(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const id = twtToId(req.params.id, res.locals.token.id);
     const membershipId = req.params.membershipId;
     joiValidate(
       {
@@ -42,7 +42,7 @@ export class UserMembershipsController {
 
   @Delete(":membershipId")
   async deleteMembership(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const id = twtToId(req.params.id, res.locals.token.id);
     const membershipId = req.params.membershipId;
     joiValidate(
       {
@@ -57,7 +57,7 @@ export class UserMembershipsController {
 
   @Patch(":membershipId")
   async updateMembership(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const id = twtToId(req.params.id, res.locals.token.id);
     const membershipId = req.params.membershipId;
     joiValidate(
       {

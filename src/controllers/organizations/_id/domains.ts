@@ -17,10 +17,7 @@ import {
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../../_staart/helpers/middleware";
-import {
-  groupUsernameToId,
-  localsToTokenOrKey,
-} from "../../../_staart/helpers/utils";
+import { twtToId, localsToTokenOrKey } from "../../../_staart/helpers/utils";
 import {
   createDomainForUser,
   deleteDomainForUser,
@@ -34,7 +31,7 @@ import {
 export class GroupDomainsController {
   @Get()
   async getUserDomains(req: Request, res: Response) {
-    const id = await groupUsernameToId(req.params.id);
+    const id = twtToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
     return getGroupDomainsForUser(localsToTokenOrKey(res), id, req.query);
   }
@@ -49,7 +46,7 @@ export class GroupDomainsController {
     )
   )
   async putUserDomains(req: Request, res: Response) {
-    const id = await groupUsernameToId(req.params.id);
+    const id = twtToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
     const added = await createDomainForUser(
       localsToTokenOrKey(res),
@@ -62,7 +59,7 @@ export class GroupDomainsController {
 
   @Get(":domainId")
   async getUserDomain(req: Request, res: Response) {
-    const id = await groupUsernameToId(req.params.id);
+    const id = twtToId(req.params.id);
     const domainId = req.params.domainId;
     joiValidate(
       {
@@ -84,7 +81,7 @@ export class GroupDomainsController {
     )
   )
   async patchUserDomain(req: Request, res: Response) {
-    const id = await groupUsernameToId(req.params.id);
+    const id = twtToId(req.params.id);
     const domainId = req.params.domainId;
     joiValidate(
       {
@@ -105,7 +102,7 @@ export class GroupDomainsController {
 
   @Delete(":domainId")
   async deleteUserDomain(req: Request, res: Response) {
-    const id = await groupUsernameToId(req.params.id);
+    const id = twtToId(req.params.id);
     const domainId = req.params.domainId;
     joiValidate(
       {
@@ -125,7 +122,7 @@ export class GroupDomainsController {
 
   @Post(":domainId/verify")
   async verifyGroupDomain(req: Request, res: Response) {
-    const id = await groupUsernameToId(req.params.id);
+    const id = twtToId(req.params.id);
     const domainId = req.params.domainId;
     const method = req.body.method || req.query.method;
     joiValidate(

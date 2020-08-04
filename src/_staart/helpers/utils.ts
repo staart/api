@@ -4,13 +4,18 @@ import { isMatch } from "@staart/text";
 import { Joi, joiValidate } from "@staart/validate";
 import dns from "dns";
 import { Tokens } from "../interfaces/enum";
+import { verify } from "twt";
 import { ApiKeyResponse } from "./jwt";
+import { config } from "@anandchowdhary/cosmic";
 
 /**
  * Make s single property optional
  * @source https://stackoverflow.com/a/54178819/1656944
  */
 export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
+export const twtToId = (twt: string) =>
+  parseInt(verify(twt, config("twtSecret")), 10);
 
 /**
  * Delete any sensitive information for a user like passwords and tokens

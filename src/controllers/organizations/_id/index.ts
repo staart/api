@@ -10,10 +10,7 @@ import {
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../../_staart/helpers/middleware";
-import {
-  groupUsernameToId,
-  localsToTokenOrKey,
-} from "../../../_staart/helpers/utils";
+import { twtToId, localsToTokenOrKey } from "../../../_staart/helpers/utils";
 import {
   deleteGroupForUser,
   getAllGroupDataForUser,
@@ -25,7 +22,7 @@ import {
 export class GroupController {
   @Get()
   async get(req: Request, res: Response) {
-    const id = await groupUsernameToId(req.params.id);
+    const id = twtToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
     const group = await getGroupForUser(localsToTokenOrKey(res), id);
     return group;
@@ -47,7 +44,7 @@ export class GroupController {
     )
   )
   async patch(req: Request, res: Response) {
-    const id = await groupUsernameToId(req.params.id);
+    const id = twtToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
     const updated = await updateGroupForUser(
       localsToTokenOrKey(res),
@@ -60,7 +57,7 @@ export class GroupController {
 
   @Delete()
   async delete(req: Request, res: Response) {
-    const groupId = await groupUsernameToId(req.params.id);
+    const groupId = twtToId(req.params.id);
     joiValidate({ groupId: Joi.string().required() }, { groupId });
     await deleteGroupForUser(res.locals.token.id, groupId, res.locals);
     return respond(RESOURCE_DELETED);
@@ -68,7 +65,7 @@ export class GroupController {
 
   @Get("data")
   async getData(req: Request, res: Response) {
-    const groupId = await groupUsernameToId(req.params.id);
+    const groupId = twtToId(req.params.id);
     joiValidate({ groupId: Joi.string().required() }, { groupId });
     return getAllGroupDataForUser(localsToTokenOrKey(res), groupId);
   }

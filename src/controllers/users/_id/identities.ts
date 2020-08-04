@@ -15,7 +15,7 @@ import {
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../../_staart/helpers/middleware";
-import { userUsernameToId } from "../../../_staart/helpers/utils";
+import { twtToId } from "../../../_staart/helpers/utils";
 import {
   connectUserIdentityForUser,
   createUserIdentityForUser,
@@ -28,14 +28,14 @@ import {
 export class UserIdentitiesController {
   @Get()
   async getUserIdentities(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const id = twtToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
     return getUserIdentitiesForUser(res.locals.token.id, id, req.query);
   }
 
   @Put()
   async createUserIdentity(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const id = twtToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
     const added = await createUserIdentityForUser(
       res.locals.token.id,
@@ -47,7 +47,7 @@ export class UserIdentitiesController {
 
   @Post(":service")
   async connectUserIdentity(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const id = twtToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
     const service = req.params.service;
     const url = req.body.url;
@@ -61,7 +61,7 @@ export class UserIdentitiesController {
 
   @Get(":identityId")
   async getUserIdentity(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const id = twtToId(req.params.id, res.locals.token.id);
     const identityId = req.params.identityId;
     joiValidate(
       {
@@ -75,7 +75,7 @@ export class UserIdentitiesController {
 
   @Delete(":identityId")
   async deleteUserIdentity(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const id = twtToId(req.params.id, res.locals.token.id);
     const identityId = req.params.identityId;
     joiValidate(
       {
