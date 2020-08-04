@@ -238,7 +238,7 @@ export const verifyEmail = async (token: string, locals: Locals) => {
 };
 
 export const loginLink = async (token: string, locals: Locals) => {
-  const userId = (await verifyToken<{ id: number }>(token, Tokens.EMAIL_VERIFY))
+  const userId = (await verifyToken<{ id: number }>(token, Tokens.LOGIN_LINK))
     .id;
   const user = await prisma.users.findOne({
     where: { id: userId },

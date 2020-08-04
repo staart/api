@@ -216,7 +216,6 @@ export class AuthController {
   async postLoginLink(req: Request, res: Response) {
     const token = req.body.token || req.params.token;
     joiValidate({ token: Joi.string().required() }, { token });
-    await loginLink(token, res.locals);
-    return respond(RESOURCE_SUCCESS);
+    return loginLink(token, res.locals);
   }
 }
