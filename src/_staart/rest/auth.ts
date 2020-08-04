@@ -54,10 +54,10 @@ export const validateRefreshToken = async (token: string, locals: Locals) => {
 };
 
 export const invalidateRefreshToken = async (token: string, locals: Locals) => {
-  const data = await verifyToken<{ id: string }>(token, Tokens.REFRESH);
+  const data = await verifyToken<{ id: number }>(token, Tokens.REFRESH);
   if (!data.id) throw new Error(USER_NOT_FOUND);
   await prisma.sessions.deleteMany({
-    where: { token, userId: parseInt(data.id) },
+    where: { token, userId: data.id },
   });
   return;
 };
@@ -85,7 +85,10 @@ export const login = async (
     if (hasUserWithUnverifiedEmail) throw new Error("401/unverified-email");
     throw new Error(USER_NOT_FOUND);
   }
-  if (!user.password) throw new Error(MISSING_PASSWORD);
+  if (!user.password) {
+    await mail({ template: Templates.LOGIN_LINK, data: user, to: email });
+    return { success: true, message: "login-link-sent" };
+  }
   const isPasswordCorrect = await compare(password, user.password);
   if (isPasswordCorrect)
     return getLoginResponse(user, EventType.AUTH_LOGIN, "local", locals);
@@ -210,10 +213,10 @@ export const sendNewPassword = async (userId: number, email: string) => {
 
 export const verifyEmail = async (token: string, locals: Locals) => {
   const emailId = (
-    await verifyToken<{ id: string }>(token, Tokens.EMAIL_VERIFY)
+    await verifyToken<{ id: number }>(token, Tokens.EMAIL_VERIFY)
   ).id;
   const email = await prisma.emails.findOne({
-    where: { id: parseInt(emailId) },
+    where: { id: emailId },
   });
   if (!email) throw new Error(RESOURCE_NOT_FOUND);
   trackEvent(
@@ -225,9 +228,27 @@ export const verifyEmail = async (token: string, locals: Locals) => {
     locals
   );
   return prisma.emails.update({
-    where: { id: parseInt(emailId) },
+    where: { id: emailId },
     data: { isVerified: true },
   });
+};
+
+export const loginLink = async (token: string, locals: Locals) => {
+  const userId = (await verifyToken<{ id: number }>(token, Tokens.EMAIL_VERIFY))
+    .id;
+  const user = await prisma.users.findOne({
+    where: { id: userId },
+  });
+  if (!user) throw new Error(RESOURCE_NOT_FOUND);
+  trackEvent(
+    {
+      userId,
+      type: EventType.AUTH_LOGIN,
+      data: { id: userId },
+    },
+    locals
+  );
+  return postLoginTokens(user, locals);
 };
 
 export const updatePassword = async (
@@ -236,10 +257,10 @@ export const updatePassword = async (
   locals: Locals
 ) => {
   const userId = (
-    await verifyToken<{ id: string }>(token, Tokens.PASSWORD_RESET)
+    await verifyToken<{ id: number }>(token, Tokens.PASSWORD_RESET)
   ).id;
   await prisma.users.update({
-    where: { id: parseInt(userId) },
+    where: { id: userId },
     data: { password: await hash(password, 8) },
   });
   await deleteItemFromCache(`cache_getUserById_${userId}`);

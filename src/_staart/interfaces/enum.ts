@@ -34,6 +34,7 @@ export enum Templates {
   UNAPPROVED_LOCATION = "unapproved-location",
   CREDITS_NEW_USER = "credits-new-user",
   CREDITS_INVITED_BY = "credits-invited-by",
+  LOGIN_LINK = "login-link",
 }
 
 export enum Tokens {

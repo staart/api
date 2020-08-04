@@ -646,7 +646,6 @@ export const inviteMemberToGroup = async (
       const newAccount = await register(
         {
           name: newMemberName,
-          prefersEmail: {},
         },
         locals,
         newMemberEmail,

@@ -25,6 +25,7 @@ import {
   updatePassword,
   validateRefreshToken,
   verifyEmail,
+  loginLink,
 } from "../../_staart/rest/auth";
 import { addInvitationCredits } from "../../_staart/rest/user";
 import { twtToId } from "../../_staart/helpers/utils";
@@ -208,6 +209,14 @@ export class AuthController {
     const token = req.body.token || req.params.token;
     joiValidate({ token: Joi.string().required() }, { token });
     await verifyEmail(token, res.locals);
+    return respond(RESOURCE_SUCCESS);
+  }
+
+  @Post("login-link")
+  async postLoginLink(req: Request, res: Response) {
+    const token = req.body.token || req.params.token;
+    joiValidate({ token: Joi.string().required() }, { token });
+    await loginLink(token, res.locals);
     return respond(RESOURCE_SUCCESS);
   }
 }
