@@ -8,17 +8,30 @@ import { config } from "@anandchowdhary/cosmic";
 export const prisma = new PrismaClient({
   log: getConfig("NODE_ENV") === "production" ? ["warn"] : ["info", "warn"],
 });
+
 prisma.$use(async (params, next) => {
   const result = await next(params);
-  console.log("Got result", result);
-  console.log("Secret it", config("twtSecret"));
+
+  // Use TWT IDs for objects
   if (typeof result === "object" && !Array.isArray(result))
-    if (typeof result.id === "number")
-      result.id = sign(String(result.id), config("twtSecret"), 10);
+    Object.keys(result).forEach((key) => {
+      if (
+        (key === "id" || key.endsWith("Id")) &&
+        typeof result[key] === "number"
+      )
+        result[key] = sign(String(result[key]), config("twtSecret"), 10);
+    });
+
+  // Use TWT IDs for arrays of objects
   if (Array.isArray(result))
     result.map((result) => {
-      if (typeof result.id === "number")
-        result.id = sign(String(result.id), config("twtSecret"), 10);
+      Object.keys(result).forEach((key) => {
+        if (
+          (key === "id" || key.endsWith("Id")) &&
+          typeof result[key] === "number"
+        )
+          result[key] = sign(String(result[key]), config("twtSecret"), 10);
+      });
       return result;
     });
   return result;
