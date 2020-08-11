@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { getConfig } from "@staart/config";
 import { complete, success } from "@staart/errors";
-import { sign } from "twt";
+import { sign, verify } from "twt";
 import { cleanup } from "@staart/server";
 import { config } from "@anandchowdhary/cosmic";
 
@@ -9,7 +9,36 @@ export const prisma = new PrismaClient({
   log: getConfig("NODE_ENV") === "production" ? ["warn"] : ["info", "warn"],
 });
 
+const decodeTwtId = (object: any) => {
+  if (typeof object === "object" && !Array.isArray(object)) {
+    Object.keys(object).forEach((key: any) => {
+      if (
+        typeof object[key] === "string" &&
+        ((typeof key === "string" && key === "id") || key.endsWith("Id"))
+      ) {
+        object[key] = parseInt(
+          verify(object[key], config("twtSecret"), 10),
+          10
+        );
+      } else if (
+        typeof object[key] === "object" &&
+        !Array.isArray(object[key])
+      ) {
+        object[key] = decodeTwtId(object[key]);
+      } else if (Array.isArray(object[key])) {
+        object[key] = object[key].map((value: any) => decodeTwtId(value));
+      }
+    });
+  } else if (Array.isArray(object)) {
+    object = object.map((value: any) => decodeTwtId(value));
+  }
+  return object;
+};
+
 prisma.$use(async (params, next) => {
+  // Decode TWT
+  if (typeof params.args === "object") params.args = decodeTwtId(params.args);
+
   const result = await next(params);
 
   // Use TWT IDs for objects
