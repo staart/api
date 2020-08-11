@@ -77,7 +77,7 @@ export class AuthController {
     validator(
       {
         email: Joi.string().email().required(),
-        password: Joi.string().min(6),
+        password: Joi.string().min(6).allow(""),
       },
       "body"
     )
