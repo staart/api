@@ -17,7 +17,7 @@ export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 export const twtToId = (twt: string, userId?: number) =>
   twt === "me" && userId
     ? userId
-    : parseInt(verify(twt, config("twtSecret")), 10);
+    : parseInt(verify(twt, config("twtSecret"), 10), 10);
 
 /**
  * Delete any sensitive information for a user like passwords and tokens

@@ -14,11 +14,11 @@ prisma.$use(async (params, next) => {
   console.log("Secret it", config("twtSecret"));
   if (typeof result === "object" && !Array.isArray(result))
     if (typeof result.id === "number")
-      result.id = sign(String(result.id), config("twtSecret"));
+      result.id = sign(String(result.id), config("twtSecret"), 10);
   if (Array.isArray(result))
     result.map((result) => {
       if (typeof result.id === "number")
-        result.id = sign(String(result.id), config("twtSecret"));
+        result.id = sign(String(result.id), config("twtSecret"), 10);
       return result;
     });
   return result;
