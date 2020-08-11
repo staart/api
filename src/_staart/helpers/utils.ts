@@ -6,7 +6,6 @@ import { Joi, joiValidate } from "@staart/validate";
 import dns from "dns";
 import { verify } from "twt";
 import { Tokens } from "../interfaces/enum";
-import { Locals } from "../interfaces/general";
 import { ApiKeyResponse } from "./jwt";
 
 /**

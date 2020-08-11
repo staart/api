@@ -1,10 +1,19 @@
 import { PrismaClient } from "@prisma/client";
 import { getConfig } from "@staart/config";
 import { complete, success } from "@staart/errors";
+import { sign } from "twt";
 import { cleanup } from "@staart/server";
+import { config } from "@anandchowdhary/cosmic";
 
 export const prisma = new PrismaClient({
   log: getConfig("NODE_ENV") === "production" ? ["warn"] : ["info", "warn"],
+});
+prisma.$use(async (params, next) => {
+  const result = await next(params);
+  console.log("Got result", result);
+  if (typeof result === "object" && !Array.isArray(result))
+    if (result.id) result.id = sign(result.id, config("twtSecret"));
+  return result;
 });
 
 cleanup(() => {
