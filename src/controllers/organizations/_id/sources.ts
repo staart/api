@@ -29,7 +29,7 @@ export class GroupSourcesController {
   @Get()
   async getSources(req: Request, res: Response) {
     const groupId = twtToId(req.params.id);
-    joiValidate({ groupId: Joi.number().required() }, { groupId });
+    joiValidate({ groupId: Joi.string().required() }, { groupId });
     const subscriptionParams = { ...req.query };
     joiValidate(
       {
@@ -48,7 +48,7 @@ export class GroupSourcesController {
   @Put()
   async putSources(req: Request, res: Response) {
     const groupId = twtToId(req.params.id);
-    joiValidate({ groupId: Joi.number().required() }, { groupId });
+    joiValidate({ groupId: Joi.string().required() }, { groupId });
     await createGroupSourceForUser(
       localsToTokenOrKey(res),
       groupId,
@@ -64,7 +64,7 @@ export class GroupSourcesController {
     const sourceId = req.params.sourceId;
     joiValidate(
       {
-        groupId: Joi.number().required(),
+        groupId: Joi.string().required(),
         sourceId: Joi.string().required(),
       },
       { groupId, sourceId }
@@ -78,7 +78,7 @@ export class GroupSourcesController {
     const groupId = twtToId(req.params.id);
     joiValidate(
       {
-        groupId: Joi.number().required(),
+        groupId: Joi.string().required(),
         sourceId: Joi.string().required(),
       },
       { groupId, sourceId }
@@ -99,7 +99,7 @@ export class GroupSourcesController {
     const groupId = twtToId(req.params.id);
     joiValidate(
       {
-        groupId: Joi.number().required(),
+        groupId: Joi.string().required(),
         sourceId: Joi.string().required(),
       },
       { groupId, sourceId }

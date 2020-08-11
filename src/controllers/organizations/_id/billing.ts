@@ -13,14 +13,14 @@ export class GroupBillingController {
   @Get()
   async getBilling(req: Request, res: Response) {
     const groupId = twtToId(req.params.id);
-    joiValidate({ groupId: Joi.number().required() }, { groupId });
+    joiValidate({ groupId: Joi.string().required() }, { groupId });
     return getGroupBillingForUser(localsToTokenOrKey(res), groupId);
   }
 
   @Patch()
   async patchBilling(req: Request, res: Response) {
     const groupId = twtToId(req.params.id);
-    joiValidate({ groupId: Joi.number().required() }, { groupId });
+    joiValidate({ groupId: Joi.string().required() }, { groupId });
     await updateGroupBillingForUser(
       localsToTokenOrKey(res),
       groupId,
@@ -35,7 +35,7 @@ export class GroupBillingController {
     const groupId = twtToId(req.params.id);
     joiValidate(
       {
-        groupId: Joi.number().required(),
+        groupId: Joi.string().required(),
       },
       { groupId }
     );

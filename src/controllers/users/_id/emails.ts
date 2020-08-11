@@ -29,7 +29,7 @@ export class UserEmailsController {
   @Get()
   async getEmails(req: Request, res: Response) {
     const id = twtToId(req.params.id, res.locals.token.id);
-    joiValidate({ id: Joi.number().required() }, { id });
+    joiValidate({ id: Joi.string().required() }, { id });
     return getAllEmailsForUser(res.locals.token.id, id, req.query);
   }
 
@@ -39,7 +39,7 @@ export class UserEmailsController {
     const email = req.body.email;
     joiValidate(
       {
-        id: Joi.number().required(),
+        id: Joi.string().required(),
         email: Joi.string().email().required(),
       },
       { id, email }
@@ -59,8 +59,8 @@ export class UserEmailsController {
     const emailId = twtToId(req.params.emailId);
     joiValidate(
       {
-        id: Joi.number().required(),
-        emailId: Joi.number().required(),
+        id: Joi.string().required(),
+        emailId: Joi.string().required(),
       },
       { id, emailId }
     );
@@ -73,8 +73,8 @@ export class UserEmailsController {
     const emailId = twtToId(req.params.emailId);
     joiValidate(
       {
-        id: Joi.number().required(),
-        emailId: Joi.number().required(),
+        id: Joi.string().required(),
+        emailId: Joi.string().required(),
       },
       { id, emailId }
     );
@@ -88,8 +88,8 @@ export class UserEmailsController {
     const emailId = twtToId(req.params.emailId);
     joiValidate(
       {
-        id: Joi.number().required(),
-        emailId: Joi.number().required(),
+        id: Joi.string().required(),
+        emailId: Joi.string().required(),
       },
       { id, emailId }
     );

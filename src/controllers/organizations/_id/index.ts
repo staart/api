@@ -23,7 +23,7 @@ export class GroupController {
   @Get()
   async get(req: Request, res: Response) {
     const id = twtToId(req.params.id);
-    joiValidate({ id: Joi.number().required() }, { id });
+    joiValidate({ id: Joi.string().required() }, { id });
     const group = await getGroupForUser(localsToTokenOrKey(res), id);
     return group;
   }
@@ -45,7 +45,7 @@ export class GroupController {
   )
   async patch(req: Request, res: Response) {
     const id = twtToId(req.params.id);
-    joiValidate({ id: Joi.number().required() }, { id });
+    joiValidate({ id: Joi.string().required() }, { id });
     const updated = await updateGroupForUser(
       localsToTokenOrKey(res),
       id,
@@ -58,7 +58,7 @@ export class GroupController {
   @Delete()
   async delete(req: Request, res: Response) {
     const groupId = twtToId(req.params.id);
-    joiValidate({ groupId: Joi.number().required() }, { groupId });
+    joiValidate({ groupId: Joi.string().required() }, { groupId });
     await deleteGroupForUser(res.locals.token.id, groupId, res.locals);
     return respond(RESOURCE_DELETED);
   }
@@ -66,7 +66,7 @@ export class GroupController {
   @Get("data")
   async getData(req: Request, res: Response) {
     const groupId = twtToId(req.params.id);
-    joiValidate({ groupId: Joi.number().required() }, { groupId });
+    joiValidate({ groupId: Joi.string().required() }, { groupId });
     return getAllGroupDataForUser(localsToTokenOrKey(res), groupId);
   }
 }

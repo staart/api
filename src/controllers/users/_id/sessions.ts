@@ -20,7 +20,7 @@ export class UserSessionsController {
   @Get()
   async getUserSessions(req: Request, res: Response) {
     const id = twtToId(req.params.id, res.locals.token.id);
-    joiValidate({ id: Joi.number().required() }, { id });
+    joiValidate({ id: Joi.string().required() }, { id });
     return getUserSessionsForUser(res.locals.token.id, id, req.query);
   }
 
@@ -30,8 +30,8 @@ export class UserSessionsController {
     const sessionId = twtToId(req.params.sessionId);
     joiValidate(
       {
-        id: Joi.number().required(),
-        sessionId: Joi.number().required(),
+        id: Joi.string().required(),
+        sessionId: Joi.string().required(),
       },
       { id, sessionId }
     );
@@ -44,8 +44,8 @@ export class UserSessionsController {
     const sessionId = twtToId(req.params.sessionId);
     joiValidate(
       {
-        id: Joi.number().required(),
-        sessionId: Joi.number().required(),
+        id: Joi.string().required(),
+        sessionId: Joi.string().required(),
       },
       { id, sessionId }
     );

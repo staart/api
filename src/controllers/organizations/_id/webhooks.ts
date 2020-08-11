@@ -30,7 +30,7 @@ export class GroupWebhooksController {
   @Get()
   async getGroupWebhooks(req: Request, res: Response) {
     const id = twtToId(req.params.id);
-    joiValidate({ id: Joi.number().required() }, { id });
+    joiValidate({ id: Joi.string().required() }, { id });
     return getGroupWebhooksForUser(localsToTokenOrKey(res), id, req.query);
   }
 
@@ -49,7 +49,7 @@ export class GroupWebhooksController {
   )
   async putGroupWebhooks(req: Request, res: Response) {
     const id = twtToId(req.params.id);
-    joiValidate({ id: Joi.number().required() }, { id });
+    joiValidate({ id: Joi.string().required() }, { id });
     const added = await createWebhookForUser(
       localsToTokenOrKey(res),
       id,
@@ -65,8 +65,8 @@ export class GroupWebhooksController {
     const webhookId = twtToId(req.params.webhookId);
     joiValidate(
       {
-        id: Joi.number().required(),
-        webhookId: Joi.number().required(),
+        id: Joi.string().required(),
+        webhookId: Joi.string().required(),
       },
       { id, webhookId }
     );
@@ -91,8 +91,8 @@ export class GroupWebhooksController {
     const webhookId = twtToId(req.params.webhookId);
     joiValidate(
       {
-        id: Joi.number().required(),
-        webhookId: Joi.number().required(),
+        id: Joi.string().required(),
+        webhookId: Joi.string().required(),
       },
       { id, webhookId }
     );
@@ -112,8 +112,8 @@ export class GroupWebhooksController {
     const webhookId = twtToId(req.params.webhookId);
     joiValidate(
       {
-        id: Joi.number().required(),
-        webhookId: Joi.number().required(),
+        id: Joi.string().required(),
+        webhookId: Joi.string().required(),
       },
       { id, webhookId }
     );

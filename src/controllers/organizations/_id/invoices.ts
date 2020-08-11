@@ -12,7 +12,7 @@ export class GroupInvoicesController {
   @Get()
   async getInvoices(req: Request, res: Response) {
     const groupId = twtToId(req.params.id);
-    joiValidate({ groupId: Joi.number().required() }, { groupId });
+    joiValidate({ groupId: Joi.string().required() }, { groupId });
     const subscriptionParams = { ...req.query };
     joiValidate(
       {
@@ -37,8 +37,8 @@ export class GroupInvoicesController {
     const invoiceId = req.params.invoiceId;
     joiValidate(
       {
-        groupId: Joi.number().required(),
-        invoiceId: Joi.number().required(),
+        groupId: Joi.string().required(),
+        invoiceId: Joi.string().required(),
       },
       { groupId, invoiceId }
     );

@@ -31,7 +31,7 @@ export class GroupApiKeysController {
   @Get()
   async getUserApiKeys(req: Request, res: Response) {
     const id = twtToId(req.params.id);
-    joiValidate({ id: Joi.number().required() }, { id });
+    joiValidate({ id: Joi.string().required() }, { id });
     return getGroupApiKeysForUser(localsToTokenOrKey(res), id, req.query);
   }
 
@@ -50,7 +50,7 @@ export class GroupApiKeysController {
   )
   async putUserApiKeys(req: Request, res: Response) {
     const id = twtToId(req.params.id);
-    joiValidate({ id: Joi.number().required() }, { id });
+    joiValidate({ id: Joi.string().required() }, { id });
     const added = await createApiKeyForUser(
       localsToTokenOrKey(res),
       id,
@@ -66,8 +66,8 @@ export class GroupApiKeysController {
     const apiKeyId = twtToId(req.params.apiKeyId);
     joiValidate(
       {
-        id: Joi.number().required(),
-        apiKeyId: Joi.number().required(),
+        id: Joi.string().required(),
+        apiKeyId: Joi.string().required(),
       },
       { id, apiKeyId }
     );
@@ -92,8 +92,8 @@ export class GroupApiKeysController {
     const apiKeyId = twtToId(req.params.apiKeyId);
     joiValidate(
       {
-        id: Joi.number().required(),
-        apiKeyId: Joi.number().required(),
+        id: Joi.string().required(),
+        apiKeyId: Joi.string().required(),
       },
       { id, apiKeyId }
     );
@@ -113,8 +113,8 @@ export class GroupApiKeysController {
     const apiKeyId = twtToId(req.params.apiKeyId);
     joiValidate(
       {
-        id: Joi.number().required(),
-        apiKeyId: Joi.number().required(),
+        id: Joi.string().required(),
+        apiKeyId: Joi.string().required(),
       },
       { id, apiKeyId }
     );
@@ -133,8 +133,8 @@ export class GroupApiKeysController {
     const apiKeyId = twtToId(req.params.apiKeyId);
     joiValidate(
       {
-        id: Joi.number().required(),
-        apiKeyId: Joi.number().required(),
+        id: Joi.string().required(),
+        apiKeyId: Joi.string().required(),
       },
       { id, apiKeyId }
     );

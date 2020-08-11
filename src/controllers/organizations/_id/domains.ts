@@ -32,7 +32,7 @@ export class GroupDomainsController {
   @Get()
   async getUserDomains(req: Request, res: Response) {
     const id = twtToId(req.params.id);
-    joiValidate({ id: Joi.number().required() }, { id });
+    joiValidate({ id: Joi.string().required() }, { id });
     return getGroupDomainsForUser(localsToTokenOrKey(res), id, req.query);
   }
 
@@ -47,7 +47,7 @@ export class GroupDomainsController {
   )
   async putUserDomains(req: Request, res: Response) {
     const id = twtToId(req.params.id);
-    joiValidate({ id: Joi.number().required() }, { id });
+    joiValidate({ id: Joi.string().required() }, { id });
     const added = await createDomainForUser(
       localsToTokenOrKey(res),
       id,
@@ -63,8 +63,8 @@ export class GroupDomainsController {
     const domainId = twtToId(req.params.domainId);
     joiValidate(
       {
-        id: Joi.number().required(),
-        domainId: Joi.number().required(),
+        id: Joi.string().required(),
+        domainId: Joi.string().required(),
       },
       { id, domainId }
     );
@@ -85,8 +85,8 @@ export class GroupDomainsController {
     const domainId = twtToId(req.params.domainId);
     joiValidate(
       {
-        id: Joi.number().required(),
-        domainId: Joi.number().required(),
+        id: Joi.string().required(),
+        domainId: Joi.string().required(),
       },
       { id, domainId }
     );
@@ -106,8 +106,8 @@ export class GroupDomainsController {
     const domainId = twtToId(req.params.domainId);
     joiValidate(
       {
-        id: Joi.number().required(),
-        domainId: Joi.number().required(),
+        id: Joi.string().required(),
+        domainId: Joi.string().required(),
       },
       { id, domainId }
     );
@@ -127,8 +127,8 @@ export class GroupDomainsController {
     const method = req.body.method || req.query.method;
     joiValidate(
       {
-        id: Joi.number().required(),
-        domainId: Joi.number().required(),
+        id: Joi.string().required(),
+        domainId: Joi.string().required(),
         method: Joi.string().allow("file", "dns").only(),
       },
       { id, domainId, method }
