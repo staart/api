@@ -11,8 +11,16 @@ export const prisma = new PrismaClient({
 prisma.$use(async (params, next) => {
   const result = await next(params);
   console.log("Got result", result);
+  console.log("Secret it", config("twtSecret"));
   if (typeof result === "object" && !Array.isArray(result))
-    if (result.id) result.id = sign(result.id, config("twtSecret"));
+    if (typeof result.id === "number")
+      result.id = sign(String(result.id), config("twtSecret"));
+  if (Array.isArray(result))
+    result.map((result) => {
+      if (typeof result.id === "number")
+        result.id = sign(String(result.id), config("twtSecret"));
+      return result;
+    });
   return result;
 });
 

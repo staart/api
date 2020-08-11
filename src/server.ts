@@ -1,7 +1,9 @@
+import { cosmicSync, config } from "@anandchowdhary/cosmic";
+cosmicSync("staart");
+
 import { success } from "@staart/errors";
 import { Controller, Get, Server } from "@staart/server";
 import { setupMiddleware } from "@staart/server";
-import { cosmicSync, config } from "@anandchowdhary/cosmic";
 
 import {
   errorHandler,
@@ -9,8 +11,6 @@ import {
   speedLimitHandler,
   trackingHandler,
 } from "./_staart/helpers/middleware";
-
-cosmicSync("staart");
 
 @Controller(config("controllerPrefix"))
 class RootController {
