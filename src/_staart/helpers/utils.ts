@@ -14,9 +14,9 @@ import { ApiKeyResponse } from "./jwt";
  */
 export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
-export const twtToId = (twt: string, userId?: number) =>
+export const twtToId = (twt: string, userId?: string) =>
   twt === "me" && userId
-    ? userId
+    ? parseInt(verify(userId, config("twtSecret"), 10), 10)
     : parseInt(verify(twt, config("twtSecret"), 10), 10);
 
 /**
