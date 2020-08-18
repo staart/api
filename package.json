@@ -16,7 +16,6 @@
     "build-babel": "staart build-babel",
     "launch": "staart launch",
     "update": "staart update api",
-    "postinstall": "staart check",
     "generate-docs": "staart docs",
     "test": "jest --forceExit",
     "snyk-protect": "snyk protect",
@@ -89,7 +88,7 @@
     "qrcode": "^1.4.4",
     "random-int": "^2.0.1",
     "randomcolor": "^0.6.2",
-    "twt": "^1.2.0"
+    "twt": "^1.2.0",
     "snyk": "^1.377.2",
     "systeminformation": "^4.26.10"
   },
