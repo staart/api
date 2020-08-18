@@ -6,7 +6,6 @@ import {
 } from "@staart/messages";
 import {
   ClassMiddleware,
-  Controller,
   Delete,
   Get,
   Patch,
@@ -16,27 +15,21 @@ import {
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../../_staart/helpers/middleware";
+import { twtToId, localsToTokenOrKey } from "../../../_staart/helpers/utils";
 import {
-  localsToTokenOrKey,
-  organizationUsernameToId,
-} from "../../../_staart/helpers/utils";
-import {
-  createOrganizationSourceForUser,
-  deleteOrganizationSourceForUser,
-  getOrganizationSourceForUser,
-  getOrganizationSourcesForUser,
-  updateOrganizationSourceForUser,
-} from "../../../_staart/rest/organization";
+  createGroupSourceForUser,
+  deleteGroupSourceForUser,
+  getGroupSourceForUser,
+  getGroupSourcesForUser,
+  updateGroupSourceForUser,
+} from "../../../_staart/rest/group";
 
 @ClassMiddleware(authHandler)
-export class OrganizationSourcesController {
+export class GroupSourcesController {
   @Get()
   async getSources(req: Request, res: Response) {
-    const organizationId = await organizationUsernameToId(req.params.id);
-    joiValidate(
-      { organizationId: Joi.string().required() },
-      { organizationId }
-    );
+    const groupId = twtToId(req.params.id);
+    joiValidate({ groupId: Joi.string().required() }, { groupId });
     const subscriptionParams = { ...req.query };
     joiValidate(
       {
@@ -45,23 +38,20 @@ export class OrganizationSourcesController {
       },
       subscriptionParams
     );
-    return getOrganizationSourcesForUser(
+    return getGroupSourcesForUser(
       localsToTokenOrKey(res),
-      organizationId,
+      groupId,
       subscriptionParams
     );
   }
 
   @Put()
   async putSources(req: Request, res: Response) {
-    const organizationId = await organizationUsernameToId(req.params.id);
-    joiValidate(
-      { organizationId: Joi.string().required() },
-      { organizationId }
-    );
-    await createOrganizationSourceForUser(
+    const groupId = twtToId(req.params.id);
+    joiValidate({ groupId: Joi.string().required() }, { groupId });
+    await createGroupSourceForUser(
       localsToTokenOrKey(res),
-      organizationId,
+      groupId,
       req.body,
       res.locals
     );
@@ -70,36 +60,32 @@ export class OrganizationSourcesController {
 
   @Get(":sourceId")
   async getSource(req: Request, res: Response) {
-    const organizationId = await organizationUsernameToId(req.params.id);
+    const groupId = twtToId(req.params.id);
     const sourceId = req.params.sourceId;
     joiValidate(
       {
-        organizationId: Joi.string().required(),
+        groupId: Joi.string().required(),
         sourceId: Joi.string().required(),
       },
-      { organizationId, sourceId }
+      { groupId, sourceId }
     );
-    return getOrganizationSourceForUser(
-      localsToTokenOrKey(res),
-      organizationId,
-      sourceId
-    );
+    return getGroupSourceForUser(localsToTokenOrKey(res), groupId, sourceId);
   }
 
   @Patch(":sourceId")
   async patchSource(req: Request, res: Response) {
     const sourceId = req.params.sourceId;
-    const organizationId = await organizationUsernameToId(req.params.id);
+    const groupId = twtToId(req.params.id);
     joiValidate(
       {
-        organizationId: Joi.string().required(),
+        groupId: Joi.string().required(),
         sourceId: Joi.string().required(),
       },
-      { organizationId, sourceId }
+      { groupId, sourceId }
     );
-    const updated = await updateOrganizationSourceForUser(
+    const updated = await updateGroupSourceForUser(
       localsToTokenOrKey(res),
-      organizationId,
+      groupId,
       sourceId,
       req.body,
       res.locals
@@ -110,17 +96,17 @@ export class OrganizationSourcesController {
   @Delete(":sourceId")
   async deleteSource(req: Request, res: Response) {
     const sourceId = req.params.sourceId;
-    const organizationId = await organizationUsernameToId(req.params.id);
+    const groupId = twtToId(req.params.id);
     joiValidate(
       {
-        organizationId: Joi.string().required(),
+        groupId: Joi.string().required(),
         sourceId: Joi.string().required(),
       },
-      { organizationId, sourceId }
+      { groupId, sourceId }
     );
-    await deleteOrganizationSourceForUser(
+    await deleteGroupSourceForUser(
       localsToTokenOrKey(res),
-      organizationId,
+      groupId,
       sourceId,
       res.locals
     );

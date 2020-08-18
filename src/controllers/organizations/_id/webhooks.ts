@@ -6,7 +6,6 @@ import {
 } from "@staart/messages";
 import {
   ClassMiddleware,
-  Controller,
   Delete,
   Get,
   Middleware,
@@ -17,29 +16,22 @@ import {
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../../_staart/helpers/middleware";
-import {
-  localsToTokenOrKey,
-  organizationUsernameToId,
-} from "../../../_staart/helpers/utils";
+import { twtToId, localsToTokenOrKey } from "../../../_staart/helpers/utils";
 import {
   createWebhookForUser,
   deleteWebhookForUser,
-  getOrganizationWebhookForUser,
-  getOrganizationWebhooksForUser,
+  getGroupWebhookForUser,
+  getGroupWebhooksForUser,
   updateWebhookForUser,
-} from "../../../_staart/rest/organization";
+} from "../../../_staart/rest/group";
 
 @ClassMiddleware(authHandler)
-export class OrganizationWebhooksController {
+export class GroupWebhooksController {
   @Get()
-  async getOrganizationWebhooks(req: Request, res: Response) {
-    const id = await organizationUsernameToId(req.params.id);
+  async getGroupWebhooks(req: Request, res: Response) {
+    const id = twtToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    return getOrganizationWebhooksForUser(
-      localsToTokenOrKey(res),
-      id,
-      req.query
-    );
+    return getGroupWebhooksForUser(localsToTokenOrKey(res), id, req.query);
   }
 
   @Put()
@@ -55,8 +47,8 @@ export class OrganizationWebhooksController {
       "body"
     )
   )
-  async putOrganizationWebhooks(req: Request, res: Response) {
-    const id = await organizationUsernameToId(req.params.id);
+  async putGroupWebhooks(req: Request, res: Response) {
+    const id = twtToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
     const added = await createWebhookForUser(
       localsToTokenOrKey(res),
@@ -68,9 +60,9 @@ export class OrganizationWebhooksController {
   }
 
   @Get(":webhookId")
-  async getOrganizationWebhook(req: Request, res: Response) {
-    const id = await organizationUsernameToId(req.params.id);
-    const webhookId = req.params.webhookId;
+  async getGroupWebhook(req: Request, res: Response) {
+    const id = twtToId(req.params.id);
+    const webhookId = twtToId(req.params.webhookId);
     joiValidate(
       {
         id: Joi.string().required(),
@@ -78,11 +70,7 @@ export class OrganizationWebhooksController {
       },
       { id, webhookId }
     );
-    return getOrganizationWebhookForUser(
-      localsToTokenOrKey(res),
-      id,
-      webhookId
-    );
+    return getGroupWebhookForUser(localsToTokenOrKey(res), id, webhookId);
   }
 
   @Patch(":webhookId")
@@ -98,9 +86,9 @@ export class OrganizationWebhooksController {
       "body"
     )
   )
-  async patchOrganizationWebhook(req: Request, res: Response) {
-    const id = await organizationUsernameToId(req.params.id);
-    const webhookId = req.params.webhookId;
+  async patchGroupWebhook(req: Request, res: Response) {
+    const id = twtToId(req.params.id);
+    const webhookId = twtToId(req.params.webhookId);
     joiValidate(
       {
         id: Joi.string().required(),
@@ -119,9 +107,9 @@ export class OrganizationWebhooksController {
   }
 
   @Delete(":webhookId")
-  async deleteOrganizationWebhook(req: Request, res: Response) {
-    const id = await organizationUsernameToId(req.params.id);
-    const webhookId = req.params.webhookId;
+  async deleteGroupWebhook(req: Request, res: Response) {
+    const id = twtToId(req.params.id);
+    const webhookId = twtToId(req.params.webhookId);
     joiValidate(
       {
         id: Joi.string().required(),

@@ -1,6 +1,6 @@
 import { Request, Response } from "@staart/server";
 import { Tokens } from "../interfaces/enum";
-import { Locals, Event } from "../interfaces/general";
+import { Event, Locals } from "../interfaces/general";
 import { verifyToken } from "./jwt";
 
 let trackingData: Array<any> = [];
@@ -47,7 +47,7 @@ export const trackUrl = async (req: Request, res: Response) => {
         Tokens.API_KEY
       );
       trackingObject.apiKeyId = token.id;
-      trackingObject.apiKeyOrganizationId = token.organizationId;
+      trackingObject.apiKeyGroupId = token.groupId;
       trackingObject.apiKeyJti = token.jti;
       delete trackingObject.apiKey;
     } catch (error) {

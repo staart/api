@@ -1,8 +1,6 @@
 import { RESOURCE_DELETED, RESOURCE_UPDATED, respond } from "@staart/messages";
 import {
-  ChildControllers,
   ClassMiddleware,
-  Controller,
   Delete,
   Get,
   Middleware,
@@ -12,7 +10,7 @@ import {
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../../_staart/helpers/middleware";
-import { userUsernameToId } from "../../../_staart/helpers/utils";
+import { twtToId } from "../../../_staart/helpers/utils";
 import {
   deleteUserForUser,
   getUserFromIdForUser,
@@ -23,7 +21,7 @@ import {
 export class UserController {
   @Get()
   async get(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const id = twtToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
     return getUserFromIdForUser(id, res.locals.token.id, req.query);
   }
@@ -61,7 +59,7 @@ export class UserController {
     )
   )
   async patch(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const id = twtToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
     const updated = await updateUserForUser(
       res.locals.token.id,
@@ -74,7 +72,7 @@ export class UserController {
 
   @Delete()
   async delete(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const id = twtToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
     await deleteUserForUser(res.locals.token.id, id, res.locals);
     return respond(RESOURCE_DELETED);

@@ -1,66 +1,44 @@
-import {
-  ClassMiddleware,
-  Controller,
-  Get,
-  Patch,
-  Request,
-  Response,
-} from "@staart/server";
+import { ClassMiddleware, Get, Patch, Request, Response } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../../_staart/helpers/middleware";
+import { twtToId, localsToTokenOrKey } from "../../../_staart/helpers/utils";
 import {
-  localsToTokenOrKey,
-  organizationUsernameToId,
-} from "../../../_staart/helpers/utils";
-import {
-  getOrganizationBillingForUser,
-  getOrganizationPricingPlansForUser,
-  updateOrganizationBillingForUser,
-} from "../../../_staart/rest/organization";
+  getGroupBillingForUser,
+  getGroupPricingPlansForUser,
+  updateGroupBillingForUser,
+} from "../../../_staart/rest/group";
 
 @ClassMiddleware(authHandler)
-export class OrganizationBillingController {
+export class GroupBillingController {
   @Get()
   async getBilling(req: Request, res: Response) {
-    const organizationId = await organizationUsernameToId(req.params.id);
-    joiValidate(
-      { organizationId: Joi.string().required() },
-      { organizationId }
-    );
-    return getOrganizationBillingForUser(
-      localsToTokenOrKey(res),
-      organizationId
-    );
+    const groupId = twtToId(req.params.id);
+    joiValidate({ groupId: Joi.string().required() }, { groupId });
+    return getGroupBillingForUser(localsToTokenOrKey(res), groupId);
   }
 
   @Patch()
   async patchBilling(req: Request, res: Response) {
-    const organizationId = await organizationUsernameToId(req.params.id);
-    joiValidate(
-      { organizationId: Joi.string().required() },
-      { organizationId }
-    );
-    await updateOrganizationBillingForUser(
+    const groupId = twtToId(req.params.id);
+    joiValidate({ groupId: Joi.string().required() }, { groupId });
+    await updateGroupBillingForUser(
       localsToTokenOrKey(res),
-      organizationId,
+      groupId,
       req.body,
       res.locals
     );
-    return { success: true, message: "organization-billing-updated" };
+    return { success: true, message: "group-billing-updated" };
   }
 
   @Get("pricing")
   async getPlans(req: Request, res: Response) {
-    const organizationId = await organizationUsernameToId(req.params.id);
+    const groupId = twtToId(req.params.id);
     joiValidate(
       {
-        organizationId: Joi.string().required(),
+        groupId: Joi.string().required(),
       },
-      { organizationId }
+      { groupId }
     );
-    return getOrganizationPricingPlansForUser(
-      localsToTokenOrKey(res),
-      organizationId
-    );
+    return getGroupPricingPlansForUser(localsToTokenOrKey(res), groupId);
   }
 }

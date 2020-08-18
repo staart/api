@@ -1,20 +1,23 @@
+import { config } from "@anandchowdhary/cosmic";
+import { users } from "@prisma/client";
 import { Request, Response } from "@staart/server";
 import { isMatch } from "@staart/text";
 import { Joi, joiValidate } from "@staart/validate";
-import { ORGANIZATION_NOT_FOUND, USER_NOT_FOUND } from "@staart/errors";
 import dns from "dns";
+import { verify } from "twt";
 import { Tokens } from "../interfaces/enum";
 import { ApiKeyResponse } from "./jwt";
-import { users } from "@prisma/client";
-import { prisma } from "../helpers/prisma";
-import { getOrganizationById } from "../services/organization.service";
-import { getUserById } from "../services/user.service";
 
 /**
  * Make s single property optional
  * @source https://stackoverflow.com/a/54178819/1656944
  */
 export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
+export const twtToId = (twt: string, userId?: number) =>
+  twt === "me" && userId
+    ? userId
+    : parseInt(verify(twt, config("twtSecret"), 10), 10);
 
 /**
  * Delete any sensitive information for a user like passwords and tokens
@@ -25,41 +28,11 @@ export const deleteSensitiveInfoUser = (user: users) => {
   return user;
 };
 
-export const organizationUsernameToId = async (id: string) => {
-  const result = (
-    await prisma.organizations.findOne({
-      select: { id: true },
-      where: {
-        username: id,
-      },
-    })
-  )?.id.toString();
-  if (result) return result;
-  throw new Error(ORGANIZATION_NOT_FOUND);
-};
-
-export const userUsernameToId = async (id: string, tokenUserId?: string) => {
-  if (id === "me" && tokenUserId) {
-    return String(tokenUserId);
-  } else {
-    const result = (
-      await prisma.users.findOne({
-        select: { id: true },
-        where: {
-          username: id,
-        },
-      })
-    )?.id.toString();
-    if (result) return result;
-    throw new Error(USER_NOT_FOUND);
-  }
-};
-
 export const localsToTokenOrKey = (res: Response) => {
   if (res.locals.token.sub == Tokens.API_KEY) {
     return res.locals.token as ApiKeyResponse;
   }
-  return res.locals.token.id as string;
+  return res.locals.token.id as number;
 };
 
 export const safeRedirect = (req: Request, res: Response, url: string) => {
@@ -114,7 +87,7 @@ export const readOnlyValues = [
   "id",
   "jwtApiKey",
   "userId",
-  "organizationId",
+  "groupId",
 ];
 
 /**
@@ -123,10 +96,10 @@ export const readOnlyValues = [
 export const IdValues = [
   "id",
   "userId",
-  "organizationId",
+  "groupId",
   "primaryEmail",
   "apiKeyId",
-  "apiKeyOrganizationId",
+  "apiKeyGroupId",
 ];
 
 export const removeFalsyValues = (value: any) => {

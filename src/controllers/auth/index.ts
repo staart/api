@@ -5,14 +5,7 @@ import {
   RESOURCE_UPDATED,
   respond,
 } from "@staart/messages";
-import {
-  ChildControllers,
-  Controller,
-  Middleware,
-  Post,
-  Request,
-  Response,
-} from "@staart/server";
+import { Middleware, Post, Request, Response } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { verifyToken } from "../../_staart/helpers/jwt";
 import {
@@ -27,16 +20,16 @@ import {
   login,
   login2FA,
   register,
+  resendEmailVerificationWithToken,
   sendPasswordReset,
   updatePassword,
   validateRefreshToken,
   verifyEmail,
-  resendEmailVerificationWithToken,
+  loginLink,
 } from "../../_staart/rest/auth";
-import { AuthOAuthController } from "./oauth";
 import { addInvitationCredits } from "../../_staart/rest/user";
+import { twtToId } from "../../_staart/helpers/utils";
 
-@ChildControllers([new AuthOAuthController()])
 export class AuthController {
   @Post("register")
   @Middleware(bruteForceHandler)
@@ -62,7 +55,7 @@ export class AuthController {
     const user = req.body;
     const email = req.body.email;
     const invitedByUser = req.body.invitedByUser;
-    delete user.organizationId;
+    delete user.groupId;
     delete user.email;
     delete user.invitedByUser;
     if (user.role === "ADMIN") delete user.role;
@@ -71,11 +64,10 @@ export class AuthController {
       user,
       res.locals,
       email,
-      req.body.organizationId,
+      req.body.groupId,
       req.body.membershipRole
     );
-    if (invitedByUser)
-      await addInvitationCredits(invitedByUser, userId.toString());
+    if (invitedByUser) await addInvitationCredits(invitedByUser, userId);
     return { ...respond(RESOURCE_CREATED), resendToken };
   }
 
@@ -85,7 +77,7 @@ export class AuthController {
     validator(
       {
         email: Joi.string().email().required(),
-        password: Joi.string().min(6).required(),
+        password: Joi.string().min(6).allow(""),
       },
       "body"
     )
@@ -201,7 +193,7 @@ export class AuthController {
   )
   async getImpersonate(req: Request, res: Response) {
     const tokenUserId = res.locals.token.id;
-    const impersonateUserId = req.params.id;
+    const impersonateUserId = twtToId(req.params.id);
     return impersonate(tokenUserId, impersonateUserId, res.locals);
   }
 
@@ -218,5 +210,12 @@ export class AuthController {
     joiValidate({ token: Joi.string().required() }, { token });
     await verifyEmail(token, res.locals);
     return respond(RESOURCE_SUCCESS);
+  }
+
+  @Post("login-link")
+  async postLoginLink(req: Request, res: Response) {
+    const token = req.body.token || req.params.token;
+    joiValidate({ token: Joi.string().required() }, { token });
+    return loginLink(token, res.locals);
   }
 }

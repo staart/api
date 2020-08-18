@@ -1,30 +1,20 @@
 import { MISSING_FIELD } from "@staart/errors";
+import { ClassMiddleware, Get, Request, Response } from "@staart/server";
+import { authHandler } from "../../_staart/helpers/middleware";
 import {
-  ClassMiddleware,
-  Controller,
-  Get,
-  Put,
-  Middleware,
-  Request,
-  Response,
-} from "@staart/server";
-import { authHandler, validator } from "../../_staart/helpers/middleware";
-import { Joi } from "@staart/validate";
-import {
-  getAllOrganizationForUser,
+  getAllGroupForUser,
   getAllUsersForUser,
-  getServerLogsForUser,
-  generateCouponForUser,
   getPaymentEventsForUser,
+  getServerLogsForUser,
 } from "../../_staart/rest/admin";
 
 @ClassMiddleware(authHandler)
 export class AdminController {
-  @Get("organizations")
-  async getOrganizations(req: Request, res: Response) {
+  @Get("groups")
+  async getGroups(req: Request, res: Response) {
     const userId = res.locals.token.id;
     if (!userId) throw new Error(MISSING_FIELD);
-    return getAllOrganizationForUser(userId, req.query);
+    return getAllGroupForUser(userId, req.query);
   }
 
   @Get("users")

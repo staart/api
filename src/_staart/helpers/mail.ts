@@ -1,10 +1,11 @@
 import { logError } from "@staart/errors";
-import { sendMail } from "@staart/mail";
+import { Mail, sendMail } from "@staart/mail";
 import { render } from "@staart/mustache-markdown";
 import { redisQueue } from "@staart/redis";
 import { readFile } from "fs-extra";
 import { join } from "path";
 import { FRONTEND_URL, REDIS_QUEUE_PREFIX } from "../../config";
+import { PartialBy } from "../../_staart/helpers/utils";
 
 const MAIL_QUEUE = `${REDIS_QUEUE_PREFIX}outbound-emails`;
 
@@ -23,35 +24,27 @@ export const receiveEmailMessage = async () => {
     qname: MAIL_QUEUE,
   });
   if ("id" in result) {
-    const {
-      to,
-      template,
-      data,
-      tryNumber,
-    }: {
-      to: string;
-      template: string;
+    const data: PartialBy<PartialBy<Mail, "subject">, "message"> & {
+      template?: string;
+      data?: any;
       tryNumber: number;
-      data: any;
     } = JSON.parse(result.message);
-    if (tryNumber && tryNumber > 3) {
-      logError("Email", `Unable to send email: ${to}`);
+    if (data.tryNumber && data.tryNumber > 3) {
+      logError("Email", `Unable to send email: ${data.to}`);
       return redisQueue.deleteMessageAsync({
         qname: MAIL_QUEUE,
         id: result.id,
       });
     }
     try {
-      await safeSendEmail(to, template, data);
+      await safeSendEmail(data);
     } catch (error) {
       console.log(error);
       await redisQueue.sendMessageAsync({
         qname: MAIL_QUEUE,
         message: JSON.stringify({
-          to,
-          template,
-          data,
-          tryNumber: tryNumber + 1,
+          ...data,
+          tryNumber: (data.tryNumber || 0) + 1,
         }),
       });
     }
@@ -66,38 +59,55 @@ export const receiveEmailMessage = async () => {
 /**
  * Send a new email using AWS SES or SMTP
  */
-export const mail = async (to: string, template: string, data: any = {}) => {
+export const mail = async (
+  options: PartialBy<PartialBy<Mail, "subject">, "message"> & {
+    template?: string;
+    data?: any;
+  }
+) => {
   await setupQueue();
   await redisQueue.sendMessageAsync({
     qname: MAIL_QUEUE,
-    message: JSON.stringify({ to, template, data, tryNumber: 1 }),
+    message: JSON.stringify({ ...options, tryNumber: 1 }),
   });
 };
 
-const safeSendEmail = async (to: string, template: string, data: any = {}) => {
-  const result = render(
-    (
-      await readFile(
-        join(
-          __dirname,
-          "..",
-          "..",
-          "..",
-          "..",
-          "src",
-          "templates",
-          `${template}.md`
+const safeSendEmail = async (
+  options: PartialBy<PartialBy<Mail, "subject">, "message"> & {
+    template?: string;
+    data?: any;
+  }
+) => {
+  options.subject = options.subject || "";
+  options.message = options.message || "";
+  if (options.template) {
+    const result = render(
+      (
+        await readFile(
+          join(
+            __dirname,
+            "..",
+            "..",
+            "..",
+            "..",
+            "src",
+            "templates",
+            `${options.template}.md`
+          )
         )
-      )
-    ).toString(),
-    { ...data, frontendUrl: FRONTEND_URL }
+      ).toString(),
+      { ...options.data, frontendUrl: FRONTEND_URL }
+    );
+    options.altText = result[0];
+    options.message = result[1];
+    options.subject = result[1]
+      .split("\n", 1)[0]
+      .replace(/<\/?[^>]+(>|$)/g, "");
+  }
+  return sendMail(
+    options as Mail & {
+      template?: string;
+      data?: any;
+    }
   );
-  const altText = result[0];
-  const message = result[1];
-  return sendMail({
-    to: to.toString(),
-    subject: result[1].split("\n", 1)[0].replace(/<\/?[^>]+(>|$)/g, ""),
-    message,
-    altText,
-  });
 };

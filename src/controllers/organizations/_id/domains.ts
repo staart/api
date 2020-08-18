@@ -1,13 +1,11 @@
 import {
   RESOURCE_CREATED,
   RESOURCE_DELETED,
-  RESOURCE_SUCCESS,
   RESOURCE_UPDATED,
   respond,
 } from "@staart/messages";
 import {
   ClassMiddleware,
-  Controller,
   Delete,
   Get,
   Middleware,
@@ -19,30 +17,23 @@ import {
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../../_staart/helpers/middleware";
-import {
-  localsToTokenOrKey,
-  organizationUsernameToId,
-} from "../../../_staart/helpers/utils";
+import { twtToId, localsToTokenOrKey } from "../../../_staart/helpers/utils";
 import {
   createDomainForUser,
   deleteDomainForUser,
-  getOrganizationDomainForUser,
-  getOrganizationDomainsForUser,
+  getGroupDomainForUser,
+  getGroupDomainsForUser,
   updateDomainForUser,
   verifyDomainForUser,
-} from "../../../_staart/rest/organization";
+} from "../../../_staart/rest/group";
 
 @ClassMiddleware(authHandler)
-export class OrganizationDomainsController {
+export class GroupDomainsController {
   @Get()
   async getUserDomains(req: Request, res: Response) {
-    const id = await organizationUsernameToId(req.params.id);
+    const id = twtToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    return getOrganizationDomainsForUser(
-      localsToTokenOrKey(res),
-      id,
-      req.query
-    );
+    return getGroupDomainsForUser(localsToTokenOrKey(res), id, req.query);
   }
 
   @Put()
@@ -55,7 +46,7 @@ export class OrganizationDomainsController {
     )
   )
   async putUserDomains(req: Request, res: Response) {
-    const id = await organizationUsernameToId(req.params.id);
+    const id = twtToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
     const added = await createDomainForUser(
       localsToTokenOrKey(res),
@@ -68,8 +59,8 @@ export class OrganizationDomainsController {
 
   @Get(":domainId")
   async getUserDomain(req: Request, res: Response) {
-    const id = await organizationUsernameToId(req.params.id);
-    const domainId = req.params.domainId;
+    const id = twtToId(req.params.id);
+    const domainId = twtToId(req.params.domainId);
     joiValidate(
       {
         id: Joi.string().required(),
@@ -77,7 +68,7 @@ export class OrganizationDomainsController {
       },
       { id, domainId }
     );
-    return getOrganizationDomainForUser(localsToTokenOrKey(res), id, domainId);
+    return getGroupDomainForUser(localsToTokenOrKey(res), id, domainId);
   }
 
   @Patch(":domainId")
@@ -90,8 +81,8 @@ export class OrganizationDomainsController {
     )
   )
   async patchUserDomain(req: Request, res: Response) {
-    const id = await organizationUsernameToId(req.params.id);
-    const domainId = req.params.domainId;
+    const id = twtToId(req.params.id);
+    const domainId = twtToId(req.params.domainId);
     joiValidate(
       {
         id: Joi.string().required(),
@@ -111,8 +102,8 @@ export class OrganizationDomainsController {
 
   @Delete(":domainId")
   async deleteUserDomain(req: Request, res: Response) {
-    const id = await organizationUsernameToId(req.params.id);
-    const domainId = req.params.domainId;
+    const id = twtToId(req.params.id);
+    const domainId = twtToId(req.params.domainId);
     joiValidate(
       {
         id: Joi.string().required(),
@@ -130,9 +121,9 @@ export class OrganizationDomainsController {
   }
 
   @Post(":domainId/verify")
-  async verifyOrganizationDomain(req: Request, res: Response) {
-    const id = await organizationUsernameToId(req.params.id);
-    const domainId = req.params.domainId;
+  async verifyGroupDomain(req: Request, res: Response) {
+    const id = twtToId(req.params.id);
+    const domainId = twtToId(req.params.domainId);
     const method = req.body.method || req.query.method;
     joiValidate(
       {

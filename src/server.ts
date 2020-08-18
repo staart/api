@@ -1,3 +1,6 @@
+import { cosmicSync, config } from "@anandchowdhary/cosmic";
+cosmicSync("staart");
+
 import { success } from "@staart/errors";
 import { Controller, Get, Server } from "@staart/server";
 import { setupMiddleware } from "@staart/server";
@@ -9,14 +12,14 @@ import {
   trackingHandler,
 } from "./_staart/helpers/middleware";
 
-@Controller("v1")
+@Controller(config("controllerPrefix"))
 class RootController {
   @Get()
   async info() {
     return {
       repository: "https://github.com/staart/api",
       docs: "https://staart.js.org",
-      madeBy: ["https://o15y.com", "https://anandchowdhary.com"],
+      madeBy: ["https://anandchowdhary.com"],
     };
   }
 }

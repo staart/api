@@ -1,11 +1,10 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["middlewares"]
+  provider = "prisma-client-js"
 }
 
 datasource mysql {
   provider = "mysql"
-  url      = env("DATABASE_URL")
+  url = "***"
 }
 
 enum Gender {

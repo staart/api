@@ -1,7 +1,6 @@
 import { RESOURCE_CREATED, RESOURCE_UPDATED, respond } from "@staart/messages";
 import {
   ClassMiddleware,
-  Controller,
   Get,
   Patch,
   Put,
@@ -10,26 +9,20 @@ import {
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../../_staart/helpers/middleware";
+import { twtToId, localsToTokenOrKey } from "../../../_staart/helpers/utils";
 import {
-  localsToTokenOrKey,
-  organizationUsernameToId,
-} from "../../../_staart/helpers/utils";
-import {
-  createOrganizationSubscriptionForUser,
-  getOrganizationSubscriptionForUser,
-  getOrganizationSubscriptionsForUser,
-  updateOrganizationSubscriptionForUser,
-} from "../../../_staart/rest/organization";
+  createGroupSubscriptionForUser,
+  getGroupSubscriptionForUser,
+  getGroupSubscriptionsForUser,
+  updateGroupSubscriptionForUser,
+} from "../../../_staart/rest/group";
 
 @ClassMiddleware(authHandler)
-export class OrganizationSubscriptionsController {
+export class GroupSubscriptionsController {
   @Get()
   async getSubscriptions(req: Request, res: Response) {
-    const organizationId = await organizationUsernameToId(req.params.id);
-    joiValidate(
-      { organizationId: Joi.string().required() },
-      { organizationId }
-    );
+    const groupId = twtToId(req.params.id);
+    joiValidate({ groupId: Joi.string().required() }, { groupId });
     const subscriptionParams = { ...req.query };
     joiValidate(
       {
@@ -41,20 +34,17 @@ export class OrganizationSubscriptionsController {
       },
       subscriptionParams
     );
-    return getOrganizationSubscriptionsForUser(
+    return getGroupSubscriptionsForUser(
       localsToTokenOrKey(res),
-      organizationId,
+      groupId,
       subscriptionParams
     );
   }
 
   @Put()
   async putSubscriptions(req: Request, res: Response) {
-    const organizationId = await organizationUsernameToId(req.params.id);
-    joiValidate(
-      { organizationId: Joi.string().required() },
-      { organizationId }
-    );
+    const groupId = twtToId(req.params.id);
+    joiValidate({ groupId: Joi.string().required() }, { groupId });
     const subscriptionParams = { ...req.body };
     joiValidate(
       {
@@ -65,9 +55,9 @@ export class OrganizationSubscriptionsController {
       },
       subscriptionParams
     );
-    await createOrganizationSubscriptionForUser(
+    await createGroupSubscriptionForUser(
       localsToTokenOrKey(res),
-      organizationId,
+      groupId,
       subscriptionParams,
       res.locals
     );
@@ -76,33 +66,33 @@ export class OrganizationSubscriptionsController {
 
   @Get(":subscriptionId")
   async getSubscription(req: Request, res: Response) {
-    const organizationId = await organizationUsernameToId(req.params.id);
+    const groupId = twtToId(req.params.id);
     const subscriptionId = req.params.subscriptionId;
     joiValidate(
       {
-        organizationId: Joi.string().required(),
+        groupId: Joi.string().required(),
         subscriptionId: Joi.string().required(),
       },
-      { organizationId, subscriptionId }
+      { groupId, subscriptionId }
     );
-    return getOrganizationSubscriptionForUser(
+    return getGroupSubscriptionForUser(
       localsToTokenOrKey(res),
-      organizationId,
+      groupId,
       subscriptionId
     );
   }
 
   @Patch(":subscriptionId")
   async patchSubscription(req: Request, res: Response) {
-    const organizationId = await organizationUsernameToId(req.params.id);
+    const groupId = twtToId(req.params.id);
     const subscriptionId = req.params.subscriptionId;
     const data = req.body;
     joiValidate(
       {
-        organizationId: Joi.string().required(),
+        groupId: Joi.string().required(),
         subscriptionId: Joi.string().required(),
       },
-      { organizationId, subscriptionId }
+      { groupId, subscriptionId }
     );
     joiValidate(
       {
@@ -115,9 +105,9 @@ export class OrganizationSubscriptionsController {
       },
       data
     );
-    await updateOrganizationSubscriptionForUser(
+    await updateGroupSubscriptionForUser(
       localsToTokenOrKey(res),
-      organizationId,
+      groupId,
       subscriptionId,
       data,
       res.locals

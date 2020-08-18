@@ -1,56 +1,52 @@
+import {
+  backupCodes,
+  MembershipRole,
+  users,
+  usersCreateInput,
+} from "@prisma/client";
 import { checkIfDisposableEmail } from "@staart/disposable-email";
 import {
+  EMAIL_EXISTS,
   INSUFFICIENT_PERMISSION,
   INVALID_2FA_TOKEN,
   INVALID_LOGIN,
-  MISSING_PASSWORD,
   NOT_ENABLED_2FA,
   RESOURCE_NOT_FOUND,
-  USERNAME_EXISTS,
   USER_NOT_FOUND,
-  EMAIL_EXISTS,
 } from "@staart/errors";
 import { compare, hash } from "@staart/text";
 import { authenticator } from "otplib";
 import { ALLOW_DISPOSABLE_EMAILS } from "../../config";
 import { can } from "../helpers/authorization";
+import { deleteItemFromCache } from "../helpers/cache";
 import {
   checkInvalidatedToken,
   getLoginResponse,
+  loginLinkToken,
   passwordResetToken,
   postLoginTokens,
+  resendEmailVerificationToken,
   TokenResponse,
   verifyToken,
-  resendEmailVerificationToken,
 } from "../helpers/jwt";
-import { deleteItemFromCache } from "../helpers/cache";
 import { mail } from "../helpers/mail";
+import { prisma } from "../helpers/prisma";
 import { trackEvent } from "../helpers/tracking";
 import { EventType, Templates, Tokens, UserScopes } from "../interfaces/enum";
 import { Locals } from "../interfaces/general";
-import { prisma } from "../helpers/prisma";
+import { getDomainByDomainName } from "../services/group.service";
 import {
-  getUserByEmail,
-  checkUserUsernameAvailability,
-  getBestUsernameForUser,
-  createUser,
   addApprovedLocation,
-  getUserById,
   createEmail,
+  createUser,
+  getUserByEmail,
+  getUserById,
   resendEmailVerification,
 } from "../services/user.service";
-import {
-  usersCreateInput,
-  MembershipRole,
-  users,
-  backup_codes,
-} from "@prisma/client";
-import { getDomainByDomainName } from "../services/organization.service";
-import { PartialBy } from "../helpers/utils";
 
 export const validateRefreshToken = async (token: string, locals: Locals) => {
   await checkInvalidatedToken(token);
-  const data = await verifyToken<{ id: string }>(token, Tokens.REFRESH);
+  const data = await verifyToken<{ id: number }>(token, Tokens.REFRESH);
   if (!data.id) throw new Error(USER_NOT_FOUND);
   const user = await getUserById(data.id);
   if (!user) throw new Error(USER_NOT_FOUND);
@@ -58,10 +54,10 @@ export const validateRefreshToken = async (token: string, locals: Locals) => {
 };
 
 export const invalidateRefreshToken = async (token: string, locals: Locals) => {
-  const data = await verifyToken<{ id: string }>(token, Tokens.REFRESH);
+  const data = await verifyToken<{ id: number }>(token, Tokens.REFRESH);
   if (!data.id) throw new Error(USER_NOT_FOUND);
   await prisma.sessions.deleteMany({
-    where: { jwtToken: token, userId: parseInt(data.id) },
+    where: { token, userId: data.id },
   });
   return;
 };
@@ -89,7 +85,14 @@ export const login = async (
     if (hasUserWithUnverifiedEmail) throw new Error("401/unverified-email");
     throw new Error(USER_NOT_FOUND);
   }
-  if (!user.password) throw new Error(MISSING_PASSWORD);
+  if (!user.password) {
+    await mail({
+      template: Templates.LOGIN_LINK,
+      data: { ...user, token: await loginLinkToken(user) },
+      to: email,
+    });
+    return { success: true, message: "login-link-sent" };
+  }
   const isPasswordCorrect = await compare(password, user.password);
   if (isPasswordCorrect)
     return getLoginResponse(user, EventType.AUTH_LOGIN, "local", locals);
@@ -97,22 +100,22 @@ export const login = async (
 };
 
 export const login2FA = async (code: number, token: string, locals: Locals) => {
-  const data = await verifyToken<{ id: string }>(token, Tokens.TWO_FACTOR);
+  const data = await verifyToken<{ id: number }>(token, Tokens.TWO_FACTOR);
   const user = await getUserById(data.id);
   if (!user) throw new Error(USER_NOT_FOUND);
   const secret = user.twoFactorSecret;
   if (!secret) throw new Error(NOT_ENABLED_2FA);
   if (authenticator.check(code.toString(), secret))
     return postLoginTokens(user, locals);
-  const allBackupCodes = await prisma.backup_codes.findMany({
+  const allBackupCodes = await prisma.backupCodes.findMany({
     where: { userId: user.id },
   });
-  let usedBackupCode: backup_codes | undefined = undefined;
+  let usedBackupCode: backupCodes | undefined = undefined;
   for await (const backupCode of allBackupCodes)
     if (await compare(backupCode.code, code.toString()))
       usedBackupCode = backupCode;
   if (usedBackupCode && !usedBackupCode.isUsed) {
-    await prisma.backup_codes.update({
+    await prisma.backupCodes.update({
       where: { id: usedBackupCode.id },
       data: { isUsed: true },
     });
@@ -122,14 +125,13 @@ export const login2FA = async (code: number, token: string, locals: Locals) => {
 };
 
 export const register = async (
-  _user: PartialBy<PartialBy<usersCreateInput, "nickname">, "username">,
+  user: usersCreateInput,
   locals?: Locals,
   email?: string,
-  organizationId?: string,
+  groupId?: number,
   role?: MembershipRole,
   emailVerified = false
 ) => {
-  const user: usersCreateInput = { username: "", nickname: "", ..._user };
   if (email) {
     const isNewEmail =
       (await prisma.emails.findMany({ where: { email, isVerified: true } }))
@@ -137,26 +139,23 @@ export const register = async (
     if (!isNewEmail) throw new Error(EMAIL_EXISTS);
     if (!ALLOW_DISPOSABLE_EMAILS) checkIfDisposableEmail(email);
   }
-  if (user.username && !(await checkUserUsernameAvailability(user.username)))
-    throw new Error(USERNAME_EXISTS);
-  user.username = user.username || (await getBestUsernameForUser(user.name));
-  if (!organizationId && email) {
+  if (!groupId && email) {
     let domain = "";
     try {
       domain = email.split("@")[1];
       const domainDetails = await getDomainByDomainName(domain);
-      organizationId = domainDetails.organizationId.toString();
+      groupId = domainDetails.groupId;
     } catch (error) {}
   }
   const userId = (
     await createUser({
       ...user,
-      ...(organizationId
+      ...(groupId
         ? {
             memberships: {
               create: {
-                organization: {
-                  connect: { id: parseInt(organizationId) },
+                group: {
+                  connect: { id: groupId },
                 },
                 role,
               },
@@ -170,10 +169,10 @@ export const register = async (
     const newEmail = await createEmail(userId, email, !emailVerified);
     await prisma.users.update({
       where: { id: userId },
-      data: { primaryEmail: newEmail.id },
+      data: { prefersEmail: { connect: { id: newEmail.id } } },
     });
     await deleteItemFromCache(`cache_getUserById_${userId}`);
-    resendToken = await resendEmailVerificationToken(newEmail.id.toString());
+    resendToken = await resendEmailVerificationToken(newEmail.id);
   }
   if (locals) await addApprovedLocation(userId, locals.ipAddress);
   return { userId, resendToken };
@@ -182,7 +181,11 @@ export const register = async (
 export const sendPasswordReset = async (email: string, locals?: Locals) => {
   const user = await getUserByEmail(email);
   const token = await passwordResetToken(user.id);
-  await mail(email, Templates.PASSWORD_RESET, { name: user.name, token });
+  await mail({
+    to: email,
+    template: Templates.PASSWORD_RESET,
+    data: { name: user.name, token },
+  });
   if (locals)
     trackEvent(
       {
@@ -204,16 +207,20 @@ export const sendNewPassword = async (userId: number, email: string) => {
   if (!user.emails.filter((userEmail) => userEmail.email === email).length)
     throw new Error(RESOURCE_NOT_FOUND);
   const token = await passwordResetToken(user.id);
-  await mail(email, Templates.NEW_PASSWORD, { name: user.name, token });
+  await mail({
+    to: email,
+    template: Templates.NEW_PASSWORD,
+    data: { name: user.name, token },
+  });
   return;
 };
 
 export const verifyEmail = async (token: string, locals: Locals) => {
   const emailId = (
-    await verifyToken<{ id: string }>(token, Tokens.EMAIL_VERIFY)
+    await verifyToken<{ id: number }>(token, Tokens.EMAIL_VERIFY)
   ).id;
   const email = await prisma.emails.findOne({
-    where: { id: parseInt(emailId) },
+    where: { id: emailId },
   });
   if (!email) throw new Error(RESOURCE_NOT_FOUND);
   trackEvent(
@@ -225,9 +232,27 @@ export const verifyEmail = async (token: string, locals: Locals) => {
     locals
   );
   return prisma.emails.update({
-    where: { id: parseInt(emailId) },
+    where: { id: emailId },
     data: { isVerified: true },
   });
+};
+
+export const loginLink = async (token: string, locals: Locals) => {
+  const userId = (await verifyToken<{ id: number }>(token, Tokens.LOGIN_LINK))
+    .id;
+  const user = await prisma.users.findOne({
+    where: { id: userId },
+  });
+  if (!user) throw new Error(RESOURCE_NOT_FOUND);
+  trackEvent(
+    {
+      userId,
+      type: EventType.AUTH_LOGIN,
+      data: { id: userId },
+    },
+    locals
+  );
+  return postLoginTokens(user, locals);
 };
 
 export const updatePassword = async (
@@ -236,10 +261,10 @@ export const updatePassword = async (
   locals: Locals
 ) => {
   const userId = (
-    await verifyToken<{ id: string }>(token, Tokens.PASSWORD_RESET)
+    await verifyToken<{ id: number }>(token, Tokens.PASSWORD_RESET)
   ).id;
   await prisma.users.update({
-    where: { id: parseInt(userId) },
+    where: { id: userId },
     data: { password: await hash(password, 8) },
   });
   await deleteItemFromCache(`cache_getUserById_${userId}`);
@@ -254,8 +279,8 @@ export const updatePassword = async (
 };
 
 export const impersonate = async (
-  tokenUserId: string,
-  impersonateUserId: string,
+  tokenUserId: number,
+  impersonateUserId: number,
   locals: Locals
 ) => {
   if (
@@ -295,7 +320,7 @@ export const approveLocation = async (token: string, locals: Locals) => {
 };
 
 export const resendEmailVerificationWithToken = async (token: string) => {
-  const data = await verifyToken<{ id: string }>(token, Tokens.EMAIL_RESEND);
+  const data = await verifyToken<{ id: number }>(token, Tokens.EMAIL_RESEND);
   if (!data.id) throw new Error(USER_NOT_FOUND);
   return resendEmailVerification(data.id);
 };

@@ -1,7 +1,6 @@
 import { RESOURCE_SUCCESS, RESOURCE_UPDATED, respond } from "@staart/messages";
 import {
   ClassMiddleware,
-  Controller,
   Delete,
   Get,
   Middleware,
@@ -12,7 +11,7 @@ import {
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../../_staart/helpers/middleware";
-import { userUsernameToId } from "../../../_staart/helpers/utils";
+import { twtToId } from "../../../_staart/helpers/utils";
 import {
   disable2FAForUser,
   enable2FAForUser,
@@ -35,7 +34,7 @@ export class UserSecurityController {
     )
   )
   async updatePassword(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const id = twtToId(req.params.id, res.locals.token.id);
     const oldPassword = req.body.oldPassword;
     const newPassword = req.body.newPassword;
     joiValidate(
@@ -56,21 +55,21 @@ export class UserSecurityController {
 
   @Get("data")
   async getUserData(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const id = twtToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
     return getAllDataForUser(res.locals.token.id, id);
   }
 
   @Get("2fa/enable")
   async getEnable2FA(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const id = twtToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
     return enable2FAForUser(res.locals.token.id, id);
   }
 
   @Post("2fa/verify")
   async postVerify2FA(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const id = twtToId(req.params.id, res.locals.token.id);
     const code = req.body.code;
     joiValidate(
       {
@@ -85,7 +84,7 @@ export class UserSecurityController {
 
   @Delete("2fa")
   async delete2FA(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const id = twtToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
     await disable2FAForUser(res.locals.token.id, id);
     return respond(RESOURCE_SUCCESS);
@@ -93,7 +92,7 @@ export class UserSecurityController {
 
   @Get("backup-codes/regenerate")
   async getRegenerateBackupCodes(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const id = twtToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
     const backupCodes = await regenerateBackupCodesForUser(
       res.locals.token.id,

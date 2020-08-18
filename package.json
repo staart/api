@@ -60,6 +60,7 @@
     "yaml": "^1.10.0"
   },
   "dependencies": {
+    "@anandchowdhary/cosmic": "^1.0.0",
     "@prisma/client": "^2.4.1",
     "@sentry/node": "^5.21.1",
     "@staart/config": "^1.0.0",
@@ -88,6 +89,7 @@
     "qrcode": "^1.4.4",
     "random-int": "^2.0.1",
     "randomcolor": "^0.6.2",
+    "twt": "^1.2.0"
     "snyk": "^1.377.2",
     "systeminformation": "^4.26.10"
   },

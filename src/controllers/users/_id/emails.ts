@@ -6,7 +6,6 @@ import {
 } from "@staart/messages";
 import {
   ClassMiddleware,
-  Controller,
   Delete,
   Get,
   Post,
@@ -16,27 +15,27 @@ import {
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../../_staart/helpers/middleware";
-import { userUsernameToId } from "../../../_staart/helpers/utils";
+import { twtToId } from "../../../_staart/helpers/utils";
 import {
-  getAllEmailsForUser,
   addEmailToUserForUser,
+  deleteEmailFromUserForUser,
+  getAllEmailsForUser,
   getEmailForUser,
   resendEmailVerificationForUser,
-  deleteEmailFromUserForUser,
 } from "../../../_staart/rest/user";
 
 @ClassMiddleware(authHandler)
 export class UserEmailsController {
   @Get()
   async getEmails(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const id = twtToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
     return getAllEmailsForUser(res.locals.token.id, id, req.query);
   }
 
   @Put()
   async putEmails(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const id = twtToId(req.params.id, res.locals.token.id);
     const email = req.body.email;
     joiValidate(
       {
@@ -56,8 +55,8 @@ export class UserEmailsController {
 
   @Get(":emailId")
   async getEmail(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
-    const emailId = req.params.emailId;
+    const id = twtToId(req.params.id, res.locals.token.id);
+    const emailId = twtToId(req.params.emailId);
     joiValidate(
       {
         id: Joi.string().required(),
@@ -70,8 +69,8 @@ export class UserEmailsController {
 
   @Post(":emailId/resend")
   async postResend(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
-    const emailId = req.params.emailId;
+    const id = twtToId(req.params.id, res.locals.token.id);
+    const emailId = twtToId(req.params.emailId);
     joiValidate(
       {
         id: Joi.string().required(),
@@ -85,8 +84,8 @@ export class UserEmailsController {
 
   @Delete(":emailId")
   async deleteEmail(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
-    const emailId = req.params.emailId;
+    const id = twtToId(req.params.id, res.locals.token.id);
+    const emailId = twtToId(req.params.emailId);
     joiValidate(
       {
         id: Joi.string().required(),

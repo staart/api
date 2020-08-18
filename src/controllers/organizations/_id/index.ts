@@ -1,46 +1,31 @@
+import { RESOURCE_DELETED, RESOURCE_UPDATED, respond } from "@staart/messages";
 import {
-  RESOURCE_CREATED,
-  RESOURCE_DELETED,
-  RESOURCE_UPDATED,
-  respond,
-} from "@staart/messages";
-import {
-  ChildControllers,
   ClassMiddleware,
-  Controller,
   Delete,
   Get,
   Middleware,
   Patch,
-  Put,
   Request,
   Response,
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../../_staart/helpers/middleware";
+import { twtToId, localsToTokenOrKey } from "../../../_staart/helpers/utils";
 import {
-  localsToTokenOrKey,
-  organizationUsernameToId,
-} from "../../../_staart/helpers/utils";
-import {
-  deleteOrganizationForUser,
-  getAllOrganizationDataForUser,
-  getOrganizationForUser,
-  newOrganizationForUser,
-  updateOrganizationForUser,
-} from "../../../_staart/rest/organization";
+  deleteGroupForUser,
+  getAllGroupDataForUser,
+  getGroupForUser,
+  updateGroupForUser,
+} from "../../../_staart/rest/group";
 
 @ClassMiddleware(authHandler)
-export class OrganizationController {
+export class GroupController {
   @Get()
   async get(req: Request, res: Response) {
-    const id = await organizationUsernameToId(req.params.id);
+    const id = twtToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    const organization = await getOrganizationForUser(
-      localsToTokenOrKey(res),
-      id
-    );
-    return organization;
+    const group = await getGroupForUser(localsToTokenOrKey(res), id);
+    return group;
   }
 
   @Patch()
@@ -59,9 +44,9 @@ export class OrganizationController {
     )
   )
   async patch(req: Request, res: Response) {
-    const id = await organizationUsernameToId(req.params.id);
+    const id = twtToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    const updated = await updateOrganizationForUser(
+    const updated = await updateGroupForUser(
       localsToTokenOrKey(res),
       id,
       req.body,
@@ -72,29 +57,16 @@ export class OrganizationController {
 
   @Delete()
   async delete(req: Request, res: Response) {
-    const organizationId = await organizationUsernameToId(req.params.id);
-    joiValidate(
-      { organizationId: Joi.string().required() },
-      { organizationId }
-    );
-    await deleteOrganizationForUser(
-      res.locals.token.id,
-      organizationId,
-      res.locals
-    );
+    const groupId = twtToId(req.params.id);
+    joiValidate({ groupId: Joi.string().required() }, { groupId });
+    await deleteGroupForUser(res.locals.token.id, groupId, res.locals);
     return respond(RESOURCE_DELETED);
   }
 
   @Get("data")
   async getData(req: Request, res: Response) {
-    const organizationId = await organizationUsernameToId(req.params.id);
-    joiValidate(
-      { organizationId: Joi.string().required() },
-      { organizationId }
-    );
-    return getAllOrganizationDataForUser(
-      localsToTokenOrKey(res),
-      organizationId
-    );
+    const groupId = twtToId(req.params.id);
+    joiValidate({ groupId: Joi.string().required() }, { groupId });
+    return getAllGroupDataForUser(localsToTokenOrKey(res), groupId);
   }
 }

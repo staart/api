@@ -19,7 +19,7 @@ const setupQueue = async () => {
 };
 
 export const queueWebhook = (
-  organizationId: string,
+  groupId: number,
   webhook: Webhooks,
   data?: any
 ) => {
@@ -28,7 +28,7 @@ export const queueWebhook = (
       redisQueue.sendMessageAsync({
         qname: WEBHOOK_QUEUE,
         message: JSON.stringify({
-          organizationId,
+          groupId,
           webhook,
           data,
           tryNumber: 1,
@@ -46,30 +46,30 @@ export const receiveWebhookMessage = async () => {
   });
   if ("id" in result) {
     const {
-      organizationId,
+      groupId,
       webhook,
       data,
       tryNumber,
     }: {
       tryNumber: number;
-      organizationId: string;
+      groupId: string;
       webhook: Webhooks;
       data?: any;
     } = JSON.parse(result.message);
     if (tryNumber && tryNumber > 3) {
-      logError("Webhook", `Unable to fire: ${organizationId} ${webhook}`);
+      logError("Webhook", `Unable to fire: ${groupId} ${webhook}`);
       return redisQueue.deleteMessageAsync({
         qname: WEBHOOK_QUEUE,
         id: result.id,
       });
     }
     try {
-      safeFireWebhook(organizationId, webhook, data);
+      safeFireWebhook(groupId, webhook, data);
     } catch (error) {
       await redisQueue.sendMessageAsync({
         qname: WEBHOOK_QUEUE,
         message: JSON.stringify({
-          organizationId,
+          groupId,
           webhook,
           data,
           tryNumber: tryNumber + 1,
@@ -85,12 +85,12 @@ export const receiveWebhookMessage = async () => {
 };
 
 const safeFireWebhook = async (
-  organizationId: string,
+  groupId: string,
   webhook: Webhooks,
   data?: any
 ) => {
   const webhooksToFire = await prisma.webhooks.findMany({
-    where: { organizationId: parseInt(organizationId), event: webhook },
+    where: { groupId: parseInt(groupId), event: webhook },
   });
   for await (const hook of webhooksToFire) {
     try {

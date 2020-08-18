@@ -1,30 +1,18 @@
-import {
-  ClassMiddleware,
-  Controller,
-  Get,
-  Request,
-  Response,
-} from "@staart/server";
+import { ClassMiddleware, Get, Request, Response } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../../_staart/helpers/middleware";
+import { twtToId, localsToTokenOrKey } from "../../../_staart/helpers/utils";
 import {
-  localsToTokenOrKey,
-  organizationUsernameToId,
-} from "../../../_staart/helpers/utils";
-import {
-  getOrganizationInvoiceForUser,
-  getOrganizationInvoicesForUser,
-} from "../../../_staart/rest/organization";
+  getGroupInvoiceForUser,
+  getGroupInvoicesForUser,
+} from "../../../_staart/rest/group";
 
 @ClassMiddleware(authHandler)
-export class OrganizationInvoicesController {
+export class GroupInvoicesController {
   @Get()
   async getInvoices(req: Request, res: Response) {
-    const organizationId = await organizationUsernameToId(req.params.id);
-    joiValidate(
-      { organizationId: Joi.string().required() },
-      { organizationId }
-    );
+    const groupId = twtToId(req.params.id);
+    joiValidate({ groupId: Joi.string().required() }, { groupId });
     const subscriptionParams = { ...req.query };
     joiValidate(
       {
@@ -36,28 +24,24 @@ export class OrganizationInvoicesController {
       },
       subscriptionParams
     );
-    return getOrganizationInvoicesForUser(
+    return getGroupInvoicesForUser(
       localsToTokenOrKey(res),
-      organizationId,
+      groupId,
       subscriptionParams
     );
   }
 
   @Get(":invoiceId")
   async getInvoice(req: Request, res: Response) {
-    const organizationId = await organizationUsernameToId(req.params.id);
+    const groupId = twtToId(req.params.id);
     const invoiceId = req.params.invoiceId;
     joiValidate(
       {
-        organizationId: Joi.string().required(),
+        groupId: Joi.string().required(),
         invoiceId: Joi.string().required(),
       },
-      { organizationId, invoiceId }
+      { groupId, invoiceId }
     );
-    return getOrganizationInvoiceForUser(
-      localsToTokenOrKey(res),
-      organizationId,
-      invoiceId
-    );
+    return getGroupInvoiceForUser(localsToTokenOrKey(res), groupId, invoiceId);
   }
 }

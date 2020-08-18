@@ -1,27 +1,17 @@
+import { RESOURCE_CREATED, respond } from "@staart/messages";
 import {
-  RESOURCE_CREATED,
-  RESOURCE_DELETED,
-  RESOURCE_UPDATED,
-  respond,
-} from "@staart/messages";
-import {
-  ChildControllers,
   ClassMiddleware,
-  Controller,
-  Delete,
-  Get,
   Middleware,
-  Patch,
   Put,
   Request,
   Response,
 } from "@staart/server";
 import { Joi } from "@staart/validate";
 import { authHandler, validator } from "../../_staart/helpers/middleware";
-import { newOrganizationForUser } from "../../_staart/rest/organization";
+import { newGroupForUser } from "../../_staart/rest/group";
 
 @ClassMiddleware(authHandler)
-export class OrganizationController {
+export class GroupController {
   @Put()
   @Middleware(
     validator(
@@ -32,7 +22,7 @@ export class OrganizationController {
     )
   )
   async put(req: Request, res: Response) {
-    const added = await newOrganizationForUser(
+    const added = await newGroupForUser(
       res.locals.token.id,
       req.body,
       res.locals

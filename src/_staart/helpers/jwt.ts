@@ -1,4 +1,9 @@
 import {
+  accessTokensCreateInput,
+  accessTokensUpdateInput,
+  users,
+} from "@prisma/client";
+import {
   IP_RANGE_CHECK_FAIL,
   REFERRER_CHECK_FAIL,
   REVOKED_TOKEN,
@@ -6,7 +11,7 @@ import {
   UNVERIFIED_EMAIL,
   USER_NOT_FOUND,
 } from "@staart/errors";
-import redis from "@staart/redis";
+import { redis } from "@staart/redis";
 import { ipRangeCheck, randomString } from "@staart/text";
 import { decode, sign, verify } from "jsonwebtoken";
 import {
@@ -21,26 +26,19 @@ import {
 } from "../../config";
 import { EventType, Templates, Tokens } from "../interfaces/enum";
 import { Locals } from "../interfaces/general";
+import {
+  checkApprovedLocation,
+  getUserPrimaryEmail,
+  updateSessionByJwt,
+} from "../services/user.service";
 import { getGeolocationFromIp } from "./location";
 import { mail } from "./mail";
+import { prisma } from "./prisma";
 import {
   deleteSensitiveInfoUser,
   includesDomainInCommaList,
   removeFalsyValues,
 } from "./utils";
-import {
-  access_tokensCreateInput,
-  access_tokensUpdateInput,
-  users,
-  api_keysCreateInput,
-  api_keysUpdateInput,
-} from "@prisma/client";
-import { prisma } from "./prisma";
-import {
-  updateSessionByJwt,
-  checkApprovedLocation,
-  getUserPrimaryEmail,
-} from "../services/user.service";
 
 /**
  * Generate a new JWT
@@ -69,12 +67,12 @@ export const generateToken = (
   });
 
 export interface TokenResponse {
-  id: string;
+  id: number;
   ipAddress?: string;
 }
 export interface ApiKeyResponse {
-  id: string;
-  organizationId: string;
+  id: number;
+  groupId: string;
   scopes: string;
   jti: string;
   sub: Tokens.API_KEY;
@@ -83,7 +81,7 @@ export interface ApiKeyResponse {
   referrerRestrictions?: string;
 }
 export interface AccessTokenResponse {
-  id: string;
+  id: number;
   userId: string;
   scopes: string;
   jti: string;
@@ -122,13 +120,13 @@ export const couponCodeJwt = (
 /**
  * Generate a new email verification JWT
  */
-export const emailVerificationToken = (id: string) =>
+export const emailVerificationToken = (id: number) =>
   generateToken({ id }, TOKEN_EXPIRY_EMAIL_VERIFICATION, Tokens.EMAIL_VERIFY);
 
 /**
  * Generate a new email verification JWT
  */
-export const resendEmailVerificationToken = (id: string) =>
+export const resendEmailVerificationToken = (id: number) =>
   generateToken({ id }, TOKEN_EXPIRY_EMAIL_VERIFICATION, Tokens.EMAIL_RESEND);
 
 /**
@@ -140,8 +138,14 @@ export const passwordResetToken = (id: number) =>
 /**
  * Generate a new login JWT
  */
-export const loginToken = (user: users) =>
-  generateToken(user, TOKEN_EXPIRY_LOGIN, Tokens.LOGIN);
+export const loginToken = (id: number) =>
+  generateToken({ id }, TOKEN_EXPIRY_LOGIN, Tokens.LOGIN);
+
+/**
+ * Generate a new login link JWT
+ */
+export const loginLinkToken = (user: users) =>
+  generateToken({ id: user.id }, TOKEN_EXPIRY_LOGIN, Tokens.LOGIN_LINK);
 
 /**
  * Generate a new 2FA JWT
@@ -150,35 +154,14 @@ export const twoFactorToken = (user: users) =>
   generateToken({ id: user.id }, TOKEN_EXPIRY_LOGIN, Tokens.TWO_FACTOR);
 
 /**
- * Generate an API key JWT
- */
-export const apiKeyToken = (
-  apiKey: api_keysCreateInput | api_keysUpdateInput
-) => {
-  const createApiKey = { ...removeFalsyValues(apiKey) };
-  delete createApiKey.createdAt;
-  delete createApiKey.jwtApiKey;
-  delete createApiKey.updatedAt;
-  delete createApiKey.name;
-  delete createApiKey.description;
-  delete createApiKey.expiresAt;
-  return generateToken(
-    createApiKey,
-    (apiKey.expiresAt
-      ? new Date(apiKey.expiresAt).getTime()
-      : TOKEN_EXPIRY_API_KEY_MAX) - new Date().getTime(),
-    Tokens.API_KEY
-  );
-};
-/**
  * Generate an access token
  */
 export const accessToken = (
-  accessToken: access_tokensCreateInput | access_tokensUpdateInput
+  accessToken: accessTokensCreateInput | accessTokensUpdateInput
 ) => {
   const createAccessToken = { ...removeFalsyValues(accessToken) };
   delete createAccessToken.createdAt;
-  delete createAccessToken.jwtAccessToken;
+  delete createAccessToken.accessToken;
   delete createAccessToken.updatedAt;
   delete createAccessToken.name;
   delete createAccessToken.description;
@@ -216,16 +199,16 @@ export const postLoginTokens = async (
   if (!user.id) throw new Error(USER_NOT_FOUND);
   const refresh = await refreshToken(user.id);
   if (!refreshTokenString) {
-    let jwtToken = refresh;
+    let token = refresh;
     try {
       const decoded = decode(refresh);
       if (decoded && typeof decoded === "object" && decoded.jti) {
-        jwtToken = decoded.jti;
+        token = decoded.jti;
       }
     } catch (error) {}
     await prisma.sessions.create({
       data: {
-        jwtToken,
+        token,
         ipAddress: locals.ipAddress || "unknown-ip-address",
         userAgent: locals.userAgent || "unknown-user-agent",
         user: { connect: { id: user.id } },
@@ -235,10 +218,7 @@ export const postLoginTokens = async (
     await updateSessionByJwt(user.id, refreshTokenString, {});
   }
   return {
-    token: await loginToken({
-      ...deleteSensitiveInfoUser(user),
-      // email: (await getUserBestEmail(user.id)).email
-    }),
+    token: await loginToken(user.id),
     refresh: !refreshTokenString ? refresh : undefined,
   };
 };
@@ -266,17 +246,17 @@ export const getLoginResponse = async (
   if (locals) {
     if (!(await checkApprovedLocation(user.id, locals.ipAddress))) {
       const location = await getGeolocationFromIp(locals.ipAddress);
-      await mail(
-        (await getUserPrimaryEmail(user.id)).email,
-        Templates.UNAPPROVED_LOCATION,
-        {
+      await mail({
+        to: (await getUserPrimaryEmail(user.id)).email,
+        template: Templates.UNAPPROVED_LOCATION,
+        data: {
           ...user,
           location: location
             ? location.city || location.region_name || location.country_code
             : "Unknown location",
           token: await approveLocationToken(user.id, locals.ipAddress),
-        }
-      );
+        },
+      });
       throw new Error(UNAPPROVED_LOCATION);
     }
   }

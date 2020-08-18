@@ -51,8 +51,16 @@
       "values": [
         "OWNER",
         "ADMIN",
-        "RESELLER",
         "MEMBER"
+      ]
+    },
+    {
+      "tag": "CreateEnum",
+      "enum": "IdentityType",
+      "values": [
+        "GOOGLE",
+        "APPLE",
+        "SLACK"
       ]
     },
     {
@@ -75,7 +83,7 @@
         "source": "mysql"
       },
       "argument": "url",
-      "value": "env(\"DATABASE_URL\")"
+      "value": "\"***\""
     },
     {
       "tag": "CreateModel",
@@ -262,13 +270,6 @@
     {
       "tag": "CreateField",
       "model": "users",
-      "field": "nickname",
-      "type": "String",
-      "arity": "Required"
-    },
-    {
-      "tag": "CreateField",
-      "model": "users",
       "field": "notificationEmails",
       "type": "NotificationEmails",
       "arity": "Required"
@@ -404,14 +405,74 @@
     {
       "tag": "CreateField",
       "model": "users",
-      "field": "primaryEmail",
-      "type": "Int",
-      "arity": "Optional"
+      "field": "prefersEmail",
+      "type": "emails",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "users",
+          "field": "prefersEmail"
+        },
+        "directive": "relation"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "users",
+          "field": "prefersEmail"
+        },
+        "directive": "relation"
+      },
+      "argument": "",
+      "value": "\"userPrefersEmail\""
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "users",
+          "field": "prefersEmail"
+        },
+        "directive": "relation"
+      },
+      "argument": "fields",
+      "value": "[prefersEmailId]"
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "users",
+          "field": "prefersEmail"
+        },
+        "directive": "relation"
+      },
+      "argument": "references",
+      "value": "[id]"
     },
     {
       "tag": "CreateField",
       "model": "users",
-      "field": "profilePicture",
+      "field": "prefersEmailId",
+      "type": "Int",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "users",
+      "field": "profilePictureUrl",
       "type": "String",
       "arity": "Required"
     },
@@ -421,7 +482,7 @@
         "path": {
           "tag": "Field",
           "model": "users",
-          "field": "profilePicture"
+          "field": "profilePictureUrl"
         },
         "directive": "default"
       }
@@ -433,7 +494,7 @@
         "path": {
           "tag": "Field",
           "model": "users",
-          "field": "profilePicture"
+          "field": "profilePictureUrl"
         },
         "directive": "default"
       },
@@ -546,6 +607,13 @@
     {
       "tag": "CreateField",
       "model": "users",
+      "field": "attributes",
+      "type": "Json",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateField",
+      "model": "users",
       "field": "updatedAt",
       "type": "DateTime",
       "arity": "Required"
@@ -559,24 +627,6 @@
           "field": "updatedAt"
         },
         "directive": "updatedAt"
-      }
-    },
-    {
-      "tag": "CreateField",
-      "model": "users",
-      "field": "username",
-      "type": "String",
-      "arity": "Required"
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "users",
-          "field": "username"
-        },
-        "directive": "unique"
       }
     },
     {
@@ -614,8 +664,8 @@
     {
       "tag": "CreateField",
       "model": "users",
-      "field": "access_tokens",
-      "type": "access_tokens",
+      "field": "accessTokens",
+      "type": "accessTokens",
       "arity": "List"
     },
     {
@@ -624,7 +674,7 @@
         "path": {
           "tag": "Field",
           "model": "users",
-          "field": "access_tokens"
+          "field": "accessTokens"
         },
         "directive": "relation"
       }
@@ -636,7 +686,7 @@
         "path": {
           "tag": "Field",
           "model": "users",
-          "field": "access_tokens"
+          "field": "accessTokens"
         },
         "directive": "relation"
       },
@@ -646,8 +696,8 @@
     {
       "tag": "CreateField",
       "model": "users",
-      "field": "approved_locations",
-      "type": "approved_locations",
+      "field": "approvedLocations",
+      "type": "approvedLocations",
       "arity": "List"
     },
     {
@@ -656,7 +706,7 @@
         "path": {
           "tag": "Field",
           "model": "users",
-          "field": "approved_locations"
+          "field": "approvedLocations"
         },
         "directive": "relation"
       }
@@ -668,7 +718,7 @@
         "path": {
           "tag": "Field",
           "model": "users",
-          "field": "approved_locations"
+          "field": "approvedLocations"
         },
         "directive": "relation"
       },
@@ -678,8 +728,8 @@
     {
       "tag": "CreateField",
       "model": "users",
-      "field": "backup_codes",
-      "type": "backup_codes",
+      "field": "backupCodes",
+      "type": "backupCodes",
       "arity": "List"
     },
     {
@@ -688,7 +738,7 @@
         "path": {
           "tag": "Field",
           "model": "users",
-          "field": "backup_codes"
+          "field": "backupCodes"
         },
         "directive": "relation"
       }
@@ -700,7 +750,7 @@
         "path": {
           "tag": "Field",
           "model": "users",
-          "field": "backup_codes"
+          "field": "backupCodes"
         },
         "directive": "relation"
       },
@@ -805,11 +855,11 @@
     },
     {
       "tag": "CreateModel",
-      "model": "organizations"
+      "model": "groups"
     },
     {
       "tag": "CreateField",
-      "model": "organizations",
+      "model": "groups",
       "field": "autoJoinDomain",
       "type": "Boolean",
       "arity": "Required"
@@ -819,7 +869,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "organizations",
+          "model": "groups",
           "field": "autoJoinDomain"
         },
         "directive": "default"
@@ -831,7 +881,7 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "organizations",
+          "model": "groups",
           "field": "autoJoinDomain"
         },
         "directive": "default"
@@ -841,7 +891,7 @@
     },
     {
       "tag": "CreateField",
-      "model": "organizations",
+      "model": "groups",
       "field": "createdAt",
       "type": "DateTime",
       "arity": "Required"
@@ -851,7 +901,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "organizations",
+          "model": "groups",
           "field": "createdAt"
         },
         "directive": "default"
@@ -863,7 +913,7 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "organizations",
+          "model": "groups",
           "field": "createdAt"
         },
         "directive": "default"
@@ -873,7 +923,7 @@
     },
     {
       "tag": "CreateField",
-      "model": "organizations",
+      "model": "groups",
       "field": "forceTwoFactor",
       "type": "Boolean",
       "arity": "Required"
@@ -883,7 +933,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "organizations",
+          "model": "groups",
           "field": "forceTwoFactor"
         },
         "directive": "default"
@@ -895,7 +945,7 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "organizations",
+          "model": "groups",
           "field": "forceTwoFactor"
         },
         "directive": "default"
@@ -905,7 +955,7 @@
     },
     {
       "tag": "CreateField",
-      "model": "organizations",
+      "model": "groups",
       "field": "id",
       "type": "Int",
       "arity": "Required"
@@ -915,7 +965,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "organizations",
+          "model": "groups",
           "field": "id"
         },
         "directive": "default"
@@ -927,7 +977,7 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "organizations",
+          "model": "groups",
           "field": "id"
         },
         "directive": "default"
@@ -940,7 +990,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "organizations",
+          "model": "groups",
           "field": "id"
         },
         "directive": "id"
@@ -948,21 +998,21 @@
     },
     {
       "tag": "CreateField",
-      "model": "organizations",
+      "model": "groups",
       "field": "ipRestrictions",
       "type": "String",
       "arity": "Optional"
     },
     {
       "tag": "CreateField",
-      "model": "organizations",
+      "model": "groups",
       "field": "name",
       "type": "String",
       "arity": "Required"
     },
     {
       "tag": "CreateField",
-      "model": "organizations",
+      "model": "groups",
       "field": "onlyAllowDomain",
       "type": "Boolean",
       "arity": "Required"
@@ -972,7 +1022,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "organizations",
+          "model": "groups",
           "field": "onlyAllowDomain"
         },
         "directive": "default"
@@ -984,7 +1034,7 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "organizations",
+          "model": "groups",
           "field": "onlyAllowDomain"
         },
         "directive": "default"
@@ -994,8 +1044,8 @@
     },
     {
       "tag": "CreateField",
-      "model": "organizations",
-      "field": "profilePicture",
+      "model": "groups",
+      "field": "profilePictureUrl",
       "type": "String",
       "arity": "Required"
     },
@@ -1004,8 +1054,8 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "organizations",
-          "field": "profilePicture"
+          "model": "groups",
+          "field": "profilePictureUrl"
         },
         "directive": "default"
       }
@@ -1016,8 +1066,8 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "organizations",
-          "field": "profilePicture"
+          "model": "groups",
+          "field": "profilePictureUrl"
         },
         "directive": "default"
       },
@@ -1026,14 +1076,14 @@
     },
     {
       "tag": "CreateField",
-      "model": "organizations",
-      "field": "stripeCustomerId",
-      "type": "String",
+      "model": "groups",
+      "field": "attributes",
+      "type": "Json",
       "arity": "Optional"
     },
     {
       "tag": "CreateField",
-      "model": "organizations",
+      "model": "groups",
       "field": "updatedAt",
       "type": "DateTime",
       "arity": "Required"
@@ -1043,7 +1093,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "organizations",
+          "model": "groups",
           "field": "updatedAt"
         },
         "directive": "updatedAt"
@@ -1051,27 +1101,9 @@
     },
     {
       "tag": "CreateField",
-      "model": "organizations",
-      "field": "username",
-      "type": "String",
-      "arity": "Required"
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "organizations",
-          "field": "username"
-        },
-        "directive": "unique"
-      }
-    },
-    {
-      "tag": "CreateField",
-      "model": "organizations",
-      "field": "api_keys",
-      "type": "api_keys",
+      "model": "groups",
+      "field": "apiKeys",
+      "type": "apiKeys",
       "arity": "List"
     },
     {
@@ -1079,8 +1111,8 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "organizations",
-          "field": "api_keys"
+          "model": "groups",
+          "field": "apiKeys"
         },
         "directive": "relation"
       }
@@ -1091,17 +1123,17 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "organizations",
-          "field": "api_keys"
+          "model": "groups",
+          "field": "apiKeys"
         },
         "directive": "relation"
       },
       "argument": "",
-      "value": "\"organizationApiKeys\""
+      "value": "\"groupApiKeys\""
     },
     {
       "tag": "CreateField",
-      "model": "organizations",
+      "model": "groups",
       "field": "domains",
       "type": "domains",
       "arity": "List"
@@ -1111,7 +1143,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "organizations",
+          "model": "groups",
           "field": "domains"
         },
         "directive": "relation"
@@ -1123,17 +1155,17 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "organizations",
+          "model": "groups",
           "field": "domains"
         },
         "directive": "relation"
       },
       "argument": "",
-      "value": "\"organizationDomains\""
+      "value": "\"groupDomains\""
     },
     {
       "tag": "CreateField",
-      "model": "organizations",
+      "model": "groups",
       "field": "memberships",
       "type": "memberships",
       "arity": "List"
@@ -1143,7 +1175,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "organizations",
+          "model": "groups",
           "field": "memberships"
         },
         "directive": "relation"
@@ -1155,17 +1187,17 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "organizations",
+          "model": "groups",
           "field": "memberships"
         },
         "directive": "relation"
       },
       "argument": "",
-      "value": "\"organizationMemberships\""
+      "value": "\"groupMemberships\""
     },
     {
       "tag": "CreateField",
-      "model": "organizations",
+      "model": "groups",
       "field": "webhooks",
       "type": "webhooks",
       "arity": "List"
@@ -1175,7 +1207,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "organizations",
+          "model": "groups",
           "field": "webhooks"
         },
         "directive": "relation"
@@ -1187,13 +1219,13 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "organizations",
+          "model": "groups",
           "field": "webhooks"
         },
         "directive": "relation"
       },
       "argument": "",
-      "value": "\"organizationWebhooks\""
+      "value": "\"groupWebhooks\""
     },
     {
       "tag": "CreateModel",
@@ -1399,6 +1431,38 @@
       "arity": "Required"
     },
     {
+      "tag": "CreateField",
+      "model": "emails",
+      "field": "users",
+      "type": "users",
+      "arity": "List"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "emails",
+          "field": "users"
+        },
+        "directive": "relation"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "emails",
+          "field": "users"
+        },
+        "directive": "relation"
+      },
+      "argument": "",
+      "value": "\"userPrefersEmail\""
+    },
+    {
       "tag": "CreateDirective",
       "location": {
         "path": {
@@ -1420,11 +1484,11 @@
     },
     {
       "tag": "CreateModel",
-      "model": "access_tokens"
+      "model": "accessTokens"
     },
     {
       "tag": "CreateField",
-      "model": "access_tokens",
+      "model": "accessTokens",
       "field": "createdAt",
       "type": "DateTime",
       "arity": "Required"
@@ -1434,7 +1498,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "access_tokens",
+          "model": "accessTokens",
           "field": "createdAt"
         },
         "directive": "default"
@@ -1446,7 +1510,7 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "access_tokens",
+          "model": "accessTokens",
           "field": "createdAt"
         },
         "directive": "default"
@@ -1456,21 +1520,21 @@
     },
     {
       "tag": "CreateField",
-      "model": "access_tokens",
+      "model": "accessTokens",
       "field": "description",
       "type": "String",
       "arity": "Optional"
     },
     {
       "tag": "CreateField",
-      "model": "access_tokens",
+      "model": "accessTokens",
       "field": "expiresAt",
       "type": "DateTime",
       "arity": "Required"
     },
     {
       "tag": "CreateField",
-      "model": "access_tokens",
+      "model": "accessTokens",
       "field": "id",
       "type": "Int",
       "arity": "Required"
@@ -1480,7 +1544,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "access_tokens",
+          "model": "accessTokens",
           "field": "id"
         },
         "directive": "default"
@@ -1492,7 +1556,7 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "access_tokens",
+          "model": "accessTokens",
           "field": "id"
         },
         "directive": "default"
@@ -1505,7 +1569,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "access_tokens",
+          "model": "accessTokens",
           "field": "id"
         },
         "directive": "id"
@@ -1513,28 +1577,28 @@
     },
     {
       "tag": "CreateField",
-      "model": "access_tokens",
-      "field": "jwtAccessToken",
+      "model": "accessTokens",
+      "field": "accessToken",
       "type": "String",
       "arity": "Required"
     },
     {
       "tag": "CreateField",
-      "model": "access_tokens",
+      "model": "accessTokens",
       "field": "name",
       "type": "String",
       "arity": "Optional"
     },
     {
       "tag": "CreateField",
-      "model": "access_tokens",
+      "model": "accessTokens",
       "field": "scopes",
-      "type": "String",
+      "type": "Json",
       "arity": "Optional"
     },
     {
       "tag": "CreateField",
-      "model": "access_tokens",
+      "model": "accessTokens",
       "field": "updatedAt",
       "type": "DateTime",
       "arity": "Required"
@@ -1544,7 +1608,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "access_tokens",
+          "model": "accessTokens",
           "field": "updatedAt"
         },
         "directive": "updatedAt"
@@ -1552,7 +1616,7 @@
     },
     {
       "tag": "CreateField",
-      "model": "access_tokens",
+      "model": "accessTokens",
       "field": "user",
       "type": "users",
       "arity": "Required"
@@ -1562,7 +1626,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "access_tokens",
+          "model": "accessTokens",
           "field": "user"
         },
         "directive": "relation"
@@ -1574,7 +1638,7 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "access_tokens",
+          "model": "accessTokens",
           "field": "user"
         },
         "directive": "relation"
@@ -1588,7 +1652,7 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "access_tokens",
+          "model": "accessTokens",
           "field": "user"
         },
         "directive": "relation"
@@ -1602,7 +1666,7 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "access_tokens",
+          "model": "accessTokens",
           "field": "user"
         },
         "directive": "relation"
@@ -1612,7 +1676,7 @@
     },
     {
       "tag": "CreateField",
-      "model": "access_tokens",
+      "model": "accessTokens",
       "field": "userId",
       "type": "Int",
       "arity": "Required"
@@ -1622,30 +1686,7 @@
       "location": {
         "path": {
           "tag": "Model",
-          "model": "access_tokens"
-        },
-        "directive": "map"
-      }
-    },
-    {
-      "tag": "CreateArgument",
-      "location": {
-        "tag": "Directive",
-        "path": {
-          "tag": "Model",
-          "model": "access_tokens"
-        },
-        "directive": "map"
-      },
-      "argument": "",
-      "value": "\"access-tokens\""
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Model",
-          "model": "access_tokens",
+          "model": "accessTokens",
           "arguments": [
             {
               "name": "",
@@ -1662,11 +1703,11 @@
     },
     {
       "tag": "CreateModel",
-      "model": "api_keys"
+      "model": "apiKeys"
     },
     {
       "tag": "CreateField",
-      "model": "api_keys",
+      "model": "apiKeys",
       "field": "createdAt",
       "type": "DateTime",
       "arity": "Required"
@@ -1676,7 +1717,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "api_keys",
+          "model": "apiKeys",
           "field": "createdAt"
         },
         "directive": "default"
@@ -1688,7 +1729,7 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "api_keys",
+          "model": "apiKeys",
           "field": "createdAt"
         },
         "directive": "default"
@@ -1698,21 +1739,21 @@
     },
     {
       "tag": "CreateField",
-      "model": "api_keys",
+      "model": "apiKeys",
       "field": "description",
       "type": "String",
       "arity": "Optional"
     },
     {
       "tag": "CreateField",
-      "model": "api_keys",
+      "model": "apiKeys",
       "field": "expiresAt",
       "type": "DateTime",
       "arity": "Required"
     },
     {
       "tag": "CreateField",
-      "model": "api_keys",
+      "model": "apiKeys",
       "field": "id",
       "type": "Int",
       "arity": "Required"
@@ -1722,7 +1763,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "api_keys",
+          "model": "apiKeys",
           "field": "id"
         },
         "directive": "default"
@@ -1734,7 +1775,7 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "api_keys",
+          "model": "apiKeys",
           "field": "id"
         },
         "directive": "default"
@@ -1747,7 +1788,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "api_keys",
+          "model": "apiKeys",
           "field": "id"
         },
         "directive": "id"
@@ -1755,30 +1796,30 @@
     },
     {
       "tag": "CreateField",
-      "model": "api_keys",
+      "model": "apiKeys",
       "field": "ipRestrictions",
-      "type": "String",
+      "type": "Json",
       "arity": "Optional"
     },
     {
       "tag": "CreateField",
-      "model": "api_keys",
-      "field": "jwtApiKey",
+      "model": "apiKeys",
+      "field": "apiKey",
       "type": "String",
       "arity": "Required"
     },
     {
       "tag": "CreateField",
-      "model": "api_keys",
+      "model": "apiKeys",
       "field": "name",
       "type": "String",
       "arity": "Optional"
     },
     {
       "tag": "CreateField",
-      "model": "api_keys",
-      "field": "organization",
-      "type": "organizations",
+      "model": "apiKeys",
+      "field": "group",
+      "type": "groups",
       "arity": "Required"
     },
     {
@@ -1786,8 +1827,8 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "api_keys",
-          "field": "organization"
+          "model": "apiKeys",
+          "field": "group"
         },
         "directive": "relation"
       }
@@ -1798,13 +1839,13 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "api_keys",
-          "field": "organization"
+          "model": "apiKeys",
+          "field": "group"
         },
         "directive": "relation"
       },
       "argument": "",
-      "value": "\"organizationApiKeys\""
+      "value": "\"groupApiKeys\""
     },
     {
       "tag": "CreateArgument",
@@ -1812,13 +1853,13 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "api_keys",
-          "field": "organization"
+          "model": "apiKeys",
+          "field": "group"
         },
         "directive": "relation"
       },
       "argument": "fields",
-      "value": "[organizationId]"
+      "value": "[groupId]"
     },
     {
       "tag": "CreateArgument",
@@ -1826,8 +1867,8 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "api_keys",
-          "field": "organization"
+          "model": "apiKeys",
+          "field": "group"
         },
         "directive": "relation"
       },
@@ -1836,28 +1877,28 @@
     },
     {
       "tag": "CreateField",
-      "model": "api_keys",
-      "field": "organizationId",
+      "model": "apiKeys",
+      "field": "groupId",
       "type": "Int",
       "arity": "Required"
     },
     {
       "tag": "CreateField",
-      "model": "api_keys",
+      "model": "apiKeys",
       "field": "referrerRestrictions",
       "type": "String",
       "arity": "Optional"
     },
     {
       "tag": "CreateField",
-      "model": "api_keys",
+      "model": "apiKeys",
       "field": "scopes",
-      "type": "String",
+      "type": "Json",
       "arity": "Optional"
     },
     {
       "tag": "CreateField",
-      "model": "api_keys",
+      "model": "apiKeys",
       "field": "updatedAt",
       "type": "DateTime",
       "arity": "Required"
@@ -1867,42 +1908,19 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "api_keys",
+          "model": "apiKeys",
           "field": "updatedAt"
         },
         "directive": "updatedAt"
       }
     },
     {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Model",
-          "model": "api_keys"
-        },
-        "directive": "map"
-      }
-    },
-    {
-      "tag": "CreateArgument",
-      "location": {
-        "tag": "Directive",
-        "path": {
-          "tag": "Model",
-          "model": "api_keys"
-        },
-        "directive": "map"
-      },
-      "argument": "",
-      "value": "\"api-keys\""
-    },
-    {
       "tag": "CreateModel",
-      "model": "approved_locations"
+      "model": "approvedLocations"
     },
     {
       "tag": "CreateField",
-      "model": "approved_locations",
+      "model": "approvedLocations",
       "field": "createdAt",
       "type": "DateTime",
       "arity": "Required"
@@ -1912,7 +1930,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "approved_locations",
+          "model": "approvedLocations",
           "field": "createdAt"
         },
         "directive": "default"
@@ -1924,7 +1942,7 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "approved_locations",
+          "model": "approvedLocations",
           "field": "createdAt"
         },
         "directive": "default"
@@ -1934,7 +1952,7 @@
     },
     {
       "tag": "CreateField",
-      "model": "approved_locations",
+      "model": "approvedLocations",
       "field": "id",
       "type": "Int",
       "arity": "Required"
@@ -1944,7 +1962,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "approved_locations",
+          "model": "approvedLocations",
           "field": "id"
         },
         "directive": "default"
@@ -1956,7 +1974,7 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "approved_locations",
+          "model": "approvedLocations",
           "field": "id"
         },
         "directive": "default"
@@ -1969,7 +1987,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "approved_locations",
+          "model": "approvedLocations",
           "field": "id"
         },
         "directive": "id"
@@ -1977,14 +1995,14 @@
     },
     {
       "tag": "CreateField",
-      "model": "approved_locations",
+      "model": "approvedLocations",
       "field": "subnet",
       "type": "String",
       "arity": "Required"
     },
     {
       "tag": "CreateField",
-      "model": "approved_locations",
+      "model": "approvedLocations",
       "field": "user",
       "type": "users",
       "arity": "Required"
@@ -1994,7 +2012,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "approved_locations",
+          "model": "approvedLocations",
           "field": "user"
         },
         "directive": "relation"
@@ -2006,7 +2024,7 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "approved_locations",
+          "model": "approvedLocations",
           "field": "user"
         },
         "directive": "relation"
@@ -2020,7 +2038,7 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "approved_locations",
+          "model": "approvedLocations",
           "field": "user"
         },
         "directive": "relation"
@@ -2034,7 +2052,7 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "approved_locations",
+          "model": "approvedLocations",
           "field": "user"
         },
         "directive": "relation"
@@ -2044,41 +2062,18 @@
     },
     {
       "tag": "CreateField",
-      "model": "approved_locations",
+      "model": "approvedLocations",
       "field": "userId",
       "type": "Int",
       "arity": "Required"
     },
     {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Model",
-          "model": "approved_locations"
-        },
-        "directive": "map"
-      }
-    },
-    {
-      "tag": "CreateArgument",
-      "location": {
-        "tag": "Directive",
-        "path": {
-          "tag": "Model",
-          "model": "approved_locations"
-        },
-        "directive": "map"
-      },
-      "argument": "",
-      "value": "\"approved-locations\""
-    },
-    {
       "tag": "CreateModel",
-      "model": "backup_codes"
+      "model": "backupCodes"
     },
     {
       "tag": "CreateField",
-      "model": "backup_codes",
+      "model": "backupCodes",
       "field": "id",
       "type": "Int",
       "arity": "Required"
@@ -2088,7 +2083,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "backup_codes",
+          "model": "backupCodes",
           "field": "id"
         },
         "directive": "default"
@@ -2100,7 +2095,7 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "backup_codes",
+          "model": "backupCodes",
           "field": "id"
         },
         "directive": "default"
@@ -2113,7 +2108,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "backup_codes",
+          "model": "backupCodes",
           "field": "id"
         },
         "directive": "id"
@@ -2121,14 +2116,14 @@
     },
     {
       "tag": "CreateField",
-      "model": "backup_codes",
+      "model": "backupCodes",
       "field": "code",
       "type": "String",
       "arity": "Required"
     },
     {
       "tag": "CreateField",
-      "model": "backup_codes",
+      "model": "backupCodes",
       "field": "createdAt",
       "type": "DateTime",
       "arity": "Required"
@@ -2138,7 +2133,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "backup_codes",
+          "model": "backupCodes",
           "field": "createdAt"
         },
         "directive": "default"
@@ -2150,7 +2145,7 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "backup_codes",
+          "model": "backupCodes",
           "field": "createdAt"
         },
         "directive": "default"
@@ -2160,7 +2155,7 @@
     },
     {
       "tag": "CreateField",
-      "model": "backup_codes",
+      "model": "backupCodes",
       "field": "updatedAt",
       "type": "DateTime",
       "arity": "Required"
@@ -2170,7 +2165,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "backup_codes",
+          "model": "backupCodes",
           "field": "updatedAt"
         },
         "directive": "updatedAt"
@@ -2178,7 +2173,7 @@
     },
     {
       "tag": "CreateField",
-      "model": "backup_codes",
+      "model": "backupCodes",
       "field": "isUsed",
       "type": "Boolean",
       "arity": "Required"
@@ -2188,7 +2183,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "backup_codes",
+          "model": "backupCodes",
           "field": "isUsed"
         },
         "directive": "default"
@@ -2200,7 +2195,7 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "backup_codes",
+          "model": "backupCodes",
           "field": "isUsed"
         },
         "directive": "default"
@@ -2210,7 +2205,7 @@
     },
     {
       "tag": "CreateField",
-      "model": "backup_codes",
+      "model": "backupCodes",
       "field": "user",
       "type": "users",
       "arity": "Required"
@@ -2220,7 +2215,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "backup_codes",
+          "model": "backupCodes",
           "field": "user"
         },
         "directive": "relation"
@@ -2232,7 +2227,7 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "backup_codes",
+          "model": "backupCodes",
           "field": "user"
         },
         "directive": "relation"
@@ -2246,7 +2241,7 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "backup_codes",
+          "model": "backupCodes",
           "field": "user"
         },
         "directive": "relation"
@@ -2260,7 +2255,7 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "backup_codes",
+          "model": "backupCodes",
           "field": "user"
         },
         "directive": "relation"
@@ -2270,7 +2265,7 @@
     },
     {
       "tag": "CreateField",
-      "model": "backup_codes",
+      "model": "backupCodes",
       "field": "userId",
       "type": "Int",
       "arity": "Required"
@@ -2280,30 +2275,7 @@
       "location": {
         "path": {
           "tag": "Model",
-          "model": "backup_codes"
-        },
-        "directive": "map"
-      }
-    },
-    {
-      "tag": "CreateArgument",
-      "location": {
-        "tag": "Directive",
-        "path": {
-          "tag": "Model",
-          "model": "backup_codes"
-        },
-        "directive": "map"
-      },
-      "argument": "",
-      "value": "\"backup-codes\""
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Model",
-          "model": "backup_codes",
+          "model": "backupCodes",
           "arguments": [
             {
               "name": "",
@@ -2317,6 +2289,209 @@
         },
         "directive": "index"
       }
+    },
+    {
+      "tag": "CreateModel",
+      "model": "couponCodes"
+    },
+    {
+      "tag": "CreateField",
+      "model": "couponCodes",
+      "field": "id",
+      "type": "Int",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "couponCodes",
+          "field": "id"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "couponCodes",
+          "field": "id"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "autoincrement()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "couponCodes",
+          "field": "id"
+        },
+        "directive": "id"
+      }
+    },
+    {
+      "tag": "CreateField",
+      "model": "couponCodes",
+      "field": "code",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "couponCodes",
+      "field": "createdAt",
+      "type": "DateTime",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "couponCodes",
+          "field": "createdAt"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "couponCodes",
+          "field": "createdAt"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "now()"
+    },
+    {
+      "tag": "CreateField",
+      "model": "couponCodes",
+      "field": "updatedAt",
+      "type": "DateTime",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "couponCodes",
+          "field": "updatedAt"
+        },
+        "directive": "updatedAt"
+      }
+    },
+    {
+      "tag": "CreateField",
+      "model": "couponCodes",
+      "field": "expiresAt",
+      "type": "DateTime",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateField",
+      "model": "couponCodes",
+      "field": "maxUses",
+      "type": "Int",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "couponCodes",
+          "field": "maxUses"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "couponCodes",
+          "field": "maxUses"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "1000"
+    },
+    {
+      "tag": "CreateField",
+      "model": "couponCodes",
+      "field": "usedCount",
+      "type": "Int",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "couponCodes",
+          "field": "usedCount"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "couponCodes",
+          "field": "usedCount"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "0"
+    },
+    {
+      "tag": "CreateField",
+      "model": "couponCodes",
+      "field": "teamRestrictions",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateField",
+      "model": "couponCodes",
+      "field": "amount",
+      "type": "Int",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "couponCodes",
+      "field": "currency",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "couponCodes",
+      "field": "description",
+      "type": "String",
+      "arity": "Optional"
     },
     {
       "tag": "CreateModel",
@@ -2439,8 +2614,8 @@
     {
       "tag": "CreateField",
       "model": "domains",
-      "field": "organization",
-      "type": "organizations",
+      "field": "group",
+      "type": "groups",
       "arity": "Required"
     },
     {
@@ -2449,7 +2624,7 @@
         "path": {
           "tag": "Field",
           "model": "domains",
-          "field": "organization"
+          "field": "group"
         },
         "directive": "relation"
       }
@@ -2461,12 +2636,12 @@
         "path": {
           "tag": "Field",
           "model": "domains",
-          "field": "organization"
+          "field": "group"
         },
         "directive": "relation"
       },
       "argument": "",
-      "value": "\"organizationDomains\""
+      "value": "\"groupDomains\""
     },
     {
       "tag": "CreateArgument",
@@ -2475,12 +2650,12 @@
         "path": {
           "tag": "Field",
           "model": "domains",
-          "field": "organization"
+          "field": "group"
         },
         "directive": "relation"
       },
       "argument": "fields",
-      "value": "[organizationId]"
+      "value": "[groupId]"
     },
     {
       "tag": "CreateArgument",
@@ -2489,7 +2664,7 @@
         "path": {
           "tag": "Field",
           "model": "domains",
-          "field": "organization"
+          "field": "group"
         },
         "directive": "relation"
       },
@@ -2499,7 +2674,7 @@
     {
       "tag": "CreateField",
       "model": "domains",
-      "field": "organizationId",
+      "field": "groupId",
       "type": "Int",
       "arity": "Required"
     },
@@ -2537,11 +2712,11 @@
           "arguments": [
             {
               "name": "",
-              "value": "[organizationId]"
+              "value": "[groupId]"
             },
             {
               "name": "name",
-              "value": "\"organizationId\""
+              "value": "\"groupId\""
             }
           ]
         },
@@ -2630,13 +2805,6 @@
     {
       "tag": "CreateField",
       "model": "identities",
-      "field": "identityId",
-      "type": "String",
-      "arity": "Required"
-    },
-    {
-      "tag": "CreateField",
-      "model": "identities",
       "field": "loginName",
       "type": "String",
       "arity": "Required"
@@ -2645,7 +2813,7 @@
       "tag": "CreateField",
       "model": "identities",
       "field": "type",
-      "type": "String",
+      "type": "IdentityType",
       "arity": "Required"
     },
     {
@@ -2835,8 +3003,8 @@
     {
       "tag": "CreateField",
       "model": "memberships",
-      "field": "organization",
-      "type": "organizations",
+      "field": "group",
+      "type": "groups",
       "arity": "Required"
     },
     {
@@ -2845,7 +3013,7 @@
         "path": {
           "tag": "Field",
           "model": "memberships",
-          "field": "organization"
+          "field": "group"
         },
         "directive": "relation"
       }
@@ -2857,12 +3025,12 @@
         "path": {
           "tag": "Field",
           "model": "memberships",
-          "field": "organization"
+          "field": "group"
         },
         "directive": "relation"
       },
       "argument": "",
-      "value": "\"organizationMemberships\""
+      "value": "\"groupMemberships\""
     },
     {
       "tag": "CreateArgument",
@@ -2871,12 +3039,12 @@
         "path": {
           "tag": "Field",
           "model": "memberships",
-          "field": "organization"
+          "field": "group"
         },
         "directive": "relation"
       },
       "argument": "fields",
-      "value": "[organizationId]"
+      "value": "[groupId]"
     },
     {
       "tag": "CreateArgument",
@@ -2885,7 +3053,7 @@
         "path": {
           "tag": "Field",
           "model": "memberships",
-          "field": "organization"
+          "field": "group"
         },
         "directive": "relation"
       },
@@ -2895,7 +3063,7 @@
     {
       "tag": "CreateField",
       "model": "memberships",
-      "field": "organizationId",
+      "field": "groupId",
       "type": "Int",
       "arity": "Required"
     },
@@ -3025,11 +3193,11 @@
           "arguments": [
             {
               "name": "",
-              "value": "[organizationId]"
+              "value": "[groupId]"
             },
             {
               "name": "name",
-              "value": "\"organizationId\""
+              "value": "\"groupId\""
             }
           ]
         },
@@ -3145,7 +3313,7 @@
     {
       "tag": "CreateField",
       "model": "sessions",
-      "field": "jwtToken",
+      "field": "token",
       "type": "String",
       "arity": "Required"
     },
@@ -3199,6 +3367,20 @@
       "tag": "CreateField",
       "model": "sessions",
       "field": "countryCode",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateField",
+      "model": "sessions",
+      "field": "browser",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateField",
+      "model": "sessions",
+      "field": "operatingSystem",
       "type": "String",
       "arity": "Optional"
     },
@@ -3449,8 +3631,8 @@
     {
       "tag": "CreateField",
       "model": "webhooks",
-      "field": "organization",
-      "type": "organizations",
+      "field": "group",
+      "type": "groups",
       "arity": "Required"
     },
     {
@@ -3459,7 +3641,7 @@
         "path": {
           "tag": "Field",
           "model": "webhooks",
-          "field": "organization"
+          "field": "group"
         },
         "directive": "relation"
       }
@@ -3471,12 +3653,12 @@
         "path": {
           "tag": "Field",
           "model": "webhooks",
-          "field": "organization"
+          "field": "group"
         },
         "directive": "relation"
       },
       "argument": "",
-      "value": "\"organizationWebhooks\""
+      "value": "\"groupWebhooks\""
     },
     {
       "tag": "CreateArgument",
@@ -3485,12 +3667,12 @@
         "path": {
           "tag": "Field",
           "model": "webhooks",
-          "field": "organization"
+          "field": "group"
         },
         "directive": "relation"
       },
       "argument": "fields",
-      "value": "[organizationId]"
+      "value": "[groupId]"
     },
     {
       "tag": "CreateArgument",
@@ -3499,7 +3681,7 @@
         "path": {
           "tag": "Field",
           "model": "webhooks",
-          "field": "organization"
+          "field": "group"
         },
         "directive": "relation"
       },
@@ -3509,7 +3691,7 @@
     {
       "tag": "CreateField",
       "model": "webhooks",
-      "field": "organizationId",
+      "field": "groupId",
       "type": "Int",
       "arity": "Required"
     },
@@ -3554,11 +3736,11 @@
           "arguments": [
             {
               "name": "",
-              "value": "[organizationId]"
+              "value": "[groupId]"
             },
             {
               "name": "name",
-              "value": "\"organizationId\""
+              "value": "\"groupId\""
             }
           ]
         },

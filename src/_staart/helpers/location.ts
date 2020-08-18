@@ -1,6 +1,6 @@
+import { success } from "@staart/errors";
 import geolite2 from "geolite2-redist";
 import maxmind, { CityResponse, Reader } from "maxmind";
-import { success } from "@staart/errors";
 
 export interface GeoLocation {
   city?: string;

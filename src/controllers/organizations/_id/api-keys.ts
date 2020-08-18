@@ -6,7 +6,6 @@ import {
 } from "@staart/messages";
 import {
   ClassMiddleware,
-  Controller,
   Delete,
   Get,
   Middleware,
@@ -17,30 +16,23 @@ import {
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../../_staart/helpers/middleware";
-import {
-  localsToTokenOrKey,
-  organizationUsernameToId,
-} from "../../../_staart/helpers/utils";
+import { twtToId, localsToTokenOrKey } from "../../../_staart/helpers/utils";
 import {
   createApiKeyForUser,
   deleteApiKeyForUser,
-  getOrganizationApiKeyForUser,
-  getOrganizationApiKeyLogsForUser,
-  getOrganizationApiKeysForUser,
+  getGroupApiKeyForUser,
+  getGroupApiKeyLogsForUser,
+  getGroupApiKeysForUser,
   updateApiKeyForUser,
-} from "../../../_staart/rest/organization";
+} from "../../../_staart/rest/group";
 
 @ClassMiddleware(authHandler)
-export class OrganizationApiKeysController {
+export class GroupApiKeysController {
   @Get()
   async getUserApiKeys(req: Request, res: Response) {
-    const id = await organizationUsernameToId(req.params.id);
+    const id = twtToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
-    return getOrganizationApiKeysForUser(
-      localsToTokenOrKey(res),
-      id,
-      req.query
-    );
+    return getGroupApiKeysForUser(localsToTokenOrKey(res), id, req.query);
   }
 
   @Put()
@@ -57,7 +49,7 @@ export class OrganizationApiKeysController {
     )
   )
   async putUserApiKeys(req: Request, res: Response) {
-    const id = await organizationUsernameToId(req.params.id);
+    const id = twtToId(req.params.id);
     joiValidate({ id: Joi.string().required() }, { id });
     const added = await createApiKeyForUser(
       localsToTokenOrKey(res),
@@ -70,8 +62,8 @@ export class OrganizationApiKeysController {
 
   @Get(":apiKeyId")
   async getUserApiKey(req: Request, res: Response) {
-    const id = await organizationUsernameToId(req.params.id);
-    const apiKeyId = req.params.apiKeyId;
+    const id = twtToId(req.params.id);
+    const apiKeyId = twtToId(req.params.apiKeyId);
     joiValidate(
       {
         id: Joi.string().required(),
@@ -79,7 +71,7 @@ export class OrganizationApiKeysController {
       },
       { id, apiKeyId }
     );
-    return getOrganizationApiKeyForUser(localsToTokenOrKey(res), id, apiKeyId);
+    return getGroupApiKeyForUser(localsToTokenOrKey(res), id, apiKeyId);
   }
 
   @Patch(":apiKeyId")
@@ -96,8 +88,8 @@ export class OrganizationApiKeysController {
     )
   )
   async patchUserApiKey(req: Request, res: Response) {
-    const id = await organizationUsernameToId(req.params.id);
-    const apiKeyId = req.params.apiKeyId;
+    const id = twtToId(req.params.id);
+    const apiKeyId = twtToId(req.params.apiKeyId);
     joiValidate(
       {
         id: Joi.string().required(),
@@ -117,8 +109,8 @@ export class OrganizationApiKeysController {
 
   @Delete(":apiKeyId")
   async deleteUserApiKey(req: Request, res: Response) {
-    const id = await organizationUsernameToId(req.params.id);
-    const apiKeyId = req.params.apiKeyId;
+    const id = twtToId(req.params.id);
+    const apiKeyId = twtToId(req.params.apiKeyId);
     joiValidate(
       {
         id: Joi.string().required(),
@@ -137,8 +129,8 @@ export class OrganizationApiKeysController {
 
   @Get(":apiKeyId/logs")
   async getUserApiKeyLogs(req: Request, res: Response) {
-    const id = await organizationUsernameToId(req.params.id);
-    const apiKeyId = req.params.apiKeyId;
+    const id = twtToId(req.params.id);
+    const apiKeyId = twtToId(req.params.apiKeyId);
     joiValidate(
       {
         id: Joi.string().required(),
@@ -146,7 +138,7 @@ export class OrganizationApiKeysController {
       },
       { id, apiKeyId }
     );
-    return getOrganizationApiKeyLogsForUser(
+    return getGroupApiKeyLogsForUser(
       localsToTokenOrKey(res),
       id,
       apiKeyId,

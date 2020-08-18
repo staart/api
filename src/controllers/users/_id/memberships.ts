@@ -1,7 +1,6 @@
 import { RESOURCE_DELETED, RESOURCE_UPDATED, respond } from "@staart/messages";
 import {
   ClassMiddleware,
-  Controller,
   Delete,
   Get,
   Patch,
@@ -10,11 +9,11 @@ import {
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../../_staart/helpers/middleware";
-import { userUsernameToId } from "../../../_staart/helpers/utils";
+import { twtToId } from "../../../_staart/helpers/utils";
 import {
-  getMembershipsForUser,
-  getMembershipDetailsForUser,
   deleteMembershipForUser,
+  getMembershipDetailsForUser,
+  getMembershipsForUser,
   updateMembershipForUser,
 } from "../../../_staart/rest/user";
 
@@ -22,15 +21,15 @@ import {
 export class UserMembershipsController {
   @Get()
   async getMemberships(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const id = twtToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
     return getMembershipsForUser(res.locals.token.id, id, req.query);
   }
 
   @Get(":membershipId")
   async getMembership(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
-    const membershipId = req.params.membershipId;
+    const id = twtToId(req.params.id, res.locals.token.id);
+    const membershipId = twtToId(req.params.membershipId);
     joiValidate(
       {
         id: Joi.string().required(),
@@ -43,8 +42,8 @@ export class UserMembershipsController {
 
   @Delete(":membershipId")
   async deleteMembership(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
-    const membershipId = req.params.membershipId;
+    const id = twtToId(req.params.id, res.locals.token.id);
+    const membershipId = twtToId(req.params.membershipId);
     joiValidate(
       {
         id: Joi.string().required(),
@@ -58,8 +57,8 @@ export class UserMembershipsController {
 
   @Patch(":membershipId")
   async updateMembership(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
-    const membershipId = req.params.membershipId;
+    const id = twtToId(req.params.id, res.locals.token.id);
+    const membershipId = twtToId(req.params.membershipId);
     joiValidate(
       {
         id: Joi.string().required(),

@@ -1,11 +1,10 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["middlewares"]
+  provider = "prisma-client-js"
 }
 
 datasource mysql {
   provider = "mysql"
-  url      = env("DATABASE_URL")
+  url = "***"
 }
 
 enum Gender {
@@ -61,8 +60,8 @@ model users {
   prefersLanguage      String               @default("en-us")
   prefersColorScheme   PrefersColorScheme   @default(NO_PREFERENCE)
   prefersReducedMotion PrefersReducedMotion @default(NO_PREFERENCE)
-  prefersEmail         emails?              @relation("userPrefersEmail", fields: [prefersEmailId], references: [id])
-  prefersEmailId       Int?
+  prefersEmail         emails               @relation("userPrefersEmail", fields: [prefersEmailId], references: [id])
+  prefersEmailId       Int
   profilePictureUrl    String               @default("https://unavatar.now.sh/fallback.png")
   role                 UserRole             @default(USER)
   timezone             String               @default("America/Los_Angeles")

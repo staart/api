@@ -1,3 +1,4 @@
+import { MembershipRole } from "@prisma/client";
 import {
   RESOURCE_CREATED,
   RESOURCE_DELETED,
@@ -6,7 +7,6 @@ import {
 } from "@staart/messages";
 import {
   ClassMiddleware,
-  Controller,
   Delete,
   Get,
   Middleware,
@@ -17,58 +17,51 @@ import {
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../../_staart/helpers/middleware";
+import { twtToId, localsToTokenOrKey } from "../../../_staart/helpers/utils";
 import {
-  localsToTokenOrKey,
-  organizationUsernameToId,
-} from "../../../_staart/helpers/utils";
-import {
-  deleteOrganizationMembershipForUser,
-  getOrganizationMembershipForUser,
-  getOrganizationMembershipsForUser,
-  inviteMemberToOrganization,
-  updateOrganizationMembershipForUser,
-} from "../../../_staart/rest/organization";
-import { MembershipRole } from "@prisma/client";
+  deleteGroupMembershipForUser,
+  getGroupMembershipForUser,
+  getGroupMembershipsForUser,
+  inviteMemberToGroup,
+  updateGroupMembershipForUser,
+} from "../../../_staart/rest/group";
 
 @ClassMiddleware(authHandler)
-export class OrganizationMembershipsController {
+export class GroupMembershipsController {
   @Get()
   async getMemberships(req: Request, res: Response) {
-    const organizationId = await organizationUsernameToId(req.params.id);
-    joiValidate(
-      { organizationId: Joi.string().required() },
-      { organizationId }
-    );
-    return getOrganizationMembershipsForUser(
+    const groupId = twtToId(req.params.id);
+    joiValidate({ groupId: Joi.string().required() }, { groupId });
+    return getGroupMembershipsForUser(
       localsToTokenOrKey(res),
-      organizationId,
+      groupId,
       req.query
     );
   }
 
   @Put()
   async putMemberships(req: Request, res: Response) {
-    const organizationId = await organizationUsernameToId(req.params.id);
+    const groupId = twtToId(req.params.id);
     const newMemberName = req.body.name;
     const newMemberEmail = req.body.email;
     const role = req.body.role;
     joiValidate(
       {
-        organizationId: Joi.string().required(),
+        groupId: Joi.string().required(),
         newMemberName: Joi.string().min(6).required(),
         newMemberEmail: Joi.string().email().required(),
         role: Joi.number(),
       },
       {
-        organizationId,
+        groupId,
         newMemberName,
         newMemberEmail,
         role,
       }
     );
-    await inviteMemberToOrganization(
+    await inviteMemberToGroup(
       localsToTokenOrKey(res),
-      organizationId,
+      groupId,
       newMemberName,
       newMemberEmail,
       role || MembershipRole.MEMBER,
@@ -79,18 +72,18 @@ export class OrganizationMembershipsController {
 
   @Get(":membershipId")
   async getMembership(req: Request, res: Response) {
-    const organizationId = await organizationUsernameToId(req.params.id);
-    const membershipId = req.params.membershipId;
+    const groupId = twtToId(req.params.id);
+    const membershipId = twtToId(req.params.membershipId);
     joiValidate(
       {
-        organizationId: Joi.string().required(),
+        groupId: Joi.string().required(),
         membershipId: Joi.string().required(),
       },
-      { organizationId, membershipId }
+      { groupId, membershipId }
     );
-    return getOrganizationMembershipForUser(
+    return getGroupMembershipForUser(
       localsToTokenOrKey(res),
-      organizationId,
+      groupId,
       membershipId
     );
   }
@@ -105,18 +98,18 @@ export class OrganizationMembershipsController {
     )
   )
   async updateMembership(req: Request, res: Response) {
-    const organizationId = await organizationUsernameToId(req.params.id);
-    const membershipId = req.params.membershipId;
+    const groupId = twtToId(req.params.id);
+    const membershipId = twtToId(req.params.membershipId);
     joiValidate(
       {
-        organizationId: Joi.string().required(),
+        groupId: Joi.string().required(),
         membershipId: Joi.string().required(),
       },
-      { organizationId, membershipId }
+      { groupId, membershipId }
     );
-    const updated = await updateOrganizationMembershipForUser(
+    const updated = await updateGroupMembershipForUser(
       localsToTokenOrKey(res),
-      organizationId,
+      groupId,
       membershipId,
       req.body
     );
@@ -125,18 +118,18 @@ export class OrganizationMembershipsController {
 
   @Delete(":membershipId")
   async deleteMembership(req: Request, res: Response) {
-    const organizationId = await organizationUsernameToId(req.params.id);
-    const membershipId = req.params.membershipId;
+    const groupId = twtToId(req.params.id);
+    const membershipId = twtToId(req.params.membershipId);
     joiValidate(
       {
-        organizationId: Joi.string().required(),
+        groupId: Joi.string().required(),
         membershipId: Joi.string().required(),
       },
-      { organizationId, membershipId }
+      { groupId, membershipId }
     );
-    await deleteOrganizationMembershipForUser(
+    await deleteGroupMembershipForUser(
       localsToTokenOrKey(res),
-      organizationId,
+      groupId,
       membershipId,
       res.locals
     );

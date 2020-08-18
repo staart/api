@@ -6,7 +6,6 @@ import {
 } from "@staart/messages";
 import {
   ClassMiddleware,
-  Controller,
   Delete,
   Get,
   Middleware,
@@ -17,7 +16,7 @@ import {
 } from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler, validator } from "../../../_staart/helpers/middleware";
-import { userUsernameToId } from "../../../_staart/helpers/utils";
+import { twtToId } from "../../../_staart/helpers/utils";
 import {
   createAccessTokenForUser,
   deleteAccessTokenForUser,
@@ -30,7 +29,7 @@ import {
 export class UserAccessTokensController {
   @Get()
   async getUserAccessTokens(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const id = twtToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
     return getUserAccessTokensForUser(res.locals.token.id, id, req.query);
   }
@@ -48,7 +47,7 @@ export class UserAccessTokensController {
     )
   )
   async putUserAccessTokens(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
+    const id = twtToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.string().required() }, { id });
     try {
       const added = await createAccessTokenForUser(
@@ -66,8 +65,8 @@ export class UserAccessTokensController {
 
   @Get(":accessTokenId")
   async getUserAccessToken(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
-    const accessTokenId = req.params.accessTokenId;
+    const id = twtToId(req.params.id, res.locals.token.id);
+    const accessTokenId = twtToId(req.params.accessTokenId);
     joiValidate(
       {
         id: Joi.string().required(),
@@ -91,8 +90,8 @@ export class UserAccessTokensController {
     )
   )
   async patchUserAccessToken(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
-    const accessTokenId = req.params.accessTokenId;
+    const id = twtToId(req.params.id, res.locals.token.id);
+    const accessTokenId = twtToId(req.params.accessTokenId);
     joiValidate(
       {
         id: Joi.string().required(),
@@ -112,8 +111,8 @@ export class UserAccessTokensController {
 
   @Delete(":accessTokenId")
   async deleteUserAccessToken(req: Request, res: Response) {
-    const id = await userUsernameToId(req.params.id, res.locals.token.id);
-    const accessTokenId = req.params.accessTokenId;
+    const id = twtToId(req.params.id, res.locals.token.id);
+    const accessTokenId = twtToId(req.params.accessTokenId);
     joiValidate(
       {
         id: Joi.string().required(),
