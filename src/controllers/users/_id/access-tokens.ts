@@ -30,7 +30,7 @@ export class UserAccessTokensController {
   @Get()
   async getUserAccessTokens(req: Request, res: Response) {
     const id = twtToId(req.params.id, res.locals.token.id);
-    joiValidate({ id: Joi.string().required() }, { id });
+    joiValidate({ id: Joi.number().required() }, { id });
     return getUserAccessTokensForUser(res.locals.token.id, id, req.query);
   }
 
@@ -48,7 +48,7 @@ export class UserAccessTokensController {
   )
   async putUserAccessTokens(req: Request, res: Response) {
     const id = twtToId(req.params.id, res.locals.token.id);
-    joiValidate({ id: Joi.string().required() }, { id });
+    joiValidate({ id: Joi.number().required() }, { id });
     try {
       const added = await createAccessTokenForUser(
         res.locals.token.id,
@@ -69,8 +69,8 @@ export class UserAccessTokensController {
     const accessTokenId = twtToId(req.params.accessTokenId);
     joiValidate(
       {
-        id: Joi.string().required(),
-        accessTokenId: Joi.string().required(),
+        id: Joi.number().required(),
+        accessTokenId: Joi.number().required(),
       },
       { id, accessTokenId }
     );
@@ -94,8 +94,8 @@ export class UserAccessTokensController {
     const accessTokenId = twtToId(req.params.accessTokenId);
     joiValidate(
       {
-        id: Joi.string().required(),
-        accessTokenId: Joi.string().required(),
+        id: Joi.number().required(),
+        accessTokenId: Joi.number().required(),
       },
       { id, accessTokenId }
     );
@@ -115,8 +115,8 @@ export class UserAccessTokensController {
     const accessTokenId = twtToId(req.params.accessTokenId);
     joiValidate(
       {
-        id: Joi.string().required(),
-        accessTokenId: Joi.string().required(),
+        id: Joi.number().required(),
+        accessTokenId: Joi.number().required(),
       },
       { id, accessTokenId }
     );

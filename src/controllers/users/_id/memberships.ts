@@ -22,7 +22,7 @@ export class UserMembershipsController {
   @Get()
   async getMemberships(req: Request, res: Response) {
     const id = twtToId(req.params.id, res.locals.token.id);
-    joiValidate({ id: Joi.string().required() }, { id });
+    joiValidate({ id: Joi.number().required() }, { id });
     return getMembershipsForUser(res.locals.token.id, id, req.query);
   }
 
@@ -32,8 +32,8 @@ export class UserMembershipsController {
     const membershipId = twtToId(req.params.membershipId);
     joiValidate(
       {
-        id: Joi.string().required(),
-        membershipId: Joi.string().required(),
+        id: Joi.number().required(),
+        membershipId: Joi.number().required(),
       },
       { id, membershipId }
     );
@@ -46,8 +46,8 @@ export class UserMembershipsController {
     const membershipId = twtToId(req.params.membershipId);
     joiValidate(
       {
-        id: Joi.string().required(),
-        membershipId: Joi.string().required(),
+        id: Joi.number().required(),
+        membershipId: Joi.number().required(),
       },
       { id, membershipId }
     );
@@ -61,8 +61,8 @@ export class UserMembershipsController {
     const membershipId = twtToId(req.params.membershipId);
     joiValidate(
       {
-        id: Joi.string().required(),
-        membershipId: Joi.string().required(),
+        id: Joi.number().required(),
+        membershipId: Joi.number().required(),
       },
       { id, membershipId }
     );

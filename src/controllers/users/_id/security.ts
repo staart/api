@@ -39,7 +39,7 @@ export class UserSecurityController {
     const newPassword = req.body.newPassword;
     joiValidate(
       {
-        id: Joi.string().required(),
+        id: Joi.number().required(),
       },
       { id }
     );
@@ -56,14 +56,14 @@ export class UserSecurityController {
   @Get("data")
   async getUserData(req: Request, res: Response) {
     const id = twtToId(req.params.id, res.locals.token.id);
-    joiValidate({ id: Joi.string().required() }, { id });
+    joiValidate({ id: Joi.number().required() }, { id });
     return getAllDataForUser(res.locals.token.id, id);
   }
 
   @Get("2fa/enable")
   async getEnable2FA(req: Request, res: Response) {
     const id = twtToId(req.params.id, res.locals.token.id);
-    joiValidate({ id: Joi.string().required() }, { id });
+    joiValidate({ id: Joi.number().required() }, { id });
     return enable2FAForUser(res.locals.token.id, id);
   }
 
@@ -73,7 +73,7 @@ export class UserSecurityController {
     const code = req.body.code;
     joiValidate(
       {
-        id: Joi.string().required(),
+        id: Joi.number().required(),
         code: Joi.number().min(5).required(),
       },
       { id, code }
@@ -85,7 +85,7 @@ export class UserSecurityController {
   @Delete("2fa")
   async delete2FA(req: Request, res: Response) {
     const id = twtToId(req.params.id, res.locals.token.id);
-    joiValidate({ id: Joi.string().required() }, { id });
+    joiValidate({ id: Joi.number().required() }, { id });
     await disable2FAForUser(res.locals.token.id, id);
     return respond(RESOURCE_SUCCESS);
   }
@@ -93,7 +93,7 @@ export class UserSecurityController {
   @Get("backup-codes/regenerate")
   async getRegenerateBackupCodes(req: Request, res: Response) {
     const id = twtToId(req.params.id, res.locals.token.id);
-    joiValidate({ id: Joi.string().required() }, { id });
+    joiValidate({ id: Joi.number().required() }, { id });
     const backupCodes = await regenerateBackupCodesForUser(
       res.locals.token.id,
       id

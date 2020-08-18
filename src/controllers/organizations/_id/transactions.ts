@@ -13,7 +13,7 @@ export class GroupTransactionsController {
   @Get()
   async getTransactions(req: Request, res: Response) {
     const groupId = twtToId(req.params.id);
-    joiValidate({ groupId: Joi.string().required() }, { groupId });
+    joiValidate({ groupId: Joi.number().required() }, { groupId });
     const transactionParams = { ...req.query };
     joiValidate(
       {
@@ -35,7 +35,7 @@ export class GroupTransactionsController {
     const couponCode = req.body.couponCode;
     joiValidate(
       {
-        groupId: Joi.string().required(),
+        groupId: Joi.number().required(),
         couponCode: Joi.string().required(),
       },
       { groupId, couponCode }
@@ -53,8 +53,8 @@ export class GroupTransactionsController {
     const transactionId = req.params.transactionId;
     joiValidate(
       {
-        groupId: Joi.string().required(),
-        transactionId: Joi.string().required(),
+        groupId: Joi.number().required(),
+        transactionId: Joi.number().required(),
       },
       { groupId, transactionId }
     );
