@@ -157,8 +157,7 @@ export const queryToParams = (req: Request) => {
       [index: string]: number | { [index: string]: string | boolean };
     } = {};
     if (typeof query.skip === "string") result.skip = parseInt(query.skip);
-    if (typeof query.first === "string") result.first = parseInt(query.first);
-    if (typeof query.last === "string") result.last = parseInt(query.last);
+    if (typeof query.take === "string") result.take = parseInt(query.take);
 
     query.select = query.select || [];
     if (typeof query.select === "string") query.select = [query.select];

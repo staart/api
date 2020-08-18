@@ -523,7 +523,7 @@ export const getGroupMembershipsForUser = async (
         where: { groupId: groupId },
         ...queryParamsToSelect(queryParams),
       }),
-      { take: queryParams.first, last: queryParams.last }
+      { take: queryParams.take }
     );
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -688,7 +688,7 @@ export const getGroupApiKeysForUser = async (
         where: { groupId: groupId },
         ...queryParamsToSelect(queryParams),
       }),
-      { take: queryParams.first, last: queryParams.last }
+      { take: queryParams.take }
     );
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -790,7 +790,7 @@ export const getGroupDomainsForUser = async (
         where: { groupId: groupId },
         ...queryParamsToSelect(queryParams),
       }),
-      { take: queryParams.first, last: queryParams.last }
+      { take: queryParams.take }
     );
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -937,7 +937,7 @@ export const getGroupWebhooksForUser = async (
         where: { groupId: groupId },
         ...queryParamsToSelect(queryParams),
       }),
-      { take: queryParams.first, last: queryParams.last }
+      { take: queryParams.take }
     );
   throw new Error(INSUFFICIENT_PERMISSION);
 };
