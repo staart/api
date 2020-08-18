@@ -23,7 +23,7 @@ export const getAllGroupForUser = async (
   if (await can(tokenUserId, SudoScopes.READ, "sudo"))
     return paginatedResult(
       await prisma.groups.findMany(queryParamsToSelect(queryParams)),
-      { first: queryParams.first, last: queryParams.last }
+      { take: queryParams.first, last: queryParams.last }
     );
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -35,7 +35,7 @@ export const getAllUsersForUser = async (
   if (await can(tokenUserId, SudoScopes.READ, "sudo"))
     return paginatedResult(
       await prisma.users.findMany(queryParamsToSelect(queryParams)),
-      { first: queryParams.first, last: queryParams.last }
+      { take: queryParams.first, last: queryParams.last }
     );
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -47,7 +47,7 @@ export const getAllCouponsForUser = async (
   if (await can(tokenUserId, SudoScopes.READ, "sudo"))
     return paginatedResult(
       await prisma.couponCodes.findMany(queryParamsToSelect(queryParams)),
-      { first: queryParams.first, last: queryParams.last }
+      { take: queryParams.first, last: queryParams.last }
     );
   throw new Error(INSUFFICIENT_PERMISSION);
 };

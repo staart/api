@@ -194,7 +194,7 @@ export const getMembershipsForUser = async (
         where: { userId: dataUserId },
         include: { group: true },
       }),
-      { first: queryParams.first, last: queryParams.last }
+      { take: queryParams.first, last: queryParams.last }
     );
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -306,7 +306,7 @@ export const getUserAccessTokensForUser = async (
         where: { userId: userId },
         ...queryParamsToSelect(queryParams),
       }),
-      { first: queryParams.first, last: queryParams.last }
+      { take: queryParams.first, last: queryParams.last }
     );
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -387,7 +387,7 @@ export const getUserSessionsForUser = async (
         where: { userId: userId },
         ...queryParamsToSelect(queryParams),
       }),
-      { first: queryParams.first, last: queryParams.last }
+      { take: queryParams.first, last: queryParams.last }
     );
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -425,7 +425,7 @@ export const getUserIdentitiesForUser = async (
         where: { userId: userId },
         ...queryParamsToSelect(queryParams),
       }),
-      { first: queryParams.first, last: queryParams.last }
+      { take: queryParams.first, last: queryParams.last }
     );
   throw new Error(INSUFFICIENT_PERMISSION);
 };
@@ -520,7 +520,7 @@ export const getAllEmailsForUser = async (
         where: { userId: userId },
         ...queryParamsToSelect(queryParams),
       }),
-      { first: queryParams.first, last: queryParams.last }
+      { take: queryParams.first, last: queryParams.last }
     );
   }
   throw new Error(INSUFFICIENT_PERMISSION);
