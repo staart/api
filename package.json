@@ -51,7 +51,7 @@
     "@types/validator": "^13.1.0",
     "@types/yaml": "^1.9.7",
     "dotenv": "^8.2.0",
-    "jest": "^26.4.0",
+    "jest": "^26.4.1",
     "semantic-release": "^17.1.1",
     "semantic-release-gitmoji": "^1.3.4",
     "ts-jest": "^26.2.0",
