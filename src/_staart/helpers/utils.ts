@@ -152,7 +152,7 @@ export const dnsResolve = (
 
 export const queryToParams = (req: Request) => {
   if (typeof req.query === "object") {
-    const query: { [index: string]: string | string[] } = req.query;
+    const query: { [index: string]: string | string[] } = req.query as any;
     const result: {
       [index: string]: number | { [index: string]: string | boolean };
     } = {};

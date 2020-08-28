@@ -26,7 +26,7 @@ export const trackEvent = (event: Event, locals?: Locals) => {
 
 export const trackUrl = async (req: Request, res: Response) => {
   if (req.method === "OPTIONS") return;
-  const trackingObject = {
+  const trackingObject: { [index: string]: any } = {
     date: new Date(),
     apiKey: req.get("X-Api-Key") || req.query.key,
     method: req.method,
@@ -40,7 +40,7 @@ export const trackUrl = async (req: Request, res: Response) => {
     ipCountry: (req.get("cf-ipcountry") || "").toLowerCase(),
     ...res.locals,
   };
-  if (trackingObject.apiKey) {
+  if (typeof trackingObject.apiKey === "string") {
     try {
       const token = await verifyToken<any>(
         trackingObject.apiKey,

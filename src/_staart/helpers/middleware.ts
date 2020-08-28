@@ -28,7 +28,7 @@ import {
   SPEED_LIMIT_TIME,
 } from "../../config";
 import { Tokens } from "../interfaces/enum";
-import { StripeLocals } from "../interfaces/general";
+import { StripeLocals, Locals } from "../interfaces/general";
 import { safeError } from "./errors";
 import {
   ApiKeyResponse,
@@ -122,7 +122,7 @@ export const authHandler = async (
     }
 
     let apiKeyJwt = req.get("X-Api-Key") || req.query.key;
-    if (apiKeyJwt) {
+    if (typeof apiKeyJwt === "string") {
       if (apiKeyJwt.startsWith("Bearer "))
         apiKeyJwt = apiKeyJwt.replace("Bearer ", "");
       const apiKeyToken = await verifyToken<ApiKeyResponse>(
@@ -130,7 +130,7 @@ export const authHandler = async (
         Tokens.API_KEY
       );
       await checkInvalidatedToken(apiKeyJwt);
-      checkIpRestrictions(apiKeyToken, res.locals);
+      checkIpRestrictions(apiKeyToken, res.locals as Locals);
       const origin = req.get("Origin");
       if (origin) {
         const referrerDomain = new URL(origin).hostname;
@@ -176,7 +176,7 @@ export const rateLimitHandler = async (
   next: NextFunction
 ) => {
   const apiKey = req.get("X-Api-Key") || req.query.key;
-  if (apiKey) {
+  if (typeof apiKey === "string") {
     try {
       const details = await verifyToken<ApiKeyResponse>(apiKey, Tokens.API_KEY);
       if (details.groupId) {
@@ -198,7 +198,7 @@ export const speedLimitHandler = async (
   next: NextFunction
 ) => {
   const apiKey = req.get("X-Api-Key") || req.query.key;
-  if (apiKey) {
+  if (typeof apiKey === "string") {
     try {
       const details = await verifyToken<ApiKeyResponse>(apiKey, Tokens.API_KEY);
       if (details.groupId) {
