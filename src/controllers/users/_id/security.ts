@@ -19,6 +19,7 @@ import {
   regenerateBackupCodesForUser,
   updatePasswordForUser,
   verify2FAForUser,
+  getPasswordForUser,
 } from "../../../_staart/rest/user";
 
 @ClassMiddleware(authHandler)
@@ -51,6 +52,13 @@ export class UserSecurityController {
       res.locals
     );
     return respond(RESOURCE_UPDATED);
+  }
+
+  @Get("password")
+  async getPassword(req: Request, res: Response) {
+    const id = twtToId(req.params.id, res.locals.token.id);
+    joiValidate({ id: Joi.number().required() }, { id });
+    return getPasswordForUser(res.locals.token.id, id);
   }
 
   @Get("data")

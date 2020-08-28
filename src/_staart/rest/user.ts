@@ -199,6 +199,22 @@ export const getMembershipsForUser = async (
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
+export const getPasswordForUser = async (
+  tokenUserId: number,
+  dataUserId: number
+) => {
+  if (
+    await can(tokenUserId, UserScopes.READ_USER_MEMBERSHIPS, "user", dataUserId)
+  ) {
+    const user = await prisma.users.findOne({
+      where: { id: dataUserId },
+    });
+    if (!user) throw new Error(USER_NOT_FOUND);
+    return { hasPassword: !!user.password };
+  }
+  throw new Error(INSUFFICIENT_PERMISSION);
+};
+
 export const getAllDataForUser = async (
   tokenUserId: number,
   userId: number
