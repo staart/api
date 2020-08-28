@@ -69,7 +69,7 @@ export const updateUserForUser = async (
   tokenUserId: number,
   updateUserId: number,
   data: users,
-  locals: Locals
+  locals: Locals | any
 ) => {
   delete data.password;
   if (await can(tokenUserId, UserScopes.UPDATE_USER, "user", updateUserId)) {
@@ -96,7 +96,7 @@ export const updatePasswordForUser = async (
   updateUserId: number,
   oldPassword: string,
   newPassword: string,
-  locals: Locals
+  locals: Locals | any
 ) => {
   if (
     await can(tokenUserId, UserScopes.CHANGE_PASSWORD, "user", updateUserId)
@@ -127,7 +127,7 @@ export const updatePasswordForUser = async (
 export const deleteUserForUser = async (
   tokenUserId: number,
   updateUserId: number,
-  locals: Locals
+  locals: Locals | any
 ) => {
   if (await can(tokenUserId, UserScopes.DELETE_USER, "user", updateUserId)) {
     const groupsToDelete = await prisma.groups.findMany({
@@ -330,7 +330,7 @@ export const updateAccessTokenForUser = async (
   userId: number,
   accessTokenId: number,
   data: accessTokensUpdateInput,
-  locals: Locals
+  locals: Locals | any
 ) => {
   if (
     await can(tokenUserId, UserScopes.UPDATE_USER_ACCESS_TOKENS, "user", userId)
@@ -346,7 +346,7 @@ export const createAccessTokenForUser = async (
   tokenUserId: number,
   userId: number,
   accessToken: accessTokensCreateInput,
-  locals: Locals
+  locals: Locals | any
 ) => {
   if (
     await can(tokenUserId, UserScopes.CREATE_USER_ACCESS_TOKENS, "user", userId)
@@ -365,7 +365,7 @@ export const deleteAccessTokenForUser = async (
   tokenUserId: number,
   userId: number,
   accessTokenId: number,
-  locals: Locals
+  locals: Locals | any
 ) => {
   if (
     await can(tokenUserId, UserScopes.DELETE_USER_ACCESS_TOKENS, "user", userId)
@@ -406,7 +406,7 @@ export const deleteSessionForUser = async (
   tokenUserId: number,
   userId: number,
   sessionId: number,
-  locals: Locals
+  locals: Locals | any
 ) => {
   if (await can(tokenUserId, UserScopes.DELETE_USER_SESSION, "user", userId)) {
     return prisma.sessions.delete({ where: { id: sessionId } });
@@ -466,7 +466,7 @@ export const deleteIdentityForUser = async (
   tokenUserId: number,
   userId: number,
   identityId: number,
-  locals: Locals
+  locals: Locals | any
 ) => {
   if (await can(tokenUserId, UserScopes.DELETE_USER_IDENTITY, "user", userId)) {
     return prisma.identities.delete({ where: { id: identityId } });
@@ -557,7 +557,7 @@ export const addEmailToUserForUser = async (
   tokenUserId: number,
   userId: number,
   email: string,
-  locals: Locals
+  locals: Locals | any
 ) => {
   if (!(await can(tokenUserId, UserScopes.CREATE_USER_EMAILS, "user", userId)))
     throw new Error(INSUFFICIENT_PERMISSION);
@@ -577,7 +577,7 @@ export const deleteEmailFromUserForUser = async (
   tokenUserId: number,
   userId: number,
   emailId: number,
-  locals: Locals
+  locals: Locals | any
 ) => {
   if (!(await can(tokenUserId, UserScopes.DELETE_USER_EMAILS, "user", userId)))
     throw new Error(INSUFFICIENT_PERMISSION);
@@ -634,7 +634,7 @@ export const getMembershipDetailsForUser = async (
 export const deleteMembershipForUser = async (
   tokenUserId: number | ApiKeyResponse,
   membershipId: number,
-  locals: Locals
+  locals: Locals | any
 ) => {
   const membership = await prisma.memberships.findOne({
     where: { id: membershipId },
@@ -675,7 +675,7 @@ export const updateMembershipForUser = async (
   userId: number | ApiKeyResponse,
   membershipId: number,
   data: membershipsUpdateInput,
-  locals: Locals
+  locals: Locals | any
 ) => {
   if (
     await can(

@@ -193,7 +193,7 @@ export const refreshToken = (id: number) =>
 
 export const postLoginTokens = async (
   user: users,
-  locals: Locals,
+  locals: Locals | any,
   refreshTokenString?: string
 ) => {
   if (!user.id) throw new Error(USER_NOT_FOUND);
@@ -236,7 +236,7 @@ export const getLoginResponse = async (
   user: users,
   type: EventType,
   strategy: string,
-  locals: Locals
+  locals: Locals | any
 ): Promise<LoginResponse> => {
   if (!user.id) throw new Error(USER_NOT_FOUND);
   const verifiedEmails = await prisma.emails.findMany({
@@ -301,7 +301,10 @@ export const invalidateToken = async (token: string) => {
     );
 };
 
-export const checkIpRestrictions = (apiKey: ApiKeyResponse, locals: Locals) => {
+export const checkIpRestrictions = (
+  apiKey: ApiKeyResponse,
+  locals: Locals | any
+) => {
   if (!apiKey.ipRestrictions) return;
   if (
     !ipRangeCheck(

@@ -15,7 +15,7 @@ export const clearSecurityEventsData = () => {
   securityEventsData = [];
 };
 
-export const trackEvent = (event: Event, locals?: Locals) => {
+export const trackEvent = (event: Event, locals?: Locals | any) => {
   event.date = new Date();
   if (locals) {
     event.ipAddress = locals.ipAddress;

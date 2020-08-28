@@ -91,7 +91,7 @@ export const getGroupForUser = async (
 export const newGroupForUser = async (
   userId: number,
   group: groupsCreateInput,
-  locals: Locals
+  locals: Locals | any
 ) => {
   if (!(group.name || "").trim()) {
     const user = await getUserById(userId);
@@ -104,7 +104,7 @@ export const updateGroupForUser = async (
   userId: number | ApiKeyResponse,
   groupId: number,
   data: groupsUpdateInput,
-  locals: Locals
+  locals: Locals | any
 ) => {
   if (await can(userId, OrgScopes.UPDATE_ORG, "group", groupId)) {
     const result = await prisma.groups.update({
@@ -123,7 +123,7 @@ export const updateGroupForUser = async (
 export const deleteGroupForUser = async (
   userId: number | ApiKeyResponse,
   groupId: number,
-  locals: Locals
+  locals: Locals | any
 ) => {
   if (await can(userId, OrgScopes.DELETE_ORG, "group", groupId)) {
     const groupDetails = await getGroupById(groupId);
@@ -168,7 +168,7 @@ export const updateGroupBillingForUser = async (
   userId: number | ApiKeyResponse,
   groupId: number,
   data: any,
-  locals: Locals
+  locals: Locals | any
 ) => {
   if (await can(userId, OrgScopes.UPDATE_ORG_BILLING, "group", groupId)) {
     const group = await getGroupById(groupId);
@@ -317,7 +317,7 @@ export const updateGroupSubscriptionForUser = async (
   groupId: number,
   subscriptionId: string,
   data: KeyValue,
-  locals?: Locals
+  locals?: Locals | any
 ) => {
   if (await can(userId, OrgScopes.UPDATE_ORG_SUBSCRIPTIONS, "group", groupId)) {
     const group = await getGroupById(groupId);
@@ -348,7 +348,7 @@ export const createGroupSubscriptionForUser = async (
   userId: number | ApiKeyResponse,
   groupId: number,
   params: { plan: string; [index: string]: any },
-  locals?: Locals
+  locals?: Locals | any
 ) => {
   if (await can(userId, OrgScopes.CREATE_ORG_SUBSCRIPTIONS, "group", groupId)) {
     const group = await getGroupById(groupId);
@@ -387,7 +387,7 @@ export const deleteGroupSourceForUser = async (
   userId: number | ApiKeyResponse,
   groupId: number,
   sourceId: string,
-  locals?: Locals
+  locals?: Locals | any
 ) => {
   if (await can(userId, OrgScopes.DELETE_ORG_SOURCES, "group", groupId)) {
     const group = await getGroupById(groupId);
@@ -418,7 +418,7 @@ export const updateGroupSourceForUser = async (
   groupId: number,
   sourceId: string,
   data: any,
-  locals?: Locals
+  locals?: Locals | any
 ) => {
   if (await can(userId, OrgScopes.UPDATE_ORG_SOURCES, "group", groupId)) {
     const group = await getGroupById(groupId);
@@ -449,7 +449,7 @@ export const createGroupSourceForUser = async (
   userId: number | ApiKeyResponse,
   groupId: number,
   card: any,
-  locals?: Locals
+  locals?: Locals | any
 ) => {
   if (await can(userId, OrgScopes.CREATE_ORG_SOURCES, "group", groupId)) {
     const group = await getGroupById(groupId);
@@ -577,7 +577,7 @@ export const deleteGroupMembershipForUser = async (
   userId: number | ApiKeyResponse,
   groupId: number,
   membershipId: number,
-  locals: Locals
+  locals: Locals | any
 ) => {
   if (await can(userId, OrgScopes.DELETE_ORG_MEMBERSHIPS, "group", groupId)) {
     const members = await prisma.memberships.findMany({
@@ -596,7 +596,7 @@ export const inviteMemberToGroup = async (
   newMemberName: string,
   newMemberEmail: string,
   role: MembershipRole,
-  locals: Locals
+  locals: Locals | any
 ) => {
   if (await can(userId, OrgScopes.CREATE_ORG_MEMBERSHIPS, "group", groupId)) {
     const group = await getGroupById(groupId);
@@ -722,7 +722,7 @@ export const updateApiKeyForUser = async (
   groupId: number,
   apiKeyId: number,
   data: apiKeysUpdateInput,
-  locals: Locals
+  locals: Locals | any
 ) => {
   if (await can(userId, OrgScopes.UPDATE_ORG_API_KEYS, "group", groupId)) {
     const result = await prisma.apiKeys.update({
@@ -740,7 +740,7 @@ export const createApiKeyForUser = async (
   userId: number | ApiKeyResponse,
   groupId: number,
   apiKey: apiKeysCreateInput,
-  locals: Locals
+  locals: Locals | any
 ) => {
   if (await can(userId, OrgScopes.CREATE_ORG_API_KEYS, "group", groupId)) {
     apiKey.apiKey = randomString({ length: 20 });
@@ -766,7 +766,7 @@ export const deleteApiKeyForUser = async (
   userId: number | ApiKeyResponse,
   groupId: number,
   apiKeyId: number,
-  locals: Locals
+  locals: Locals | any
 ) => {
   if (await can(userId, OrgScopes.DELETE_ORG_API_KEYS, "group", groupId)) {
     const result = await prisma.apiKeys.delete({
@@ -810,7 +810,7 @@ export const updateDomainForUser = async (
   groupId: number,
   domainId: number,
   data: domainsUpdateInput,
-  locals: Locals
+  locals: Locals | any
 ) => {
   if (await can(userId, OrgScopes.UPDATE_ORG_DOMAINS, "group", groupId)) {
     const result = await prisma.domains.update({
@@ -828,7 +828,7 @@ export const createDomainForUser = async (
   userId: number | ApiKeyResponse,
   groupId: number,
   domain: domainsCreateInput,
-  locals: Locals
+  locals: Locals | any
 ) => {
   if (await can(userId, OrgScopes.CREATE_ORG_DOMAINS, "group", groupId)) {
     await checkDomainAvailability(domain.domain);
@@ -855,7 +855,7 @@ export const deleteDomainForUser = async (
   userId: number | ApiKeyResponse,
   groupId: number,
   domainId: number,
-  locals: Locals
+  locals: Locals | any
 ) => {
   if (await can(userId, OrgScopes.DELETE_ORG_DOMAINS, "group", groupId)) {
     const result = await prisma.domains.delete({
@@ -873,7 +873,7 @@ export const verifyDomainForUser = async (
   groupId: number,
   domainId: number,
   method: "dns" | "file",
-  locals: Locals
+  locals: Locals | any
 ) => {
   if (await can(userId, OrgScopes.VERIFY_ORG_DOMAINS, "group", groupId)) {
     const domain = await prisma.domains.findOne({
@@ -957,7 +957,7 @@ export const updateWebhookForUser = async (
   groupId: number,
   webhookId: number,
   data: webhooksUpdateInput,
-  locals: Locals
+  locals: Locals | any
 ) => {
   if (await can(userId, OrgScopes.UPDATE_ORG_WEBHOOKS, "group", groupId)) {
     const result = await prisma.webhooks.update({
@@ -975,7 +975,7 @@ export const createWebhookForUser = async (
   userId: number | ApiKeyResponse,
   groupId: number,
   webhook: webhooksCreateInput,
-  locals: Locals
+  locals: Locals | any
 ) => {
   if (await can(userId, OrgScopes.DELETE_ORG_WEBHOOKS, "group", groupId)) {
     const result = await prisma.webhooks.create({
@@ -1002,7 +1002,7 @@ export const deleteWebhookForUser = async (
   userId: number | ApiKeyResponse,
   groupId: number,
   webhookId: number,
-  locals: Locals
+  locals: Locals | any
 ) => {
   if (await can(userId, OrgScopes.CREATE_ORG_WEBHOOKS, "group", groupId)) {
     const result = prisma.webhooks.delete({

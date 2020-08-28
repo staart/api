@@ -44,7 +44,10 @@ import {
   resendEmailVerification,
 } from "../services/user.service";
 
-export const validateRefreshToken = async (token: string, locals: Locals) => {
+export const validateRefreshToken = async (
+  token: string,
+  locals: Locals | any
+) => {
   await checkInvalidatedToken(token);
   const data = await verifyToken<{ id: number }>(token, Tokens.REFRESH);
   if (!data.id) throw new Error(USER_NOT_FOUND);
@@ -53,7 +56,10 @@ export const validateRefreshToken = async (token: string, locals: Locals) => {
   return postLoginTokens(user, locals, token);
 };
 
-export const invalidateRefreshToken = async (token: string, locals: Locals) => {
+export const invalidateRefreshToken = async (
+  token: string,
+  locals: Locals | any
+) => {
   const data = await verifyToken<{ id: number }>(token, Tokens.REFRESH);
   if (!data.id) throw new Error(USER_NOT_FOUND);
   await prisma.sessions.deleteMany({
@@ -65,7 +71,7 @@ export const invalidateRefreshToken = async (token: string, locals: Locals) => {
 export const login = async (
   email: string,
   password: string,
-  locals: Locals
+  locals: Locals | any
 ) => {
   let user: users;
   try {
@@ -99,7 +105,11 @@ export const login = async (
   throw new Error(INVALID_LOGIN);
 };
 
-export const login2FA = async (code: number, token: string, locals: Locals) => {
+export const login2FA = async (
+  code: number,
+  token: string,
+  locals: Locals | any
+) => {
   const data = await verifyToken<{ id: number }>(token, Tokens.TWO_FACTOR);
   const user = await getUserById(data.id);
   if (!user) throw new Error(USER_NOT_FOUND);
@@ -126,7 +136,7 @@ export const login2FA = async (code: number, token: string, locals: Locals) => {
 
 export const register = async (
   user: usersCreateInput,
-  locals?: Locals,
+  locals?: Locals | any,
   email?: string,
   groupId?: number,
   role?: MembershipRole,
@@ -178,7 +188,10 @@ export const register = async (
   return { userId, resendToken };
 };
 
-export const sendPasswordReset = async (email: string, locals?: Locals) => {
+export const sendPasswordReset = async (
+  email: string,
+  locals?: Locals | any
+) => {
   const user = await getUserByEmail(email);
   const token = await passwordResetToken(user.id);
   await mail({
@@ -215,7 +228,7 @@ export const sendNewPassword = async (userId: number, email: string) => {
   return;
 };
 
-export const verifyEmail = async (token: string, locals: Locals) => {
+export const verifyEmail = async (token: string, locals: Locals | any) => {
   const emailId = (
     await verifyToken<{ id: number }>(token, Tokens.EMAIL_VERIFY)
   ).id;
@@ -237,7 +250,7 @@ export const verifyEmail = async (token: string, locals: Locals) => {
   });
 };
 
-export const loginLink = async (token: string, locals: Locals) => {
+export const loginLink = async (token: string, locals: Locals | any) => {
   const userId = (await verifyToken<{ id: number }>(token, Tokens.LOGIN_LINK))
     .id;
   const user = await prisma.users.findOne({
@@ -258,7 +271,7 @@ export const loginLink = async (token: string, locals: Locals) => {
 export const updatePassword = async (
   token: string,
   password: string,
-  locals: Locals
+  locals: Locals | any
 ) => {
   const userId = (
     await verifyToken<{ id: number }>(token, Tokens.PASSWORD_RESET)
@@ -281,7 +294,7 @@ export const updatePassword = async (
 export const impersonate = async (
   tokenUserId: number,
   impersonateUserId: number,
-  locals: Locals
+  locals: Locals | any
 ) => {
   if (
     !(await can(tokenUserId, UserScopes.IMPERSONATE, "user", impersonateUserId))
@@ -294,7 +307,7 @@ export const impersonate = async (
   throw new Error(USER_NOT_FOUND);
 };
 
-export const approveLocation = async (token: string, locals: Locals) => {
+export const approveLocation = async (token: string, locals: Locals | any) => {
   const tokenUser = await verifyToken<TokenResponse>(
     token,
     Tokens.APPROVE_LOCATION
