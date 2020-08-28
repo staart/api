@@ -119,12 +119,9 @@ export const queryParamsToSelect = (queryParams: any) => {
   return data;
 };
 
-export const paginatedResult = <T>(
-  data: T,
-  { first, last }: { first?: number; last?: number }
-) => {
+export const paginatedResult = <T>(data: T, { take }: { take?: number }) => {
   const dataArray = (data as any) as { id: number }[];
-  const hasMore = dataArray.length >= (first || last || Infinity);
+  const hasMore = dataArray.length >= (take || Infinity);
   return {
     data,
     hasMore,
