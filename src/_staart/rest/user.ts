@@ -48,6 +48,7 @@ import {
   resendEmailVerification,
 } from "../services/user.service";
 import { deleteGroupForUser } from "./group";
+import { PartialBy } from "../helpers/utils";
 
 export const getUserFromIdForUser = async (
   userId: number,
@@ -68,9 +69,10 @@ export const getUserFromIdForUser = async (
 export const updateUserForUser = async (
   tokenUserId: number,
   updateUserId: number,
-  data: users,
+  _data: users,
   locals: Locals | any
 ) => {
+  const data: PartialBy<users, "password"> = { ..._data };
   delete data.password;
   if (await can(tokenUserId, UserScopes.UPDATE_USER, "user", updateUserId)) {
     const user = await prisma.users.update({

@@ -22,10 +22,13 @@ export const twtToId = (twt: string, userId?: string) =>
 /**
  * Delete any sensitive information for a user like passwords and tokens
  */
-export const deleteSensitiveInfoUser = (user: users) => {
+export const deleteSensitiveInfoUser = (_user: users) => {
+  const user: PartialBy<PartialBy<users, "password">, "twoFactorSecret"> = {
+    ..._user,
+  };
   delete user.password;
   delete user.twoFactorSecret;
-  return user;
+  return user as users;
 };
 
 export const localsToTokenOrKey = (res: Response) => {
