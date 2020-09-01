@@ -72,7 +72,7 @@
     "@staart/payments": "^4.0.0",
     "@staart/redis": "^2.3.1",
     "@staart/scripts": "^1.17.0",
-    "@staart/server": "^2.7.0",
+    "@staart/server": "^2.7.1",
     "@staart/text": "^2.3.0",
     "@staart/validate": "^3.0.2",
     "axios": "^0.20.0",
