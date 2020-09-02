@@ -3,7 +3,7 @@ import { AccessTokenResponse, ApiKeyResponse } from "./jwt";
 import { newEnforcer, Model, StringAdapter } from "casbin";
 import { prisma } from "./prisma";
 import { ScopesUser, ScopesGroup, ScopesAdmin } from "../../config";
-import { readFileSync } from "fs-extra";
+import { twtToId } from "./utils";
 import { join } from "path";
 
 /**
@@ -49,44 +49,70 @@ export const BaseScopesAdmin = {
 const getPolicyForUser = async (userId: number) => {
   let policy = "";
   Object.values(ScopesUser).forEach((scope) => {
-    policy += `p, user-${userId}, user-${userId}, ${Acts.READ}${scope}\n`;
-    policy += `p, user-${userId}, user-${userId}, ${Acts.WRITE}${scope}\n`;
+    policy += `p, user-${twtToId(userId)}, user-${twtToId(userId)}, ${
+      Acts.READ
+    }${scope}\n`;
+    policy += `p, user-${twtToId(userId)}, user-${twtToId(userId)}, ${
+      Acts.WRITE
+    }${scope}\n`;
   });
-  policy += `p, user-${userId}, user-${userId}, ${Acts.DELETE}\n`;
+  policy += `p, user-${twtToId(userId)}, user-${twtToId(userId)}, ${
+    Acts.DELETE
+  }\n`;
   const memberships = await prisma.memberships.findMany({
     where: { userId },
   });
   for await (const membership of memberships) {
-    policy += `p, user-${userId}, membership-${membership.id}, ${Acts.READ}\n`;
-    policy += `p, user-${userId}, membership-${membership.id}, ${Acts.WRITE}\n`;
-    policy += `p, user-${userId}, membership-${membership.id}, ${Acts.DELETE}\n`;
+    policy += `p, user-${twtToId(userId)}, membership-${twtToId(
+      membership.id
+    )}, ${Acts.READ}\n`;
+    policy += `p, user-${twtToId(userId)}, membership-${twtToId(
+      membership.id
+    )}, ${Acts.WRITE}\n`;
+    policy += `p, user-${twtToId(userId)}, membership-${twtToId(
+      membership.id
+    )}, ${Acts.DELETE}\n`;
     if (membership.role === "ADMIN" || membership.role === "OWNER") {
       const groupMemberships = await prisma.memberships.findMany({
         where: { groupId: membership.groupId },
       });
-      policy += `p, user-${userId}, group-${membership.groupId}, ${Acts.DELETE}\n`;
+      policy += `p, user-${twtToId(userId)}, group-${twtToId(
+        membership.groupId
+      )}, ${Acts.DELETE}\n`;
       groupMemberships.forEach((groupMembership) => {
-        policy += `p, user-${userId}, membership-${groupMembership.id}, ${Acts.READ}\n`;
+        policy += `p, user-${twtToId(userId)}, membership-${twtToId(
+          groupMembership.id
+        )}, ${Acts.READ}\n`;
         if (groupMembership.role !== "OWNER") {
-          policy += `p, user-${userId}, membership-${groupMembership.id}, ${Acts.WRITE}\n`;
-          policy += `p, user-${userId}, membership-${groupMembership.id}, ${Acts.DELETE}\n`;
+          policy += `p, user-${twtToId(userId)}, membership-${twtToId(
+            groupMembership.id
+          )}, ${Acts.WRITE}\n`;
+          policy += `p, user-${twtToId(userId)}, membership-${twtToId(
+            groupMembership.id
+          )}, ${Acts.DELETE}\n`;
         }
       });
     }
     Object.values(ScopesGroup).forEach((scope) => {
       if (membership.role === "ADMIN" || membership.role === "OWNER") {
-        policy += `p, user-${userId}, group-${membership.groupId}, ${Acts.READ}${scope}\n`;
-        policy += `p, user-${userId}, group-${membership.groupId}, ${Acts.WRITE}${scope}\n`;
+        policy += `p, user-${twtToId(userId)}, group-${twtToId(
+          membership.groupId
+        )}, ${Acts.READ}${scope}\n`;
+        policy += `p, user-${twtToId(userId)}, group-${twtToId(
+          membership.groupId
+        )}, ${Acts.WRITE}${scope}\n`;
       } else {
-        policy += `p, user-${userId}, group-${membership.groupId}, ${Acts.READ}${scope}\n`;
+        policy += `p, user-${twtToId(userId)}, group-${twtToId(
+          membership.groupId
+        )}, ${Acts.READ}${scope}\n`;
       }
     });
   }
   const userDetails = await getUserById(userId);
   if (userDetails.role === "SUDO") {
     Object.values(ScopesAdmin).forEach((scope) => {
-      policy += `p, user-${userId}, ${Acts.READ}, ${scope}\n`;
-      policy += `p, user-${userId}, ${Acts.WRITE}, ${scope}\n`;
+      policy += `p, user-${twtToId(userId)}, ${Acts.READ}, ${scope}\n`;
+      policy += `p, user-${twtToId(userId)}, ${Acts.WRITE}, ${scope}\n`;
     });
   }
   console.log(policy);

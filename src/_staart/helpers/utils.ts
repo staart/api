@@ -14,11 +14,11 @@ import { ApiKeyResponse } from "./jwt";
  */
 export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
-export const twtToId = (twt: string, userId?: string) => {
-  if (twt.length < 10 && twt !== "me") return parseInt(twt);
+export const twtToId = (twt: string | number, userId?: string) => {
+  if (String(twt).length < 10 && twt !== "me") return parseInt(String(twt));
   return twt === "me" && userId
     ? parseInt(verify(userId, config("twtSecret"), 10), 10)
-    : parseInt(verify(twt, config("twtSecret"), 10), 10);
+    : parseInt(verify(String(twt), config("twtSecret"), 10), 10);
 };
 
 /**
