@@ -14,8 +14,9 @@ Staart API is build to work with [Staart UI](https://github.com/staart/ui), the 
 
 ## ⭐ Features
 
-### 🆕 New in v2 (beta)
+### 🆕 New in beta
 
+- Casbin-powered permission management
 - JWT-powered single-use coupon codes
 - Redis-powered queues for outbound emails and logs
 - Cloud agnostic, no longer specific to AWS
