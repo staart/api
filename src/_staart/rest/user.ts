@@ -393,7 +393,15 @@ export const getUserAccessTokenScopesForUser = async (tokenUserId: number) => {
   )
     throw new Error(INSUFFICIENT_PERMISSION);
 
-  return Object.values(ScopesUser);
+  const data: { [index: string]: any } = {};
+  Object.values(ScopesUser).forEach((scope) => {
+    data[scope] = [];
+    [Acts.READ, Acts.WRITE].forEach((act) => {
+      data[scope].push(`${act}${scope}`);
+    });
+  });
+
+  return data;
 };
 
 export const getUserAccessTokenForUser = async (

@@ -39,13 +39,6 @@ export class UserAccessTokensController {
     );
   }
 
-  @Get("/scopes")
-  async getUserAccessTokenScopes(req: Request, res: Response) {
-    const id = twtToId(req.params.id, res.locals.token.id);
-    joiValidate({ id: Joi.number().required() }, { id });
-    return getUserAccessTokenScopesForUser(twtToId(res.locals.token.id));
-  }
-
   @Put()
   @Middleware(
     validator(

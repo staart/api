@@ -20,6 +20,7 @@ import {
   updatePasswordForUser,
   verify2FAForUser,
   getPasswordForUser,
+  getUserAccessTokenScopesForUser,
 } from "../../../_staart/rest/user";
 
 @ClassMiddleware(authHandler)
@@ -111,5 +112,10 @@ export class UserSecurityController {
       id
     );
     return { ...respond(RESOURCE_SUCCESS), backupCodes };
+  }
+
+  @Get("access-token-scopes")
+  async getUserAccessTokenScopes(req: Request, res: Response) {
+    return getUserAccessTokenScopesForUser(twtToId(res.locals.token.id));
   }
 }
