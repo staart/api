@@ -1,6 +1,6 @@
 import { getUserById } from "../services/user.service";
 import { AccessTokenResponse, ApiKeyResponse } from "./jwt";
-import { newEnforcer, Model } from "casbin";
+import { newEnforcer, Model, StringAdapter } from "casbin";
 import { prisma } from "./prisma";
 import { ScopesUser, ScopesGroup, ScopesAdmin } from "../../config";
 import { readFileSync } from "fs-extra";
@@ -94,7 +94,7 @@ const getPolicyForUser = async (userId: number) => {
 };
 
 const model = new Model();
-model.loadModelFromText(readFileSync(join(".", "casbin-model.conf"), "utf-8"));
+model.loadModel(join(".", "casbin-model.conf"));
 
 export const can = async (
   subject: number | ApiKeyResponse | AccessTokenResponse,
@@ -102,9 +102,8 @@ export const can = async (
   object: string
 ) => {
   if (typeof subject === "number") {
-    console.log("Subject is", subject);
     const policy = await getPolicyForUser(subject);
-    const enforcer = await newEnforcer(model, policy);
+    const enforcer = await newEnforcer(model, new StringAdapter(policy));
     return enforcer.enforce(`user-${subject}`, object, action);
   }
   return false;
