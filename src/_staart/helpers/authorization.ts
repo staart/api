@@ -23,10 +23,10 @@ const canUserUser = async (user: users, action: UserScopes, target: users) => {
   if (user.id === target.id) return true;
 
   const userMemberships = await prisma.memberships.findMany({
-    where: { user: user },
+    where: { userId: user.id },
   });
   const targetMemberships = await prisma.memberships.findMany({
-    where: { user: target },
+    where: { userId: target.id },
   });
 
   let allowed = false;
@@ -73,7 +73,9 @@ const canUserGroup = async (user: users, action: OrgScopes, target: groups) => {
   // A super user can do anything
   if (user.role === "SUDO") return true;
 
-  const memberships = await prisma.memberships.findMany({ where: { user } });
+  const memberships = await prisma.memberships.findMany({
+    where: { userId: user.id },
+  });
   const targetMemberships = memberships.filter((m) => m.groupId === target.id);
 
   let allowed = false;
@@ -112,7 +114,9 @@ const canUserMembership = async (
   // A member can do anything to herself
   if (user.id === target.userId) return true;
 
-  const memberships = await prisma.memberships.findMany({ where: { user } });
+  const memberships = await prisma.memberships.findMany({
+    where: { userId: user.id },
+  });
 
   let allowed = false;
   memberships.forEach((membership) => {
