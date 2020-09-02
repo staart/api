@@ -11,6 +11,53 @@ import { getGroupById } from "../services/group.service";
 import { getUserById } from "../services/user.service";
 import { AccessTokenResponse, ApiKeyResponse } from "./jwt";
 import { prisma } from "./prisma";
+import { ScopesUser, ScopesGroup } from "../../config";
+
+/**
+ * Basic scopes are read and write
+ * If you can write, you can create, update, and delete
+ */
+export enum Acts {
+  READ = "read:",
+  WRITE = "write:",
+}
+export const BaseScopesUser = {
+  ACCESS_TOKENS: "users/access-tokens",
+  EMAILS: "users/emails",
+  IDENTITIES: "users/identities",
+  MEMBERSHIPS: "users/memberships",
+  SECURITY: "users/security",
+  SESSIONS: "users/sessions",
+};
+export const BaseScopesGroup = {
+  API_KEYS: "groups/api-keys",
+  BILLING: "groups/billing",
+  DOMAINS: "groups/domains",
+  INVOICES: "groups/invoices",
+  MEMBERSHIPS: "groups/memberships",
+  SOURCES: "groups/sources",
+  SUBSCRIPTIONS: "groups/subscriptions",
+  TRANSACTIONS: "groups/transactions",
+  WEBHOOKS: "groups/webhooks",
+};
+
+const getPolicyForUser = async (userId: number) => {
+  let policy = "";
+  Object.values(ScopesUser).forEach((scope) => {
+    policy += `p, user-${userId}, user-${userId}, ${Acts.READ}${scope}\n`;
+    policy += `p, user-${userId}, user-${userId}, ${Acts.WRITE}${scope}\n`;
+  });
+  const memberships = await prisma.memberships.findMany({
+    where: { userId },
+  });
+  memberships.forEach((membership) => {
+    if (membership.role === "MEMBER") {
+      Object.values(ScopesGroup).forEach((scope) => {
+        policy += `p, user-${userId}, group-${membership.groupId}, ${Acts.READ}${scope}\n`;
+      });
+    }
+  });
+};
 
 /**
  * Whether a user can perform an action on another user

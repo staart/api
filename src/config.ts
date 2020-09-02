@@ -1,4 +1,8 @@
 import { config } from "dotenv";
+import {
+  BaseScopesUser,
+  BaseScopesGroup,
+} from "./_staart/helpers/authorization";
 config();
 
 export const bool = (val?: string | boolean) =>
@@ -130,3 +134,6 @@ export const ELASTIC_EVENTS_INDEX =
   process.env.ELASTIC_EVENTS_INDEX || "staart-events";
 export const ELASTIC_INSTANCES_INDEX =
   process.env.ELASTIC_INSTANCES_INDEX || "staart-instances";
+
+export const ScopesUser = { ...BaseScopesUser };
+export const ScopesGroup = { ...BaseScopesGroup };
