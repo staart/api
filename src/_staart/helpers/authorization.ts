@@ -20,6 +20,7 @@ import { ScopesUser, ScopesGroup } from "../../config";
 export enum Acts {
   READ = "read:",
   WRITE = "write:",
+  DELETE_MEMBERSHIP = "delete:membership",
 }
 export const BaseScopesUser = {
   ACCESS_TOKENS: "users/access-tokens",
@@ -50,13 +51,28 @@ const getPolicyForUser = async (userId: number) => {
   const memberships = await prisma.memberships.findMany({
     where: { userId },
   });
-  memberships.forEach((membership) => {
-    if (membership.role === "MEMBER") {
-      Object.values(ScopesGroup).forEach((scope) => {
-        policy += `p, user-${userId}, group-${membership.groupId}, ${Acts.READ}${scope}\n`;
+  for await (const membership of memberships) {
+    policy += `p, user-${userId}, membership-${membership.id}, ${Acts.DELETE_MEMBERSHIP} \n`;
+    if (membership.role === "ADMIN" || membership.role === "OWNER") {
+      const groupMemberships = await prisma.memberships.findMany({
+        where: { groupId: membership.groupId },
+      });
+      groupMemberships.forEach((groupMembership) => {
+        if (groupMembership.role !== "OWNER")
+          policy += `p, user-${userId}, membership-${groupMembership.id}, ${Acts.DELETE_MEMBERSHIP} \n`;
       });
     }
-  });
+    Object.values(ScopesGroup).forEach((scope) => {
+      if (membership.role === "ADMIN" || membership.role === "OWNER") {
+        policy += `p, user-${userId}, group-${membership.groupId}, ${Acts.READ}${scope}\n`;
+        policy += `p, user-${userId}, group-${membership.groupId}, ${Acts.WRITE}${scope}\n`;
+      } else {
+        policy += `p, user-${userId}, group-${membership.groupId}, ${Acts.READ}${scope}\n`;
+      }
+    });
+  }
+  console.log(policy);
+  return policy;
 };
 
 /**
