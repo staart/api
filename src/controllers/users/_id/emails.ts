@@ -30,7 +30,7 @@ export class UserEmailsController {
   async getEmails(req: Request, res: Response) {
     const id = twtToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.number().required() }, { id });
-    return getAllEmailsForUser(res.locals.token.id, id, req.query);
+    return getAllEmailsForUser(twtToId(res.locals.token.id), id, req.query);
   }
 
   @Put()
@@ -45,7 +45,7 @@ export class UserEmailsController {
       { id, email }
     );
     const added = await addEmailToUserForUser(
-      res.locals.token.id,
+      twtToId(res.locals.token.id),
       id,
       email,
       res.locals
@@ -64,7 +64,7 @@ export class UserEmailsController {
       },
       { id, emailId }
     );
-    return getEmailForUser(res.locals.token.id, id, emailId);
+    return getEmailForUser(twtToId(res.locals.token.id), id, emailId);
   }
 
   @Post(":emailId/resend")
@@ -78,7 +78,11 @@ export class UserEmailsController {
       },
       { id, emailId }
     );
-    await resendEmailVerificationForUser(res.locals.token.id, id, emailId);
+    await resendEmailVerificationForUser(
+      twtToId(res.locals.token.id),
+      id,
+      emailId
+    );
     return respond(RESOURCE_SUCCESS);
   }
 
@@ -94,7 +98,7 @@ export class UserEmailsController {
       { id, emailId }
     );
     await deleteEmailFromUserForUser(
-      res.locals.token.id,
+      twtToId(res.locals.token.id),
       id,
       emailId,
       res.locals

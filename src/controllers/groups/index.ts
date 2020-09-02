@@ -9,6 +9,7 @@ import {
 import { Joi } from "@staart/validate";
 import { authHandler, validator } from "../../_staart/helpers/middleware";
 import { newGroupForUser } from "../../_staart/rest/group";
+import { twtToId } from "../../_staart/helpers/utils";
 
 @ClassMiddleware(authHandler)
 export class GroupController {
@@ -23,7 +24,7 @@ export class GroupController {
   )
   async put(req: Request, res: Response) {
     const added = await newGroupForUser(
-      res.locals.token.id,
+      twtToId(res.locals.token.id),
       req.body,
       res.locals
     );

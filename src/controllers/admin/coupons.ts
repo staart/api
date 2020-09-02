@@ -19,12 +19,13 @@ import {
   getCouponForUser,
   updateCouponForUser,
 } from "../../_staart/rest/admin";
+import { twtToId } from "../../_staart/helpers/utils";
 
 @ClassMiddleware(authHandler)
 export class AdminCouponController {
   @Get()
   async getCoupons(req: Request, res: Response) {
-    const userId = res.locals.token.id;
+    const userId = twtToId(res.locals.token.id);
     if (!userId) throw new Error(MISSING_FIELD);
     return getAllCouponsForUser(userId, req.query);
   }
@@ -46,7 +47,7 @@ export class AdminCouponController {
     )
   )
   async createCoupon(req: Request, res: Response) {
-    const userId = res.locals.token.id;
+    const userId = twtToId(res.locals.token.id);
     if (!userId) throw new Error(MISSING_FIELD);
     const added = await generateCouponForUser(userId, req.body);
     return { ...respond(RESOURCE_CREATED), added };
@@ -54,7 +55,7 @@ export class AdminCouponController {
 
   @Get(":id")
   async getCoupon(req: Request, res: Response) {
-    const userId = res.locals.token.id;
+    const userId = twtToId(res.locals.token.id);
     if (!userId) throw new Error(MISSING_FIELD);
     return getCouponForUser(userId, req.params.id);
   }
@@ -76,14 +77,14 @@ export class AdminCouponController {
     )
   )
   async updateCoupon(req: Request, res: Response) {
-    const userId = res.locals.token.id;
+    const userId = twtToId(res.locals.token.id);
     if (!userId) throw new Error(MISSING_FIELD);
     return updateCouponForUser(userId, req.params.id, req.body);
   }
 
   @Delete(":id")
   async deleteCoupon(req: Request, res: Response) {
-    const userId = res.locals.token.id;
+    const userId = twtToId(res.locals.token.id);
     if (!userId) throw new Error(MISSING_FIELD);
     return deleteCouponForUser(userId, req.params.id);
   }

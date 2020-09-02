@@ -21,7 +21,7 @@ export class UserSessionsController {
   async getUserSessions(req: Request, res: Response) {
     const id = twtToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.number().required() }, { id });
-    return getUserSessionsForUser(res.locals.token.id, id, req.query);
+    return getUserSessionsForUser(twtToId(res.locals.token.id), id, req.query);
   }
 
   @Get(":sessionId")
@@ -35,7 +35,7 @@ export class UserSessionsController {
       },
       { id, sessionId }
     );
-    return getUserSessionForUser(res.locals.token.id, id, sessionId);
+    return getUserSessionForUser(twtToId(res.locals.token.id), id, sessionId);
   }
 
   @Delete(":sessionId")
@@ -49,7 +49,12 @@ export class UserSessionsController {
       },
       { id, sessionId }
     );
-    await deleteSessionForUser(res.locals.token.id, id, sessionId, res.locals);
+    await deleteSessionForUser(
+      twtToId(res.locals.token.id),
+      id,
+      sessionId,
+      res.locals
+    );
     return respond(RESOURCE_DELETED);
   }
 }

@@ -59,7 +59,7 @@ export class GroupController {
   async delete(req: Request, res: Response) {
     const groupId = twtToId(req.params.id);
     joiValidate({ groupId: Joi.number().required() }, { groupId });
-    await deleteGroupForUser(res.locals.token.id, groupId, res.locals);
+    await deleteGroupForUser(twtToId(res.locals.token.id), groupId, res.locals);
     return respond(RESOURCE_DELETED);
   }
 

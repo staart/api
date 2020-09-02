@@ -30,7 +30,11 @@ export class UserIdentitiesController {
   async getUserIdentities(req: Request, res: Response) {
     const id = twtToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.number().required() }, { id });
-    return getUserIdentitiesForUser(res.locals.token.id, id, req.query);
+    return getUserIdentitiesForUser(
+      twtToId(res.locals.token.id),
+      id,
+      req.query
+    );
   }
 
   @Put()
@@ -38,7 +42,7 @@ export class UserIdentitiesController {
     const id = twtToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.number().required() }, { id });
     const added = await createUserIdentityForUser(
-      res.locals.token.id,
+      twtToId(res.locals.token.id),
       id,
       req.body
     );
@@ -55,7 +59,12 @@ export class UserIdentitiesController {
       { service: Joi.string().required(), url: Joi.string().required() },
       { service, url }
     );
-    await connectUserIdentityForUser(res.locals.token.id, id, service, url);
+    await connectUserIdentityForUser(
+      twtToId(res.locals.token.id),
+      id,
+      service,
+      url
+    );
     return respond(RESOURCE_SUCCESS);
   }
 
@@ -70,7 +79,7 @@ export class UserIdentitiesController {
       },
       { id, identityId }
     );
-    return getUserIdentityForUser(res.locals.token.id, id, identityId);
+    return getUserIdentityForUser(twtToId(res.locals.token.id), id, identityId);
   }
 
   @Delete(":identityId")
@@ -85,7 +94,7 @@ export class UserIdentitiesController {
       { id, identityId }
     );
     await deleteIdentityForUser(
-      res.locals.token.id,
+      twtToId(res.locals.token.id),
       id,
       identityId,
       res.locals

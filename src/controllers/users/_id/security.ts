@@ -45,7 +45,7 @@ export class UserSecurityController {
       { id }
     );
     await updatePasswordForUser(
-      res.locals.token.id,
+      twtToId(res.locals.token.id),
       id,
       oldPassword,
       newPassword,
@@ -58,21 +58,21 @@ export class UserSecurityController {
   async getPassword(req: Request, res: Response) {
     const id = twtToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.number().required() }, { id });
-    return getPasswordForUser(res.locals.token.id, id);
+    return getPasswordForUser(twtToId(res.locals.token.id), id);
   }
 
   @Get("data")
   async getUserData(req: Request, res: Response) {
     const id = twtToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.number().required() }, { id });
-    return getAllDataForUser(res.locals.token.id, id);
+    return getAllDataForUser(twtToId(res.locals.token.id), id);
   }
 
   @Get("2fa/enable")
   async getEnable2FA(req: Request, res: Response) {
     const id = twtToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.number().required() }, { id });
-    return enable2FAForUser(res.locals.token.id, id);
+    return enable2FAForUser(twtToId(res.locals.token.id), id);
   }
 
   @Post("2fa/verify")
@@ -86,7 +86,11 @@ export class UserSecurityController {
       },
       { id, code }
     );
-    const backupCodes = await verify2FAForUser(res.locals.token.id, id, code);
+    const backupCodes = await verify2FAForUser(
+      twtToId(res.locals.token.id),
+      id,
+      code
+    );
     return { ...respond(RESOURCE_SUCCESS), backupCodes };
   }
 
@@ -94,7 +98,7 @@ export class UserSecurityController {
   async delete2FA(req: Request, res: Response) {
     const id = twtToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.number().required() }, { id });
-    await disable2FAForUser(res.locals.token.id, id);
+    await disable2FAForUser(twtToId(res.locals.token.id), id);
     return respond(RESOURCE_SUCCESS);
   }
 
@@ -103,7 +107,7 @@ export class UserSecurityController {
     const id = twtToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.number().required() }, { id });
     const backupCodes = await regenerateBackupCodesForUser(
-      res.locals.token.id,
+      twtToId(res.locals.token.id),
       id
     );
     return { ...respond(RESOURCE_SUCCESS), backupCodes };

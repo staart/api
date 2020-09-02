@@ -192,7 +192,7 @@ export class AuthController {
     validator({ impersonateUserId: Joi.number().required() }, "params")
   )
   async getImpersonate(req: Request, res: Response) {
-    const tokenUserId = res.locals.token.id;
+    const tokenUserId = twtToId(res.locals.token.id);
     const impersonateUserId = twtToId(req.params.id);
     return impersonate(tokenUserId, impersonateUserId, res.locals);
   }

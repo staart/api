@@ -31,7 +31,11 @@ export class UserAccessTokensController {
   async getUserAccessTokens(req: Request, res: Response) {
     const id = twtToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.number().required() }, { id });
-    return getUserAccessTokensForUser(res.locals.token.id, id, req.query);
+    return getUserAccessTokensForUser(
+      twtToId(res.locals.token.id),
+      id,
+      req.query
+    );
   }
 
   @Put()
@@ -51,7 +55,7 @@ export class UserAccessTokensController {
     joiValidate({ id: Joi.number().required() }, { id });
     try {
       const added = await createAccessTokenForUser(
-        res.locals.token.id,
+        twtToId(res.locals.token.id),
         id,
         req.body,
         res.locals
@@ -74,7 +78,11 @@ export class UserAccessTokensController {
       },
       { id, accessTokenId }
     );
-    return getUserAccessTokenForUser(res.locals.token.id, id, accessTokenId);
+    return getUserAccessTokenForUser(
+      twtToId(res.locals.token.id),
+      id,
+      accessTokenId
+    );
   }
 
   @Patch(":accessTokenId")
@@ -100,7 +108,7 @@ export class UserAccessTokensController {
       { id, accessTokenId }
     );
     const updated = await updateAccessTokenForUser(
-      res.locals.token.id,
+      twtToId(res.locals.token.id),
       id,
       accessTokenId,
       req.body,
@@ -121,7 +129,7 @@ export class UserAccessTokensController {
       { id, accessTokenId }
     );
     await deleteAccessTokenForUser(
-      res.locals.token.id,
+      twtToId(res.locals.token.id),
       id,
       accessTokenId,
       res.locals

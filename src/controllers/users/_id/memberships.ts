@@ -23,7 +23,7 @@ export class UserMembershipsController {
   async getMemberships(req: Request, res: Response) {
     const id = twtToId(req.params.id, res.locals.token.id);
     joiValidate({ id: Joi.number().required() }, { id });
-    return getMembershipsForUser(res.locals.token.id, id, req.query);
+    return getMembershipsForUser(twtToId(res.locals.token.id), id, req.query);
   }
 
   @Get(":membershipId")
