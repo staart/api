@@ -168,7 +168,7 @@ export const accessToken = (
   delete createAccessToken.expiresAt;
   return generateToken(
     createAccessToken,
-    (accessToken.expiresAt
+    (typeof accessToken.expiresAt === "string"
       ? new Date(accessToken.expiresAt).getTime()
       : TOKEN_EXPIRY_API_KEY_MAX) - new Date().getTime(),
     Tokens.ACCESS_TOKEN
