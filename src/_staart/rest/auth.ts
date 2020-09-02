@@ -16,8 +16,8 @@ import {
 } from "@staart/errors";
 import { compare, hash } from "@staart/text";
 import { authenticator } from "otplib";
-import { ALLOW_DISPOSABLE_EMAILS } from "../../config";
-import { can } from "../helpers/authorization";
+import { ALLOW_DISPOSABLE_EMAILS, ScopesAdmin } from "../../config";
+import { can, Acts } from "../helpers/authorization";
 import { deleteItemFromCache } from "../helpers/cache";
 import {
   checkInvalidatedToken,
@@ -296,9 +296,7 @@ export const impersonate = async (
   impersonateUserId: number,
   locals: Locals | any
 ) => {
-  if (
-    !(await can(tokenUserId, UserScopes.IMPERSONATE, "user", impersonateUserId))
-  )
+  if (!(await can(tokenUserId, Acts.WRITE, ScopesAdmin.USERS)))
     throw new Error(INSUFFICIENT_PERMISSION);
 
   const user = await getUserById(impersonateUserId);

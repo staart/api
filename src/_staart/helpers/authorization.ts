@@ -27,6 +27,7 @@ export const BaseScopesUser = {
 export const BaseScopesGroup = {
   INFO: "groups/info",
   API_KEYS: "groups/api-keys",
+  API_KEY_LOGS: "groups/api-key-logs",
   BILLING: "groups/billing",
   DOMAINS: "groups/domains",
   INVOICES: "groups/invoices",
@@ -35,6 +36,7 @@ export const BaseScopesGroup = {
   SUBSCRIPTIONS: "groups/subscriptions",
   TRANSACTIONS: "groups/transactions",
   WEBHOOKS: "groups/webhooks",
+  SECURITY: "groups/security",
 };
 export const BaseScopesAdmin = {
   GROUPS: "admin/groups",
@@ -62,9 +64,13 @@ const getPolicyForUser = async (userId: number) => {
       const groupMemberships = await prisma.memberships.findMany({
         where: { groupId: membership.groupId },
       });
+      policy += `p, user-${userId}, group-${membership.groupId}, ${Acts.DELETE}\n`;
       groupMemberships.forEach((groupMembership) => {
-        if (groupMembership.role !== "OWNER")
+        policy += `p, user-${userId}, membership-${groupMembership.id}, ${Acts.READ}\n`;
+        if (groupMembership.role !== "OWNER") {
+          policy += `p, user-${userId}, membership-${groupMembership.id}, ${Acts.WRITE}\n`;
           policy += `p, user-${userId}, membership-${groupMembership.id}, ${Acts.DELETE}\n`;
+        }
       });
     }
     Object.values(ScopesGroup).forEach((scope) => {

@@ -49,8 +49,13 @@ import {
 } from "@staart/payments";
 import { randomString } from "@staart/text";
 import axios from "axios";
-import { JWT_ISSUER, TOKEN_EXPIRY_API_KEY_MAX } from "../../config";
-import { can } from "../helpers/authorization";
+import {
+  JWT_ISSUER,
+  TOKEN_EXPIRY_API_KEY_MAX,
+  ScopesGroup,
+  ScopesUser,
+} from "../../config";
+import { can, Acts } from "../helpers/authorization";
 import { deleteItemFromCache } from "../helpers/cache";
 import {
   ApiKeyResponse,
@@ -83,9 +88,12 @@ export const getGroupForUser = async (
   userId: number | ApiKeyResponse,
   groupId: number
 ) => {
-  if (await can(userId, OrgScopes.READ_ORG, "group", groupId))
-    return getGroupById(groupId);
-  throw new Error(INSUFFICIENT_PERMISSION);
+  if (
+    !(await can(userId, `${Acts.WRITE}${ScopesGroup.INFO}`, `group-${groupId}`))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  return getGroupById(groupId);
 };
 
 export const newGroupForUser = async (
@@ -93,6 +101,15 @@ export const newGroupForUser = async (
   group: groupsCreateInput,
   locals: Locals | any
 ) => {
+  if (
+    !(await can(
+      userId,
+      `${Acts.WRITE}${ScopesUser.MEMBERSHIPS}`,
+      `user-${userId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
   if (!(group.name || "").trim()) {
     const user = await getUserById(userId);
     group.name = user.name;
@@ -106,18 +123,20 @@ export const updateGroupForUser = async (
   data: groupsUpdateInput,
   locals: Locals | any
 ) => {
-  if (await can(userId, OrgScopes.UPDATE_ORG, "group", groupId)) {
-    const result = await prisma.groups.update({
-      where: {
-        id: groupId,
-      },
-      data,
-    });
-    queueWebhook(groupId, Webhooks.UPDATE_ORGANIZATION, data);
-    trackEvent({ groupId, type: Webhooks.UPDATE_ORGANIZATION }, locals);
-    return result;
-  }
-  throw new Error(INSUFFICIENT_PERMISSION);
+  if (
+    !(await can(userId, `${Acts.WRITE}${ScopesGroup.INFO}`, `group-${groupId}`))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  const result = await prisma.groups.update({
+    where: {
+      id: groupId,
+    },
+    data,
+  });
+  queueWebhook(groupId, Webhooks.UPDATE_ORGANIZATION, data);
+  trackEvent({ groupId, type: Webhooks.UPDATE_ORGANIZATION }, locals);
+  return result;
 };
 
 export const deleteGroupForUser = async (
@@ -125,43 +144,49 @@ export const deleteGroupForUser = async (
   groupId: number,
   locals: Locals | any
 ) => {
-  if (await can(userId, OrgScopes.DELETE_ORG, "group", groupId)) {
-    const groupDetails = await getGroupById(groupId);
-    await deleteItemFromCache(`cache_getGroupById_${groupDetails.id}`);
-    if (
-      typeof groupDetails.attributes === "object" &&
-      !Array.isArray(groupDetails.attributes) &&
-      groupDetails.attributes?.stripeCustomerId === "string"
-    )
-      await deleteCustomer(groupDetails.attributes?.stripeCustomerId);
-    await prisma.groups.delete({
-      where: {
-        id: groupId,
-      },
-    });
-    queueWebhook(groupId, Webhooks.DELETE_ORGANIZATION);
-    trackEvent({ groupId, type: Webhooks.DELETE_ORGANIZATION }, locals);
-    return;
-  }
-  throw new Error(INSUFFICIENT_PERMISSION);
+  if (!(await can(userId, Acts.DELETE, `group-${groupId}`)))
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  const groupDetails = await getGroupById(groupId);
+  await deleteItemFromCache(`cache_getGroupById_${groupDetails.id}`);
+  if (
+    typeof groupDetails.attributes === "object" &&
+    !Array.isArray(groupDetails.attributes) &&
+    groupDetails.attributes?.stripeCustomerId === "string"
+  )
+    await deleteCustomer(groupDetails.attributes?.stripeCustomerId);
+  await prisma.groups.delete({
+    where: {
+      id: groupId,
+    },
+  });
+  queueWebhook(groupId, Webhooks.DELETE_ORGANIZATION);
+  trackEvent({ groupId, type: Webhooks.DELETE_ORGANIZATION }, locals);
+  return;
 };
 
 export const getGroupBillingForUser = async (
   userId: number | ApiKeyResponse,
   groupId: number
 ) => {
-  if (await can(userId, OrgScopes.READ_ORG_BILLING, "group", groupId)) {
-    const group = await getGroupById(groupId);
-    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (
-      typeof group.attributes === "object" &&
-      !Array.isArray(group.attributes) &&
-      group.attributes?.stripeCustomerId === "string"
-    )
-      return getCustomer(group.attributes?.stripeCustomerId);
-    throw new Error(STRIPE_NO_CUSTOMER);
-  }
-  throw new Error(INSUFFICIENT_PERMISSION);
+  if (
+    !(await can(
+      userId,
+      `${Acts.READ}${ScopesGroup.BILLING}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  const group = await getGroupById(groupId);
+  if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+  if (
+    typeof group.attributes === "object" &&
+    !Array.isArray(group.attributes) &&
+    group.attributes?.stripeCustomerId === "string"
+  )
+    return getCustomer(group.attributes?.stripeCustomerId);
+  throw new Error(STRIPE_NO_CUSTOMER);
 };
 
 export const updateGroupBillingForUser = async (
@@ -170,29 +195,35 @@ export const updateGroupBillingForUser = async (
   data: any,
   locals: Locals | any
 ) => {
-  if (await can(userId, OrgScopes.UPDATE_ORG_BILLING, "group", groupId)) {
-    const group = await getGroupById(groupId);
-    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
-    let result;
-    if (
-      typeof group.attributes === "object" &&
-      !Array.isArray(group.attributes) &&
-      group.attributes?.stripeCustomerId === "string"
-    ) {
-      result = await updateCustomer(group.attributes?.stripeCustomerId, data);
-    } else {
-      result = await createCustomer(
-        groupId,
-        data,
-        (groupId: number, data: groupsUpdateInput) =>
-          prisma.groups.update({ where: { id: groupId }, data })
-      );
-    }
-    queueWebhook(groupId, Webhooks.UPDATE_ORGANIZATION_BILLING, data);
-    trackEvent({ groupId, type: Webhooks.UPDATE_ORGANIZATION_BILLING }, locals);
-    return result;
+  if (
+    !(await can(
+      userId,
+      `${Acts.WRITE}${ScopesGroup.BILLING}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  const group = await getGroupById(groupId);
+  if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+  let result;
+  if (
+    typeof group.attributes === "object" &&
+    !Array.isArray(group.attributes) &&
+    group.attributes?.stripeCustomerId === "string"
+  ) {
+    result = await updateCustomer(group.attributes?.stripeCustomerId, data);
+  } else {
+    result = await createCustomer(
+      groupId,
+      data,
+      (groupId: number, data: groupsUpdateInput) =>
+        prisma.groups.update({ where: { id: groupId }, data })
+    );
   }
-  throw new Error(INSUFFICIENT_PERMISSION);
+  queueWebhook(groupId, Webhooks.UPDATE_ORGANIZATION_BILLING, data);
+  trackEvent({ groupId, type: Webhooks.UPDATE_ORGANIZATION_BILLING }, locals);
+  return result;
 };
 
 export const getGroupInvoicesForUser = async (
@@ -200,18 +231,24 @@ export const getGroupInvoicesForUser = async (
   groupId: number,
   params: KeyValue
 ) => {
-  if (await can(userId, OrgScopes.READ_ORG_INVOICES, "group", groupId)) {
-    const group = await getGroupById(groupId);
-    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (
-      typeof group.attributes === "object" &&
-      !Array.isArray(group.attributes) &&
-      group.attributes?.stripeCustomerId === "string"
-    )
-      return getInvoices(group.attributes?.stripeCustomerId, params);
-    throw new Error(STRIPE_NO_CUSTOMER);
-  }
-  throw new Error(INSUFFICIENT_PERMISSION);
+  if (
+    !(await can(
+      userId,
+      `${Acts.READ}${ScopesGroup.INVOICES}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  const group = await getGroupById(groupId);
+  if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+  if (
+    typeof group.attributes === "object" &&
+    !Array.isArray(group.attributes) &&
+    group.attributes?.stripeCustomerId === "string"
+  )
+    return getInvoices(group.attributes?.stripeCustomerId, params);
+  throw new Error(STRIPE_NO_CUSTOMER);
 };
 
 export const getGroupInvoiceForUser = async (
@@ -219,18 +256,24 @@ export const getGroupInvoiceForUser = async (
   groupId: number,
   invoiceId: string
 ) => {
-  if (await can(userId, OrgScopes.READ_ORG_INVOICES, "group", groupId)) {
-    const group = await getGroupById(groupId);
-    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (
-      typeof group.attributes === "object" &&
-      !Array.isArray(group.attributes) &&
-      group.attributes?.stripeCustomerId === "string"
-    )
-      return getInvoice(group.attributes?.stripeCustomerId, invoiceId);
-    throw new Error(STRIPE_NO_CUSTOMER);
-  }
-  throw new Error(INSUFFICIENT_PERMISSION);
+  if (
+    !(await can(
+      userId,
+      `${Acts.READ}${ScopesGroup.INVOICES}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  const group = await getGroupById(groupId);
+  if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+  if (
+    typeof group.attributes === "object" &&
+    !Array.isArray(group.attributes) &&
+    group.attributes?.stripeCustomerId === "string"
+  )
+    return getInvoice(group.attributes?.stripeCustomerId, invoiceId);
+  throw new Error(STRIPE_NO_CUSTOMER);
 };
 
 export const getGroupSourcesForUser = async (
@@ -238,18 +281,24 @@ export const getGroupSourcesForUser = async (
   groupId: number,
   params: KeyValue
 ) => {
-  if (await can(userId, OrgScopes.READ_ORG_SOURCES, "group", groupId)) {
-    const group = await getGroupById(groupId);
-    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (
-      typeof group.attributes === "object" &&
-      !Array.isArray(group.attributes) &&
-      group.attributes?.stripeCustomerId === "string"
-    )
-      return getSources(group.attributes?.stripeCustomerId, params);
-    throw new Error(STRIPE_NO_CUSTOMER);
-  }
-  throw new Error(INSUFFICIENT_PERMISSION);
+  if (
+    !(await can(
+      userId,
+      `${Acts.READ}${ScopesGroup.SOURCES}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  const group = await getGroupById(groupId);
+  if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+  if (
+    typeof group.attributes === "object" &&
+    !Array.isArray(group.attributes) &&
+    group.attributes?.stripeCustomerId === "string"
+  )
+    return getSources(group.attributes?.stripeCustomerId, params);
+  throw new Error(STRIPE_NO_CUSTOMER);
 };
 
 export const getGroupSourceForUser = async (
@@ -257,18 +306,24 @@ export const getGroupSourceForUser = async (
   groupId: number,
   sourceId: string
 ) => {
-  if (await can(userId, OrgScopes.READ_ORG_SOURCES, "group", groupId)) {
-    const group = await getGroupById(groupId);
-    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (
-      typeof group.attributes === "object" &&
-      !Array.isArray(group.attributes) &&
-      group.attributes?.stripeCustomerId === "string"
-    )
-      return getSource(group.attributes?.stripeCustomerId, sourceId);
-    throw new Error(STRIPE_NO_CUSTOMER);
-  }
-  throw new Error(INSUFFICIENT_PERMISSION);
+  if (
+    !(await can(
+      userId,
+      `${Acts.READ}${ScopesGroup.SOURCES}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  const group = await getGroupById(groupId);
+  if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+  if (
+    typeof group.attributes === "object" &&
+    !Array.isArray(group.attributes) &&
+    group.attributes?.stripeCustomerId === "string"
+  )
+    return getSource(group.attributes?.stripeCustomerId, sourceId);
+  throw new Error(STRIPE_NO_CUSTOMER);
 };
 
 export const getGroupSubscriptionsForUser = async (
@@ -276,18 +331,24 @@ export const getGroupSubscriptionsForUser = async (
   groupId: number,
   params: KeyValue
 ) => {
-  if (await can(userId, OrgScopes.READ_ORG_SUBSCRIPTIONS, "group", groupId)) {
-    const group = await getGroupById(groupId);
-    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (
-      typeof group.attributes === "object" &&
-      !Array.isArray(group.attributes) &&
-      group.attributes?.stripeCustomerId === "string"
-    )
-      return getSubscriptions(group.attributes?.stripeCustomerId, params);
-    throw new Error(STRIPE_NO_CUSTOMER);
-  }
-  throw new Error(INSUFFICIENT_PERMISSION);
+  if (
+    !(await can(
+      userId,
+      `${Acts.READ}${ScopesGroup.SUBSCRIPTIONS}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  const group = await getGroupById(groupId);
+  if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+  if (
+    typeof group.attributes === "object" &&
+    !Array.isArray(group.attributes) &&
+    group.attributes?.stripeCustomerId === "string"
+  )
+    return getSubscriptions(group.attributes?.stripeCustomerId, params);
+  throw new Error(STRIPE_NO_CUSTOMER);
 };
 
 export const getGroupSubscriptionForUser = async (
@@ -295,21 +356,24 @@ export const getGroupSubscriptionForUser = async (
   groupId: number,
   subscriptionId: string
 ) => {
-  if (await can(userId, OrgScopes.READ_ORG_SUBSCRIPTIONS, "group", groupId)) {
-    const group = await getGroupById(groupId);
-    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (
-      typeof group.attributes === "object" &&
-      !Array.isArray(group.attributes) &&
-      group.attributes?.stripeCustomerId === "string"
-    )
-      return getSubscription(
-        group.attributes?.stripeCustomerId,
-        subscriptionId
-      );
-    throw new Error(STRIPE_NO_CUSTOMER);
-  }
-  throw new Error(INSUFFICIENT_PERMISSION);
+  if (
+    !(await can(
+      userId,
+      `${Acts.READ}${ScopesGroup.SUBSCRIPTIONS}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  const group = await getGroupById(groupId);
+  if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+  if (
+    typeof group.attributes === "object" &&
+    !Array.isArray(group.attributes) &&
+    group.attributes?.stripeCustomerId === "string"
+  )
+    return getSubscription(group.attributes?.stripeCustomerId, subscriptionId);
+  throw new Error(STRIPE_NO_CUSTOMER);
 };
 
 export const updateGroupSubscriptionForUser = async (
@@ -319,29 +383,35 @@ export const updateGroupSubscriptionForUser = async (
   data: KeyValue,
   locals?: Locals | any
 ) => {
-  if (await can(userId, OrgScopes.UPDATE_ORG_SUBSCRIPTIONS, "group", groupId)) {
-    const group = await getGroupById(groupId);
-    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (
-      typeof group.attributes === "object" &&
-      !Array.isArray(group.attributes) &&
-      group.attributes?.stripeCustomerId === "string"
-    ) {
-      const result = await updateSubscription(
-        group.attributes?.stripeCustomerId,
-        subscriptionId,
-        data
-      );
-      queueWebhook(groupId, Webhooks.UPDATE_ORGANIZATION_SUBSCRIPTION, data);
-      trackEvent(
-        { groupId, type: Webhooks.UPDATE_ORGANIZATION_SUBSCRIPTION },
-        locals
-      );
-      return result;
-    }
-    throw new Error(STRIPE_NO_CUSTOMER);
+  if (
+    !(await can(
+      userId,
+      `${Acts.WRITE}${ScopesGroup.SUBSCRIPTIONS}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  const group = await getGroupById(groupId);
+  if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+  if (
+    typeof group.attributes === "object" &&
+    !Array.isArray(group.attributes) &&
+    group.attributes?.stripeCustomerId === "string"
+  ) {
+    const result = await updateSubscription(
+      group.attributes?.stripeCustomerId,
+      subscriptionId,
+      data
+    );
+    queueWebhook(groupId, Webhooks.UPDATE_ORGANIZATION_SUBSCRIPTION, data);
+    trackEvent(
+      { groupId, type: Webhooks.UPDATE_ORGANIZATION_SUBSCRIPTION },
+      locals
+    );
+    return result;
   }
-  throw new Error(INSUFFICIENT_PERMISSION);
+  throw new Error(STRIPE_NO_CUSTOMER);
 };
 
 export const createGroupSubscriptionForUser = async (
@@ -350,37 +420,50 @@ export const createGroupSubscriptionForUser = async (
   params: { plan: string; [index: string]: any },
   locals?: Locals | any
 ) => {
-  if (await can(userId, OrgScopes.CREATE_ORG_SUBSCRIPTIONS, "group", groupId)) {
-    const group = await getGroupById(groupId);
-    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (
-      typeof group.attributes === "object" &&
-      !Array.isArray(group.attributes) &&
-      group.attributes?.stripeCustomerId === "string"
-    ) {
-      const result = await createSubscription(
-        group.attributes?.stripeCustomerId,
-        params
-      );
-      queueWebhook(groupId, Webhooks.CREATE_ORGANIZATION_SUBSCRIPTION, params);
-      trackEvent(
-        { groupId, type: Webhooks.CREATE_ORGANIZATION_SUBSCRIPTION },
-        locals
-      );
-      return result;
-    }
-    throw new Error(STRIPE_NO_CUSTOMER);
+  if (
+    !(await can(
+      userId,
+      `${Acts.WRITE}${ScopesGroup.SUBSCRIPTIONS}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  const group = await getGroupById(groupId);
+  if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+  if (
+    typeof group.attributes === "object" &&
+    !Array.isArray(group.attributes) &&
+    group.attributes?.stripeCustomerId === "string"
+  ) {
+    const result = await createSubscription(
+      group.attributes?.stripeCustomerId,
+      params
+    );
+    queueWebhook(groupId, Webhooks.CREATE_ORGANIZATION_SUBSCRIPTION, params);
+    trackEvent(
+      { groupId, type: Webhooks.CREATE_ORGANIZATION_SUBSCRIPTION },
+      locals
+    );
+    return result;
   }
-  throw new Error(INSUFFICIENT_PERMISSION);
+  throw new Error(STRIPE_NO_CUSTOMER);
 };
 
 export const getGroupPricingPlansForUser = async (
   userId: number | ApiKeyResponse,
   groupId: number
 ) => {
-  if (await can(userId, OrgScopes.READ_ORG_PLANS, "group", groupId))
-    return getProductPricing();
-  throw new Error(INSUFFICIENT_PERMISSION);
+  if (
+    !(await can(
+      userId,
+      `${Acts.READ}${ScopesGroup.BILLING}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  return getProductPricing();
 };
 
 export const deleteGroupSourceForUser = async (
@@ -389,28 +472,31 @@ export const deleteGroupSourceForUser = async (
   sourceId: string,
   locals?: Locals | any
 ) => {
-  if (await can(userId, OrgScopes.DELETE_ORG_SOURCES, "group", groupId)) {
-    const group = await getGroupById(groupId);
-    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (
-      typeof group.attributes === "object" &&
-      !Array.isArray(group.attributes) &&
-      group.attributes?.stripeCustomerId === "string"
-    ) {
-      const result = await deleteSource(
-        group.attributes?.stripeCustomerId,
-        sourceId
-      );
-      queueWebhook(groupId, Webhooks.DELETE_ORGANIZATION_SOURCE, sourceId);
-      trackEvent(
-        { groupId, type: Webhooks.DELETE_ORGANIZATION_SOURCE },
-        locals
-      );
-      return result;
-    }
-    throw new Error(STRIPE_NO_CUSTOMER);
+  if (
+    !(await can(
+      userId,
+      `${Acts.WRITE}${ScopesGroup.SOURCES}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  const group = await getGroupById(groupId);
+  if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+  if (
+    typeof group.attributes === "object" &&
+    !Array.isArray(group.attributes) &&
+    group.attributes?.stripeCustomerId === "string"
+  ) {
+    const result = await deleteSource(
+      group.attributes?.stripeCustomerId,
+      sourceId
+    );
+    queueWebhook(groupId, Webhooks.DELETE_ORGANIZATION_SOURCE, sourceId);
+    trackEvent({ groupId, type: Webhooks.DELETE_ORGANIZATION_SOURCE }, locals);
+    return result;
   }
-  throw new Error(INSUFFICIENT_PERMISSION);
+  throw new Error(STRIPE_NO_CUSTOMER);
 };
 
 export const updateGroupSourceForUser = async (
@@ -420,29 +506,32 @@ export const updateGroupSourceForUser = async (
   data: any,
   locals?: Locals | any
 ) => {
-  if (await can(userId, OrgScopes.UPDATE_ORG_SOURCES, "group", groupId)) {
-    const group = await getGroupById(groupId);
-    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (
-      typeof group.attributes === "object" &&
-      !Array.isArray(group.attributes) &&
-      group.attributes?.stripeCustomerId === "string"
-    ) {
-      const result = await updateSource(
-        group.attributes?.stripeCustomerId,
-        sourceId,
-        data
-      );
-      queueWebhook(groupId, Webhooks.UPDATE_ORGANIZATION_SOURCE, data);
-      trackEvent(
-        { groupId, type: Webhooks.UPDATE_ORGANIZATION_SOURCE },
-        locals
-      );
-      return result;
-    }
-    throw new Error(STRIPE_NO_CUSTOMER);
+  if (
+    !(await can(
+      userId,
+      `${Acts.WRITE}${ScopesGroup.SOURCES}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  const group = await getGroupById(groupId);
+  if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+  if (
+    typeof group.attributes === "object" &&
+    !Array.isArray(group.attributes) &&
+    group.attributes?.stripeCustomerId === "string"
+  ) {
+    const result = await updateSource(
+      group.attributes?.stripeCustomerId,
+      sourceId,
+      data
+    );
+    queueWebhook(groupId, Webhooks.UPDATE_ORGANIZATION_SOURCE, data);
+    trackEvent({ groupId, type: Webhooks.UPDATE_ORGANIZATION_SOURCE }, locals);
+    return result;
   }
-  throw new Error(INSUFFICIENT_PERMISSION);
+  throw new Error(STRIPE_NO_CUSTOMER);
 };
 
 export const createGroupSourceForUser = async (
@@ -451,65 +540,71 @@ export const createGroupSourceForUser = async (
   card: any,
   locals?: Locals | any
 ) => {
-  if (await can(userId, OrgScopes.CREATE_ORG_SOURCES, "group", groupId)) {
-    const group = await getGroupById(groupId);
-    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (
-      typeof group.attributes === "object" &&
-      !Array.isArray(group.attributes) &&
-      group.attributes?.stripeCustomerId === "string"
-    ) {
-      const result = await createSource(
-        group.attributes?.stripeCustomerId,
-        card
-      );
-      queueWebhook(groupId, Webhooks.CREATE_ORGANIZATION_SOURCE, card);
-      trackEvent(
-        { groupId, type: Webhooks.CREATE_ORGANIZATION_SOURCE },
-        locals
-      );
-      return result;
-    }
-    throw new Error(STRIPE_NO_CUSTOMER);
+  if (
+    !(await can(
+      userId,
+      `${Acts.WRITE}${ScopesGroup.SOURCES}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  const group = await getGroupById(groupId);
+  if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+  if (
+    typeof group.attributes === "object" &&
+    !Array.isArray(group.attributes) &&
+    group.attributes?.stripeCustomerId === "string"
+  ) {
+    const result = await createSource(group.attributes?.stripeCustomerId, card);
+    queueWebhook(groupId, Webhooks.CREATE_ORGANIZATION_SOURCE, card);
+    trackEvent({ groupId, type: Webhooks.CREATE_ORGANIZATION_SOURCE }, locals);
+    return result;
   }
-  throw new Error(INSUFFICIENT_PERMISSION);
+  throw new Error(STRIPE_NO_CUSTOMER);
 };
 
 export const getAllGroupDataForUser = async (
   userId: number | ApiKeyResponse,
   groupId: number
 ) => {
-  if (await can(userId, OrgScopes.READ_ORG_TRANSACTIONS, "group", groupId)) {
-    const group = await prisma.groups.findOne({
-      where: {
-        id: groupId,
-      },
-      include: {
-        apiKeys: true,
-        domains: true,
-        memberships: true,
-        webhooks: true,
-      },
-    });
-    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
-    return {
-      ...group,
-      ...(typeof group.attributes === "object" &&
-      !Array.isArray(group.attributes) &&
-      typeof group.attributes?.stripeCustomerId === "string"
-        ? {
-            billing: await getCustomer(group.attributes?.stripeCustomerId),
-            subscriptions: await getSubscriptions(
-              group.attributes?.stripeCustomerId,
-              {}
-            ),
-            invoices: await getInvoices(group.attributes?.stripeCustomerId, {}),
-            sources: await getSources(group.attributes?.stripeCustomerId, {}),
-          }
-        : {}),
-    };
-  }
-  throw new Error(INSUFFICIENT_PERMISSION);
+  if (
+    !(await can(
+      userId,
+      `${Acts.READ}${ScopesGroup.SECURITY}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  const group = await prisma.groups.findOne({
+    where: {
+      id: groupId,
+    },
+    include: {
+      apiKeys: true,
+      domains: true,
+      memberships: true,
+      webhooks: true,
+    },
+  });
+  if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+  return {
+    ...group,
+    ...(typeof group.attributes === "object" &&
+    !Array.isArray(group.attributes) &&
+    typeof group.attributes?.stripeCustomerId === "string"
+      ? {
+          billing: await getCustomer(group.attributes?.stripeCustomerId),
+          subscriptions: await getSubscriptions(
+            group.attributes?.stripeCustomerId,
+            {}
+          ),
+          invoices: await getInvoices(group.attributes?.stripeCustomerId, {}),
+          sources: await getSources(group.attributes?.stripeCustomerId, {}),
+        }
+      : {}),
+  };
 };
 
 export const getGroupMembershipsForUser = async (
@@ -517,15 +612,22 @@ export const getGroupMembershipsForUser = async (
   groupId: number,
   queryParams: any
 ) => {
-  if (await can(userId, OrgScopes.READ_ORG_MEMBERSHIPS, "group", groupId))
-    return paginatedResult(
-      await prisma.memberships.findMany({
-        where: { groupId: groupId },
-        ...queryParamsToSelect(queryParams),
-      }),
-      { take: queryParams.take }
-    );
-  throw new Error(INSUFFICIENT_PERMISSION);
+  if (
+    !(await can(
+      userId,
+      `${Acts.READ}${ScopesGroup.MEMBERSHIPS}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  return paginatedResult(
+    await prisma.memberships.findMany({
+      where: { groupId: groupId },
+      ...queryParamsToSelect(queryParams),
+    }),
+    { take: queryParams.take }
+  );
 };
 
 export const getGroupMembershipForUser = async (
@@ -533,12 +635,19 @@ export const getGroupMembershipForUser = async (
   groupId: number,
   membershipId: number
 ) => {
-  if (await can(userId, OrgScopes.READ_ORG_MEMBERSHIPS, "group", groupId))
-    return prisma.memberships.findOne({
-      where: { id: membershipId },
-      include: { user: true },
-    });
-  throw new Error(INSUFFICIENT_PERMISSION);
+  if (
+    !(await can(
+      userId,
+      `${Acts.READ}${ScopesGroup.MEMBERSHIPS}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  return prisma.memberships.findOne({
+    where: { id: membershipId },
+    include: { user: true },
+  });
 };
 
 export const updateGroupMembershipForUser = async (
@@ -547,25 +656,25 @@ export const updateGroupMembershipForUser = async (
   membershipId: number,
   data: membershipsUpdateInput
 ) => {
-  if (await can(userId, OrgScopes.UPDATE_ORG_MEMBERSHIPS, "group", groupId)) {
-    if (data.role) {
-      const currentMembership = await prisma.memberships.findOne({
-        where: { id: membershipId },
-      });
-      if (!currentMembership) throw new Error(MEMBERSHIP_NOT_FOUND);
-      if (currentMembership.role === "OWNER" && data.role !== "OWNER") {
-        const members = await prisma.memberships.findMany({
-          where: { groupId: groupId, role: "OWNER" },
-        });
-        if (members.length === 1) throw new Error(CANNOT_DELETE_SOLE_MEMBER);
-      }
-    }
-    return prisma.memberships.update({
+  if (!(await can(userId, Acts.WRITE, `membership-${membershipId}`)))
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  if (data.role) {
+    const currentMembership = await prisma.memberships.findOne({
       where: { id: membershipId },
-      data,
     });
+    if (!currentMembership) throw new Error(MEMBERSHIP_NOT_FOUND);
+    if (currentMembership.role === "OWNER" && data.role !== "OWNER") {
+      const members = await prisma.memberships.findMany({
+        where: { groupId: groupId, role: "OWNER" },
+      });
+      if (members.length === 1) throw new Error(CANNOT_DELETE_SOLE_MEMBER);
+    }
   }
-  throw new Error(INSUFFICIENT_PERMISSION);
+  return prisma.memberships.update({
+    where: { id: membershipId },
+    data,
+  });
 };
 
 /**
@@ -579,15 +688,14 @@ export const deleteGroupMembershipForUser = async (
   membershipId: number,
   locals: Locals | any
 ) => {
-  if (await can(userId, OrgScopes.DELETE_ORG_MEMBERSHIPS, "group", groupId)) {
-    const members = await prisma.memberships.findMany({
-      where: { groupId: groupId },
-    });
-    if (members.length === 1)
-      return deleteGroupForUser(userId, groupId, locals);
-    return prisma.memberships.delete({ where: { id: membershipId } });
-  }
-  throw new Error(INSUFFICIENT_PERMISSION);
+  if (!(await can(userId, Acts.DELETE, `membership-${membershipId}`)))
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  const members = await prisma.memberships.findMany({
+    where: { groupId: groupId },
+  });
+  if (members.length === 1) return deleteGroupForUser(userId, groupId, locals);
+  return prisma.memberships.delete({ where: { id: membershipId } });
 };
 
 export const inviteMemberToGroup = async (
@@ -598,83 +706,89 @@ export const inviteMemberToGroup = async (
   role: MembershipRole,
   locals: Locals | any
 ) => {
-  if (await can(userId, OrgScopes.CREATE_ORG_MEMBERSHIPS, "group", groupId)) {
-    const group = await getGroupById(groupId);
-    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (group.onlyAllowDomain) {
-      const emailDomain = newMemberEmail.split("@")[1];
-      try {
-        const domainDetails = await getDomainByDomainName(emailDomain);
-        if (domainDetails.groupId !== groupId) throw new Error();
-      } catch (error) {
-        throw new Error(CANNOT_INVITE_DOMAIN);
-      }
-    }
-    let newUser: users | undefined = undefined;
-    let userExists = false;
-    let createdUserId: number;
+  if (
+    !(await can(
+      userId,
+      `${Acts.WRITE}${ScopesGroup.MEMBERSHIPS}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
 
-    const checkUser = await prisma.users.findMany({
-      where: { emails: { some: { email: newMemberEmail } } },
-      take: 1,
-    });
-    if (checkUser.length) {
-      newUser = checkUser[0];
-      userExists = true;
+  const group = await getGroupById(groupId);
+  if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+  if (group.onlyAllowDomain) {
+    const emailDomain = newMemberEmail.split("@")[1];
+    try {
+      const domainDetails = await getDomainByDomainName(emailDomain);
+      if (domainDetails.groupId !== groupId) throw new Error();
+    } catch (error) {
+      throw new Error(CANNOT_INVITE_DOMAIN);
     }
-
-    if (userExists && newUser) {
-      const isMemberAlready =
-        (
-          await prisma.memberships.findMany({
-            where: {
-              userId: newUser.id,
-              groupId: groupId,
-            },
-          })
-        ).length !== 0;
-      createdUserId = newUser.id;
-      if (isMemberAlready) throw new Error(USER_IS_MEMBER_ALREADY);
-      await prisma.memberships.create({
-        data: {
-          user: { connect: { id: newUser.id } },
-          group: { connect: { id: groupId } },
-          role,
-        },
-      });
-    } else {
-      const newAccount = await register(
-        {
-          name: newMemberName,
-        },
-        locals,
-        newMemberEmail,
-        groupId,
-        role
-      );
-      createdUserId = newAccount.userId;
-    }
-    if (createdUserId) {
-      const inviter =
-        typeof userId !== "object"
-          ? (await getUserById(userId))?.name ?? "Someone"
-          : "Someone";
-      const userDetails = await getUserById(createdUserId);
-      mail({
-        to: newMemberEmail,
-        template: Templates.INVITED_TO_TEAM,
-        data: {
-          ...userDetails,
-          team: group.name,
-          inviter,
-        },
-      })
-        .then(() => {})
-        .catch(() => {});
-    }
-    return;
   }
-  throw new Error(INSUFFICIENT_PERMISSION);
+  let newUser: users | undefined = undefined;
+  let userExists = false;
+  let createdUserId: number;
+
+  const checkUser = await prisma.users.findMany({
+    where: { emails: { some: { email: newMemberEmail } } },
+    take: 1,
+  });
+  if (checkUser.length) {
+    newUser = checkUser[0];
+    userExists = true;
+  }
+
+  if (userExists && newUser) {
+    const isMemberAlready =
+      (
+        await prisma.memberships.findMany({
+          where: {
+            userId: newUser.id,
+            groupId: groupId,
+          },
+        })
+      ).length !== 0;
+    createdUserId = newUser.id;
+    if (isMemberAlready) throw new Error(USER_IS_MEMBER_ALREADY);
+    await prisma.memberships.create({
+      data: {
+        user: { connect: { id: newUser.id } },
+        group: { connect: { id: groupId } },
+        role,
+      },
+    });
+  } else {
+    const newAccount = await register(
+      {
+        name: newMemberName,
+      },
+      locals,
+      newMemberEmail,
+      groupId,
+      role
+    );
+    createdUserId = newAccount.userId;
+  }
+  if (createdUserId) {
+    const inviter =
+      typeof userId !== "object"
+        ? (await getUserById(userId))?.name ?? "Someone"
+        : "Someone";
+    const userDetails = await getUserById(createdUserId);
+    mail({
+      to: newMemberEmail,
+      template: Templates.INVITED_TO_TEAM,
+      data: {
+        ...userDetails,
+        team: group.name,
+        inviter,
+      },
+    })
+      .then(() => {})
+      .catch(() => {});
+  }
+  return;
 };
 
 export const getGroupApiKeysForUser = async (
@@ -682,15 +796,22 @@ export const getGroupApiKeysForUser = async (
   groupId: number,
   queryParams: any
 ) => {
-  if (await can(userId, OrgScopes.READ_ORG_API_KEYS, "group", groupId))
-    return paginatedResult(
-      await prisma.apiKeys.findMany({
-        where: { groupId: groupId },
-        ...queryParamsToSelect(queryParams),
-      }),
-      { take: queryParams.take }
-    );
-  throw new Error(INSUFFICIENT_PERMISSION);
+  if (
+    !(await can(
+      userId,
+      `${Acts.READ}${ScopesGroup.API_KEYS}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  return paginatedResult(
+    await prisma.apiKeys.findMany({
+      where: { groupId: groupId },
+      ...queryParamsToSelect(queryParams),
+    }),
+    { take: queryParams.take }
+  );
 };
 
 export const getGroupApiKeyForUser = async (
@@ -698,9 +819,16 @@ export const getGroupApiKeyForUser = async (
   groupId: number,
   apiKeyId: number
 ) => {
-  if (await can(userId, OrgScopes.READ_ORG_API_KEYS, "group", groupId))
-    return prisma.apiKeys.findOne({ where: { id: apiKeyId } });
-  throw new Error(INSUFFICIENT_PERMISSION);
+  if (
+    !(await can(
+      userId,
+      `${Acts.READ}${ScopesGroup.API_KEYS}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  return prisma.apiKeys.findOne({ where: { id: apiKeyId } });
 };
 
 export const getGroupApiKeyLogsForUser = async (
@@ -712,9 +840,16 @@ export const getGroupApiKeyLogsForUser = async (
     from?: string;
   }
 ) => {
-  if (await can(userId, OrgScopes.READ_ORG_API_KEY_LOGS, "group", groupId))
-    return getApiKeyLogs(apiKeyId, query);
-  throw new Error(INSUFFICIENT_PERMISSION);
+  if (
+    !(await can(
+      userId,
+      `${Acts.READ}${ScopesGroup.API_KEY_LOGS}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  return getApiKeyLogs(apiKeyId, query);
 };
 
 export const updateApiKeyForUser = async (
@@ -724,16 +859,22 @@ export const updateApiKeyForUser = async (
   data: apiKeysUpdateInput,
   locals: Locals | any
 ) => {
-  if (await can(userId, OrgScopes.UPDATE_ORG_API_KEYS, "group", groupId)) {
-    const result = await prisma.apiKeys.update({
-      where: { id: apiKeyId },
-      data,
-    });
-    queueWebhook(groupId, Webhooks.UPDATE_API_KEY, data);
-    trackEvent({ groupId, type: Webhooks.UPDATE_API_KEY }, locals);
-    return result;
-  }
-  throw new Error(INSUFFICIENT_PERMISSION);
+  if (
+    !(await can(
+      userId,
+      `${Acts.WRITE}${ScopesGroup.API_KEYS}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  const result = await prisma.apiKeys.update({
+    where: { id: apiKeyId },
+    data,
+  });
+  queueWebhook(groupId, Webhooks.UPDATE_API_KEY, data);
+  trackEvent({ groupId, type: Webhooks.UPDATE_API_KEY }, locals);
+  return result;
 };
 
 export const createApiKeyForUser = async (
@@ -742,24 +883,30 @@ export const createApiKeyForUser = async (
   apiKey: apiKeysCreateInput,
   locals: Locals | any
 ) => {
-  if (await can(userId, OrgScopes.CREATE_ORG_API_KEYS, "group", groupId)) {
-    apiKey.apiKey = randomString({ length: 20 });
-    apiKey.expiresAt = apiKey.expiresAt || new Date(TOKEN_EXPIRY_API_KEY_MAX);
-    const result = await prisma.apiKeys.create({
-      data: {
-        ...apiKey,
-        group: {
-          connect: {
-            id: groupId,
-          },
+  if (
+    !(await can(
+      userId,
+      `${Acts.WRITE}${ScopesGroup.API_KEYS}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  apiKey.apiKey = randomString({ length: 20 });
+  apiKey.expiresAt = apiKey.expiresAt || new Date(TOKEN_EXPIRY_API_KEY_MAX);
+  const result = await prisma.apiKeys.create({
+    data: {
+      ...apiKey,
+      group: {
+        connect: {
+          id: groupId,
         },
       },
-    });
-    queueWebhook(groupId, Webhooks.CREATE_API_KEY, apiKey);
-    trackEvent({ groupId, type: Webhooks.CREATE_API_KEY }, locals);
-    return result;
-  }
-  throw new Error(INSUFFICIENT_PERMISSION);
+    },
+  });
+  queueWebhook(groupId, Webhooks.CREATE_API_KEY, apiKey);
+  trackEvent({ groupId, type: Webhooks.CREATE_API_KEY }, locals);
+  return result;
 };
 
 export const deleteApiKeyForUser = async (
@@ -768,15 +915,21 @@ export const deleteApiKeyForUser = async (
   apiKeyId: number,
   locals: Locals | any
 ) => {
-  if (await can(userId, OrgScopes.DELETE_ORG_API_KEYS, "group", groupId)) {
-    const result = await prisma.apiKeys.delete({
-      where: { id: apiKeyId },
-    });
-    queueWebhook(groupId, Webhooks.DELETE_API_KEY, apiKeyId);
-    trackEvent({ groupId, type: Webhooks.DELETE_API_KEY }, locals);
-    return result;
-  }
-  throw new Error(INSUFFICIENT_PERMISSION);
+  if (
+    !(await can(
+      userId,
+      `${Acts.WRITE}${ScopesGroup.API_KEYS}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  const result = await prisma.apiKeys.delete({
+    where: { id: apiKeyId },
+  });
+  queueWebhook(groupId, Webhooks.DELETE_API_KEY, apiKeyId);
+  trackEvent({ groupId, type: Webhooks.DELETE_API_KEY }, locals);
+  return result;
 };
 
 export const getGroupDomainsForUser = async (
@@ -784,15 +937,22 @@ export const getGroupDomainsForUser = async (
   groupId: number,
   queryParams: any
 ) => {
-  if (await can(userId, OrgScopes.READ_ORG_DOMAINS, "group", groupId))
-    return paginatedResult(
-      await prisma.domains.findMany({
-        where: { groupId: groupId },
-        ...queryParamsToSelect(queryParams),
-      }),
-      { take: queryParams.take }
-    );
-  throw new Error(INSUFFICIENT_PERMISSION);
+  if (
+    !(await can(
+      userId,
+      `${Acts.READ}${ScopesGroup.DOMAINS}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  return paginatedResult(
+    await prisma.domains.findMany({
+      where: { groupId: groupId },
+      ...queryParamsToSelect(queryParams),
+    }),
+    { take: queryParams.take }
+  );
 };
 
 export const getGroupDomainForUser = async (
@@ -800,9 +960,16 @@ export const getGroupDomainForUser = async (
   groupId: number,
   domainId: number
 ) => {
-  if (await can(userId, OrgScopes.READ_ORG_DOMAINS, "group", groupId))
-    return prisma.domains.findOne({ where: { id: domainId } });
-  throw new Error(INSUFFICIENT_PERMISSION);
+  if (
+    !(await can(
+      userId,
+      `${Acts.READ}${ScopesGroup.DOMAINS}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  return prisma.domains.findOne({ where: { id: domainId } });
 };
 
 export const updateDomainForUser = async (
@@ -812,16 +979,22 @@ export const updateDomainForUser = async (
   data: domainsUpdateInput,
   locals: Locals | any
 ) => {
-  if (await can(userId, OrgScopes.UPDATE_ORG_DOMAINS, "group", groupId)) {
-    const result = await prisma.domains.update({
-      where: { id: domainId },
-      data,
-    });
-    queueWebhook(groupId, Webhooks.UPDATE_DOMAIN, data);
-    trackEvent({ groupId, type: Webhooks.UPDATE_DOMAIN }, locals);
-    return result;
-  }
-  throw new Error(INSUFFICIENT_PERMISSION);
+  if (
+    !(await can(
+      userId,
+      `${Acts.WRITE}${ScopesGroup.DOMAINS}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  const result = await prisma.domains.update({
+    where: { id: domainId },
+    data,
+  });
+  queueWebhook(groupId, Webhooks.UPDATE_DOMAIN, data);
+  trackEvent({ groupId, type: Webhooks.UPDATE_DOMAIN }, locals);
+  return result;
 };
 
 export const createDomainForUser = async (
@@ -830,25 +1003,31 @@ export const createDomainForUser = async (
   domain: domainsCreateInput,
   locals: Locals | any
 ) => {
-  if (await can(userId, OrgScopes.CREATE_ORG_DOMAINS, "group", groupId)) {
-    await checkDomainAvailability(domain.domain);
-    const result = await prisma.domains.create({
-      data: {
-        ...domain,
-        verificationCode: await randomString({ length: 25 }),
-        isVerified: false,
-        group: {
-          connect: {
-            id: groupId,
-          },
+  if (
+    !(await can(
+      userId,
+      `${Acts.WRITE}${ScopesGroup.DOMAINS}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  await checkDomainAvailability(domain.domain);
+  const result = await prisma.domains.create({
+    data: {
+      ...domain,
+      verificationCode: await randomString({ length: 25 }),
+      isVerified: false,
+      group: {
+        connect: {
+          id: groupId,
         },
       },
-    });
-    queueWebhook(groupId, Webhooks.CREATE_DOMAIN, domain);
-    trackEvent({ groupId, type: Webhooks.CREATE_DOMAIN }, locals);
-    return result;
-  }
-  throw new Error(INSUFFICIENT_PERMISSION);
+    },
+  });
+  queueWebhook(groupId, Webhooks.CREATE_DOMAIN, domain);
+  trackEvent({ groupId, type: Webhooks.CREATE_DOMAIN }, locals);
+  return result;
 };
 
 export const deleteDomainForUser = async (
@@ -857,15 +1036,21 @@ export const deleteDomainForUser = async (
   domainId: number,
   locals: Locals | any
 ) => {
-  if (await can(userId, OrgScopes.DELETE_ORG_DOMAINS, "group", groupId)) {
-    const result = await prisma.domains.delete({
-      where: { id: domainId },
-    });
-    queueWebhook(groupId, Webhooks.DELETE_DOMAIN, domainId);
-    trackEvent({ groupId, type: Webhooks.DELETE_DOMAIN }, locals);
-    return result;
-  }
-  throw new Error(INSUFFICIENT_PERMISSION);
+  if (
+    !(await can(
+      userId,
+      `${Acts.WRITE}${ScopesGroup.DOMAINS}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  const result = await prisma.domains.delete({
+    where: { id: domainId },
+  });
+  queueWebhook(groupId, Webhooks.DELETE_DOMAIN, domainId);
+  trackEvent({ groupId, type: Webhooks.DELETE_DOMAIN }, locals);
+  return result;
 };
 
 export const verifyDomainForUser = async (
@@ -875,38 +1060,29 @@ export const verifyDomainForUser = async (
   method: "dns" | "file",
   locals: Locals | any
 ) => {
-  if (await can(userId, OrgScopes.VERIFY_ORG_DOMAINS, "group", groupId)) {
-    const domain = await prisma.domains.findOne({
-      where: { id: domainId },
-    });
-    if (!domain) throw new Error(RESOURCE_NOT_FOUND);
-    if (domain.isVerified) throw new Error(DOMAIN_ALREADY_VERIFIED);
-    if (!domain.verificationCode) throw new Error(DOMAIN_UNABLE_TO_VERIFY);
-    if (method === "file") {
-      try {
-        const file: string = (
-          await axios.get(
-            `http://${domain.domain}/.well-known/${JWT_ISSUER}-verify.txt`
-          )
-        ).data;
-        if (file.replace(/\r?\n|\r/g, "").trim() === domain.verificationCode) {
-          const result = await prisma.domains.update({
-            where: { id: domainId },
-            data: { isVerified: true },
-          });
-          queueWebhook(groupId, Webhooks.VERIFY_DOMAIN, {
-            domainId,
-            method,
-          });
-          trackEvent({ groupId, type: Webhooks.VERIFY_DOMAIN }, locals);
-          return result;
-        }
-      } catch (error) {
-        throw new Error(DOMAIN_MISSING_FILE);
-      }
-    } else {
-      const dns = await dnsResolve(domain.domain, "TXT");
-      if (JSON.stringify(dns).includes(domain.verificationCode)) {
+  if (
+    !(await can(
+      userId,
+      `${Acts.WRITE}${ScopesGroup.DOMAINS}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  const domain = await prisma.domains.findOne({
+    where: { id: domainId },
+  });
+  if (!domain) throw new Error(RESOURCE_NOT_FOUND);
+  if (domain.isVerified) throw new Error(DOMAIN_ALREADY_VERIFIED);
+  if (!domain.verificationCode) throw new Error(DOMAIN_UNABLE_TO_VERIFY);
+  if (method === "file") {
+    try {
+      const file: string = (
+        await axios.get(
+          `http://${domain.domain}/.well-known/${JWT_ISSUER}-verify.txt`
+        )
+      ).data;
+      if (file.replace(/\r?\n|\r/g, "").trim() === domain.verificationCode) {
         const result = await prisma.domains.update({
           where: { id: domainId },
           data: { isVerified: true },
@@ -917,13 +1093,28 @@ export const verifyDomainForUser = async (
         });
         trackEvent({ groupId, type: Webhooks.VERIFY_DOMAIN }, locals);
         return result;
-      } else {
-        throw new Error(DOMAIN_MISSING_DNS);
       }
+    } catch (error) {
+      throw new Error(DOMAIN_MISSING_FILE);
     }
-    throw new Error(DOMAIN_UNABLE_TO_VERIFY);
+  } else {
+    const dns = await dnsResolve(domain.domain, "TXT");
+    if (JSON.stringify(dns).includes(domain.verificationCode)) {
+      const result = await prisma.domains.update({
+        where: { id: domainId },
+        data: { isVerified: true },
+      });
+      queueWebhook(groupId, Webhooks.VERIFY_DOMAIN, {
+        domainId,
+        method,
+      });
+      trackEvent({ groupId, type: Webhooks.VERIFY_DOMAIN }, locals);
+      return result;
+    } else {
+      throw new Error(DOMAIN_MISSING_DNS);
+    }
   }
-  throw new Error(INSUFFICIENT_PERMISSION);
+  throw new Error(DOMAIN_UNABLE_TO_VERIFY);
 };
 
 export const getGroupWebhooksForUser = async (
@@ -931,15 +1122,22 @@ export const getGroupWebhooksForUser = async (
   groupId: number,
   queryParams: any
 ) => {
-  if (await can(userId, OrgScopes.READ_ORG_WEBHOOKS, "group", groupId))
-    return paginatedResult(
-      await prisma.webhooks.findMany({
-        where: { groupId: groupId },
-        ...queryParamsToSelect(queryParams),
-      }),
-      { take: queryParams.take }
-    );
-  throw new Error(INSUFFICIENT_PERMISSION);
+  if (
+    !(await can(
+      userId,
+      `${Acts.READ}${ScopesGroup.WEBHOOKS}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  return paginatedResult(
+    await prisma.webhooks.findMany({
+      where: { groupId: groupId },
+      ...queryParamsToSelect(queryParams),
+    }),
+    { take: queryParams.take }
+  );
 };
 
 export const getGroupWebhookForUser = async (
@@ -947,9 +1145,16 @@ export const getGroupWebhookForUser = async (
   groupId: number,
   webhookId: number
 ) => {
-  if (await can(userId, OrgScopes.READ_ORG_WEBHOOKS, "group", groupId))
-    return prisma.webhooks.findOne({ where: { id: webhookId } });
-  throw new Error(INSUFFICIENT_PERMISSION);
+  if (
+    !(await can(
+      userId,
+      `${Acts.READ}${ScopesGroup.WEBHOOKS}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  return prisma.webhooks.findOne({ where: { id: webhookId } });
 };
 
 export const updateWebhookForUser = async (
@@ -959,16 +1164,22 @@ export const updateWebhookForUser = async (
   data: webhooksUpdateInput,
   locals: Locals | any
 ) => {
-  if (await can(userId, OrgScopes.UPDATE_ORG_WEBHOOKS, "group", groupId)) {
-    const result = await prisma.webhooks.update({
-      where: { id: webhookId },
-      data,
-    });
-    queueWebhook(groupId, Webhooks.UPDATE_WEBHOOK, data);
-    trackEvent({ groupId, type: Webhooks.UPDATE_WEBHOOK }, locals);
-    return result;
-  }
-  throw new Error(INSUFFICIENT_PERMISSION);
+  if (
+    !(await can(
+      userId,
+      `${Acts.WRITE}${ScopesGroup.WEBHOOKS}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  const result = await prisma.webhooks.update({
+    where: { id: webhookId },
+    data,
+  });
+  queueWebhook(groupId, Webhooks.UPDATE_WEBHOOK, data);
+  trackEvent({ groupId, type: Webhooks.UPDATE_WEBHOOK }, locals);
+  return result;
 };
 
 export const createWebhookForUser = async (
@@ -977,25 +1188,31 @@ export const createWebhookForUser = async (
   webhook: webhooksCreateInput,
   locals: Locals | any
 ) => {
-  if (await can(userId, OrgScopes.DELETE_ORG_WEBHOOKS, "group", groupId)) {
-    const result = await prisma.webhooks.create({
-      data: {
-        ...webhook,
-        group: {
-          connect: {
-            id: groupId,
-          },
+  if (
+    !(await can(
+      userId,
+      `${Acts.WRITE}${ScopesGroup.WEBHOOKS}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  const result = await prisma.webhooks.create({
+    data: {
+      ...webhook,
+      group: {
+        connect: {
+          id: groupId,
         },
       },
-    });
-    fireSingleWebhook(result, Webhooks.TEST_WEBHOOK)
-      .then(() => {})
-      .catch(() => {});
-    queueWebhook(groupId, Webhooks.CREATE_WEBHOOK, webhook);
-    trackEvent({ groupId, type: Webhooks.CREATE_WEBHOOK }, locals);
-    return result;
-  }
-  throw new Error(INSUFFICIENT_PERMISSION);
+    },
+  });
+  fireSingleWebhook(result, Webhooks.TEST_WEBHOOK)
+    .then(() => {})
+    .catch(() => {});
+  queueWebhook(groupId, Webhooks.CREATE_WEBHOOK, webhook);
+  trackEvent({ groupId, type: Webhooks.CREATE_WEBHOOK }, locals);
+  return result;
 };
 
 export const deleteWebhookForUser = async (
@@ -1004,15 +1221,21 @@ export const deleteWebhookForUser = async (
   webhookId: number,
   locals: Locals | any
 ) => {
-  if (await can(userId, OrgScopes.CREATE_ORG_WEBHOOKS, "group", groupId)) {
-    const result = prisma.webhooks.delete({
-      where: { id: webhookId },
-    });
-    queueWebhook(groupId, Webhooks.DELETE_WEBHOOK, webhookId);
-    trackEvent({ groupId, type: Webhooks.DELETE_WEBHOOK }, locals);
-    return result;
-  }
-  throw new Error(INSUFFICIENT_PERMISSION);
+  if (
+    !(await can(
+      userId,
+      `${Acts.WRITE}${ScopesGroup.WEBHOOKS}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  const result = prisma.webhooks.delete({
+    where: { id: webhookId },
+  });
+  queueWebhook(groupId, Webhooks.DELETE_WEBHOOK, webhookId);
+  trackEvent({ groupId, type: Webhooks.DELETE_WEBHOOK }, locals);
+  return result;
 };
 
 export const applyCouponToGroupForUser = async (
@@ -1020,46 +1243,52 @@ export const applyCouponToGroupForUser = async (
   groupId: number,
   coupon: string
 ) => {
-  if (await can(userId, OrgScopes.CREATE_ORG_TRANSACTIONS, "group", groupId)) {
-    let amount: number | undefined = undefined;
-    let currency: string | undefined = undefined;
-    let description: string | undefined = undefined;
-    try {
-      const result = await verifyToken<{
-        amount: number;
-        currency: string;
-        description?: string;
-      }>(coupon, Tokens.COUPON);
-      await checkInvalidatedToken(coupon);
-      amount = result.amount;
-      currency = result.currency;
-      description = result.description;
-    } catch (error) {
-      throw new Error(INVALID_INPUT);
-    }
-    const group = await getGroupById(groupId);
-    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (
-      amount &&
-      currency &&
-      typeof group.attributes === "object" &&
-      !Array.isArray(group.attributes) &&
-      group.attributes?.stripeCustomerId === "string"
-    ) {
-      const result = await createCustomerBalanceTransaction(
-        group.attributes?.stripeCustomerId,
-        {
-          amount,
-          currency,
-          description,
-        }
-      );
-      await invalidateToken(coupon);
-      return result;
-    }
-    throw new Error(STRIPE_NO_CUSTOMER);
+  if (
+    !(await can(
+      userId,
+      `${Acts.WRITE}${ScopesGroup.TRANSACTIONS}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  let amount: number | undefined = undefined;
+  let currency: string | undefined = undefined;
+  let description: string | undefined = undefined;
+  try {
+    const result = await verifyToken<{
+      amount: number;
+      currency: string;
+      description?: string;
+    }>(coupon, Tokens.COUPON);
+    await checkInvalidatedToken(coupon);
+    amount = result.amount;
+    currency = result.currency;
+    description = result.description;
+  } catch (error) {
+    throw new Error(INVALID_INPUT);
   }
-  throw new Error(INSUFFICIENT_PERMISSION);
+  const group = await getGroupById(groupId);
+  if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+  if (
+    amount &&
+    currency &&
+    typeof group.attributes === "object" &&
+    !Array.isArray(group.attributes) &&
+    group.attributes?.stripeCustomerId === "string"
+  ) {
+    const result = await createCustomerBalanceTransaction(
+      group.attributes?.stripeCustomerId,
+      {
+        amount,
+        currency,
+        description,
+      }
+    );
+    await invalidateToken(coupon);
+    return result;
+  }
+  throw new Error(STRIPE_NO_CUSTOMER);
 };
 
 export const getGroupTransactionsForUser = async (
@@ -1067,21 +1296,27 @@ export const getGroupTransactionsForUser = async (
   groupId: number,
   params: KeyValue
 ) => {
-  if (await can(userId, OrgScopes.READ_ORG_TRANSACTIONS, "group", groupId)) {
-    const group = await getGroupById(groupId);
-    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (
-      typeof group.attributes === "object" &&
-      !Array.isArray(group.attributes) &&
-      group.attributes?.stripeCustomerId === "string"
-    )
-      return getCustomBalanceTransactions(
-        group.attributes?.stripeCustomerId,
-        params
-      );
-    throw new Error(STRIPE_NO_CUSTOMER);
-  }
-  throw new Error(INSUFFICIENT_PERMISSION);
+  if (
+    !(await can(
+      userId,
+      `${Acts.READ}${ScopesGroup.TRANSACTIONS}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  const group = await getGroupById(groupId);
+  if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+  if (
+    typeof group.attributes === "object" &&
+    !Array.isArray(group.attributes) &&
+    group.attributes?.stripeCustomerId === "string"
+  )
+    return getCustomBalanceTransactions(
+      group.attributes?.stripeCustomerId,
+      params
+    );
+  throw new Error(STRIPE_NO_CUSTOMER);
 };
 
 export const getGroupTransactionForUser = async (
@@ -1089,19 +1324,25 @@ export const getGroupTransactionForUser = async (
   groupId: number,
   transactionId: string
 ) => {
-  if (await can(userId, OrgScopes.READ_ORG_TRANSACTIONS, "group", groupId)) {
-    const group = await getGroupById(groupId);
-    if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
-    if (
-      typeof group.attributes === "object" &&
-      !Array.isArray(group.attributes) &&
-      group.attributes?.stripeCustomerId === "string"
-    )
-      return getCustomBalanceTransaction(
-        group.attributes?.stripeCustomerId,
-        transactionId
-      );
-    throw new Error(STRIPE_NO_CUSTOMER);
-  }
-  throw new Error(INSUFFICIENT_PERMISSION);
+  if (
+    !(await can(
+      userId,
+      `${Acts.READ}${ScopesGroup.TRANSACTIONS}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  const group = await getGroupById(groupId);
+  if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+  if (
+    typeof group.attributes === "object" &&
+    !Array.isArray(group.attributes) &&
+    group.attributes?.stripeCustomerId === "string"
+  )
+    return getCustomBalanceTransaction(
+      group.attributes?.stripeCustomerId,
+      transactionId
+    );
+  throw new Error(STRIPE_NO_CUSTOMER);
 };
