@@ -97,9 +97,6 @@ export const TOKEN_EXPIRY_LOGIN = process.env.TOKEN_EXPIRY_LOGIN || "15m";
 export const TOKEN_EXPIRY_APPROVE_LOCATION =
   process.env.TOKEN_EXPIRY_APPROVE_LOCATION || "10m";
 export const TOKEN_EXPIRY_REFRESH = process.env.TOKEN_EXPIRY_REFRESH || "30d";
-export const TOKEN_EXPIRY_API_KEY_MAX = process.env.TOKEN_EXPIRY_API_KEY_MAX
-  ? parseInt(process.env.TOKEN_EXPIRY_API_KEY_MAX)
-  : 10413685800000; // 2299-12-31 is the default maximum expiry (also what Microsoft uses)
 export const DISALLOW_OPEN_CORS = bool(process.env.DISALLOW_OPEN_CORS);
 
 // OAuth2 credentials

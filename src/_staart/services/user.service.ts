@@ -1,6 +1,5 @@
 import {
   accessTokens,
-  accessTokensCreateInput,
   sessionsUpdateInput,
   users,
   usersCreateInput,
@@ -18,13 +17,12 @@ import {
 import { createHash } from "crypto";
 import { decode } from "jsonwebtoken";
 import randomInt from "random-int";
-import { TOKEN_EXPIRY_API_KEY_MAX } from "../../config";
 import {
   deleteItemFromCache,
   getItemFromCache,
   setItemInCache,
 } from "../helpers/cache";
-import { accessToken, emailVerificationToken } from "../helpers/jwt";
+import { emailVerificationToken } from "../helpers/jwt";
 import { mail } from "../helpers/mail";
 import { prisma } from "../helpers/prisma";
 import { deleteSensitiveInfoUser } from "../helpers/utils";
@@ -160,15 +158,6 @@ export const createBackupCodes = async (userId: number, count = 1) => {
     });
   }
   return codes;
-};
-
-/**
- * Create an API key
- */
-export const createAccessToken = async (data: accessTokensCreateInput) => {
-  data.expiresAt = data.expiresAt || new Date(TOKEN_EXPIRY_API_KEY_MAX);
-  data.accessToken = await accessToken(data);
-  return prisma.accessTokens.create({ data });
 };
 
 /**

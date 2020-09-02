@@ -49,12 +49,7 @@ import {
 } from "@staart/payments";
 import { randomString } from "@staart/text";
 import axios from "axios";
-import {
-  JWT_ISSUER,
-  TOKEN_EXPIRY_API_KEY_MAX,
-  ScopesGroup,
-  ScopesUser,
-} from "../../config";
+import { JWT_ISSUER, ScopesGroup, ScopesUser } from "../../config";
 import { can, Acts } from "../helpers/authorization";
 import { deleteItemFromCache } from "../helpers/cache";
 import {
@@ -893,7 +888,6 @@ export const createApiKeyForUser = async (
     throw new Error(INSUFFICIENT_PERMISSION);
 
   apiKey.apiKey = randomString({ length: 20 });
-  apiKey.expiresAt = apiKey.expiresAt || new Date(TOKEN_EXPIRY_API_KEY_MAX);
   const result = await prisma.apiKeys.create({
     data: {
       ...apiKey,

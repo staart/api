@@ -23,12 +23,7 @@ import { deleteCustomer } from "@staart/payments";
 import { compare, hash, randomString } from "@staart/text";
 import { authenticator } from "otplib";
 import { toDataURL } from "qrcode";
-import {
-  ALLOW_DISPOSABLE_EMAILS,
-  SERVICE_2FA,
-  TOKEN_EXPIRY_API_KEY_MAX,
-  ScopesUser,
-} from "../../config";
+import { ALLOW_DISPOSABLE_EMAILS, SERVICE_2FA, ScopesUser } from "../../config";
 import { can, Acts } from "../helpers/authorization";
 import { deleteItemFromCache } from "../helpers/cache";
 import { ApiKeyResponse, couponCodeJwt } from "../helpers/jwt";
@@ -458,8 +453,6 @@ export const createAccessTokenForUser = async (
     throw new Error(INSUFFICIENT_PERMISSION);
 
   accessToken.accessToken = randomString({ length: 20 });
-  accessToken.expiresAt =
-    accessToken.expiresAt || new Date(TOKEN_EXPIRY_API_KEY_MAX);
   return prisma.accessTokens.create({
     data: { ...accessToken, user: { connect: { id: userId } } },
   });

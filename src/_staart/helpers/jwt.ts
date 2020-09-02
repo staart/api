@@ -1,8 +1,4 @@
-import {
-  accessTokensCreateInput,
-  accessTokensUpdateInput,
-  users,
-} from "@prisma/client";
+import { users } from "@prisma/client";
 import {
   IP_RANGE_CHECK_FAIL,
   REFERRER_CHECK_FAIL,
@@ -17,7 +13,6 @@ import { decode, sign, verify } from "jsonwebtoken";
 import {
   JWT_ISSUER,
   JWT_SECRET,
-  TOKEN_EXPIRY_API_KEY_MAX,
   TOKEN_EXPIRY_APPROVE_LOCATION,
   TOKEN_EXPIRY_EMAIL_VERIFICATION,
   TOKEN_EXPIRY_LOGIN,
@@ -152,28 +147,6 @@ export const loginLinkToken = (user: users) =>
  */
 export const twoFactorToken = (user: users) =>
   generateToken({ id: user.id }, TOKEN_EXPIRY_LOGIN, Tokens.TWO_FACTOR);
-
-/**
- * Generate an access token
- */
-export const accessToken = (
-  accessToken: accessTokensCreateInput | accessTokensUpdateInput
-) => {
-  const createAccessToken = { ...removeFalsyValues(accessToken) };
-  delete createAccessToken.createdAt;
-  delete createAccessToken.accessToken;
-  delete createAccessToken.updatedAt;
-  delete createAccessToken.name;
-  delete createAccessToken.description;
-  delete createAccessToken.expiresAt;
-  return generateToken(
-    createAccessToken,
-    (typeof accessToken.expiresAt === "string"
-      ? new Date(accessToken.expiresAt).getTime()
-      : TOKEN_EXPIRY_API_KEY_MAX) - new Date().getTime(),
-    Tokens.ACCESS_TOKEN
-  );
-};
 
 /**
  * Generate a new approve location JWT

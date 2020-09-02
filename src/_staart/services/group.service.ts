@@ -18,11 +18,7 @@ import {
 import { capitalizeFirstAndLastLetter, ms, randomString } from "@staart/text";
 import axios from "axios";
 import randomColor from "randomcolor";
-import {
-  ELASTIC_LOGS_INDEX,
-  JWT_ISSUER,
-  TOKEN_EXPIRY_API_KEY_MAX,
-} from "../../config";
+import { ELASTIC_LOGS_INDEX, JWT_ISSUER } from "../../config";
 import {
   deleteItemFromCache,
   getItemFromCache,
@@ -110,15 +106,6 @@ export const getApiKeyLogs = async (apiKeyId: number, query: KeyValue) => {
     },
   });
   return cleanElasticSearchQueryResponse(result.body, 10);
-};
-
-/**
- * Create an API key
- */
-export const createApiKey = async (apiKey: apiKeysCreateInput) => {
-  apiKey.expiresAt = apiKey.expiresAt || new Date(TOKEN_EXPIRY_API_KEY_MAX);
-  apiKey.apiKey = randomString({ length: 24 });
-  return prisma.apiKeys.create({ data: apiKey });
 };
 
 /**
