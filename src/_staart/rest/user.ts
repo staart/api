@@ -388,6 +388,19 @@ export const getUserAccessTokensForUser = async (
   );
 };
 
+export const getUserAccessTokenScopesForUser = async (tokenUserId: number) => {
+  if (
+    !(await can(
+      tokenUserId,
+      `${Acts.READ}${ScopesUser.ACCESS_TOKENS}`,
+      `user-${tokenUserId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  return Object.values(ScopesUser);
+};
+
 export const getUserAccessTokenForUser = async (
   tokenUserId: number,
   userId: number,

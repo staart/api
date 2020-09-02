@@ -23,6 +23,7 @@ import {
   getUserAccessTokenForUser,
   getUserAccessTokensForUser,
   updateAccessTokenForUser,
+  getUserAccessTokenScopesForUser,
 } from "../../../_staart/rest/user";
 
 @ClassMiddleware(authHandler)
@@ -36,6 +37,13 @@ export class UserAccessTokensController {
       id,
       req.query
     );
+  }
+
+  @Get("/scopes")
+  async getUserAccessTokenScopes(req: Request, res: Response) {
+    const id = twtToId(req.params.id, res.locals.token.id);
+    joiValidate({ id: Joi.number().required() }, { id });
+    return getUserAccessTokenScopesForUser(twtToId(res.locals.token.id));
   }
 
   @Put()
