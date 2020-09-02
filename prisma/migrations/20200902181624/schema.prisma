@@ -5,7 +5,7 @@ generator client {
 
 datasource mysql {
   provider = "mysql"
-  url      = env("DATABASE_URL")
+  url = "***"
 }
 
 enum Gender {

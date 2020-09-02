@@ -115,7 +115,6 @@ const getPolicyForUser = async (userId: number) => {
       policy += `p, user-${twtToId(userId)}, ${Acts.WRITE}, ${scope}\n`;
     });
   }
-  console.log(policy);
   return policy;
 };
 
