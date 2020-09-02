@@ -98,8 +98,8 @@ model.loadModelFromText(readFileSync(join(".", "casbin-model.conf"), "utf-8"));
 
 export const can = async (
   subject: number | ApiKeyResponse | AccessTokenResponse,
-  object: string,
-  action: string
+  action: string,
+  object: string
 ) => {
   if (typeof subject === "number") {
     console.log("Subject is", subject);

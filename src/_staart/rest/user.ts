@@ -148,7 +148,7 @@ export const deleteUserForUser = async (
   updateUserId: number,
   locals: Locals | any
 ) => {
-  if (!(await can(tokenUserId, `${Acts.DELETE}`, `user-${updateUserId}`)))
+  if (!(await can(tokenUserId, Acts.DELETE, `user-${updateUserId}`)))
     throw new Error(INSUFFICIENT_PERMISSION);
 
   const groupsToDelete = await prisma.groups.findMany({
