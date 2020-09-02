@@ -23,10 +23,10 @@ import { join } from "path";
 export enum Acts {
   READ = "read:",
   WRITE = "write:",
-  DELETE_MEMBERSHIP = "delete:membership",
+  DELETE = "delete",
 }
 export const BaseScopesUser = {
-  BASIC: "users/basic",
+  INFO: "users/info",
   ACCESS_TOKENS: "users/access-tokens",
   EMAILS: "users/emails",
   IDENTITIES: "users/identities",
@@ -35,7 +35,7 @@ export const BaseScopesUser = {
   SESSIONS: "users/sessions",
 };
 export const BaseScopesGroup = {
-  BASIC: "groups/basic",
+  INFO: "groups/info",
   API_KEYS: "groups/api-keys",
   BILLING: "groups/billing",
   DOMAINS: "groups/domains",
@@ -53,18 +53,21 @@ const getPolicyForUser = async (userId: number) => {
     policy += `p, user-${userId}, user-${userId}, ${Acts.READ}${scope}\n`;
     policy += `p, user-${userId}, user-${userId}, ${Acts.WRITE}${scope}\n`;
   });
+  policy += `p, user-${userId}, user-${userId}, ${Acts.DELETE}\n`;
   const memberships = await prisma.memberships.findMany({
     where: { userId },
   });
   for await (const membership of memberships) {
-    policy += `p, user-${userId}, membership-${membership.id}, ${Acts.DELETE_MEMBERSHIP} \n`;
+    policy += `p, user-${userId}, membership-${membership.id}, ${Acts.READ}\n`;
+    policy += `p, user-${userId}, membership-${membership.id}, ${Acts.WRITE}\n`;
+    policy += `p, user-${userId}, membership-${membership.id}, ${Acts.DELETE}\n`;
     if (membership.role === "ADMIN" || membership.role === "OWNER") {
       const groupMemberships = await prisma.memberships.findMany({
         where: { groupId: membership.groupId },
       });
       groupMemberships.forEach((groupMembership) => {
         if (groupMembership.role !== "OWNER")
-          policy += `p, user-${userId}, membership-${groupMembership.id}, ${Acts.DELETE_MEMBERSHIP} \n`;
+          policy += `p, user-${userId}, membership-${groupMembership.id}, ${Acts.DELETE}\n`;
       });
     }
     Object.values(ScopesGroup).forEach((scope) => {
