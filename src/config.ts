@@ -2,6 +2,7 @@ import { config } from "dotenv";
 import {
   BaseScopesUser,
   BaseScopesGroup,
+  BaseScopesAdmin,
 } from "./_staart/helpers/authorization";
 config();
 
@@ -137,3 +138,4 @@ export const ELASTIC_INSTANCES_INDEX =
 
 export const ScopesUser = { ...BaseScopesUser };
 export const ScopesGroup = { ...BaseScopesGroup };
+export const ScopesAdmin = { ...BaseScopesAdmin };

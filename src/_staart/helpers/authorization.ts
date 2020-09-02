@@ -1,18 +1,8 @@
-import {
-  accessTokens,
-  apiKeys,
-  groups,
-  memberships,
-  users,
-} from "@prisma/client";
-import { INVALID_TOKEN, USER_NOT_FOUND } from "@staart/errors";
-import { OrgScopes, SudoScopes, Tokens, UserScopes } from "../interfaces/enum";
-import { getGroupById } from "../services/group.service";
 import { getUserById } from "../services/user.service";
 import { AccessTokenResponse, ApiKeyResponse } from "./jwt";
 import { newEnforcer, Model } from "casbin";
 import { prisma } from "./prisma";
-import { ScopesUser, ScopesGroup } from "../../config";
+import { ScopesUser, ScopesGroup, ScopesAdmin } from "../../config";
 import { readFileSync } from "fs-extra";
 import { join } from "path";
 
@@ -46,6 +36,13 @@ export const BaseScopesGroup = {
   TRANSACTIONS: "groups/transactions",
   WEBHOOKS: "groups/webhooks",
 };
+export const BaseScopesAdmin = {
+  GROUPS: "admin/groups",
+  USERS: "admin/users",
+  COUPONS: "admin/coupons",
+  PAYMENT_EVENTS: "admin/payment-events",
+  SERVER_LOGS: "admin/server-logs",
+};
 
 const getPolicyForUser = async (userId: number) => {
   let policy = "";
@@ -77,6 +74,13 @@ const getPolicyForUser = async (userId: number) => {
       } else {
         policy += `p, user-${userId}, group-${membership.groupId}, ${Acts.READ}${scope}\n`;
       }
+    });
+  }
+  const userDetails = await getUserById(userId);
+  if (userDetails.role === "SUDO") {
+    Object.values(ScopesAdmin).forEach((scope) => {
+      policy += `p, user-${userId}, ${Acts.READ}, ${scope}\n`;
+      policy += `p, user-${userId}, ${Acts.WRITE}, ${scope}\n`;
     });
   }
   console.log(policy);
