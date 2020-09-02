@@ -27,8 +27,9 @@ import {
   ALLOW_DISPOSABLE_EMAILS,
   SERVICE_2FA,
   TOKEN_EXPIRY_API_KEY_MAX,
+  ScopesUser,
 } from "../../config";
-import { can } from "../helpers/authorization";
+import { can, Acts } from "../helpers/authorization";
 import { deleteItemFromCache } from "../helpers/cache";
 import { ApiKeyResponse, couponCodeJwt } from "../helpers/jwt";
 import { mail } from "../helpers/mail";
@@ -55,15 +56,20 @@ export const getUserFromIdForUser = async (
   tokenUserId: number,
   queryParams: any
 ) => {
-  if (await can(tokenUserId, UserScopes.READ_USER, "user", userId)) {
-    const user = await prisma.users.findOne({
-      ...queryParamsToSelect(queryParams),
-      where: { id: userId },
-    });
-    if (user) return user;
-    throw new Error(USER_NOT_FOUND);
-  }
-  throw new Error(INSUFFICIENT_PERMISSION);
+  if (
+    !(await can(
+      tokenUserId,
+      `${Acts.READ}${ScopesUser.BASIC}`,
+      `user-${userId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+  const user = await prisma.users.findOne({
+    ...queryParamsToSelect(queryParams),
+    where: { id: userId },
+  });
+  if (user) return user;
+  throw new Error(USER_NOT_FOUND);
 };
 
 export const updateUserForUser = async (
@@ -72,24 +78,31 @@ export const updateUserForUser = async (
   _data: users,
   locals: Locals | any
 ) => {
+  if (
+    !(await can(
+      tokenUserId,
+      `${Acts.WRITE}${ScopesUser.BASIC}`,
+      `user-${updateUserId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
   const data: PartialBy<users, "password"> = { ..._data };
   delete data.password;
-  if (await can(tokenUserId, UserScopes.UPDATE_USER, "user", updateUserId)) {
-    const user = await prisma.users.update({
-      data,
-      where: { id: updateUserId },
-    });
-    await deleteItemFromCache(`cache_getUserById_${updateUserId}`);
-    trackEvent(
-      {
-        userId: tokenUserId,
-        type: EventType.USER_UPDATED,
-        data: { id: updateUserId, data },
-      },
-      locals
-    );
-    return user;
-  }
+  const user = await prisma.users.update({
+    data,
+    where: { id: updateUserId },
+  });
+  await deleteItemFromCache(`cache_getUserById_${updateUserId}`);
+  trackEvent(
+    {
+      userId: tokenUserId,
+      type: EventType.USER_UPDATED,
+      data: { id: updateUserId, data },
+    },
+    locals
+  );
+  return user;
+
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
