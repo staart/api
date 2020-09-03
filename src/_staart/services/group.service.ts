@@ -189,11 +189,11 @@ export const createDomain = async (domain: domainsCreateInput) => {
 };
 
 /**
- * Get a user by their username
+ * Check if a domain is available
  */
-export const checkDomainAvailability = async (username: string) => {
+export const checkDomainAvailability = async (domainName: string) => {
   try {
-    const domain = await getDomainByDomainName(username);
+    const domain = await getDomainByDomainName(domainName);
     if (domain && domain.id) return false;
   } catch (error) {}
   return true;

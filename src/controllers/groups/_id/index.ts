@@ -33,7 +33,6 @@ export class GroupController {
     validator(
       {
         name: Joi.string(),
-        username: Joi.string().regex(/^[a-z0-9\-]+$/i),
         forceTwoFactor: Joi.boolean(),
         autoJoinDomain: Joi.boolean(),
         onlyAllowDomain: Joi.boolean(),
