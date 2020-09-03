@@ -1,4 +1,5 @@
 {
   "controllerPrefix": "v1",
-  "genderPrediction": true
+  "registerGenderPrediction": true,
+  "registerLocationDetection": true
 }

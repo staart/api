@@ -27,24 +27,36 @@ import { mail } from "../helpers/mail";
 import { prisma } from "../helpers/prisma";
 import { deleteSensitiveInfoUser } from "../helpers/utils";
 import { Templates } from "../interfaces/enum";
-import { KeyValue } from "../interfaces/general";
+import { KeyValue, Locals } from "../interfaces/general";
 import { config } from "@anandchowdhary/cosmic";
 import { sendNewPassword } from "../rest/auth";
 import axios from "axios";
+import { getGeolocationFromIp } from "../helpers/location";
 
 /**
  * Create a new user
  */
-export const createUser = async (user: usersCreateInput) => {
+export const createUser = async (user: usersCreateInput, locals?: Locals) => {
   user.name = capitalizeFirstAndLastLetter(user.name);
   user.password = user.password ? await hash(user.password, 8) : undefined;
-  if (config("genderPrediction") && !user.gender) {
+  if (config("registerGenderPrediction") && !user.gender) {
     try {
       const { data }: { data: { gender: "male" | "female" } } = await axios.get(
         `https://api.genderize.io/?name=peter`
       );
       if (["male", "female"].includes(data.gender))
         user.gender = data.gender.toUpperCase() as "MALE" | "FEMALE";
+    } catch (error) {}
+  }
+  if (
+    locals &&
+    config("registerLocationDetection") &&
+    (!user.countryCode || !user.timezone)
+  ) {
+    try {
+      const location = await getGeolocationFromIp(locals.ipAddress);
+      user.countryCode = user.countryCode ?? location?.country_code;
+      user.timezone = user.timezone ?? location?.time_zone;
     } catch (error) {}
   }
   user.profilePictureUrl =

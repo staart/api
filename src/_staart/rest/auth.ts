@@ -157,7 +157,7 @@ export const register = async (
       groupId = domainDetails.groupId;
     } catch (error) {}
   }
-  const userId = (await createUser(user)).id;
+  const userId = (await createUser(user, locals)).id;
   if (groupId) {
     await prisma.memberships.create({
       data: {
