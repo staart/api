@@ -24,6 +24,7 @@ import {
   getGroupApiKeyLogsForUser,
   getGroupApiKeysForUser,
   updateApiKeyForUser,
+  getGroupApiKeyScopesForUser,
 } from "../../../_staart/rest/group";
 
 @ClassMiddleware(authHandler)
@@ -58,6 +59,18 @@ export class GroupApiKeysController {
       res.locals
     );
     return { ...respond(RESOURCE_CREATED), added };
+  }
+
+  @Get("scopes")
+  async getUserApiKeyScopes(req: Request, res: Response) {
+    const id = twtToId(req.params.id);
+    joiValidate(
+      {
+        id: Joi.number().required(),
+      },
+      { id }
+    );
+    return getGroupApiKeyScopesForUser(localsToTokenOrKey(res), id);
   }
 
   @Get(":apiKeyId")

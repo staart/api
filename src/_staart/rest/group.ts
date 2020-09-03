@@ -1340,3 +1340,43 @@ export const getGroupTransactionForUser = async (
     );
   throw new Error(STRIPE_NO_CUSTOMER);
 };
+
+export const getGroupApiKeyScopesForUser = async (
+  tokenUserId: number | ApiKeyResponse,
+  groupId: number
+) => {
+  if (
+    !(await can(
+      tokenUserId,
+      `${Acts.READ}${ScopesGroup.API_KEYS}`,
+      `group-${groupId}`
+    ))
+  )
+    throw new Error(INSUFFICIENT_PERMISSION);
+
+  const data: { [index: string]: any } = {};
+  Object.values(ScopesGroup).forEach((scope) => {
+    data[scope] = [];
+    [Acts.READ, Acts.WRITE].forEach((act) => {
+      data[scope].push({
+        value: `p, user-${tokenUserId}, group-${groupId}, ${act}${scope}`,
+        name: `${act}${scope}`,
+      });
+    });
+  });
+  const memberships = await prisma.memberships.findMany({
+    where: { groupId },
+  });
+  data["delete:data"] = [
+    {
+      name: `${Acts.DELETE}group`,
+      value: `p, user-${tokenUserId}, group-${groupId}, ${Acts.DELETE}${ScopesGroup.INFO}`,
+    },
+    ...memberships.map((membership) => ({
+      value: `p, user-${tokenUserId}, membership-${membership.id}, ${Acts.DELETE}${ScopesUser.MEMBERSHIPS}`,
+      name: `${Acts.DELETE}membership-${membership.id}`,
+    })),
+  ];
+
+  return data;
+};
