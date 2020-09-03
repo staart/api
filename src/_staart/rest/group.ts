@@ -780,13 +780,6 @@ export const inviteMemberToGroup = async (
         ? (await getUserById(userId))?.name ?? "Someone"
         : "Someone";
     const userDetails = await getUserById(createdUserId);
-    await prisma.memberships.create({
-      data: {
-        user: { connect: { id: createdUserId } },
-        group: { connect: { id: groupId } },
-        role,
-      },
-    });
     mail({
       to: newMemberEmail,
       template: Templates.INVITED_TO_TEAM,

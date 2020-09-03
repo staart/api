@@ -35,7 +35,7 @@ import { sendNewPassword } from "../rest/auth";
  */
 export const createUser = async (user: usersCreateInput) => {
   user.name = capitalizeFirstAndLastLetter(user.name);
-  user.password = user.password ? await hash(user.password, 8) : null;
+  user.password = user.password ? await hash(user.password, 8) : undefined;
   user.profilePictureUrl =
     user.profilePictureUrl ||
     `https://api.adorable.io/avatars/285/${createHash("md5")

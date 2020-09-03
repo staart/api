@@ -157,23 +157,16 @@ export const register = async (
       groupId = domainDetails.groupId;
     } catch (error) {}
   }
-  const userId = (
-    await createUser({
-      ...user,
-      ...(groupId
-        ? {
-            memberships: {
-              create: {
-                group: {
-                  connect: { id: groupId },
-                },
-                role,
-              },
-            },
-          }
-        : {}),
-    })
-  ).id;
+  const userId = (await createUser(user)).id;
+  if (groupId) {
+    await prisma.memberships.create({
+      data: {
+        user: { connect: { id: userId } },
+        group: { connect: { id: groupId } },
+        role,
+      },
+    });
+  }
   let resendToken: string | undefined = undefined;
   if (email) {
     const newEmail = await createEmail(userId, email, !emailVerified);
