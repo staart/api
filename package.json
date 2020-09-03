@@ -16,6 +16,7 @@
     "build-babel": "staart build-babel",
     "launch": "staart launch",
     "update": "staart update api",
+    "update-template": "update-template https://github.com/staart/api",
     "generate-docs": "staart docs",
     "test": "jest --forceExit",
     "snyk-protect": "snyk protect",
@@ -56,6 +57,7 @@
     "semantic-release-gitmoji": "^1.3.4",
     "ts-jest": "^26.3.0",
     "typescript": "^4.0.2",
+    "update-template": "^1.1.0",
     "yaml": "^1.10.0"
   },
   "dependencies": {
