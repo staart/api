@@ -13,7 +13,7 @@ import { join } from "path";
 export enum Acts {
   READ = "read:",
   WRITE = "write:",
-  DELETE = "delete",
+  DELETE = "delete:",
 }
 export const BaseScopesUser = {
   INFO: "users/info",
@@ -46,73 +46,51 @@ export const BaseScopesAdmin = {
   SERVER_LOGS: "admin/server-logs",
 };
 
-const getPolicyForUser = async (userId: number) => {
+const getPolicyForUser = async (id: number) => {
   let policy = "";
+  const userId = twtToId(id);
   Object.values(ScopesUser).forEach((scope) => {
-    policy += `p, user-${twtToId(userId)}, user-${twtToId(userId)}, ${
-      Acts.READ
-    }${scope}\n`;
-    policy += `p, user-${twtToId(userId)}, user-${twtToId(userId)}, ${
-      Acts.WRITE
-    }${scope}\n`;
+    policy += `p, user-${userId}, user-${userId}, ${Acts.READ}${scope}\n`;
+    policy += `p, user-${userId}, user-${userId}, ${Acts.WRITE}${scope}\n`;
   });
-  policy += `p, user-${twtToId(userId)}, user-${twtToId(userId)}, ${
-    Acts.DELETE
-  }\n`;
+  policy += `p, user-${userId}, user-${userId}, ${Acts.DELETE}\n`;
   const memberships = await prisma.memberships.findMany({
-    where: { userId },
+    where: { id },
   });
   for await (const membership of memberships) {
-    policy += `p, user-${twtToId(userId)}, membership-${twtToId(
-      membership.id
-    )}, ${Acts.READ}\n`;
-    policy += `p, user-${twtToId(userId)}, membership-${twtToId(
-      membership.id
-    )}, ${Acts.WRITE}\n`;
-    policy += `p, user-${twtToId(userId)}, membership-${twtToId(
-      membership.id
-    )}, ${Acts.DELETE}\n`;
+    const membershipId = twtToId(membership.id);
+    const groupId = twtToId(membership.groupId);
+    policy += `p, user-${userId}, membership-${membershipId}, ${Acts.READ}\n`;
+    policy += `p, user-${userId}, membership-${membershipId}, ${Acts.WRITE}\n`;
+    policy += `p, user-${userId}, membership-${membershipId}, ${Acts.DELETE}\n`;
     if (membership.role === "ADMIN" || membership.role === "OWNER") {
       const groupMemberships = await prisma.memberships.findMany({
         where: { groupId: membership.groupId },
       });
-      policy += `p, user-${twtToId(userId)}, group-${twtToId(
-        membership.groupId
-      )}, ${Acts.DELETE}\n`;
+      policy += `p, user-${userId}, group-${groupId}, ${Acts.DELETE}\n`;
       groupMemberships.forEach((groupMembership) => {
-        policy += `p, user-${twtToId(userId)}, membership-${twtToId(
-          groupMembership.id
-        )}, ${Acts.READ}\n`;
+        const memberId = twtToId(groupMembership.id);
+        policy += `p, user-${userId}, membership-${memberId}, ${Acts.READ}\n`;
         if (groupMembership.role !== "OWNER") {
-          policy += `p, user-${twtToId(userId)}, membership-${twtToId(
-            groupMembership.id
-          )}, ${Acts.WRITE}\n`;
-          policy += `p, user-${twtToId(userId)}, membership-${twtToId(
-            groupMembership.id
-          )}, ${Acts.DELETE}\n`;
+          policy += `p, user-${userId}, membership-${memberId}, ${Acts.WRITE}\n`;
+          policy += `p, user-${userId}, membership-${memberId}, ${Acts.DELETE}\n`;
         }
       });
     }
     Object.values(ScopesGroup).forEach((scope) => {
       if (membership.role === "ADMIN" || membership.role === "OWNER") {
-        policy += `p, user-${twtToId(userId)}, group-${twtToId(
-          membership.groupId
-        )}, ${Acts.READ}${scope}\n`;
-        policy += `p, user-${twtToId(userId)}, group-${twtToId(
-          membership.groupId
-        )}, ${Acts.WRITE}${scope}\n`;
+        policy += `p, user-${userId}, group-${groupId}, ${Acts.READ}${scope}\n`;
+        policy += `p, user-${userId}, group-${groupId}, ${Acts.WRITE}${scope}\n`;
       } else {
-        policy += `p, user-${twtToId(userId)}, group-${twtToId(
-          membership.groupId
-        )}, ${Acts.READ}${scope}\n`;
+        policy += `p, user-${userId}, group-${groupId}, ${Acts.READ}${scope}\n`;
       }
     });
   }
-  const userDetails = await getUserById(userId);
+  const userDetails = await getUserById(id);
   if (userDetails.role === "SUDO") {
     Object.values(ScopesAdmin).forEach((scope) => {
-      policy += `p, user-${twtToId(userId)}, ${Acts.READ}, ${scope}\n`;
-      policy += `p, user-${twtToId(userId)}, ${Acts.WRITE}, ${scope}\n`;
+      policy += `p, user-${userId}, ${Acts.READ}, ${scope}\n`;
+      policy += `p, user-${userId}, ${Acts.WRITE}, ${scope}\n`;
     });
   }
   return policy;
