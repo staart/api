@@ -34,7 +34,7 @@ export class UserController {
           .min(3)
           .regex(/^[a-zA-Z ]*$/),
         nickname: Joi.string(),
-        primaryEmail: [Joi.string(), Joi.number()],
+        prefersEmailId: [Joi.string(), Joi.number()],
         countryCode: Joi.string().length(2),
         password: Joi.string().min(6),
         gender: Joi.string()

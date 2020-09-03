@@ -73,10 +73,10 @@ export const updateUser = async (id: number, user: KeyValue) => {
   const originalUser = await getUserById(id);
   await deleteItemFromCache(`cache_getUserById_${originalUser.id}`);
   if (user.password) user.password = await hash(user.password, 8);
-  if (user.primaryEmail) {
+  if (user.prefersEmailId) {
     if ((originalUser.profilePictureUrl || "").includes("api.adorable.io")) {
       const emailDetails = await prisma.emails.findOne({
-        where: { id: user.primaryEmail },
+        where: { id: user.prefersEmailId },
       });
       if (emailDetails)
         user.profilePicture = `https://www.gravatar.com/avatar/${createHash(

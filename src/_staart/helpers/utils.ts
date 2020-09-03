@@ -102,7 +102,7 @@ export const IdValues = [
   "id",
   "userId",
   "groupId",
-  "primaryEmail",
+  "prefersEmailId",
   "apiKeyId",
   "apiKeyGroupId",
 ];
