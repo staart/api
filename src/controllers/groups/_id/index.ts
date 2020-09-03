@@ -37,7 +37,7 @@ export class GroupController {
         autoJoinDomain: Joi.boolean(),
         onlyAllowDomain: Joi.boolean(),
         ipRestrictions: Joi.string(),
-        profilePicture: Joi.string(),
+        profilePictureUrl: Joi.string(),
       },
       "body"
     )

@@ -51,7 +51,7 @@ export class UserController {
         prefersColorScheme: Joi.string()
           .allow("NO_PREFERENCE", "LIGHT", "DARK")
           .only(),
-        profilePicture: Joi.string(),
+        profilePictureUrl: Joi.string(),
         checkLocationOnLogin: Joi.boolean(),
       },
       "body"
