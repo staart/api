@@ -50,7 +50,7 @@ export class GroupMembershipsController {
         groupId: Joi.number().required(),
         newMemberName: Joi.string().min(6).required(),
         newMemberEmail: Joi.string().email().required(),
-        role: Joi.number(),
+        role: Joi.string().allow("ADMIN", "MEMBER").only(),
       },
       {
         groupId,
@@ -92,7 +92,7 @@ export class GroupMembershipsController {
   @Middleware(
     validator(
       {
-        role: Joi.string().allow("OWNER", "ADMIN", "RESELLER", "MEMBER").only(),
+        role: Joi.string().allow("ADMIN", "MEMBER").only(),
       },
       "body"
     )
