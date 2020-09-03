@@ -490,7 +490,7 @@ export const createAccessTokenForUser = async (
   )
     throw new Error(INSUFFICIENT_PERMISSION);
 
-  accessToken.accessToken = randomString({ length: 20 });
+  accessToken.accessToken = randomString({ length: 32 });
   return prisma.accessTokens.create({
     data: { ...accessToken, user: { connect: { id: userId } } },
   });

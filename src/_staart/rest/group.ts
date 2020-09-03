@@ -887,7 +887,7 @@ export const createApiKeyForUser = async (
   )
     throw new Error(INSUFFICIENT_PERMISSION);
 
-  apiKey.apiKey = randomString({ length: 20 });
+  apiKey.apiKey = randomString({ length: 32 });
   const result = await prisma.apiKeys.create({
     data: {
       ...apiKey,
