@@ -712,6 +712,11 @@ export const inviteMemberToGroup = async (
 
   const group = await getGroupById(groupId);
   if (!group) throw new Error(ORGANIZATION_NOT_FOUND);
+
+  /**
+   * Only users with emails on verified domain can join this group
+   * Make sure that the provided email ends with the domain
+   */
   if (group.onlyAllowDomain) {
     const emailDomain = newMemberEmail.split("@")[1];
     try {
@@ -725,8 +730,11 @@ export const inviteMemberToGroup = async (
   let userExists = false;
   let createdUserId: number;
 
+  /**
+   * Check if a user with the email already exists
+   */
   const checkUser = await prisma.users.findMany({
-    where: { emails: { some: { email: newMemberEmail } } },
+    where: { emails: { some: { email: newMemberEmail, isVerified: true } } },
     take: 1,
   });
   if (checkUser.length) {
@@ -746,6 +754,7 @@ export const inviteMemberToGroup = async (
       ).length !== 0;
     createdUserId = newUser.id;
     if (isMemberAlready) throw new Error(USER_IS_MEMBER_ALREADY);
+
     await prisma.memberships.create({
       data: {
         user: { connect: { id: newUser.id } },
@@ -771,6 +780,13 @@ export const inviteMemberToGroup = async (
         ? (await getUserById(userId))?.name ?? "Someone"
         : "Someone";
     const userDetails = await getUserById(createdUserId);
+    await prisma.memberships.create({
+      data: {
+        user: { connect: { id: createdUserId } },
+        group: { connect: { id: groupId } },
+        role,
+      },
+    });
     mail({
       to: newMemberEmail,
       template: Templates.INVITED_TO_TEAM,
