@@ -1,3 +1,4 @@
 {
-  "controllerPrefix": "v1"
+  "controllerPrefix": "v1",
+  "genderPrediction": true
 }

@@ -28,7 +28,9 @@ import { prisma } from "../helpers/prisma";
 import { deleteSensitiveInfoUser } from "../helpers/utils";
 import { Templates } from "../interfaces/enum";
 import { KeyValue } from "../interfaces/general";
+import { config } from "@anandchowdhary/cosmic";
 import { sendNewPassword } from "../rest/auth";
+import axios from "axios";
 
 /**
  * Create a new user
@@ -36,6 +38,15 @@ import { sendNewPassword } from "../rest/auth";
 export const createUser = async (user: usersCreateInput) => {
   user.name = capitalizeFirstAndLastLetter(user.name);
   user.password = user.password ? await hash(user.password, 8) : undefined;
+  if (config("genderPrediction") && !user.gender) {
+    try {
+      const { data }: { data: { gender: "male" | "female" } } = await axios.get(
+        `https://api.genderize.io/?name=peter`
+      );
+      if (["male", "female"].includes(data.gender))
+        user.gender = data.gender.toUpperCase() as "MALE" | "FEMALE";
+    } catch (error) {}
+  }
   user.profilePictureUrl =
     user.profilePictureUrl ||
     `https://api.adorable.io/avatars/285/${createHash("md5")
