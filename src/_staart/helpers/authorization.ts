@@ -53,27 +53,27 @@ const getPolicyForUser = async (id: number) => {
     policy += `p, user-${userId}, user-${userId}, ${Acts.READ}${scope}\n`;
     policy += `p, user-${userId}, user-${userId}, ${Acts.WRITE}${scope}\n`;
   });
-  policy += `p, user-${userId}, user-${userId}, ${Acts.DELETE}\n`;
+  policy += `p, user-${userId}, user-${userId}, ${Acts.DELETE}${ScopesUser.INFO}\n`;
   const memberships = await prisma.memberships.findMany({
     where: { id },
   });
   for await (const membership of memberships) {
     const membershipId = twtToId(membership.id);
     const groupId = twtToId(membership.groupId);
-    policy += `p, user-${userId}, membership-${membershipId}, ${Acts.READ}\n`;
-    policy += `p, user-${userId}, membership-${membershipId}, ${Acts.WRITE}\n`;
-    policy += `p, user-${userId}, membership-${membershipId}, ${Acts.DELETE}\n`;
+    policy += `p, user-${userId}, membership-${membershipId}, ${Acts.READ}${ScopesUser.MEMBERSHIPS}\n`;
+    policy += `p, user-${userId}, membership-${membershipId}, ${Acts.WRITE}${ScopesUser.MEMBERSHIPS}\n`;
+    policy += `p, user-${userId}, membership-${membershipId}, ${Acts.DELETE}${ScopesUser.MEMBERSHIPS}\n`;
     if (membership.role === "ADMIN" || membership.role === "OWNER") {
       const groupMemberships = await prisma.memberships.findMany({
         where: { groupId: membership.groupId },
       });
-      policy += `p, user-${userId}, group-${groupId}, ${Acts.DELETE}\n`;
+      policy += `p, user-${userId}, group-${groupId}, ${Acts.DELETE}${ScopesGroup.INFO}\n`;
       groupMemberships.forEach((groupMembership) => {
         const memberId = twtToId(groupMembership.id);
-        policy += `p, user-${userId}, membership-${memberId}, ${Acts.READ}\n`;
+        policy += `p, user-${userId}, membership-${memberId}, ${Acts.READ}${ScopesUser.MEMBERSHIPS}\n`;
         if (groupMembership.role !== "OWNER") {
-          policy += `p, user-${userId}, membership-${memberId}, ${Acts.WRITE}\n`;
-          policy += `p, user-${userId}, membership-${memberId}, ${Acts.DELETE}\n`;
+          policy += `p, user-${userId}, membership-${memberId}, ${Acts.WRITE}${ScopesUser.MEMBERSHIPS}\n`;
+          policy += `p, user-${userId}, membership-${memberId}, ${Acts.DELETE}${ScopesUser.MEMBERSHIPS}\n`;
         }
       });
     }

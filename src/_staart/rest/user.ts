@@ -23,7 +23,12 @@ import { deleteCustomer } from "@staart/payments";
 import { compare, hash, randomString } from "@staart/text";
 import { authenticator } from "otplib";
 import { toDataURL } from "qrcode";
-import { ALLOW_DISPOSABLE_EMAILS, SERVICE_2FA, ScopesUser } from "../../config";
+import {
+  ALLOW_DISPOSABLE_EMAILS,
+  SERVICE_2FA,
+  ScopesUser,
+  ScopesGroup,
+} from "../../config";
 import { can, Acts } from "../helpers/authorization";
 import { deleteItemFromCache } from "../helpers/cache";
 import { ApiKeyResponse, couponCodeJwt } from "../helpers/jwt";
@@ -397,9 +402,34 @@ export const getUserAccessTokenScopesForUser = async (tokenUserId: number) => {
   Object.values(ScopesUser).forEach((scope) => {
     data[scope] = [];
     [Acts.READ, Acts.WRITE].forEach((act) => {
-      data[scope].push(`${act}${scope}`);
+      data[scope].push({
+        value: `p, user-${tokenUserId}, user-${tokenUserId}, ${act}${scope}`,
+        name: `${act}${scope}`,
+      });
     });
   });
+  const memberships = await prisma.memberships.findMany({
+    where: { userId: tokenUserId },
+  });
+  data["delete:data"] = [
+    {
+      name: `${Acts.DELETE}user`,
+      value: `p, user-${tokenUserId}, user-${tokenUserId}, ${Acts.DELETE}${ScopesUser.INFO}`,
+    },
+    ...memberships.map((membership) => ({
+      value: `p, user-${tokenUserId}, membership-${membership.id}, ${Acts.DELETE}${ScopesUser.MEMBERSHIPS}`,
+      name: `${Acts.DELETE}membership-${membership.id}`,
+    })),
+    ...memberships
+      .filter(
+        (membership) =>
+          membership.role === "ADMIN" || membership.role === "OWNER"
+      )
+      .map((membership) => ({
+        value: `p, user-${tokenUserId}, group-${membership.groupId}, ${Acts.DELETE}${ScopesGroup.INFO}`,
+        name: `${Acts.DELETE}group-${membership.groupId}`,
+      })),
+  ];
 
   return data;
 };
