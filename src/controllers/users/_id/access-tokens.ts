@@ -43,10 +43,9 @@ export class UserAccessTokensController {
   @Middleware(
     validator(
       {
-        scopes: Joi.string(),
+        scopes: Joi.array().items(Joi.string()),
         name: Joi.string(),
         description: Joi.string(),
-        expiresAt: Joi.string(),
       },
       "body"
     )
@@ -90,10 +89,9 @@ export class UserAccessTokensController {
   @Middleware(
     validator(
       {
-        scopes: Joi.string().allow(null),
+        scopes: Joi.array().items(Joi.string()).allow(null),
         name: Joi.string().allow(null),
         description: Joi.string().allow(null),
-        expiresAt: Joi.string(),
       },
       "body"
     )

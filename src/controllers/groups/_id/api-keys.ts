@@ -39,7 +39,7 @@ export class GroupApiKeysController {
   @Middleware(
     validator(
       {
-        scopes: Joi.string(),
+        scopes: Joi.array().items(Joi.string()),
         ipRestrictions: Joi.string(),
         referrerRestrictions: Joi.string(),
         name: Joi.string(),
@@ -78,7 +78,7 @@ export class GroupApiKeysController {
   @Middleware(
     validator(
       {
-        scopes: Joi.string().allow(null),
+        scopes: Joi.array().items(Joi.string()).allow(null),
         ipRestrictions: Joi.string().allow(null),
         referrerRestrictions: Joi.string().allow(null),
         name: Joi.string().allow(null),
