@@ -1,4 +1,11 @@
-import { ClassMiddleware, Get, Patch, Request, Response } from "@staart/server";
+import {
+  ClassMiddleware,
+  Get,
+  Patch,
+  Request,
+  Response,
+  NextFunction,
+} from "@staart/server";
 import { Joi, joiValidate } from "@staart/validate";
 import { authHandler } from "../../../_staart/helpers/middleware";
 import { twtToId, localsToTokenOrKey } from "../../../_staart/helpers/utils";
@@ -7,8 +14,17 @@ import {
   getGroupPricingPlansForUser,
   updateGroupBillingForUser,
 } from "../../../_staart/rest/group";
+import { config } from "@anandchowdhary/cosmic";
+import { safeError } from "../../../_staart/helpers/errors";
 
 @ClassMiddleware(authHandler)
+@ClassMiddleware(async (_: Request, res: Response, next: NextFunction) => {
+  if (!config("enableStripePayments")) {
+    const error = safeError("404/billing-not-enabled");
+    res.status(error.status);
+    return res.json(error);
+  } else return next();
+})
 export class GroupBillingController {
   @Get()
   async getBilling(req: Request, res: Response) {
