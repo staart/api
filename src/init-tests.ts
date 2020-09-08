@@ -1,4 +1,4 @@
-import { logError, success, warn } from "@staart/errors";
+import { logError, success, warn, info } from "@staart/errors";
 import { sendMail, setupTransporter } from "@staart/mail";
 import { ELASTIC_INSTANCES_INDEX, TEST_EMAIL } from "./_staart/config";
 import { elasticSearchIndex } from "./_staart/helpers/elasticsearch";
@@ -43,6 +43,7 @@ class Database implements Test {
 class Stripe implements Test {
   name = "Stripe";
   async test() {
+    if (!config("enableStripePayments")) return info("Skipped");
     const prices = await getProductPricing();
     success(`Got ${prices.data.length} pricing plans`);
   }
