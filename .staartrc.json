@@ -1,5 +1,6 @@
 {
   "controllerPrefix": "v1",
   "registerGenderPrediction": true,
-  "registerLocationDetection": true
+  "registerLocationDetection": true,
+  "enableStripePayments": true
 }
