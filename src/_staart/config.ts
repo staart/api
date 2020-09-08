@@ -1,3 +1,9 @@
+/**
+ * This is the central configuration file for Staart
+ * It is RECOMMENDED that you do not modify this file, but create
+ * your own configuration file in `src/` to add custom properties.
+ */
+
 import { config } from "dotenv";
 import {
   BaseScopesUser,
@@ -6,13 +12,14 @@ import {
 } from "./helpers/authorization";
 config();
 
-export const bool = (val?: string | boolean) =>
-  String(val).toLowerCase() === "true";
+/**
+ * Convert a Check if a boolean value is true (supports strings)
+ * @param booleanValue - Value to convert
+ */
+export const bool = (booleanValue?: string | boolean) =>
+  String(booleanValue).toLowerCase() === "true";
 
-// Server
 export const PORT = process.env.PORT ? parseInt(process.env.PORT) : 80;
-export const BASE_URL = process.env.BASE_URL || "";
-export const SENTRY_DSN = process.env.SENTRY_DSN || "";
 
 // Rate limiting
 export const BRUTE_FORCE_TIME = process.env.BRUTE_FORCE_TIME

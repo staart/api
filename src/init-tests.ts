@@ -7,7 +7,11 @@ import { prisma } from "./_staart/helpers/prisma";
 import { elasticSearchEnabled } from "@staart/elasticsearch";
 import { getProductPricing } from "@staart/payments";
 import { redis } from "@staart/redis";
+import { init } from "@sentry/node";
 import pkg from "../package.json";
+import { config } from "@anandchowdhary/cosmic";
+
+if (config("sentryDsn")) init({ dsn: config<string>("sentryDsn") });
 
 let numberOfFailedTests = 0;
 interface Test {
