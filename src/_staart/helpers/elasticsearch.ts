@@ -1,9 +1,9 @@
 import { elasticSearch, elasticSearchEnabled } from "@staart/elasticsearch";
 import { logError } from "@staart/errors";
 import { redisQueue } from "@staart/redis";
-import { REDIS_QUEUE_PREFIX } from "../config";
+import { config } from "@anandchowdhary/cosmic";
 
-const ELASTIC_QUEUE = `${REDIS_QUEUE_PREFIX}es-records`;
+const ELASTIC_QUEUE = `${config("redisQueuePrefix")}_es-records`;
 
 let queueSetup = false;
 const setupQueue = async () => {

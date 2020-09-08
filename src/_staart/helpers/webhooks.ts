@@ -2,12 +2,13 @@ import { logError } from "@staart/errors";
 import { redisQueue } from "@staart/redis";
 import axios from "axios";
 import { createHmac } from "crypto";
-import { JWT_ISSUER, REDIS_QUEUE_PREFIX } from "../config";
+import { JWT_ISSUER } from "../config";
 import { Webhooks } from "../interfaces/enum";
 import { webhooks } from "@prisma/client";
 import { prisma } from "./prisma";
+import { config } from "@anandchowdhary/cosmic";
 
-const WEBHOOK_QUEUE = `${REDIS_QUEUE_PREFIX}webhooks`;
+const WEBHOOK_QUEUE = `${config("redisQueuePrefix")}_webhooks`;
 
 let queueSetup = false;
 const setupQueue = async () => {
