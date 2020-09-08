@@ -147,9 +147,9 @@ export const deleteGroupForUser = async (
   if (
     typeof groupDetails.attributes === "object" &&
     !Array.isArray(groupDetails.attributes) &&
-    groupDetails.attributes?.stripeCustomerId === "string"
+    groupDetails.attributes?.stripeCustomer === "string"
   )
-    await deleteCustomer(groupDetails.attributes?.stripeCustomerId);
+    await deleteCustomer(groupDetails.attributes?.stripeCustomer);
   await prisma.groups.delete({
     where: {
       id: groupId,
@@ -178,9 +178,9 @@ export const getGroupBillingForUser = async (
   if (
     typeof group.attributes === "object" &&
     !Array.isArray(group.attributes) &&
-    group.attributes?.stripeCustomerId === "string"
+    group.attributes?.stripeCustomer === "string"
   )
-    return getCustomer(group.attributes?.stripeCustomerId);
+    return getCustomer(group.attributes?.stripeCustomer);
   throw new Error(STRIPE_NO_CUSTOMER);
 };
 
@@ -205,14 +205,14 @@ export const updateGroupBillingForUser = async (
   if (
     typeof group.attributes === "object" &&
     !Array.isArray(group.attributes) &&
-    group.attributes?.stripeCustomerId === "string"
+    group.attributes?.stripeCustomer === "string"
   ) {
-    result = await updateCustomer(group.attributes?.stripeCustomerId, data);
+    result = await updateCustomer(group.attributes?.stripeCustomer, data);
   } else {
     result = await createCustomer(
       groupId,
       data,
-      async (groupId: number, data: { stripeCustomerId: string }) => {
+      async (groupId: number, data: { stripeCustomer: string }) => {
         const attributes =
           typeof group.attributes === "object" ? group.attributes : {};
         return prisma.groups.update({
@@ -246,9 +246,9 @@ export const getGroupInvoicesForUser = async (
   if (
     typeof group.attributes === "object" &&
     !Array.isArray(group.attributes) &&
-    group.attributes?.stripeCustomerId === "string"
+    group.attributes?.stripeCustomer === "string"
   )
-    return getInvoices(group.attributes?.stripeCustomerId, params);
+    return getInvoices(group.attributes?.stripeCustomer, params);
   throw new Error(STRIPE_NO_CUSTOMER);
 };
 
@@ -271,9 +271,9 @@ export const getGroupInvoiceForUser = async (
   if (
     typeof group.attributes === "object" &&
     !Array.isArray(group.attributes) &&
-    group.attributes?.stripeCustomerId === "string"
+    group.attributes?.stripeCustomer === "string"
   )
-    return getInvoice(group.attributes?.stripeCustomerId, invoiceId);
+    return getInvoice(group.attributes?.stripeCustomer, invoiceId);
   throw new Error(STRIPE_NO_CUSTOMER);
 };
 
@@ -296,9 +296,9 @@ export const getGroupSourcesForUser = async (
   if (
     typeof group.attributes === "object" &&
     !Array.isArray(group.attributes) &&
-    group.attributes?.stripeCustomerId === "string"
+    group.attributes?.stripeCustomer === "string"
   )
-    return getSources(group.attributes?.stripeCustomerId, params);
+    return getSources(group.attributes?.stripeCustomer, params);
   throw new Error(STRIPE_NO_CUSTOMER);
 };
 
@@ -321,9 +321,9 @@ export const getGroupSourceForUser = async (
   if (
     typeof group.attributes === "object" &&
     !Array.isArray(group.attributes) &&
-    group.attributes?.stripeCustomerId === "string"
+    group.attributes?.stripeCustomer === "string"
   )
-    return getSource(group.attributes?.stripeCustomerId, sourceId);
+    return getSource(group.attributes?.stripeCustomer, sourceId);
   throw new Error(STRIPE_NO_CUSTOMER);
 };
 
@@ -346,9 +346,9 @@ export const getGroupSubscriptionsForUser = async (
   if (
     typeof group.attributes === "object" &&
     !Array.isArray(group.attributes) &&
-    group.attributes?.stripeCustomerId === "string"
+    group.attributes?.stripeCustomer === "string"
   )
-    return getSubscriptions(group.attributes?.stripeCustomerId, params);
+    return getSubscriptions(group.attributes?.stripeCustomer, params);
   throw new Error(STRIPE_NO_CUSTOMER);
 };
 
@@ -371,9 +371,9 @@ export const getGroupSubscriptionForUser = async (
   if (
     typeof group.attributes === "object" &&
     !Array.isArray(group.attributes) &&
-    group.attributes?.stripeCustomerId === "string"
+    group.attributes?.stripeCustomer === "string"
   )
-    return getSubscription(group.attributes?.stripeCustomerId, subscriptionId);
+    return getSubscription(group.attributes?.stripeCustomer, subscriptionId);
   throw new Error(STRIPE_NO_CUSTOMER);
 };
 
@@ -398,10 +398,10 @@ export const updateGroupSubscriptionForUser = async (
   if (
     typeof group.attributes === "object" &&
     !Array.isArray(group.attributes) &&
-    group.attributes?.stripeCustomerId === "string"
+    group.attributes?.stripeCustomer === "string"
   ) {
     const result = await updateSubscription(
-      group.attributes?.stripeCustomerId,
+      group.attributes?.stripeCustomer,
       subscriptionId,
       data
     );
@@ -435,10 +435,10 @@ export const createGroupSubscriptionForUser = async (
   if (
     typeof group.attributes === "object" &&
     !Array.isArray(group.attributes) &&
-    group.attributes?.stripeCustomerId === "string"
+    group.attributes?.stripeCustomer === "string"
   ) {
     const result = await createSubscription(
-      group.attributes?.stripeCustomerId,
+      group.attributes?.stripeCustomer,
       params
     );
     queueWebhook(groupId, Webhooks.CREATE_ORGANIZATION_SUBSCRIPTION, params);
@@ -487,10 +487,10 @@ export const deleteGroupSourceForUser = async (
   if (
     typeof group.attributes === "object" &&
     !Array.isArray(group.attributes) &&
-    group.attributes?.stripeCustomerId === "string"
+    group.attributes?.stripeCustomer === "string"
   ) {
     const result = await deleteSource(
-      group.attributes?.stripeCustomerId,
+      group.attributes?.stripeCustomer,
       sourceId
     );
     queueWebhook(groupId, Webhooks.DELETE_ORGANIZATION_SOURCE, sourceId);
@@ -521,10 +521,10 @@ export const updateGroupSourceForUser = async (
   if (
     typeof group.attributes === "object" &&
     !Array.isArray(group.attributes) &&
-    group.attributes?.stripeCustomerId === "string"
+    group.attributes?.stripeCustomer === "string"
   ) {
     const result = await updateSource(
-      group.attributes?.stripeCustomerId,
+      group.attributes?.stripeCustomer,
       sourceId,
       data
     );
@@ -555,9 +555,9 @@ export const createGroupSourceForUser = async (
   if (
     typeof group.attributes === "object" &&
     !Array.isArray(group.attributes) &&
-    group.attributes?.stripeCustomerId === "string"
+    group.attributes?.stripeCustomer === "string"
   ) {
-    const result = await createSource(group.attributes?.stripeCustomerId, card);
+    const result = await createSource(group.attributes?.stripeCustomer, card);
     queueWebhook(groupId, Webhooks.CREATE_ORGANIZATION_SOURCE, card);
     trackEvent({ groupId, type: Webhooks.CREATE_ORGANIZATION_SOURCE }, locals);
     return result;
@@ -594,15 +594,15 @@ export const getAllGroupDataForUser = async (
     ...group,
     ...(typeof group.attributes === "object" &&
     !Array.isArray(group.attributes) &&
-    typeof group.attributes?.stripeCustomerId === "string"
+    typeof group.attributes?.stripeCustomer === "string"
       ? {
-          billing: await getCustomer(group.attributes?.stripeCustomerId),
+          billing: await getCustomer(group.attributes?.stripeCustomer),
           subscriptions: await getSubscriptions(
-            group.attributes?.stripeCustomerId,
+            group.attributes?.stripeCustomer,
             {}
           ),
-          invoices: await getInvoices(group.attributes?.stripeCustomerId, {}),
-          sources: await getSources(group.attributes?.stripeCustomerId, {}),
+          invoices: await getInvoices(group.attributes?.stripeCustomer, {}),
+          sources: await getSources(group.attributes?.stripeCustomer, {}),
         }
       : {}),
   };
@@ -1284,10 +1284,10 @@ export const applyCouponToGroupForUser = async (
     currency &&
     typeof group.attributes === "object" &&
     !Array.isArray(group.attributes) &&
-    group.attributes?.stripeCustomerId === "string"
+    group.attributes?.stripeCustomer === "string"
   ) {
     const result = await createCustomerBalanceTransaction(
-      group.attributes?.stripeCustomerId,
+      group.attributes?.stripeCustomer,
       {
         amount,
         currency,
@@ -1319,10 +1319,10 @@ export const getGroupTransactionsForUser = async (
   if (
     typeof group.attributes === "object" &&
     !Array.isArray(group.attributes) &&
-    group.attributes?.stripeCustomerId === "string"
+    group.attributes?.stripeCustomer === "string"
   )
     return getCustomBalanceTransactions(
-      group.attributes?.stripeCustomerId,
+      group.attributes?.stripeCustomer,
       params
     );
   throw new Error(STRIPE_NO_CUSTOMER);
@@ -1347,10 +1347,10 @@ export const getGroupTransactionForUser = async (
   if (
     typeof group.attributes === "object" &&
     !Array.isArray(group.attributes) &&
-    group.attributes?.stripeCustomerId === "string"
+    group.attributes?.stripeCustomer === "string"
   )
     return getCustomBalanceTransaction(
-      group.attributes?.stripeCustomerId,
+      group.attributes?.stripeCustomer,
       transactionId
     );
   throw new Error(STRIPE_NO_CUSTOMER);

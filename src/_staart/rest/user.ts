@@ -165,9 +165,9 @@ export const deleteUserForUser = async (
     if (
       typeof group.attributes === "object" &&
       !Array.isArray(group.attributes) &&
-      typeof group.attributes?.stripeCustomerId === "string"
+      typeof group.attributes?.stripeCustomer === "string"
     )
-      await deleteCustomer(group.attributes?.stripeCustomerId);
+      await deleteCustomer(group.attributes?.stripeCustomer);
   }
   await prisma.groups.deleteMany({
     where: {
