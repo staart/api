@@ -4,13 +4,13 @@
  * your own configuration file in `src/` to add custom properties.
  */
 
-import { config } from "dotenv";
+import { cosmicSync } from "@anandchowdhary/cosmic";
 import {
   BaseScopesUser,
   BaseScopesGroup,
   BaseScopesAdmin,
 } from "./helpers/authorization";
-config();
+cosmicSync("staart");
 
 /**
  * Convert a Check if a boolean value is true (supports strings)
@@ -18,8 +18,6 @@ config();
  */
 export const bool = (booleanValue?: string | boolean) =>
   String(booleanValue).toLowerCase() === "true";
-
-export const PORT = process.env.PORT ? parseInt(process.env.PORT) : 80;
 
 // Rate limiting
 export const BRUTE_FORCE_TIME = process.env.BRUTE_FORCE_TIME
@@ -53,24 +51,11 @@ export const SPEED_LIMIT_COUNT = process.env.SPEED_LIMIT_COUNT
   ? parseInt(process.env.SPEED_LIMIT_COUNT)
   : 1000; // Start delaying after 1000 requests
 
-// Database
-export const DB_HOST = process.env.DB_HOST || "localhost";
-export const DB_PORT = process.env.DB_PORT
-  ? parseInt(process.env.DB_PORT)
-  : 3306;
-export const DB_USERNAME = process.env.DB_USERNAME || "root";
-export const DB_PASSWORD = process.env.DB_PASSWORD || "";
-export const DB_DATABASE = process.env.DB_DATABASE || "database";
-export const DB_TABLE_PREFIX = process.env.DB_TABLE_PREFIX || "";
-
-// Redis
-export const REDIS_URL = process.env.REDIS_URL || "";
-export const REDIS_QUEUE_PREFIX = process.env.REDIS_QUEUE_PREFIX || "staart-";
-
 // Caching
 export const CACHE_TTL = process.env.CACHE_TTL
   ? parseInt(process.env.CACHE_TTL)
   : 600;
+
 export const CACHE_CHECK_PERIOD = process.env.CACHE_CHECK_PERIOD
   ? parseInt(process.env.CACHE_CHECK_PERIOD)
   : 1000;
