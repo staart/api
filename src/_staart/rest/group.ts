@@ -212,15 +212,21 @@ export const updateGroupBillingForUser = async (
     result = await createCustomer(
       groupId,
       data,
-      async (groupId: number, data: { stripeCustomer: string }) => {
+      async (groupId: number, data: { stripeCustomerId: string }) => {
         const attributes =
           typeof group.attributes === "object" ? group.attributes : {};
         return prisma.groups.update({
           where: { id: groupId },
-          data: { attributes: { ...attributes, ...data } },
+          data: {
+            attributes: {
+              ...attributes,
+              stripeCustomer: data.stripeCustomerId,
+            },
+          },
         });
       }
     );
+    console.log(result);
   }
   queueWebhook(groupId, Webhooks.UPDATE_ORGANIZATION_BILLING, data);
   trackEvent({ groupId, type: Webhooks.UPDATE_ORGANIZATION_BILLING }, locals);
