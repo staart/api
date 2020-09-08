@@ -61,7 +61,7 @@
     "yaml": "^1.10.0"
   },
   "dependencies": {
-    "@anandchowdhary/cosmic": "^1.0.0",
+    "@anandchowdhary/cosmic": "^1.0.1",
     "@prisma/client": "^2.6.2",
     "@sentry/node": "^5.22.3",
     "@staart/config": "^1.0.1",
