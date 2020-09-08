@@ -18,7 +18,7 @@ import {
   TOKEN_EXPIRY_LOGIN,
   TOKEN_EXPIRY_PASSWORD_RESET,
   TOKEN_EXPIRY_REFRESH,
-} from "../../config";
+} from "../config";
 import { EventType, Templates, Tokens } from "../interfaces/enum";
 import { Locals } from "../interfaces/general";
 import {

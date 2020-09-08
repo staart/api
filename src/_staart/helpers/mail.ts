@@ -4,7 +4,7 @@ import { render } from "@staart/mustache-markdown";
 import { redisQueue } from "@staart/redis";
 import { readFile } from "fs-extra";
 import { join } from "path";
-import { FRONTEND_URL, REDIS_QUEUE_PREFIX } from "../../config";
+import { FRONTEND_URL, REDIS_QUEUE_PREFIX } from "../config";
 import { PartialBy } from "../../_staart/helpers/utils";
 
 const MAIL_QUEUE = `${REDIS_QUEUE_PREFIX}outbound-emails`;

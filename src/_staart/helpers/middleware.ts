@@ -26,7 +26,7 @@ import {
   SPEED_LIMIT_COUNT,
   SPEED_LIMIT_DELAY,
   SPEED_LIMIT_TIME,
-} from "../../config";
+} from "../config";
 import { Tokens } from "../interfaces/enum";
 import { StripeLocals, Locals } from "../interfaces/general";
 import { safeError } from "./errors";

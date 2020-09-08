@@ -2,7 +2,7 @@ import { getUserById } from "../services/user.service";
 import { AccessTokenResponse, ApiKeyResponse } from "./jwt";
 import { newEnforcer, Model, StringAdapter } from "casbin";
 import { prisma } from "./prisma";
-import { ScopesUser, ScopesGroup, ScopesAdmin } from "../../config";
+import { ScopesUser, ScopesGroup, ScopesAdmin } from "../config";
 import { twtToId } from "./utils";
 import { join } from "path";
 

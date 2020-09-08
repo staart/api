@@ -1,7 +1,7 @@
 import { elasticSearch, elasticSearchEnabled } from "@staart/elasticsearch";
 import { logError } from "@staart/errors";
 import { redisQueue } from "@staart/redis";
-import { REDIS_QUEUE_PREFIX } from "../../config";
+import { REDIS_QUEUE_PREFIX } from "../config";
 
 const ELASTIC_QUEUE = `${REDIS_QUEUE_PREFIX}es-records`;
 

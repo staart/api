@@ -1,6 +1,6 @@
 import { ms } from "@staart/text";
 import { CronJob } from "cron";
-import { TOKEN_EXPIRY_REFRESH } from "../config";
+import { TOKEN_EXPIRY_REFRESH } from "../_staart/config";
 import { prisma } from "../_staart/helpers/prisma";
 
 export default () => {

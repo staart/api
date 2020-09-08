@@ -3,7 +3,7 @@ import {
   BaseScopesUser,
   BaseScopesGroup,
   BaseScopesAdmin,
-} from "./_staart/helpers/authorization";
+} from "./helpers/authorization";
 config();
 
 export const bool = (val?: string | boolean) =>

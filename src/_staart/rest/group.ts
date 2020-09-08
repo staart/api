@@ -49,7 +49,7 @@ import {
 } from "@staart/payments";
 import { randomString } from "@staart/text";
 import axios from "axios";
-import { JWT_ISSUER, ScopesGroup, ScopesUser } from "../../config";
+import { JWT_ISSUER, ScopesGroup, ScopesUser } from "../config";
 import { can, Acts } from "../helpers/authorization";
 import { deleteItemFromCache } from "../helpers/cache";
 import {

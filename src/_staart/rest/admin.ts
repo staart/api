@@ -6,7 +6,7 @@ import {
 import { INSUFFICIENT_PERMISSION } from "@staart/errors";
 import { getEvents } from "@staart/payments";
 import { ms, randomString } from "@staart/text";
-import { ELASTIC_LOGS_INDEX, ScopesAdmin } from "../../config";
+import { ELASTIC_LOGS_INDEX, ScopesAdmin } from "../config";
 import { can, Acts } from "../helpers/authorization";
 import { couponCodeJwt } from "../helpers/jwt";
 import {

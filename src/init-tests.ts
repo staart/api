@@ -1,6 +1,6 @@
 import { logError, success, warn } from "@staart/errors";
 import { sendMail, setupTransporter } from "@staart/mail";
-import { ELASTIC_INSTANCES_INDEX, TEST_EMAIL } from "./config";
+import { ELASTIC_INSTANCES_INDEX, TEST_EMAIL } from "./_staart/config";
 import { elasticSearchIndex } from "./_staart/helpers/elasticsearch";
 import { receiveEmailMessage } from "./_staart/helpers/mail";
 import { prisma } from "./_staart/helpers/prisma";

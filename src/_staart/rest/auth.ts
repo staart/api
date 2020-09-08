@@ -16,7 +16,7 @@ import {
 } from "@staart/errors";
 import { compare, hash } from "@staart/text";
 import { authenticator } from "otplib";
-import { ALLOW_DISPOSABLE_EMAILS, ScopesAdmin } from "../../config";
+import { ALLOW_DISPOSABLE_EMAILS, ScopesAdmin } from "../config";
 import { can, Acts } from "../helpers/authorization";
 import { deleteItemFromCache } from "../helpers/cache";
 import {

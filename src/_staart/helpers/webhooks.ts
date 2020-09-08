@@ -2,7 +2,7 @@ import { logError } from "@staart/errors";
 import { redisQueue } from "@staart/redis";
 import axios from "axios";
 import { createHmac } from "crypto";
-import { JWT_ISSUER, REDIS_QUEUE_PREFIX } from "../../config";
+import { JWT_ISSUER, REDIS_QUEUE_PREFIX } from "../config";
 import { Webhooks } from "../interfaces/enum";
 import { webhooks } from "@prisma/client";
 import { prisma } from "./prisma";

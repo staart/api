@@ -28,7 +28,7 @@ import {
   SERVICE_2FA,
   ScopesUser,
   ScopesGroup,
-} from "../../config";
+} from "../config";
 import { can, Acts } from "../helpers/authorization";
 import { deleteItemFromCache } from "../helpers/cache";
 import { ApiKeyResponse, couponCodeJwt } from "../helpers/jwt";

@@ -1,7 +1,7 @@
 import { error } from "@staart/errors";
 import { CronJob } from "cron";
 import { getConfig } from "@staart/config";
-import { ELASTIC_EVENTS_INDEX, ELASTIC_LOGS_INDEX } from "../config";
+import { ELASTIC_EVENTS_INDEX, ELASTIC_LOGS_INDEX } from "../_staart/config";
 import {
   elasticSearchIndex,
   receiveElasticSearchMessage,
