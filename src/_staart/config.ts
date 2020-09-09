@@ -19,49 +19,7 @@ cosmicSync("staart");
 export const bool = (booleanValue?: string | boolean) =>
   String(booleanValue).toLowerCase() === "true";
 
-// Rate limiting
-export const BRUTE_FORCE_TIME = process.env.BRUTE_FORCE_TIME
-  ? parseInt(process.env.BRUTE_FORCE_TIME)
-  : 300000; // 5 minutes
-export const BRUTE_FORCE_DELAY = process.env.BRUTE_FORCE_DELAY
-  ? parseInt(process.env.BRUTE_FORCE_DELAY)
-  : 250; // 0.25s per request delay
-export const BRUTE_FORCE_COUNT = process.env.BRUTE_FORCE_COUNT
-  ? parseInt(process.env.BRUTE_FORCE_COUNT)
-  : 5; // Start delaying after 5 requests
-export const RATE_LIMIT_TIME = process.env.RATE_LIMIT_TIME
-  ? parseInt(process.env.RATE_LIMIT_TIME)
-  : 60000; // 1 minute
-export const RATE_LIMIT_MAX = process.env.RATE_LIMIT_MAX
-  ? parseInt(process.env.RATE_LIMIT_MAX)
-  : 1000; // Max 1,000 requests/minute from an IP
-export const PUBLIC_RATE_LIMIT_TIME = process.env.PUBLIC_RATE_LIMIT_TIME
-  ? parseInt(process.env.PUBLIC_RATE_LIMIT_TIME)
-  : 60000; // 1 minute
-export const PUBLIC_RATE_LIMIT_MAX = process.env.PUBLIC_RATE_LIMIT_MAX
-  ? parseInt(process.env.PUBLIC_RATE_LIMIT_MAX)
-  : 60; // Max 60 requests/minute from an IP
-export const SPEED_LIMIT_TIME = process.env.SPEED_LIMIT_TIME
-  ? parseInt(process.env.SPEED_LIMIT_TIME)
-  : 600000; // 10 minutes
-export const SPEED_LIMIT_DELAY = process.env.SPEED_LIMIT_DELAY
-  ? parseInt(process.env.SPEED_LIMIT_DELAY)
-  : 100; // 100ms per request delay
-export const SPEED_LIMIT_COUNT = process.env.SPEED_LIMIT_COUNT
-  ? parseInt(process.env.SPEED_LIMIT_COUNT)
-  : 1000; // Start delaying after 1000 requests
-
-// Caching
-export const CACHE_TTL = process.env.CACHE_TTL
-  ? parseInt(process.env.CACHE_TTL)
-  : 600;
-
-export const CACHE_CHECK_PERIOD = process.env.CACHE_CHECK_PERIOD
-  ? parseInt(process.env.CACHE_CHECK_PERIOD)
-  : 1000;
-
 // Email
-export const FRONTEND_URL = process.env.FRONTEND_URL || "https://example.com";
 export const ALLOW_DISPOSABLE_EMAILS = bool(process.env.DISPOSABLE_EMAIL);
 export const TEST_EMAIL = process.env.TEST_EMAIL || "staart@mailinator.com";
 /// If you want to use AWS SES to send emails:

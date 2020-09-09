@@ -4,7 +4,6 @@ import { render } from "@staart/mustache-markdown";
 import { redisQueue } from "@staart/redis";
 import { readFile } from "fs-extra";
 import { join } from "path";
-import { FRONTEND_URL } from "../config";
 import { PartialBy } from "../../_staart/helpers/utils";
 import { config } from "@anandchowdhary/cosmic";
 
@@ -98,7 +97,7 @@ const safeSendEmail = async (
           )
         )
       ).toString(),
-      { ...options.data, frontendUrl: FRONTEND_URL }
+      { ...options.data, frontendUrl: config("frontendUrl") }
     );
     options.altText = result[0];
     options.message = result[1];

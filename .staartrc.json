@@ -1,5 +1,6 @@
 {
   "controllerPrefix": "v1",
+  "frontendUrl": "https://staart-ui.netlify.app",
   "registerGenderPrediction": true,
   "registerLocationDetection": true,
   "enableStripePayments": true,

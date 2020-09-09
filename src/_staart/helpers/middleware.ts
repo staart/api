@@ -15,18 +15,6 @@ import {
 import { ms } from "@staart/text";
 import { joiValidate, SchemaMap } from "@staart/validate";
 import pkg from "../../../package.json";
-import {
-  BRUTE_FORCE_COUNT,
-  BRUTE_FORCE_DELAY,
-  BRUTE_FORCE_TIME,
-  PUBLIC_RATE_LIMIT_MAX,
-  PUBLIC_RATE_LIMIT_TIME,
-  RATE_LIMIT_MAX,
-  RATE_LIMIT_TIME,
-  SPEED_LIMIT_COUNT,
-  SPEED_LIMIT_DELAY,
-  SPEED_LIMIT_TIME,
-} from "../config";
 import { Tokens } from "../interfaces/enum";
 import { StripeLocals, Locals } from "../interfaces/general";
 import { safeError } from "./errors";
@@ -40,24 +28,25 @@ import {
 } from "./jwt";
 import { trackUrl } from "./tracking";
 import { includesDomainInCommaList } from "./utils";
+import { config } from "@anandchowdhary/cosmic";
 
 const bruteForce = slowDown({
-  windowMs: BRUTE_FORCE_TIME,
-  delayAfter: BRUTE_FORCE_COUNT,
-  delayMs: BRUTE_FORCE_DELAY,
+  windowMs: config("bruteForceTime", 300000), // 10 minutes
+  delayAfter: config("bruteForceCount", 250), // 250 requests
+  delayMs: config("bruteForceDelay", 5), // 50ms
 });
 const rateLimiter = RateLimit({
-  windowMs: RATE_LIMIT_TIME,
-  max: RATE_LIMIT_MAX,
+  windowMs: config("rateLimitTime", 60000), // 1 minute
+  max: config("rateLimitMax", 1000), // 1000 requests
 });
 const publicRateLimiter = RateLimit({
-  windowMs: PUBLIC_RATE_LIMIT_TIME,
-  max: PUBLIC_RATE_LIMIT_MAX,
+  windowMs: config("publicRateLimitTime", 60000), // 1 minute
+  max: config("publicRateLimitMax", 60), // 60 requests
 });
 const speedLimiter = slowDown({
-  windowMs: SPEED_LIMIT_TIME,
-  delayAfter: SPEED_LIMIT_COUNT,
-  delayMs: SPEED_LIMIT_DELAY,
+  windowMs: config("speedLimitTime", 600000), // 10 minutes
+  delayAfter: config("speedLimitCount", 100), // 100 requests
+  delayMs: config("speedLimitDelay", 1000), // 1000ms
 });
 
 /**
