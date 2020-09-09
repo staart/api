@@ -2,5 +2,7 @@
   "controllerPrefix": "v1",
   "registerGenderPrediction": true,
   "registerLocationDetection": true,
-  "enableStripePayments": true
+  "enableStripePayments": true,
+  "trackAuditLogData:": true,
+  "trackRequestData:": true
 }
