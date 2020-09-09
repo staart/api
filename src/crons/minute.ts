@@ -38,14 +38,9 @@ export default () => {
 };
 
 const storeSecurityEvents = async () => {
+  if (!config("trackAuditLogData")) return;
   const data = getSecurityEvents();
   if (!data.length) return;
-  const date = new Date();
-  const year = date.getUTCFullYear();
-  let month = (date.getUTCMonth() + 1).toString();
-  month = parseInt(month) < 10 ? `0${month}` : month;
-  let day = (date.getUTCDate() + 1).toString();
-  day = parseInt(day) < 10 ? `0${day}` : day;
   for await (const body of data) {
     if (typeof body === "object") {
       Object.keys(body).forEach((key) => {
@@ -70,14 +65,9 @@ const storeSecurityEvents = async () => {
 };
 
 const storeTrackingLogs = async () => {
+  if (!config("trackRequestData")) return;
   const data = getTrackingData();
   if (!data.length) return;
-  const date = new Date();
-  const year = date.getUTCFullYear();
-  let month = (date.getUTCMonth() + 1).toString();
-  month = parseInt(month) < 10 ? `0${month}` : month;
-  let day = (date.getUTCDate() + 1).toString();
-  day = parseInt(day) < 10 ? `0${day}` : day;
   for await (const body of data) {
     try {
       if (typeof body === "object") {
