@@ -6,6 +6,7 @@ import { config } from "@anandchowdhary/cosmic";
 const ELASTIC_QUEUE = `${config("redisQueuePrefix")}_es-records`;
 
 let queueSetup = false;
+/** Setup the Redis queue to ElasticSearch records */
 const setupQueue = async () => {
   if (queueSetup) return true;
   const queues = redisQueue.listQueuesAsync();
@@ -14,6 +15,10 @@ const setupQueue = async () => {
   return (queueSetup = true);
 };
 
+/**
+ * Add a new record to an ElasticSearch index
+ * @param indexParams - Params (index and body)
+ */
 export const elasticSearchIndex = async (indexParams: {
   index: string;
   body: any;
@@ -25,6 +30,7 @@ export const elasticSearchIndex = async (indexParams: {
   });
 };
 
+/** Receieve new messages from the queue and index records */
 export const receiveElasticSearchMessage = async () => {
   await setupQueue();
   const result = await redisQueue.receiveMessageAsync({

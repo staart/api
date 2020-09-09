@@ -12,9 +12,13 @@ export interface GeoLocation {
   accuracy_radius?: number;
   zip_code?: string;
   region_name?: string;
+  region_code?: string;
 }
 
+// In-memory cache of the reader
 let lookup: Reader<CityResponse> | undefined = undefined;
+
+/** Get cached lookup or open a new one */
 const getLookup = async () => {
   if (lookup) return lookup;
   lookup = await geolite2.open<CityResponse>("GeoLite2-City", (path) => {
@@ -24,14 +28,18 @@ const getLookup = async () => {
   return lookup;
 };
 
+/**
+ * Get the geolocation from an IP address using GeoIP2
+ * @param ipAddress - IP address
+ */
 export const getGeolocationFromIp = async (
   ipAddress: string
-): Promise<GeoLocation | undefined> => {
+): Promise<GeoLocation> => {
+  const location: GeoLocation = {};
   try {
     const lookup = await getLookup();
     const ipLookup = lookup.get(ipAddress);
-    if (!ipLookup) return;
-    const location: any = {};
+    if (!ipLookup) return location;
     if (ipLookup.city) location.city = ipLookup.city.names.en;
     if (ipLookup.continent) location.continent = ipLookup.continent.names.en;
     if (ipLookup.country) location.country_code = ipLookup.country.iso_code;
@@ -45,6 +53,6 @@ export const getGeolocationFromIp = async (
       location.region_name = ipLookup.subdivisions[0].names.en;
     if (ipLookup.subdivisions)
       location.region_code = ipLookup.subdivisions[0].iso_code;
-    return location;
   } catch (error) {}
+  return location;
 };

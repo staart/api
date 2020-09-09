@@ -8,9 +8,10 @@ import { FRONTEND_URL } from "../config";
 import { PartialBy } from "../../_staart/helpers/utils";
 import { config } from "@anandchowdhary/cosmic";
 
-const MAIL_QUEUE = `${config("redisQueuePrefix")}outbound-emails`;
+const MAIL_QUEUE = `${config("redisQueuePrefix")}-outbound-emails`;
 
 let queueSetup = false;
+/** Setup the Redis queue to send emails */
 const setupQueue = async () => {
   if (queueSetup) return true;
   const queues = redisQueue.listQueuesAsync();
@@ -19,6 +20,7 @@ const setupQueue = async () => {
   return (queueSetup = true);
 };
 
+/** Receieve messages from the Redis queue and send emails */
 export const receiveEmailMessage = async () => {
   await setupQueue();
   const result = await redisQueue.receiveMessageAsync({
@@ -57,9 +59,7 @@ export const receiveEmailMessage = async () => {
   }
 };
 
-/**
- * Send a new email using AWS SES or SMTP
- */
+/** Send a new email using AWS SES or SMTP */
 export const mail = async (
   options: PartialBy<PartialBy<Mail, "subject">, "message"> & {
     template?: string;
@@ -73,6 +73,7 @@ export const mail = async (
   });
 };
 
+/** Send an email suppressing any errors */
 const safeSendEmail = async (
   options: PartialBy<PartialBy<Mail, "subject">, "message"> & {
     template?: string;

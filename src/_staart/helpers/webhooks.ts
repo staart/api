@@ -8,9 +8,10 @@ import { webhooks } from "@prisma/client";
 import { prisma } from "./prisma";
 import { config } from "@anandchowdhary/cosmic";
 
-const WEBHOOK_QUEUE = `${config("redisQueuePrefix")}_webhooks`;
+const WEBHOOK_QUEUE = `${config("redisQueuePrefix")}-webhooks`;
 
 let queueSetup = false;
+/** Setup the webhook queue using Redis */
 const setupQueue = async () => {
   if (queueSetup) return true;
   const queues = redisQueue.listQueuesAsync();
@@ -19,6 +20,7 @@ const setupQueue = async () => {
   return (queueSetup = true);
 };
 
+/** Queue a webhook for a group */
 export const queueWebhook = (
   groupId: number,
   webhook: Webhooks,
@@ -40,6 +42,7 @@ export const queueWebhook = (
     .catch(() => logError("Webhook queue", "Unable to queue webhook"));
 };
 
+/** Receive a webhook from a message and call the webhook */
 export const receiveWebhookMessage = async () => {
   await setupQueue();
   const result = await redisQueue.receiveMessageAsync({
@@ -85,6 +88,7 @@ export const receiveWebhookMessage = async () => {
   }
 };
 
+/** Fire a webhook suppressing errors */
 const safeFireWebhook = async (
   groupId: string,
   webhook: Webhooks,
@@ -101,6 +105,7 @@ const safeFireWebhook = async (
   return;
 };
 
+/** Fire a single webhook */
 export const fireSingleWebhook = async (
   webhook: webhooks,
   hookType: Webhooks,

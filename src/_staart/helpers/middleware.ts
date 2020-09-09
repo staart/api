@@ -224,11 +224,16 @@ export const cachedResponse = (time: string) => {
   };
 };
 
+/**
+ * Validate the request contents
+ * @param schemaMap - Schema map object
+ * @param type - Request property
+ */
 export const validator = (
   schemaMap: SchemaMap,
   type: "body" | "params" | "query"
 ) => {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: Request, _: Response, next: NextFunction) => {
     let data: any;
     switch (type) {
       case "params":

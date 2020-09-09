@@ -4,10 +4,15 @@ import { sign, verify } from "twt";
 import { cleanup } from "@staart/server";
 import { config } from "@anandchowdhary/cosmic";
 
+/** Prisma client */
 export const prisma = new PrismaClient({
   log: config("nodeEnv") === "production" ? ["warn"] : ["info", "warn"],
 });
 
+/**
+ * Decode all TWT IDs as numbers in an object
+ * @param object - Object to decode
+ */
 const decodeTwtId = (object: any) => {
   if (typeof object === "object" && !Array.isArray(object)) {
     Object.keys(object).forEach((key: any) => {
@@ -70,6 +75,7 @@ cleanup(() => {
   prisma.disconnect().then(() => success("Disconnected database connection"));
 });
 
+/** Convert search query params */
 export const queryParamsToSelect = (queryParams: any) => {
   const data: any = {};
 
@@ -118,6 +124,7 @@ export const queryParamsToSelect = (queryParams: any) => {
   return data;
 };
 
+/** Convert a Prisma response to pagination responses */
 export const paginatedResult = <T>(data: T, { take }: { take?: number }) => {
   const dataArray = (data as any) as { id: number }[];
   const hasMore = dataArray.length >= (take || Infinity);

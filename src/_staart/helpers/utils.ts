@@ -33,6 +33,7 @@ export const deleteSensitiveInfoUser = (_user: users) => {
   return user as users;
 };
 
+/** Convert locals to ID */
 export const localsToTokenOrKey = (res: Response) => {
   if (res.locals.token.sub == Tokens.API_KEY) {
     return res.locals.token as ApiKeyResponse;
@@ -40,12 +41,14 @@ export const localsToTokenOrKey = (res: Response) => {
   return twtToId(res.locals.token.id) as number;
 };
 
+/** Redirect a request to a URL */
 export const safeRedirect = (req: Request, res: Response, url: string) => {
   if (req.get("X-Requested-With") === "XMLHttpRequest")
     return res.json({ redirect: url });
   return res.redirect(url);
 };
 
+/** Get the authoriazation token from a request */
 export const getCodeFromRequest = (req: Request) => {
   const code =
     req.body.code || (req.get("Authorization") || "").replace("Bearer ", "");
@@ -107,6 +110,7 @@ export const IdValues = [
   "apiKeyGroupId",
 ];
 
+/** Remove any falsy values an object */
 export const removeFalsyValues = (value: any) => {
   if (value && typeof value === "object") {
     Object.keys(value).map((key) => {
@@ -116,6 +120,7 @@ export const removeFalsyValues = (value: any) => {
   return value;
 };
 
+/** Check if a value is part of a comma-separated list */
 export const includesDomainInCommaList = (commaList: string, value: string) => {
   const list = commaList.split(",").map((item) => item.trim());
   let includes = false;
@@ -125,6 +130,7 @@ export const includesDomainInCommaList = (commaList: string, value: string) => {
   return includes;
 };
 
+/** Resolve a hostname and get its DNS records */
 export const dnsResolve = (
   hostname: string,
   recordType:
@@ -155,6 +161,7 @@ export const dnsResolve = (
     });
   });
 
+/** Convert query parameters to Prisma body */
 export const queryToParams = (req: Request) => {
   if (typeof req.query === "object") {
     const query: { [index: string]: string | string[] } = req.query as any;
