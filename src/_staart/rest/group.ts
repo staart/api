@@ -67,7 +67,7 @@ import {
 import { trackEvent } from "../helpers/tracking";
 import { dnsResolve } from "../helpers/utils";
 import { fireSingleWebhook, queueWebhook } from "../helpers/webhooks";
-import { OrgScopes, Templates, Tokens, Webhooks } from "../interfaces/enum";
+import { Templates, Tokens, Webhooks } from "../interfaces/enum";
 import { KeyValue, Locals } from "../interfaces/general";
 import {
   checkDomainAvailability,

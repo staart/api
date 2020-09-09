@@ -32,7 +32,7 @@ import {
 import { mail } from "../helpers/mail";
 import { prisma } from "../helpers/prisma";
 import { trackEvent } from "../helpers/tracking";
-import { EventType, Templates, Tokens, UserScopes } from "../interfaces/enum";
+import { EventType, Templates, Tokens } from "../interfaces/enum";
 import { Locals } from "../interfaces/general";
 import { getDomainByDomainName } from "../services/group.service";
 import {

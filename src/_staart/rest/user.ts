@@ -39,7 +39,7 @@ import {
   queryParamsToSelect,
 } from "../helpers/prisma";
 import { trackEvent } from "../helpers/tracking";
-import { EventType, Templates, UserScopes } from "../interfaces/enum";
+import { EventType } from "../interfaces/enum";
 import { Locals } from "../interfaces/general";
 import {
   createBackupCodes,
