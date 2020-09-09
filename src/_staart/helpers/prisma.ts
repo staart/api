@@ -1,12 +1,11 @@
 import { PrismaClient } from "@prisma/client";
-import { getConfig } from "@staart/config";
 import { complete, success } from "@staart/errors";
 import { sign, verify } from "twt";
 import { cleanup } from "@staart/server";
 import { config } from "@anandchowdhary/cosmic";
 
 export const prisma = new PrismaClient({
-  log: getConfig("NODE_ENV") === "production" ? ["warn"] : ["info", "warn"],
+  log: config("nodeEnv") === "production" ? ["warn"] : ["info", "warn"],
 });
 
 const decodeTwtId = (object: any) => {

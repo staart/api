@@ -1,6 +1,5 @@
 import { error } from "@staart/errors";
 import { CronJob } from "cron";
-import { getConfig } from "@staart/config";
 import { ELASTIC_EVENTS_INDEX, ELASTIC_LOGS_INDEX } from "../_staart/config";
 import {
   elasticSearchIndex,
@@ -15,6 +14,7 @@ import {
 } from "../_staart/helpers/tracking";
 import { IdValues } from "../_staart/helpers/utils";
 import { receiveWebhookMessage } from "../_staart/helpers/webhooks";
+import { config } from "@anandchowdhary/cosmic";
 
 /**
  * We run this cron job every minute in production
@@ -22,9 +22,9 @@ import { receiveWebhookMessage } from "../_staart/helpers/webhooks";
  */
 export default () => {
   new CronJob(
-    getConfig("NODE_ENV") === "production"
+    config("nodeEnv") === "production"
       ? "* * * * *"
-      : getConfig("DEV_CRON_MINUTE") ?? "*/10 * * * * *",
+      : config("devCronMinute") ?? "*/10 * * * * *",
     async () => {
       await receiveEmailMessage();
       await receiveElasticSearchMessage();
