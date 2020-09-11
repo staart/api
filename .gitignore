@@ -133,7 +133,6 @@ typings/
 
 # Built files
 dist/
-docs/
 src/app.ts
 .staart/
 
