@@ -2,6 +2,8 @@
 
 All environment variables are stored in a `.env` file locally. All environment variables are optional.
 
+You can also set these variables in `.staartrc.json` using camel cased names. This is recommended when your environment variables are not secrets; for example, you can set your API keys as `.env` values, but publicly-available information like the port and frontend URLs can be in `staartrc.json`. For example, the `FRONTEND_URL` environment variable can be set as `frontendUrl` in `.staartrc.json`.
+
 ## Port
 
 The first and most important is the port you want the Staart backend process to run on. On production, this is usually `80`. Locally, it can be something like `3000` or `8080`. In these examples, we'll use the port 7007.
