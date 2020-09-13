@@ -59,6 +59,28 @@ Once you've added the database URL, you can perform the following step to create
 npx prisma migrate up --experimental
 ```
 
+### Update `.staartrc.json`
+
+The `.staartrc.json` file is used for your feature preferences in Staart. You can update the file based on what you want to enable:
+
+```json
+{
+  "controllerPrefix": "v1",
+  "frontendUrl": "https://staart-ui.netlify.app",
+  "registerGenderPrediction": true,
+  "registerLocationDetection": true,
+  "enableStripePayments": true,
+  "trackAuditLogData:": true,
+  "trackRequestData:": true
+}
+```
+
+The `controllerPrefix` is the prefix used for versioning the API. In this example, `v1` means that all URLs will be prefixed like http://localhost:7007/v1/auth/login. The `frontendUrl` is the URL of the frontend app (for emails and redirects), which is typically where you're running [Staart UI](https://github.com/staart/ui).
+
+During registration, there are a few opt-in features that you may enable. An API is used to predict the gender of the user based on their name; to enable this, set `registerGenderPrediction` to true. Similarly, their timezone and country is pre-filled based on their IP address, enable using `registerLocationDetection`.
+
+You can also disable specific features, like recurring payments using Stripe by setting `enableStripePayments` to false. Two types of events are tracked in ElasticSearch, audit log data (security events) and all HTTP requests, which can be enabled using `trackAuditLogData` and `trackRequestData` respectively.
+
 ### Add other environment variables
 
 The next step is to add the basic environment variables. Start by creating a `.env` file in the project directory and add the `PORT`. You should also add the `DATABASE_URL` that you previously added to `prisma/.env`:
