@@ -92,7 +92,7 @@
     "random-int": "^2.0.1",
     "randomcolor": "^0.6.2",
     "snyk": "^1.398.1",
-    "systeminformation": "^4.27.4",
+    "systeminformation": "^4.27.5",
     "twt": "^1.2.0"
   },
   "files": [
