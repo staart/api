@@ -1,3 +1,4 @@
+import { config } from "@anandchowdhary/cosmic";
 import {
   backupCodes,
   MembershipRole,
@@ -142,6 +143,8 @@ export const register = async (
   role?: MembershipRole,
   emailVerified = false
 ) => {
+  if (!config("newUserRegistrations"))
+    throw new Error("User registrations are not enabled");
   if (email) {
     const isNewEmail =
       (await prisma.emails.findMany({ where: { email, isVerified: true } }))
