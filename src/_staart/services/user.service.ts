@@ -263,8 +263,9 @@ export const createEmail = async (
   sendVerification = true,
   sendPasswordSet = false
 ) => {
+  const emailSafe = email.trim().toLowerCase();
   const result = await prisma.emails.create({
-    data: { email, user: { connect: { id: userId } } },
+    data: { email, emailSafe, user: { connect: { id: userId } } },
   });
   if (sendVerification) {
     const user = await getUserById(userId);
