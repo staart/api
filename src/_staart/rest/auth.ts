@@ -145,6 +145,11 @@ export const register = async (
 ) => {
   if (!config("newUserRegistrations"))
     throw new Error("User registrations are not enabled");
+  if (config("newUserRegistrationDomains")) {
+    const domains = config<string[]>("newUserRegistrationDomains");
+    if (!domains.includes(email?.split("@")[1] ?? ""))
+      throw new Error("This domain is not allowed");
+  }
   if (email) {
     const isNewEmail =
       (await prisma.emails.findMany({ where: { email, isVerified: true } }))
