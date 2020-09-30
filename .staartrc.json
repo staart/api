@@ -6,5 +6,7 @@
   "enableStripePayments": true,
   "trackAuditLogData:": true,
   "trackRequestData:": true,
-  "newUserRegistrations": true
+  "newUserRegistrations": true,
+  "testEmail": "staart@mailinator.com",
+  "allowDisposableEmails": false
 }
