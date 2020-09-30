@@ -8,5 +8,6 @@
   "trackRequestData:": true,
   "newUserRegistrations": true,
   "testEmail": "staart@mailinator.com",
-  "allowDisposableEmails": false
+  "allowDisposableEmails": false,
+  "jwtIssuer": "staart"
 }
