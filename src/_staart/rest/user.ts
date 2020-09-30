@@ -1,3 +1,4 @@
+import { config } from "@anandchowdhary/cosmic";
 import {
   accessTokensCreateInput,
   accessTokensUpdateInput,
@@ -23,22 +24,17 @@ import { deleteCustomer } from "@staart/payments";
 import { compare, hash, randomString } from "@staart/text";
 import { authenticator } from "otplib";
 import { toDataURL } from "qrcode";
-import {
-  ALLOW_DISPOSABLE_EMAILS,
-  SERVICE_2FA,
-  ScopesUser,
-  ScopesGroup,
-} from "../config";
-import { can, Acts } from "../helpers/authorization";
+import { ScopesGroup, ScopesUser } from "../config";
+import { Acts, can } from "../helpers/authorization";
 import { deleteItemFromCache } from "../helpers/cache";
-import { ApiKeyResponse, couponCodeJwt } from "../helpers/jwt";
-import { mail } from "../helpers/mail";
+import { ApiKeyResponse } from "../helpers/jwt";
 import {
   paginatedResult,
   prisma,
   queryParamsToSelect,
 } from "../helpers/prisma";
 import { trackEvent } from "../helpers/tracking";
+import { PartialBy } from "../helpers/utils";
 import { EventType } from "../interfaces/enum";
 import { Locals } from "../interfaces/general";
 import {
@@ -49,7 +45,9 @@ import {
   resendEmailVerification,
 } from "../services/user.service";
 import { deleteGroupForUser } from "./group";
-import { PartialBy } from "../helpers/utils";
+
+const ALLOW_DISPOSABLE_EMAILS = config("allowDisposableEmails");
+const SERVICE_2FA = config("service_2Fa");
 
 export const getUserFromIdForUser = async (
   userId: number,

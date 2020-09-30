@@ -1,3 +1,4 @@
+import { config } from "@anandchowdhary/cosmic";
 import { couponCodesUpdateInput } from "@prisma/client";
 import {
   cleanElasticSearchQueryResponse,
@@ -6,14 +7,16 @@ import {
 import { INSUFFICIENT_PERMISSION } from "@staart/errors";
 import { getEvents } from "@staart/payments";
 import { ms, randomString } from "@staart/text";
-import { ELASTIC_LOGS_INDEX, ScopesAdmin } from "../config";
-import { can, Acts } from "../helpers/authorization";
+import { ScopesAdmin } from "../config";
+import { Acts, can } from "../helpers/authorization";
 import { couponCodeJwt } from "../helpers/jwt";
 import {
   paginatedResult,
   prisma,
   queryParamsToSelect,
 } from "../helpers/prisma";
+
+const ELASTIC_LOGS_INDEX = config("elasticLogsIndex");
 
 export const getAllGroupForUser = async (
   tokenUserId: number,

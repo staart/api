@@ -1,7 +1,8 @@
+import { config } from "@anandchowdhary/cosmic";
 import { ms } from "@staart/text";
 import { CronJob } from "cron";
-import { TOKEN_EXPIRY_REFRESH } from "../_staart/config";
 import { prisma } from "../_staart/helpers/prisma";
+const TOKEN_EXPIRY_REFRESH = config<string>("tokenExpiryRefresh");
 
 export default () => {
   new CronJob(

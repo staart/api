@@ -1,3 +1,4 @@
+import { config } from "@anandchowdhary/cosmic";
 import {
   apiKeysCreateInput,
   apiKeysUpdateInput,
@@ -49,8 +50,8 @@ import {
 } from "@staart/payments";
 import { randomString } from "@staart/text";
 import axios from "axios";
-import { JWT_ISSUER, ScopesGroup, ScopesUser } from "../config";
-import { can, Acts } from "../helpers/authorization";
+import { ScopesGroup, ScopesUser } from "../config";
+import { Acts, can } from "../helpers/authorization";
 import { deleteItemFromCache } from "../helpers/cache";
 import {
   ApiKeyResponse,
@@ -78,6 +79,8 @@ import {
 } from "../services/group.service";
 import { getUserById } from "../services/user.service";
 import { register } from "./auth";
+
+const JWT_ISSUER = config("jwtIssuer");
 
 export const getGroupForUser = async (
   userId: number | ApiKeyResponse,

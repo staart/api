@@ -1,6 +1,5 @@
 import { error } from "@staart/errors";
 import { CronJob } from "cron";
-import { ELASTIC_EVENTS_INDEX, ELASTIC_LOGS_INDEX } from "../_staart/config";
 import {
   elasticSearchIndex,
   receiveElasticSearchMessage,
@@ -15,6 +14,9 @@ import {
 import { IdValues } from "../_staart/helpers/utils";
 import { receiveWebhookMessage } from "../_staart/helpers/webhooks";
 import { config } from "@anandchowdhary/cosmic";
+
+const ELASTIC_EVENTS_INDEX = config("elasticEventsIndex");
+const ELASTIC_LOGS_INDEX = config("elasticLogsIndex");
 
 /**
  * We run this cron job every minute in production

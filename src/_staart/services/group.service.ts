@@ -1,5 +1,5 @@
+import { config } from "@anandchowdhary/cosmic";
 import {
-  apiKeysCreateInput,
   apiKeysUpdateInput,
   domainsCreateInput,
   groups,
@@ -18,7 +18,6 @@ import {
 import { capitalizeFirstAndLastLetter, ms, randomString } from "@staart/text";
 import axios from "axios";
 import randomColor from "randomcolor";
-import { ELASTIC_LOGS_INDEX, JWT_ISSUER } from "../config";
 import {
   deleteItemFromCache,
   getItemFromCache,
@@ -26,6 +25,9 @@ import {
 } from "../helpers/cache";
 import { prisma } from "../helpers/prisma";
 import { KeyValue } from "../interfaces/general";
+
+const ELASTIC_LOGS_INDEX = config("elasticLogsIndex");
+const JWT_ISSUER = config("jwtIssuer");
 
 /*
  * Create a new group for a user

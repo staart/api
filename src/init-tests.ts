@@ -1,6 +1,5 @@
 import { logError, success, warn, info } from "@staart/errors";
 import { sendMail, setupTransporter } from "@staart/mail";
-import { ELASTIC_INSTANCES_INDEX, TEST_EMAIL } from "./_staart/config";
 import { elasticSearchIndex } from "./_staart/helpers/elasticsearch";
 import { receiveEmailMessage } from "./_staart/helpers/mail";
 import { prisma } from "./_staart/helpers/prisma";
@@ -10,6 +9,9 @@ import { redis } from "@staart/redis";
 import { init } from "@sentry/node";
 import pkg from "../package.json";
 import { config } from "@anandchowdhary/cosmic";
+
+const ELASTIC_INSTANCES_INDEX = config("elasticInstancesIndex");
+const TEST_EMAIL = config("testEmail");
 
 if (config("sentryDsn")) init({ dsn: config<string>("sentryDsn") });
 

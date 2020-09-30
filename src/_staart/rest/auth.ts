@@ -17,8 +17,8 @@ import {
 } from "@staart/errors";
 import { compare, hash } from "@staart/text";
 import { authenticator } from "otplib";
-import { ALLOW_DISPOSABLE_EMAILS, ScopesAdmin } from "../config";
-import { can, Acts } from "../helpers/authorization";
+import { ScopesAdmin } from "../config";
+import { Acts, can } from "../helpers/authorization";
 import { deleteItemFromCache } from "../helpers/cache";
 import {
   checkInvalidatedToken,
@@ -44,6 +44,8 @@ import {
   getUserById,
   resendEmailVerification,
 } from "../services/user.service";
+
+const ALLOW_DISPOSABLE_EMAILS = config("allowDisposableEmails");
 
 export const validateRefreshToken = async (
   token: string,

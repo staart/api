@@ -1,3 +1,4 @@
+import { config } from "@anandchowdhary/cosmic";
 import { users } from "@prisma/client";
 import {
   IP_RANGE_CHECK_FAIL,
@@ -10,15 +11,6 @@ import {
 import { redis } from "@staart/redis";
 import { ipRangeCheck, randomString } from "@staart/text";
 import { decode, sign, verify } from "jsonwebtoken";
-import {
-  JWT_ISSUER,
-  JWT_SECRET,
-  TOKEN_EXPIRY_APPROVE_LOCATION,
-  TOKEN_EXPIRY_EMAIL_VERIFICATION,
-  TOKEN_EXPIRY_LOGIN,
-  TOKEN_EXPIRY_PASSWORD_RESET,
-  TOKEN_EXPIRY_REFRESH,
-} from "../config";
 import { EventType, Templates, Tokens } from "../interfaces/enum";
 import { Locals } from "../interfaces/general";
 import {
@@ -29,11 +21,15 @@ import {
 import { getGeolocationFromIp } from "./location";
 import { mail } from "./mail";
 import { prisma } from "./prisma";
-import {
-  deleteSensitiveInfoUser,
-  includesDomainInCommaList,
-  removeFalsyValues,
-} from "./utils";
+import { includesDomainInCommaList } from "./utils";
+
+const JWT_ISSUER = config("jwtIssuer");
+const JWT_SECRET = config("jwtSecret");
+const TOKEN_EXPIRY_APPROVE_LOCATION = config("tokenExpiryApproveLocation");
+const TOKEN_EXPIRY_EMAIL_VERIFICATION = config("tokenExpiryEmailVerification");
+const TOKEN_EXPIRY_LOGIN = config("tokenExpiryLogin");
+const TOKEN_EXPIRY_PASSWORD_RESET = config("tokenExpiryPasswordReset");
+const TOKEN_EXPIRY_REFRESH = config("tokenExpiryRefresh");
 
 /**
  * Generate a new JWT
