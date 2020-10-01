@@ -9,5 +9,10 @@
   "newUserRegistrations": true,
   "testEmail": "staart@mailinator.com",
   "allowDisposableEmails": false,
-  "jwtIssuer": "staart"
+  "jwtIssuer": "staart",
+  "tokenExpiryApproveLocation": "15m",
+  "tokenExpiryEmailVerification": "30d",
+  "tokenExpiryLogin": "1h",
+  "tokenExpiryPasswordReset": "15m",
+  "tokenExpiryRefresh": "30d"
 }
