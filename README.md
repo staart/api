@@ -143,6 +143,7 @@ The development of Staart projects is supported by these wonderful companies. [F
     <td align="center"><a href="https://github.com/O15Y"><img src="https://avatars3.githubusercontent.com/u/48348500?v=4" width="100px" alt=""/><br><sub><b>O15Y</b></sub></a></td>
     <td align="center"><a href="https://github.com/speakupnl"><img src="https://avatars3.githubusercontent.com/u/33686381?v=4" width="100px" alt=""/><br><sub><b>Speakup</b></sub></a></td>
     <td align="center"><a href="https://github.com/netlify"><img src="https://avatars3.githubusercontent.com/u/7892489?v=4" width="100px" alt=""/><br><sub><b>Netlify</b></sub></a></td>
+    <td align="center"><a href="https://github.com/koj-co"><img src="https://avatars3.githubusercontent.com/u/65495851?v=4" width="100px" alt=""/><br><sub><b>Koj</b></sub></a></td>
   </tr>
 </table>
 
