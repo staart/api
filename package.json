@@ -37,7 +37,7 @@
     "@prisma/cli": "^2.8.1",
     "@semantic-release/git": "^9.0.0",
     "@types/cron": "^1.7.2",
-    "@types/fs-extra": "^9.0.1",
+    "@types/fs-extra": "^9.0.2",
     "@types/geolite2": "^2.0.0",
     "@types/hapi__joi": "^17.1.6",
     "@types/jest": "^26.0.14",
