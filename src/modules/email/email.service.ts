@@ -8,6 +8,7 @@ import Mail from 'nodemailer/lib/mailer';
 import { promises as fs } from 'fs';
 import { join } from 'path';
 import mem from 'mem';
+import { render } from '@staart/mustache-markdown';
 
 @Injectable()
 export class EmailService {
@@ -45,6 +46,15 @@ export class EmailService {
   private async sendEmail(options: Mail.Options & EmailOptions) {
     if (options.template) {
       const template = await this.readTemplate(options.template);
+      const [markdown, html] = render(template, options.data);
+      options.html = html;
+      options.text = markdown;
+      options.alternatives = [
+        {
+          contentType: 'text/x-web-markdown',
+          content: markdown,
+        },
+      ];
     }
     return this.transport.sendMail(options);
   }
