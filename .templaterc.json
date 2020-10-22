@@ -1,5 +1,0 @@
-{
-  "files": [".github/**/*", "src/**/*"],
-  "npmDependencies": true,
-  "npmScripts": true
-}

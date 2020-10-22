@@ -1,9 +1,0 @@
-controllerPrefix
-frontendUrl
-registerGenderPrediction
-registerLocationDetection
-enableStripePayments
-trackAuditLogData
-trackRequestData
-newUserRegistrations
-newUserRegistrationDomains
