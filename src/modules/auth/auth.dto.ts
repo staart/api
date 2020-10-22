@@ -80,3 +80,14 @@ export class ResendEmailVerificationDto {
   @IsNotEmpty()
   email: string;
 }
+
+export class LoginDto {
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @IsString()
+  @MinLength(8)
+  @IsOptional()
+  password?: string;
+}
