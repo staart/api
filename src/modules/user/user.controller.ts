@@ -1,5 +1,14 @@
-import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
-import { users } from '@prisma/client';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Query,
+} from '@nestjs/common';
+import { users, usersUpdateInput } from '@prisma/client';
 import { OmitSecrets } from 'src/modules/prisma/prisma.interface';
 import { CursorPipe } from 'src/pipes/cursor.pipe';
 import { OptionalIntPipe } from 'src/pipes/optional-int.pipe';
@@ -27,5 +36,20 @@ export class UserController {
     @Param('id', ParseIntPipe) id: number,
   ): Promise<OmitSecrets<users>> {
     return this.usersService.user({ id: Number(id) });
+  }
+
+  @Patch(':id')
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: usersUpdateInput,
+  ): Promise<OmitSecrets<users>> {
+    return this.usersService.updateUser({ where: { id: Number(id) }, data });
+  }
+
+  @Delete(':id')
+  async remove(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<OmitSecrets<users>> {
+    return this.usersService.deleteUser({ id: Number(id) });
   }
 }
