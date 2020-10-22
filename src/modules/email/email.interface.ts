@@ -9,3 +9,7 @@ export interface EmailConfig {
     pass: string;
   };
 }
+
+export interface EmailOptions {
+  template?: string;
+}
