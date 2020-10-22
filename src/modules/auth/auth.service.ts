@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { users } from '@prisma/client';
 import { EmailService } from '../email/email.service';
@@ -19,17 +24,25 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, password: string): Promise<number> {
+  async validateUser(email: string, password?: string): Promise<number> {
     const emailSafe = this.users.getSafeEmail(email);
     const user = await this.prisma.users.findFirst({
       where: { emails: { some: { emailSafe } } },
+      select: { id: true, password: true },
     });
     if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    if (!password || !user.password)
+      throw new HttpException(
+        'Logging in without passwords is not supported',
+        HttpStatus.NOT_IMPLEMENTED,
+      );
     if (await compare(password, user.password)) return user.id;
     return null;
   }
 
-  async login(id: number) {
+  async login(email: string, password?: string) {
+    const id = await this.validateUser(email, password);
+    if (!id) throw new UnauthorizedException();
     const payload = { sub: id };
     return {
       accessToken: this.jwtService.sign(payload),
