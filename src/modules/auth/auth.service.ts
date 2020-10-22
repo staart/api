@@ -3,6 +3,7 @@ import {
   HttpStatus,
   Injectable,
   UnauthorizedException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { users } from '@prisma/client';
@@ -120,6 +121,7 @@ export class AuthService {
   }
 
   async refresh(ipAddress: string, userAgent: string, token: string) {
+    if (!token) throw new UnprocessableEntityException();
     const session = await this.prisma.sessions.findFirst({
       where: { token },
       select: { user: { select: { id: true } } },

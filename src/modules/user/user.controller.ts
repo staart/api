@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { users } from '@prisma/client';
 import { OmitSecrets } from 'src/modules/prisma/prisma.interface';
@@ -14,10 +15,12 @@ import { CursorPipe } from 'src/pipes/cursor.pipe';
 import { OptionalIntPipe } from 'src/pipes/optional-int.pipe';
 import { OrderByPipe } from 'src/pipes/order-by.pipe';
 import { WherePipe } from 'src/pipes/where.pipe';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UpdateUserDto } from './user.dto';
 import { UsersService } from './user.service';
 
 @Controller('users')
+@UseGuards(JwtAuthGuard)
 export class UserController {
   constructor(private usersService: UsersService) {}
 
