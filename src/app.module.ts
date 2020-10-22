@@ -4,11 +4,18 @@ import { RateLimiterInterceptor, RateLimiterModule } from 'nestjs-rate-limiter';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
+import { EmailModule } from './modules/email.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
 import { UsersModule } from './modules/user/user.module';
 
 @Module({
-  imports: [PrismaModule, UsersModule, AuthModule, RateLimiterModule],
+  imports: [
+    PrismaModule,
+    UsersModule,
+    AuthModule,
+    RateLimiterModule,
+    EmailModule,
+  ],
   controllers: [AppController],
   providers: [
     AppService,
