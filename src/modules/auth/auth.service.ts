@@ -13,6 +13,7 @@ import { UsersService } from '../user/user.service';
 import { RegisterDto } from './auth.dto';
 import { compare } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 
 @Injectable()
 export class AuthService {
@@ -40,12 +41,28 @@ export class AuthService {
     return null;
   }
 
-  async login(email: string, password?: string) {
+  async login(
+    ipAddress: string,
+    userAgent: string,
+    email: string,
+    password?: string,
+  ) {
     const id = await this.validateUser(email, password);
     if (!id) throw new UnauthorizedException();
-    const payload = { sub: id };
+    const token = randomStringGenerator();
+    await this.prisma.sessions.create({
+      data: { token, ipAddress, userAgent, user: { connect: { id } } },
+    });
     return {
-      accessToken: this.jwtService.sign(payload),
+      accessToken: this.jwtService.sign(
+        { sub: `user${id}` },
+        {
+          expiresIn: this.configService.get<string>(
+            'security.accessTokenExpiry',
+          ),
+        },
+      ),
+      refreshToken: token,
     };
   }
 

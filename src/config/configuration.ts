@@ -3,6 +3,7 @@ export default () => ({
   security: {
     saltRounds: process.env.SALT_ROUNDS ?? 10,
     jwtSecret: process.env.JWT_SECRET ?? 'staart',
+    accessTokenExpiry: process.env.ACCESS_TOKEN_EXPIRY ?? '1h',
   },
   email: {
     name: process.env.EMAIL_NAME ?? 'Staart',

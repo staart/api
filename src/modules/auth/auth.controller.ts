@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Headers, Ip, Post, UseGuards } from '@nestjs/common';
 import { users } from '@prisma/client';
 import { RateLimit } from 'nestjs-rate-limiter';
 import { OmitSecrets } from 'src/modules/prisma/prisma.interface';
@@ -16,8 +16,12 @@ export class AuthController {
     duration: 60,
     errorMessage: 'Wait for 60 seconds before trying to login again',
   })
-  async login(@Body() data: LoginDto): Promise<{ accessToken: string }> {
-    return this.authService.login(data.email, data.password);
+  async login(
+    @Body() data: LoginDto,
+    @Ip() ip: string,
+    @Headers('') userAgent: string,
+  ): Promise<{ accessToken: string }> {
+    return this.authService.login(ip, userAgent, data.email, data.password);
   }
 
   @Post('register')
