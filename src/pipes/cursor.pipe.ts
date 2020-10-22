@@ -5,8 +5,9 @@ import {
   HttpStatus,
   ArgumentMetadata,
 } from '@nestjs/common';
+import { parseObjectLiteral } from 'src/helpers/parse-object-literal';
 
-/** Convert a string like "id 12, name Anand" to { id: 12, name: "Anand" } */
+/** Convert a string like "id: 12, b: 'Anand'" to { id: 12, name: "Anand" } */
 @Injectable()
 export class CursorPipe implements PipeTransform {
   transform(
@@ -15,13 +16,14 @@ export class CursorPipe implements PipeTransform {
   ): Record<string, number | string> | undefined {
     if (value == null) return undefined;
     try {
-      const rules = value.split(' ').map(val => val.trim());
-      const cursor: Record<string, number | string> = {};
+      const rules = parseObjectLiteral(value);
+      const items: Record<string, number | string> = {};
       rules.forEach(rule => {
-        const [key, val] = rule.split(' ', 1);
-        rules[key] = val;
+        const num = Number(rule[1]);
+        if (!isNaN(num)) items[rule[0]] = num;
+        else items[rule[0]] = rule[1];
       });
-      return cursor;
+      return items;
     } catch (_) {
       throw new HttpException(
         `"${metadata.data}" should be like "id 12, name Anand", provided "${value}"`,
