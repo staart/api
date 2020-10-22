@@ -18,4 +18,14 @@ export class AuthController {
   async update(@Body() data: RegisterDto): Promise<OmitSecrets<users>> {
     return this.authService.register(data);
   }
+
+  @Post('resend-email-verification')
+  @RateLimit({
+    points: 10,
+    duration: 60,
+    errorMessage: 'Wait for 60 seconds before trying to create an account',
+  })
+  async resendVerify() {
+    return this.authService.resentEmailVerification();
+  }
 }

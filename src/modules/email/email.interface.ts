@@ -13,4 +13,5 @@ export interface EmailConfig {
 export interface EmailOptions {
   template?: string;
   data?: Record<string, any>;
+  noLayout?: boolean;
 }
