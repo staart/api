@@ -2,12 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EmailConfig } from './email.interface';
 import nodemailer from 'nodemailer';
+import Mail from 'nodemailer/lib/mailer';
 
 @Injectable()
 export class EmailService {
-  emailConfig: EmailConfig;
+  transport: Mail;
 
   constructor(private configService: ConfigService) {
-    this.emailConfig = this.configService.get<EmailConfig>('email');
+    this.transport = nodemailer.createTransport(
+      this.configService.get<EmailConfig>('email'),
+    );
   }
 }
