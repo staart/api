@@ -8,12 +8,13 @@ import {
   Patch,
   Query,
 } from '@nestjs/common';
-import { users, usersUpdateInput } from '@prisma/client';
+import { users } from '@prisma/client';
 import { OmitSecrets } from 'src/modules/prisma/prisma.interface';
 import { CursorPipe } from 'src/pipes/cursor.pipe';
 import { OptionalIntPipe } from 'src/pipes/optional-int.pipe';
 import { OrderByPipe } from 'src/pipes/order-by.pipe';
 import { WherePipe } from 'src/pipes/where.pipe';
+import { UpdateUserDto } from './user.dto';
 import { UsersService } from './user.service';
 
 @Controller('users')
@@ -41,7 +42,7 @@ export class UserController {
   @Patch(':id')
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() data: usersUpdateInput,
+    @Body() data: UpdateUserDto,
   ): Promise<OmitSecrets<users>> {
     return this.usersService.updateUser({ where: { id: Number(id) }, data });
   }
