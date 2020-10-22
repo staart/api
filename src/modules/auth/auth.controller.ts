@@ -1,10 +1,9 @@
-import { Body, Controller, Headers, Ip, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Headers, Ip, Post } from '@nestjs/common';
 import { users } from '@prisma/client';
 import { RateLimit } from 'nestjs-rate-limiter';
 import { OmitSecrets } from 'src/modules/prisma/prisma.interface';
 import { LoginDto, RegisterDto, ResendEmailVerificationDto } from './auth.dto';
 import { AuthService } from './auth.service';
-import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -19,7 +18,7 @@ export class AuthController {
   async login(
     @Body() data: LoginDto,
     @Ip() ip: string,
-    @Headers('') userAgent: string,
+    @Headers('User-Agent') userAgent: string,
   ): Promise<{ accessToken: string }> {
     return this.authService.login(ip, userAgent, data.email, data.password);
   }
@@ -35,9 +34,17 @@ export class AuthController {
   }
 
   @Post('refresh')
-  @UseGuards(JwtAuthGuard)
-  async refresh() {
-    return { newToken: 'okay' };
+  @RateLimit({
+    points: 5,
+    duration: 60,
+    errorMessage: 'Wait for 60 seconds before trying to login again',
+  })
+  async refresh(
+    @Ip() ip: string,
+    @Headers('User-Agent') userAgent: string,
+    @Body('token') refreshToken: string,
+  ): Promise<{ accessToken: string }> {
+    return this.authService.refresh(ip, userAgent, refreshToken);
   }
 
   @Post('resend-email-verification')

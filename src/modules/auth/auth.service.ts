@@ -118,4 +118,28 @@ export class AuthService {
     });
     return { queued: true };
   }
+
+  async refresh(ipAddress: string, userAgent: string, token: string) {
+    const session = await this.prisma.sessions.findFirst({
+      where: { token },
+      select: { user: { select: { id: true } } },
+    });
+    if (!session)
+      throw new HttpException('Session not found', HttpStatus.NOT_FOUND);
+    await this.prisma.sessions.updateMany({
+      where: { token },
+      data: { ipAddress, userAgent },
+    });
+    return {
+      accessToken: this.jwtService.sign(
+        { sub: `user${session.user.id}` },
+        {
+          expiresIn: this.configService.get<string>(
+            'security.accessTokenExpiry',
+          ),
+        },
+      ),
+      refreshToken: token,
+    };
+  }
 }
