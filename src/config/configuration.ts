@@ -1,5 +1,8 @@
 export default () => ({
   frontendUrl: process.env.FRONTEND_URL ?? 'http://localhost:3000',
+  security: {
+    saltRounds: process.env.SALT_ROUNDS ?? 10,
+  },
   email: {
     name: process.env.EMAIL_NAME ?? 'Staart',
     from: process.env.EMAIL_FROM,

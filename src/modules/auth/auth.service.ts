@@ -6,6 +6,7 @@ import { OmitSecrets } from '../prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../user/user.service';
 import { RegisterDto } from './auth.dto';
+import { compare } from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -15,6 +16,19 @@ export class AuthService {
     private email: EmailService,
     private configService: ConfigService,
   ) {}
+
+  async validateUser(
+    email: string,
+    password: string,
+  ): Promise<OmitSecrets<users>> {
+    const emailSafe = this.users.getSafeEmail(email);
+    const user = await this.prisma.users.findFirst({
+      where: { emails: { some: { emailSafe } } },
+    });
+    if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    if (await compare(password, user.password)) return this.prisma.expose(user);
+    return null;
+  }
 
   async register(data: RegisterDto): Promise<OmitSecrets<users>> {
     const email = data.email;
