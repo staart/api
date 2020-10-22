@@ -66,4 +66,10 @@ export class UsersService {
     });
     return this.prisma.expose<users>(user);
   }
+
+  getSafeEmail(email: string) {
+    email = email.toLowerCase();
+    email = `${email.split('@', 1)[0].split('+')}[0]@${email.split('@', 1)[1]}`;
+    return email;
+  }
 }
