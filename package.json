@@ -28,6 +28,7 @@
     "class-transformer": "^0.3.1",
     "class-validator": "^0.12.2",
     "handlebars": "^4.7.6",
+    "mem": "^8.0.0",
     "nestjs-rate-limiter": "^2.5.6",
     "nodemailer": "^6.4.14",
     "object-literal-parse": "^2.1.0",
