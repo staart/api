@@ -25,6 +25,7 @@
     "@nestjs/config": "^0.5.0",
     "@nestjs/core": "^7.0.0",
     "@nestjs/platform-express": "^7.0.0",
+    "@staart/mustache-markdown": "^3.0.3",
     "class-transformer": "^0.3.1",
     "class-validator": "^0.12.2",
     "handlebars": "^4.7.6",
