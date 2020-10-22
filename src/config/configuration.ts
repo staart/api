@@ -1,4 +1,5 @@
 export default () => ({
+  frontendUrl: process.env.FRONTEND_URL ?? 'http://localhost:3000',
   email: {
     name: process.env.EMAIL_NAME ?? 'Staart',
     from: process.env.EMAIL_FROM,

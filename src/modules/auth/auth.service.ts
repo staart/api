@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { users } from '@prisma/client';
 import { EmailService } from '../email/email.service';
 import { OmitSecrets } from '../prisma/prisma.interface';
@@ -12,6 +13,7 @@ export class AuthService {
     private prisma: PrismaService,
     private users: UsersService,
     private email: EmailService,
+    private configService: ConfigService,
   ) {}
 
   async register(data: RegisterDto): Promise<OmitSecrets<users>> {
@@ -37,10 +39,33 @@ export class AuthService {
         },
       },
     });
+    await this.sendEmailVerification(email);
     return this.prisma.expose(user);
   }
 
-  async resentEmailVerification() {
+  async sendEmailVerification(email: string, resend = false) {
+    const emailSafe = this.users.getSafeEmail(email);
+    const emailDetails = await this.prisma.emails.findFirst({
+      where: { emailSafe },
+      include: { user: true },
+    });
+    if (!emailDetails)
+      throw new HttpException(
+        'There is no user for this email',
+        HttpStatus.NOT_FOUND,
+      );
+    this.email.send({
+      to: `"${emailDetails.user.name}" <${email}>`,
+      template: resend
+        ? 'auth/resend-email-verification'
+        : 'auth/email-verification',
+      data: {
+        name: emailDetails.user.name,
+        link: `${this.configService.get<string>(
+          'frontendUrl',
+        )}/auth/verify-email?token=`,
+      },
+    });
     return { queued: true };
   }
 }

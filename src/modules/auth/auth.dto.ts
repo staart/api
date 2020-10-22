@@ -74,3 +74,9 @@ export class RegisterDto {
   @IsOptional()
   attributes: Record<string, any>;
 }
+
+export class ResendEmailVerificationDto {
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+}
