@@ -31,6 +31,8 @@
     "nestjs-rate-limiter": "^2.5.6",
     "nodemailer": "^6.4.14",
     "object-literal-parse": "^2.1.0",
+    "p-queue": "^6.6.2",
+    "p-retry": "^4.2.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.5.4"

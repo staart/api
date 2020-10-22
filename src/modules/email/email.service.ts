@@ -13,4 +13,12 @@ export class EmailService {
       this.configService.get<EmailConfig>('email'),
     );
   }
+
+  async queue() {
+    //
+  }
+
+  private send() {
+    //
+  }
 }
