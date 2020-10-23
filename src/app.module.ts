@@ -8,6 +8,7 @@ import configuration from './config/configuration';
 import { AuthModule } from './modules/auth/auth.module';
 import { EmailModule } from './modules/email/email.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
+import { SessionsModule } from './modules/sessions/sessions.module';
 import { UsersModule } from './modules/user/user.module';
 
 @Module({
@@ -23,6 +24,7 @@ import { UsersModule } from './modules/user/user.module';
       duration: 60,
     }),
     EmailModule,
+    SessionsModule,
   ],
   controllers: [AppController],
   providers: [
