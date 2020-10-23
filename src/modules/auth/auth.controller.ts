@@ -1,7 +1,7 @@
 import { Body, Controller, Headers, Ip, Post } from '@nestjs/common';
 import { users } from '@prisma/client';
 import { RateLimit } from 'nestjs-rate-limiter';
-import { OmitSecrets } from 'src/modules/prisma/prisma.interface';
+import { Expose } from 'src/modules/prisma/prisma.interface';
 import { LoginDto, RegisterDto, ResendEmailVerificationDto } from './auth.dto';
 import { AuthService } from './auth.service';
 
@@ -29,7 +29,7 @@ export class AuthController {
     duration: 60,
     errorMessage: 'Wait for 60 seconds before trying to create an account',
   })
-  async register(@Body() data: RegisterDto): Promise<OmitSecrets<users>> {
+  async register(@Body() data: RegisterDto): Promise<Expose<users>> {
     return this.authService.register(data);
   }
 

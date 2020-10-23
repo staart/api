@@ -1,1 +1,1 @@
-export type OmitSecrets<T> = Omit<Omit<T, 'password'>, 'twoFactorSecret'>;
+export type Expose<T> = Omit<Omit<T, 'password'>, 'twoFactorSecret'>;

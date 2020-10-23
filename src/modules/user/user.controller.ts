@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { users } from '@prisma/client';
-import { OmitSecrets } from 'src/modules/prisma/prisma.interface';
+import { Expose } from 'src/modules/prisma/prisma.interface';
 import { CursorPipe } from 'src/pipes/cursor.pipe';
 import { OptionalIntPipe } from 'src/pipes/optional-int.pipe';
 import { OrderByPipe } from 'src/pipes/order-by.pipe';
@@ -33,16 +33,14 @@ export class UserController {
     @Query('cursor', CursorPipe) cursor?: Record<string, number | string>,
     @Query('where', WherePipe) where?: Record<string, number | string>,
     @Query('orderBy', OrderByPipe) orderBy?: Record<string, 'asc' | 'desc'>,
-  ): Promise<OmitSecrets<users>[]> {
+  ): Promise<Expose<users>[]> {
     return this.usersService.users({ skip, take, orderBy, cursor, where });
   }
 
   @Get(':id')
   @UseGuards(ScopesGuard)
   @Scopes('user{id}:read')
-  async get(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<OmitSecrets<users>> {
+  async get(@Param('id', ParseIntPipe) id: number): Promise<Expose<users>> {
     return this.usersService.user({ id: Number(id) });
   }
 
@@ -50,14 +48,12 @@ export class UserController {
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateUserDto,
-  ): Promise<OmitSecrets<users>> {
+  ): Promise<Expose<users>> {
     return this.usersService.updateUser({ where: { id: Number(id) }, data });
   }
 
   @Delete(':id')
-  async remove(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<OmitSecrets<users>> {
+  async remove(@Param('id', ParseIntPipe) id: number): Promise<Expose<users>> {
     return this.usersService.deleteUser({ id: Number(id) });
   }
 }

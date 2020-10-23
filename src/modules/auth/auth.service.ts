@@ -8,7 +8,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { users } from '@prisma/client';
 import { EmailService } from '../email/email.service';
-import { OmitSecrets } from '../prisma/prisma.interface';
+import { Expose } from '../prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../user/user.service';
 import { RegisterDto } from './auth.dto';
@@ -61,7 +61,7 @@ export class AuthService {
     };
   }
 
-  async register(data: RegisterDto): Promise<OmitSecrets<users>> {
+  async register(data: RegisterDto): Promise<Expose<users>> {
     const email = data.email;
     const emailSafe = this.users.getSafeEmail(email);
     delete data.email;

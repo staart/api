@@ -8,7 +8,7 @@ import {
   usersWhereInput,
   usersOrderByInput,
 } from '@prisma/client';
-import { OmitSecrets } from 'src/modules/prisma/prisma.interface';
+import { Expose } from 'src/modules/prisma/prisma.interface';
 
 @Injectable()
 export class UsersService {
@@ -16,7 +16,7 @@ export class UsersService {
 
   async user(
     userWhereUniqueInput: usersWhereUniqueInput,
-  ): Promise<OmitSecrets<users> | null> {
+  ): Promise<Expose<users> | null> {
     const user = await this.prisma.users.findOne({
       where: userWhereUniqueInput,
     });
@@ -30,7 +30,7 @@ export class UsersService {
     cursor?: usersWhereUniqueInput;
     where?: usersWhereInput;
     orderBy?: usersOrderByInput;
-  }): Promise<OmitSecrets<users>[]> {
+  }): Promise<Expose<users>[]> {
     const { skip, take, cursor, where, orderBy } = params;
     const users = await this.prisma.users.findMany({
       skip,
@@ -51,7 +51,7 @@ export class UsersService {
   async updateUser(params: {
     where: usersWhereUniqueInput;
     data: usersUpdateInput;
-  }): Promise<OmitSecrets<users>> {
+  }): Promise<Expose<users>> {
     const { where, data } = params;
     const user = await this.prisma.users.update({
       data,
@@ -60,7 +60,7 @@ export class UsersService {
     return this.prisma.expose<users>(user);
   }
 
-  async deleteUser(where: usersWhereUniqueInput): Promise<OmitSecrets<users>> {
+  async deleteUser(where: usersWhereUniqueInput): Promise<Expose<users>> {
     const user = await this.prisma.users.delete({
       where,
     });
