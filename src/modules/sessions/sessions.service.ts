@@ -17,15 +17,6 @@ import { PrismaService } from '../prisma/prisma.service';
 @Injectable()
 export class SessionsService {
   constructor(private prisma: PrismaService) {}
-  async createSession(
-    userId: number,
-    data: sessionsCreateInput,
-  ): Promise<sessions> {
-    return this.prisma.sessions.create({
-      data: { ...data, user: { connect: { id: userId } } },
-    });
-  }
-
   async getSessions(
     userId: number,
     params: {
