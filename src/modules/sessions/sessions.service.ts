@@ -44,6 +44,8 @@ export class SessionsService {
     const session = await this.prisma.sessions.findOne({
       where: { id },
     });
+    if (!session)
+      throw new HttpException('Session not found', HttpStatus.NOT_FOUND);
     if (session.userId !== userId) throw new UnauthorizedException();
     if (!session)
       throw new HttpException('Session not found', HttpStatus.NOT_FOUND);
@@ -54,6 +56,8 @@ export class SessionsService {
     const testSession = await this.prisma.sessions.findOne({
       where: { id },
     });
+    if (!testSession)
+      throw new HttpException('Session not found', HttpStatus.NOT_FOUND);
     if (testSession.userId !== userId) throw new UnauthorizedException();
     const session = await this.prisma.sessions.delete({
       where: { id },

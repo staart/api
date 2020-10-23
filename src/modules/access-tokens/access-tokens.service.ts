@@ -57,9 +57,9 @@ export class AccessTokensService {
     const accessToken = await this.prisma.accessTokens.findOne({
       where: { id },
     });
-    if (accessToken.userId !== userId) throw new UnauthorizedException();
     if (!accessToken)
       throw new HttpException('AccessToken not found', HttpStatus.NOT_FOUND);
+    if (accessToken.userId !== userId) throw new UnauthorizedException();
     return this.prisma.expose<accessTokens>(accessToken);
   }
 
@@ -71,6 +71,8 @@ export class AccessTokensService {
     const testAccessToken = await this.prisma.accessTokens.findOne({
       where: { id },
     });
+    if (!testAccessToken)
+      throw new HttpException('AccessToken not found', HttpStatus.NOT_FOUND);
     if (testAccessToken.userId !== userId) throw new UnauthorizedException();
     const accessToken = await this.prisma.accessTokens.update({
       where: { id },
@@ -87,6 +89,8 @@ export class AccessTokensService {
     const testAccessToken = await this.prisma.accessTokens.findOne({
       where: { id },
     });
+    if (!testAccessToken)
+      throw new HttpException('AccessToken not found', HttpStatus.NOT_FOUND);
     if (testAccessToken.userId !== userId) throw new UnauthorizedException();
     const accessToken = await this.prisma.accessTokens.update({
       where: { id },
@@ -102,6 +106,8 @@ export class AccessTokensService {
     const testAccessToken = await this.prisma.accessTokens.findOne({
       where: { id },
     });
+    if (!testAccessToken)
+      throw new HttpException('AccessToken not found', HttpStatus.NOT_FOUND);
     if (testAccessToken.userId !== userId) throw new UnauthorizedException();
     const accessToken = await this.prisma.accessTokens.delete({
       where: { id },

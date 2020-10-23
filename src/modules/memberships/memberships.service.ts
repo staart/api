@@ -46,9 +46,9 @@ export class MembershipsService {
       where: { id },
       include: { group: true },
     });
-    if (membership.userId !== userId) throw new UnauthorizedException();
     if (!membership)
       throw new HttpException('Membership not found', HttpStatus.NOT_FOUND);
+    if (membership.userId !== userId) throw new UnauthorizedException();
     return this.prisma.expose<memberships>(membership);
   }
 
@@ -59,6 +59,8 @@ export class MembershipsService {
     const testMembership = await this.prisma.memberships.findOne({
       where: { id },
     });
+    if (!testMembership)
+      throw new HttpException('Membership not found', HttpStatus.NOT_FOUND);
     if (testMembership.userId !== userId) throw new UnauthorizedException();
     await this.verifyDeleteMembership(testMembership.groupId, id);
     const membership = await this.prisma.memberships.delete({
