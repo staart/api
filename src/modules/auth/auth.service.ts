@@ -55,14 +55,8 @@ export class AuthService {
     await this.prisma.sessions.create({
       data: { token, ipAddress, userAgent, user: { connect: { id } } },
     });
-    const payload: AccessTokenClaims = {
-      sub: `user${id}`,
-      scopes: ['example-scope'],
-    };
     return {
-      accessToken: this.jwtService.sign(payload, {
-        expiresIn: this.configService.get<string>('security.accessTokenExpiry'),
-      }),
+      accessToken: await this.getAccessToken(id),
       refreshToken: token,
     };
   }
@@ -133,15 +127,37 @@ export class AuthService {
       data: { ipAddress, userAgent },
     });
     return {
-      accessToken: this.jwtService.sign(
-        { sub: `user${session.user.id}` },
-        {
-          expiresIn: this.configService.get<string>(
-            'security.accessTokenExpiry',
-          ),
-        },
-      ),
+      accessToken: await this.getAccessToken(session.user.id),
       refreshToken: token,
     };
+  }
+
+  private async getAccessToken(userId: number): Promise<string> {
+    const scopes = await this.getScopes(userId);
+    const payload: AccessTokenClaims = {
+      sub: `user${userId}`,
+      scopes,
+    };
+    return this.jwtService.sign(payload, {
+      expiresIn: this.configService.get<string>('security.accessTokenExpiry'),
+    });
+  }
+
+  async getScopes(userId: number): Promise<string[]> {
+    const scopes: string[] = [`user${userId}:*`];
+    const memberships = await this.prisma.memberships.findMany({
+      where: { user: { id: userId } },
+      select: { id: true, role: true, group: { select: { id: true } } },
+    });
+    memberships.forEach(membership => {
+      scopes.push(`membership${membership.id}:*`);
+      if (membership.role === 'OWNER')
+        scopes.push(`group${membership.group.id}:*`);
+      if (membership.role === 'ADMIN')
+        scopes.push(`group${membership.group.id}:write-*`);
+      if (membership.role !== 'OWNER')
+        scopes.push(`group${membership.group.id}:read-*`);
+    });
+    return scopes;
   }
 }
