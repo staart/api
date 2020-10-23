@@ -18,6 +18,8 @@ import { OrderByPipe } from 'src/pipes/order-by.pipe';
 import { WherePipe } from 'src/pipes/where.pipe';
 import { UserRequest } from '../auth/auth.interface';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Scopes } from '../auth/scope.decorator';
+import { ScopesGuard } from '../auth/scope.guard';
 import { UpdateUserDto } from './user.dto';
 import { UsersService } from './user.service';
 
@@ -38,6 +40,8 @@ export class UserController {
   }
 
   @Get(':id')
+  @UseGuards(ScopesGuard)
+  @Scopes('user3:read')
   async get(
     @Req() req: UserRequest,
     @Param('id', ParseIntPipe) id: number,
