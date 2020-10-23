@@ -69,7 +69,7 @@ export class UsersService {
 
   getSafeEmail(email: string) {
     email = email.toLowerCase();
-    email = `${email.split('@', 1)[0].split('+')}[0]@${email.split('@', 1)[1]}`;
+    email = `${email.split('@')[0].split('+')}@${email.split('@')[1]}`;
     return email;
   }
 }

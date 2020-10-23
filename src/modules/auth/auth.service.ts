@@ -15,6 +15,7 @@ import { RegisterDto } from './auth.dto';
 import { compare } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
+import { AccessTokenClaims } from './auth.interface';
 
 @Injectable()
 export class AuthService {
@@ -54,15 +55,14 @@ export class AuthService {
     await this.prisma.sessions.create({
       data: { token, ipAddress, userAgent, user: { connect: { id } } },
     });
+    const payload: AccessTokenClaims = {
+      sub: `user${id}`,
+      scopes: ['example-scope'],
+    };
     return {
-      accessToken: this.jwtService.sign(
-        { sub: `user${id}` },
-        {
-          expiresIn: this.configService.get<string>(
-            'security.accessTokenExpiry',
-          ),
-        },
-      ),
+      accessToken: this.jwtService.sign(payload, {
+        expiresIn: this.configService.get<string>('security.accessTokenExpiry'),
+      }),
       refreshToken: token,
     };
   }
