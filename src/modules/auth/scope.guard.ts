@@ -9,12 +9,14 @@ export class ScopesGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean {
     const scopes = this.reflector.get<string[]>('scopes', context.getHandler());
-    if (!scopes) return true;
     const request = context.switchToHttp().getRequest<UserRequest>();
+    if (!scopes) return true;
     const user: AccessTokenParsed = request.user;
     let authorized = false;
     for (const userScope of user.scopes) {
-      for (const scope of scopes) {
+      for (let scope of scopes) {
+        for (const key in request.params)
+          scope = scope.replace(`{${key}}`, request.params[key]);
         authorized = authorized || minimatch(scope, userScope);
         if (authorized) return true;
       }

@@ -7,7 +7,6 @@ import {
   ParseIntPipe,
   Patch,
   Query,
-  Req,
   UseGuards,
 } from '@nestjs/common';
 import { users } from '@prisma/client';
@@ -16,7 +15,6 @@ import { CursorPipe } from 'src/pipes/cursor.pipe';
 import { OptionalIntPipe } from 'src/pipes/optional-int.pipe';
 import { OrderByPipe } from 'src/pipes/order-by.pipe';
 import { WherePipe } from 'src/pipes/where.pipe';
-import { UserRequest } from '../auth/auth.interface';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Scopes } from '../auth/scope.decorator';
 import { ScopesGuard } from '../auth/scope.guard';
@@ -41,12 +39,10 @@ export class UserController {
 
   @Get(':id')
   @UseGuards(ScopesGuard)
-  @Scopes('user3:read')
+  @Scopes('user{id}:read')
   async get(
-    @Req() req: UserRequest,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<OmitSecrets<users>> {
-    console.log(req.user);
     return this.usersService.user({ id: Number(id) });
   }
 

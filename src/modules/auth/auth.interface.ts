@@ -1,4 +1,5 @@
-import { Request } from '@nestjs/common';
+import { Request as ExpressRequest } from 'express';
+import { Request as NestRequest } from '@nestjs/common';
 
 export interface AccessTokenClaims {
   sub: string;
@@ -10,6 +11,7 @@ export interface AccessTokenParsed {
   scopes: string[];
 }
 
-export interface UserRequest extends Request {
+type CombinedRequest = ExpressRequest & typeof NestRequest;
+export interface UserRequest extends CombinedRequest {
   user: AccessTokenParsed;
 }
