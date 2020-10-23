@@ -18,7 +18,10 @@ import { UsersModule } from './modules/user/user.module';
     PrismaModule,
     UsersModule,
     AuthModule,
-    RateLimiterModule,
+    RateLimiterModule.register({
+      points: 100,
+      duration: 60,
+    }),
     EmailModule,
   ],
   controllers: [AppController],
