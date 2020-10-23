@@ -50,7 +50,7 @@ export class SessionController {
     @Param('userId', ParseIntPipe) userId: number,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Expose<sessions>> {
-    return this.sessionsService.getSession(userId, { id: Number(id) });
+    return this.sessionsService.getSession(userId, Number(id));
   }
 
   @Delete(':id')
@@ -60,6 +60,6 @@ export class SessionController {
     @Param('userId', ParseIntPipe) userId: number,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Expose<sessions>> {
-    return this.sessionsService.deleteSession(userId, { id: Number(id) });
+    return this.sessionsService.deleteSession(userId, Number(id));
   }
 }

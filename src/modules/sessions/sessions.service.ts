@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import {
   sessions,
-  sessionsCreateInput,
   sessionsOrderByInput,
   sessionsWhereInput,
   sessionsWhereUniqueInput,
@@ -40,10 +39,10 @@ export class SessionsService {
 
   async getSession(
     userId: number,
-    sessionWhereUniqueInput: sessionsWhereUniqueInput,
+    id: number,
   ): Promise<Expose<sessions> | null> {
     const session = await this.prisma.sessions.findOne({
-      where: sessionWhereUniqueInput,
+      where: { id },
     });
     if (session.userId !== userId) throw new UnauthorizedException();
     if (!session)
@@ -51,16 +50,13 @@ export class SessionsService {
     return this.prisma.expose<sessions>(session);
   }
 
-  async deleteSession(
-    userId: number,
-    where: sessionsWhereUniqueInput,
-  ): Promise<Expose<sessions>> {
+  async deleteSession(userId: number, id: number): Promise<Expose<sessions>> {
     const testSession = await this.prisma.sessions.findOne({
-      where,
+      where: { id },
     });
     if (testSession.userId !== userId) throw new UnauthorizedException();
     const session = await this.prisma.sessions.delete({
-      where,
+      where: { id },
     });
     return this.prisma.expose<sessions>(session);
   }
