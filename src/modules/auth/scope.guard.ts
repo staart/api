@@ -1,6 +1,7 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AccessTokenParsed } from './auth.interface';
+import minimatch from 'minimatch';
 
 @Injectable()
 export class ScopesGuard implements CanActivate {
@@ -12,7 +13,6 @@ export class ScopesGuard implements CanActivate {
     if (!scopes) return true;
     const request = context.switchToHttp().getRequest();
     const user: AccessTokenParsed = request.user;
-
     // return user.scopes.includes(scopes);
   }
 }
