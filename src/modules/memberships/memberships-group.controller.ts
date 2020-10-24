@@ -1,9 +1,11 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Query,
 } from '@nestjs/common';
 import { memberships } from '@prisma/client';
@@ -13,16 +15,17 @@ import { OptionalIntPipe } from 'src/pipes/optional-int.pipe';
 import { OrderByPipe } from 'src/pipes/order-by.pipe';
 import { WherePipe } from 'src/pipes/where.pipe';
 import { Scopes } from '../auth/scope.decorator';
+import { UpdateMembershipDto } from './memberships.dto';
 import { MembershipsService } from './memberships.service';
 
-@Controller('users/:userId/memberships')
-export class UserMembershipController {
+@Controller('groups/:groupId/memberships')
+export class GroupMembershipController {
   constructor(private membershipsService: MembershipsService) {}
 
   @Get()
-  @Scopes('user-{userId}:read-membership')
+  @Scopes('group-{groupId}:read-membership')
   async getAll(
-    @Param('userId', ParseIntPipe) userId: number,
+    @Param('groupId', ParseIntPipe) groupId: number,
     @Query('skip', OptionalIntPipe) skip?: number,
     @Query('take', OptionalIntPipe) take?: number,
     @Query('cursor', CursorPipe) cursor?: Record<string, number | string>,
@@ -34,25 +37,39 @@ export class UserMembershipController {
       take,
       orderBy,
       cursor,
-      where: { ...where, user: { id: userId } },
+      where: { ...where, group: { id: groupId } },
     });
   }
 
   @Get(':id')
-  @Scopes('user-{userId}:read-membership-{id}')
+  @Scopes('group-{groupId}:read-membership-{id}')
   async get(
-    @Param('userId', ParseIntPipe) userId: number,
+    @Param('groupId', ParseIntPipe) groupId: number,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Expose<memberships>> {
-    return this.membershipsService.getUserMembership(userId, Number(id));
+    return this.membershipsService.getGroupMembership(groupId, Number(id));
+  }
+
+  @Patch(':id')
+  @Scopes('group-{groupId}:read-membership-{id}')
+  async update(
+    @Body() data: UpdateMembershipDto,
+    @Param('groupId', ParseIntPipe) groupId: number,
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<Expose<memberships>> {
+    return this.membershipsService.updateGroupMembership(
+      groupId,
+      Number(id),
+      data,
+    );
   }
 
   @Delete(':id')
-  @Scopes('user-{userId}:delete-membership-{id}')
+  @Scopes('group-{groupId}:delete-membership-{id}')
   async remove(
-    @Param('userId', ParseIntPipe) userId: number,
+    @Param('groupId', ParseIntPipe) groupId: number,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Expose<memberships>> {
-    return this.membershipsService.deleteUserMembership(userId, Number(id));
+    return this.membershipsService.deleteGroupMembership(groupId, Number(id));
   }
 }
