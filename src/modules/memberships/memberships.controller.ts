@@ -19,7 +19,6 @@ import { ScopesGuard } from '../auth/scope.guard';
 import { MembershipsService } from './memberships.service';
 
 @Controller('users/:userId/memberships')
-@UseGuards(JwtAuthGuard)
 export class MembershipController {
   constructor(private membershipsService: MembershipsService) {}
 

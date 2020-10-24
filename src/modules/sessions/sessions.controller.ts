@@ -19,7 +19,6 @@ import { ScopesGuard } from '../auth/scope.guard';
 import { SessionsService } from './sessions.service';
 
 @Controller('users/:userId/sessions')
-@UseGuards(JwtAuthGuard)
 export class SessionController {
   constructor(private sessionsService: SessionsService) {}
 

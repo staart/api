@@ -26,7 +26,6 @@ import { CreateGroupDto, ReplaceGroupDto, UpdateGroupDto } from './groups.dto';
 import { GroupsService } from './groups.service';
 
 @Controller('groups')
-@UseGuards(JwtAuthGuard)
 export class GroupController {
   constructor(private groupsService: GroupsService) {}
 

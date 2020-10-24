@@ -22,7 +22,6 @@ import { CreateEmailDto } from './emails.dto';
 import { EmailsService } from './emails.service';
 
 @Controller('users/:userId/emails')
-@UseGuards(JwtAuthGuard)
 export class EmailController {
   constructor(private emailsService: EmailsService) {}
 
