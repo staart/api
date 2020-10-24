@@ -12,10 +12,11 @@ import { Expose } from '../prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../user/user.service';
 import { RegisterDto } from './auth.dto';
-import { compare } from 'bcrypt';
+import { compare, hash } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import { AccessTokenClaims } from './auth.interface';
+import { PwnedService } from '../pwned/pwned.service';
 
 @Injectable()
 export class AuthService {
@@ -25,6 +26,7 @@ export class AuthService {
     private email: EmailService,
     private configService: ConfigService,
     private jwtService: JwtService,
+    private pwnedService: PwnedService,
   ) {}
 
   async validateUser(email: string, password?: string): Promise<number> {
@@ -66,7 +68,17 @@ export class AuthService {
   async register(data: RegisterDto): Promise<Expose<users>> {
     const email = data.email;
     const emailSafe = this.users.getSafeEmail(email);
+    const ignorePwnedPassword = !!data.ignorePwnedPassword;
     delete data.email;
+    delete data.ignorePwnedPassword;
+
+    if (data.password) {
+      if (!ignorePwnedPassword) await this.ensureSafePassword(data.password);
+      data.password = await hash(
+        data.password,
+        this.configService.get<number>('security.saltRounds'),
+      );
+    }
 
     const users = await this.users.users({
       take: 1,
@@ -148,6 +160,16 @@ export class AuthService {
     return this.jwtService.sign(payload, {
       expiresIn: this.configService.get<string>('security.accessTokenExpiry'),
     });
+  }
+
+  async ensureSafePassword(password: string): Promise<void> {
+    if (!this.configService.get<boolean>('security.passwordPwnedCheck')) return;
+    const isSafe = this.pwnedService.isPasswordSafe(password);
+    if (!isSafe)
+      throw new HttpException(
+        'This password has been compromised in a data breach.',
+        HttpStatus.BAD_REQUEST,
+      );
   }
 
   async getScopes(userId: number): Promise<string[]> {

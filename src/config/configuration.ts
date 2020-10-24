@@ -4,6 +4,7 @@ export default () => ({
     saltRounds: process.env.SALT_ROUNDS ?? 10,
     jwtSecret: process.env.JWT_SECRET ?? 'staart',
     accessTokenExpiry: process.env.ACCESS_TOKEN_EXPIRY ?? '1h',
+    passwordPwnedCheck: !!process.env.PASSWORD_PWNED_CHECK,
   },
   email: {
     name: process.env.EMAIL_NAME ?? 'Staart',
