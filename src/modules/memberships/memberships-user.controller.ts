@@ -16,7 +16,7 @@ import { Scopes } from '../auth/scope.decorator';
 import { MembershipsService } from './memberships.service';
 
 @Controller('users/:userId/memberships')
-export class MembershipController {
+export class UserMembershipController {
   constructor(private membershipsService: MembershipsService) {}
 
   @Get()
