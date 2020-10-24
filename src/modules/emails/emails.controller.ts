@@ -27,7 +27,6 @@ export class EmailController {
   constructor(private emailsService: EmailsService) {}
 
   @Post()
-  @UseGuards(ScopesGuard)
   @Scopes('user{userId}:write', 'email:write')
   async create(
     @Param('userId', ParseIntPipe) userId: number,
@@ -37,7 +36,6 @@ export class EmailController {
   }
 
   @Get()
-  @UseGuards(ScopesGuard)
   @Scopes('user{userId}:read', 'email:read')
   async getAll(
     @Param('userId', ParseIntPipe) userId: number,
@@ -57,7 +55,6 @@ export class EmailController {
   }
 
   @Get(':id')
-  @UseGuards(ScopesGuard)
   @Scopes('user{userId}:read', 'email{id}:read')
   async get(
     @Param('userId', ParseIntPipe) userId: number,
@@ -67,7 +64,6 @@ export class EmailController {
   }
 
   @Delete(':id')
-  @UseGuards(ScopesGuard)
   @Scopes('user{userId}:delete', 'email{id}:delete')
   async remove(
     @Param('userId', ParseIntPipe) userId: number,

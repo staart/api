@@ -31,7 +31,6 @@ export class GroupController {
   constructor(private groupsService: GroupsService) {}
 
   @Post()
-  @UseGuards(ScopesGuard)
   @Scopes('user:write', 'group:write')
   async create(
     @Req() req: UserRequest,
@@ -41,7 +40,6 @@ export class GroupController {
   }
 
   @Get()
-  @UseGuards(ScopesGuard)
   @Scopes('group:read')
   async getAll(
     @Query('skip', OptionalIntPipe) skip?: number,
@@ -60,14 +58,12 @@ export class GroupController {
   }
 
   @Get(':id')
-  @UseGuards(ScopesGuard)
   @Scopes('group{id}:read')
   async get(@Param('id', ParseIntPipe) id: number): Promise<Expose<groups>> {
     return this.groupsService.getGroup(Number(id));
   }
 
   @Patch(':id')
-  @UseGuards(ScopesGuard)
   @Scopes('group{id}:write')
   async update(
     @Body() data: UpdateGroupDto,
@@ -77,7 +73,6 @@ export class GroupController {
   }
 
   @Put(':id')
-  @UseGuards(ScopesGuard)
   @Scopes('group{id}:write')
   async replace(
     @Body() data: ReplaceGroupDto,
@@ -87,7 +82,6 @@ export class GroupController {
   }
 
   @Delete(':id')
-  @UseGuards(ScopesGuard)
   @Scopes('group{id}:delete')
   async remove(@Param('id', ParseIntPipe) id: number): Promise<Expose<groups>> {
     return this.groupsService.deleteGroup(Number(id));
