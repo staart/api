@@ -71,14 +71,10 @@ export class AuthService {
     const ignorePwnedPassword = !!data.ignorePwnedPassword;
     delete data.email;
     delete data.ignorePwnedPassword;
-
-    if (data.password) {
-      if (!ignorePwnedPassword) await this.ensureSafePassword(data.password);
-      data.password = await hash(
-        data.password,
-        this.configService.get<number>('security.saltRounds'),
-      );
-    }
+    data.password = await this.hashAndValidatePassword(
+      data.password,
+      ignorePwnedPassword,
+    );
 
     const users = await this.users.users({
       take: 1,
@@ -162,14 +158,23 @@ export class AuthService {
     });
   }
 
-  async ensureSafePassword(password: string): Promise<void> {
-    if (!this.configService.get<boolean>('security.passwordPwnedCheck')) return;
-    const isSafe = this.pwnedService.isPasswordSafe(password);
-    if (!isSafe)
-      throw new HttpException(
-        'This password has been compromised in a data breach.',
-        HttpStatus.BAD_REQUEST,
-      );
+  async hashAndValidatePassword(
+    password: string,
+    ignorePwnedPassword: boolean,
+  ): Promise<string> {
+    if (!ignorePwnedPassword) {
+      if (!this.configService.get<boolean>('security.passwordPwnedCheck'))
+        return;
+      if (!(await this.pwnedService.isPasswordSafe(password)))
+        throw new HttpException(
+          'This password has been compromised in a data breach.',
+          HttpStatus.BAD_REQUEST,
+        );
+    }
+    return await hash(
+      password,
+      this.configService.get<number>('security.saltRounds'),
+    );
   }
 
   async getScopes(userId: number): Promise<string[]> {

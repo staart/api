@@ -31,13 +31,13 @@ export class UserController {
     @Query('where', WherePipe) where?: Record<string, number | string>,
     @Query('orderBy', OrderByPipe) orderBy?: Record<string, 'asc' | 'desc'>,
   ): Promise<Expose<users>[]> {
-    return this.usersService.users({ skip, take, orderBy, cursor, where });
+    return this.usersService.getUsers({ skip, take, orderBy, cursor, where });
   }
 
   @Get(':id')
   @Scopes('user-{id}:read-info')
   async get(@Param('id', ParseIntPipe) id: number): Promise<Expose<users>> {
-    return this.usersService.user({ id: Number(id) });
+    return this.usersService.getUser(Number(id));
   }
 
   @Patch(':id')
@@ -46,12 +46,12 @@ export class UserController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateUserDto,
   ): Promise<Expose<users>> {
-    return this.usersService.updateUser({ where: { id: Number(id) }, data });
+    return this.usersService.updateUser(Number(id), data);
   }
 
   @Delete(':id')
   @Scopes('user-{id}:delete')
   async remove(@Param('id', ParseIntPipe) id: number): Promise<Expose<users>> {
-    return this.usersService.deleteUser({ id: Number(id) });
+    return this.usersService.deleteUser(Number(id));
   }
 }
