@@ -33,7 +33,6 @@ export class AccessTokenController {
   constructor(private accessTokensService: AccessTokensService) {}
 
   @Post()
-  @UseGuards(ScopesGuard)
   @Scopes('user{userId}:write', 'access-token:write')
   async create(
     @Param('userId', ParseIntPipe) userId: number,
@@ -43,7 +42,6 @@ export class AccessTokenController {
   }
 
   @Get()
-  @UseGuards(ScopesGuard)
   @Scopes('user{userId}:read', 'access-token:read')
   async getAll(
     @Param('userId', ParseIntPipe) userId: number,
@@ -63,7 +61,6 @@ export class AccessTokenController {
   }
 
   @Get(':id')
-  @UseGuards(ScopesGuard)
   @Scopes('user{userId}:read', 'access-token{id}:read')
   async get(
     @Param('userId', ParseIntPipe) userId: number,
@@ -73,7 +70,6 @@ export class AccessTokenController {
   }
 
   @Patch(':id')
-  @UseGuards(ScopesGuard)
   @Scopes('user{userId}:write', 'access-token{id}:write')
   async update(
     @Body() data: UpdateAccessTokenDto,
@@ -84,7 +80,6 @@ export class AccessTokenController {
   }
 
   @Put(':id')
-  @UseGuards(ScopesGuard)
   @Scopes('user{userId}:write', 'access-token{id}:write')
   async replace(
     @Body() data: ReplaceAccessTokenDto,
@@ -95,7 +90,6 @@ export class AccessTokenController {
   }
 
   @Delete(':id')
-  @UseGuards(ScopesGuard)
   @Scopes('user{userId}:delete', 'access-token{id}:delete')
   async remove(
     @Param('userId', ParseIntPipe) userId: number,

@@ -4,8 +4,10 @@ import { RateLimit } from 'nestjs-rate-limiter';
 import { Expose } from 'src/modules/prisma/prisma.interface';
 import { LoginDto, RegisterDto, ResendEmailVerificationDto } from './auth.dto';
 import { AuthService } from './auth.service';
+import { Public } from './public.decorator';
 
 @Controller('auth')
+@Public()
 export class AuthController {
   constructor(private authService: AuthService) {}
 

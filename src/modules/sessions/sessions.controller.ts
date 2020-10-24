@@ -24,7 +24,6 @@ export class SessionController {
   constructor(private sessionsService: SessionsService) {}
 
   @Get()
-  @UseGuards(ScopesGuard)
   @Scopes('user{userId}:read', 'session:read')
   async getAll(
     @Param('userId', ParseIntPipe) userId: number,
@@ -44,7 +43,6 @@ export class SessionController {
   }
 
   @Get(':id')
-  @UseGuards(ScopesGuard)
   @Scopes('user{userId}:read', 'session{id}:read')
   async get(
     @Param('userId', ParseIntPipe) userId: number,
@@ -54,7 +52,6 @@ export class SessionController {
   }
 
   @Delete(':id')
-  @UseGuards(ScopesGuard)
   @Scopes('user{userId}:delete', 'session{id}:delete')
   async remove(
     @Param('userId', ParseIntPipe) userId: number,

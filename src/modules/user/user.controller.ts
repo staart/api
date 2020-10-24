@@ -27,7 +27,6 @@ export class UserController {
   constructor(private usersService: UsersService) {}
 
   @Get()
-  @UseGuards(ScopesGuard)
   @Scopes('user:read')
   async getAll(
     @Query('skip', OptionalIntPipe) skip?: number,
@@ -40,14 +39,12 @@ export class UserController {
   }
 
   @Get(':id')
-  @UseGuards(ScopesGuard)
   @Scopes('user{id}:read')
   async get(@Param('id', ParseIntPipe) id: number): Promise<Expose<users>> {
     return this.usersService.user({ id: Number(id) });
   }
 
   @Patch(':id')
-  @UseGuards(ScopesGuard)
   @Scopes('user{id}:write')
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -57,7 +54,6 @@ export class UserController {
   }
 
   @Delete(':id')
-  @UseGuards(ScopesGuard)
   @Scopes('user{id}:delete')
   async remove(@Param('id', ParseIntPipe) id: number): Promise<Expose<users>> {
     return this.usersService.deleteUser({ id: Number(id) });

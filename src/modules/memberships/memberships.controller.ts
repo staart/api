@@ -24,7 +24,6 @@ export class MembershipController {
   constructor(private membershipsService: MembershipsService) {}
 
   @Get()
-  @UseGuards(ScopesGuard)
   @Scopes('user{userId}:read', 'membership:read')
   async getAll(
     @Param('userId', ParseIntPipe) userId: number,
@@ -44,7 +43,6 @@ export class MembershipController {
   }
 
   @Get(':id')
-  @UseGuards(ScopesGuard)
   @Scopes('user{userId}:read', 'membership{id}:read')
   async get(
     @Param('userId', ParseIntPipe) userId: number,
@@ -54,7 +52,6 @@ export class MembershipController {
   }
 
   @Delete(':id')
-  @UseGuards(ScopesGuard)
   @Scopes('user{userId}:delete', 'membership{id}:delete')
   async remove(
     @Param('userId', ParseIntPipe) userId: number,
