@@ -6,6 +6,7 @@ import {
   Param,
   ParseIntPipe,
   Patch,
+  Post,
   Query,
 } from '@nestjs/common';
 import { memberships } from '@prisma/client';
@@ -15,12 +16,24 @@ import { OptionalIntPipe } from 'src/pipes/optional-int.pipe';
 import { OrderByPipe } from 'src/pipes/order-by.pipe';
 import { WherePipe } from 'src/pipes/where.pipe';
 import { Scopes } from '../auth/scope.decorator';
-import { UpdateMembershipDto } from './memberships.dto';
+import {
+  CreateGroupMembershipDto,
+  UpdateMembershipDto,
+} from './memberships.dto';
 import { MembershipsService } from './memberships.service';
 
 @Controller('groups/:groupId/memberships')
 export class GroupMembershipController {
   constructor(private membershipsService: MembershipsService) {}
+
+  @Post()
+  @Scopes('group-{groupId}:write-membership')
+  async create(
+    @Param('groupId', ParseIntPipe) groupId: number,
+    @Body() data: CreateGroupMembershipDto,
+  ): Promise<Expose<memberships>> {
+    return this.membershipsService.createGroupMembership(groupId, data);
+  }
 
   @Get()
   @Scopes('group-{groupId}:read-membership')

@@ -31,9 +31,11 @@ export class AuthService {
     const emailSafe = this.users.getSafeEmail(email);
     const user = await this.prisma.users.findFirst({
       where: { emails: { some: { emailSafe } } },
-      select: { id: true, password: true },
+      select: { id: true, password: true, emails: true },
     });
     if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    if (!user.emails.find(i => i.emailSafe === emailSafe)?.isVerified)
+      throw new UnauthorizedException();
     if (!password || !user.password)
       throw new HttpException(
         'Logging in without passwords is not supported',
@@ -98,6 +100,11 @@ export class AuthService {
       throw new HttpException(
         'There is no user for this email',
         HttpStatus.NOT_FOUND,
+      );
+    if (!emailDetails.isVerified)
+      throw new HttpException(
+        'This email is already verified',
+        HttpStatus.BAD_REQUEST,
       );
     this.email.send({
       to: `"${emailDetails.user.name}" <${email}>`,

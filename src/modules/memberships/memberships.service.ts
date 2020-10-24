@@ -5,6 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import {
+  groupsCreateInput,
   memberships,
   membershipsOrderByInput,
   membershipsUpdateInput,
@@ -12,11 +13,18 @@ import {
   membershipsWhereUniqueInput,
 } from '@prisma/client';
 import { Expose } from 'src/modules/prisma/prisma.interface';
+import { AuthService } from '../auth/auth.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { UsersService } from '../user/user.service';
+import { CreateMembershipInput } from './memberships.interface';
 
 @Injectable()
 export class MembershipsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private users: UsersService,
+    private auth: AuthService,
+  ) {}
   async getMemberships(params: {
     skip?: number;
     take?: number;
@@ -116,8 +124,35 @@ export class MembershipsService {
     return this.prisma.expose<memberships>(membership);
   }
 
+  async createUserMembership(userId: number, data: groupsCreateInput) {
+    return this.prisma.memberships.create({
+      data: {
+        role: 'OWNER',
+        user: { connect: { id: userId } },
+        group: { create: data },
+      },
+    });
+  }
+
+  async createGroupMembership(groupId: number, data: CreateMembershipInput) {
+    const emailSafe = this.users.getSafeEmail(data.email);
+    let user = this.prisma.expose(
+      await this.prisma.users.findFirst({
+        where: { emails: { some: { emailSafe } } },
+      }),
+    );
+    if (!user) user = await this.auth.register(data);
+    return this.prisma.memberships.create({
+      data: {
+        role: data.role,
+        group: { connect: { id: groupId } },
+        user: { connect: { id: user.id } },
+      },
+    });
+  }
+
   /** Verify whether a group membership can be deleted */
-  async verifyDeleteMembership(
+  private async verifyDeleteMembership(
     groupId: number,
     membershipId: number,
   ): Promise<void> {
