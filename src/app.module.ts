@@ -9,6 +9,7 @@ import { AccessTokensModule } from './modules/access-tokens/access-tokens.module
 import { AuthModule } from './modules/auth/auth.module';
 import { EmailModule } from './modules/email/email.module';
 import { EmailsModule } from './modules/emails/emails.module';
+import { GroupsModule } from './modules/groups/groups.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
 import { SessionsModule } from './modules/sessions/sessions.module';
 import { UsersModule } from './modules/user/user.module';
@@ -29,6 +30,7 @@ import { UsersModule } from './modules/user/user.module';
     SessionsModule,
     AccessTokensModule,
     EmailsModule,
+    GroupsModule,
   ],
   controllers: [AppController],
   providers: [
