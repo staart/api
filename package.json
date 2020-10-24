@@ -77,7 +77,7 @@
     "@staart/server": "^2.7.1",
     "@staart/text": "^2.3.1",
     "@staart/validate": "^3.0.2",
-    "axios": "^0.20.0",
+    "axios": "^0.21.0",
     "casbin": "^5.1.6",
     "client-oauth2": "^4.3.3",
     "cron": "^1.8.2",
