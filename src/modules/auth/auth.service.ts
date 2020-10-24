@@ -35,7 +35,7 @@ export class AuthService {
     });
     if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     if (!user.emails.find(i => i.emailSafe === emailSafe)?.isVerified)
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('This email is not verified');
     if (!password || !user.password)
       throw new HttpException(
         'Logging in without passwords is not supported',
