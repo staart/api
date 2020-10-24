@@ -144,19 +144,23 @@ export class AuthService {
   }
 
   async getScopes(userId: number): Promise<string[]> {
-    const scopes: string[] = [`user${userId}:*`];
+    const scopes: string[] = [`user-${userId}:*`];
     const memberships = await this.prisma.memberships.findMany({
       where: { user: { id: userId } },
       select: { id: true, role: true, group: { select: { id: true } } },
     });
     memberships.forEach(membership => {
-      scopes.push(`membership${membership.id}:*`);
+      scopes.push(`membership-${membership.id}:*`);
       if (membership.role === 'OWNER')
-        scopes.push(`group${membership.group.id}:*`);
+        scopes.push(`group-${membership.group.id}:*`);
+
+      // Admins cannot delete a group, but they can read/write
       if (membership.role === 'ADMIN')
-        scopes.push(`group${membership.group.id}:write-*`);
+        scopes.push(`group-${membership.group.id}:write-*`);
+
+      // Non-owners (admins and regular members) can also read
       if (membership.role !== 'OWNER')
-        scopes.push(`group${membership.group.id}:read-*`);
+        scopes.push(`group-${membership.group.id}:read-*`);
     });
     return scopes;
   }

@@ -7,7 +7,6 @@ import {
   ParseIntPipe,
   Patch,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import { users } from '@prisma/client';
 import { Expose } from 'src/modules/prisma/prisma.interface';
@@ -15,9 +14,7 @@ import { CursorPipe } from 'src/pipes/cursor.pipe';
 import { OptionalIntPipe } from 'src/pipes/optional-int.pipe';
 import { OrderByPipe } from 'src/pipes/order-by.pipe';
 import { WherePipe } from 'src/pipes/where.pipe';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Scopes } from '../auth/scope.decorator';
-import { ScopesGuard } from '../auth/scope.guard';
 import { UpdateUserDto } from './user.dto';
 import { UsersService } from './user.service';
 
@@ -38,13 +35,13 @@ export class UserController {
   }
 
   @Get(':id')
-  @Scopes('user{id}:read')
+  @Scopes('user-{id}:read-info')
   async get(@Param('id', ParseIntPipe) id: number): Promise<Expose<users>> {
     return this.usersService.user({ id: Number(id) });
   }
 
   @Patch(':id')
-  @Scopes('user{id}:write')
+  @Scopes('user-{id}:write-info')
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateUserDto,
@@ -53,7 +50,7 @@ export class UserController {
   }
 
   @Delete(':id')
-  @Scopes('user{id}:delete')
+  @Scopes('user-{id}:delete')
   async remove(@Param('id', ParseIntPipe) id: number): Promise<Expose<users>> {
     return this.usersService.deleteUser({ id: Number(id) });
   }

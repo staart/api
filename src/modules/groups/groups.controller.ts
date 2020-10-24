@@ -6,11 +6,8 @@ import {
   Param,
   ParseIntPipe,
   Patch,
-  Post,
   Put,
   Query,
-  Req,
-  UseGuards,
 } from '@nestjs/common';
 import { groups } from '@prisma/client';
 import { Expose } from 'src/modules/prisma/prisma.interface';
@@ -18,25 +15,13 @@ import { CursorPipe } from 'src/pipes/cursor.pipe';
 import { OptionalIntPipe } from 'src/pipes/optional-int.pipe';
 import { OrderByPipe } from 'src/pipes/order-by.pipe';
 import { WherePipe } from 'src/pipes/where.pipe';
-import { UserRequest } from '../auth/auth.interface';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Scopes } from '../auth/scope.decorator';
-import { ScopesGuard } from '../auth/scope.guard';
-import { CreateGroupDto, ReplaceGroupDto, UpdateGroupDto } from './groups.dto';
+import { ReplaceGroupDto, UpdateGroupDto } from './groups.dto';
 import { GroupsService } from './groups.service';
 
 @Controller('groups')
 export class GroupController {
   constructor(private groupsService: GroupsService) {}
-
-  @Post()
-  @Scopes('user:write', 'group:write')
-  async create(
-    @Req() req: UserRequest,
-    @Body() data: CreateGroupDto,
-  ): Promise<Expose<groups>> {
-    return this.groupsService.createGroup(req.user.id, data);
-  }
 
   @Get()
   @Scopes('group:read')
@@ -57,13 +42,13 @@ export class GroupController {
   }
 
   @Get(':id')
-  @Scopes('group{id}:read')
+  @Scopes('group-{id}:read-info')
   async get(@Param('id', ParseIntPipe) id: number): Promise<Expose<groups>> {
     return this.groupsService.getGroup(Number(id));
   }
 
   @Patch(':id')
-  @Scopes('group{id}:write')
+  @Scopes('group-{id}:write-info')
   async update(
     @Body() data: UpdateGroupDto,
     @Param('id', ParseIntPipe) id: number,
@@ -72,7 +57,7 @@ export class GroupController {
   }
 
   @Put(':id')
-  @Scopes('group{id}:write')
+  @Scopes('group-{id}:write-info')
   async replace(
     @Body() data: ReplaceGroupDto,
     @Param('id', ParseIntPipe) id: number,
@@ -81,7 +66,7 @@ export class GroupController {
   }
 
   @Delete(':id')
-  @Scopes('group{id}:delete')
+  @Scopes('group-{id}:delete')
   async remove(@Param('id', ParseIntPipe) id: number): Promise<Expose<groups>> {
     return this.groupsService.deleteGroup(Number(id));
   }
