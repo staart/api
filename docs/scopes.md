@@ -21,7 +21,7 @@ In line 5 of the above code snippet, the scope for this endpoints is `@Scopes('u
 
 ## Glob matching
 
-The scope provided to a user (with ID 123, for example) when logging in to their accout is `user-123:*`. Staart uses glob-based matching to ensure their have access to authorized routes.
+The scope provided to a user (with ID 123, for example) when logging in to their account is `user-123:*`. Staart uses glob-based matching to ensure their have access to authorized routes.
 
 In the above example, the user can access this resource because `user-123:*` matches `user-123:read-email-456`.
 
