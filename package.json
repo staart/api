@@ -84,7 +84,7 @@
     "fs-extra": "^9.0.1",
     "geolite2-redist": "^1.0.7",
     "jsonwebtoken": "^8.5.1",
-    "maxmind": "^4.3.0",
+    "maxmind": "^4.3.1",
     "mysql": "^2.18.1",
     "node-emoji": "^1.10.0",
     "otplib": "^12.0.1",
