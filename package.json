@@ -52,7 +52,7 @@
     "swagger-ui-express": "^4.1.4"
   },
   "devDependencies": {
-    "@nestjs/cli": "^7.0.0",
+    "@nestjs/cli": "^7.5.1",
     "@nestjs/schematics": "^7.0.0",
     "@nestjs/testing": "^7.0.0",
     "@prisma/cli": "^2.9.0",
