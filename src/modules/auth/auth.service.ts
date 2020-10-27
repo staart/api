@@ -76,11 +76,10 @@ export class AuthService {
       ignorePwnedPassword,
     );
 
-    const users = await this.users.users({
-      take: 1,
+    const testUser = await this.prisma.users.findFirst({
       where: { emails: { some: { emailSafe } } },
     });
-    if (users.length)
+    if (testUser)
       throw new HttpException(
         'A user with this email already exists',
         HttpStatus.CONFLICT,
