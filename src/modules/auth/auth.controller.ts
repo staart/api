@@ -2,7 +2,12 @@ import { Body, Controller, Headers, Ip, Post } from '@nestjs/common';
 import { users } from '@prisma/client';
 import { RateLimit } from 'nestjs-rate-limiter';
 import { Expose } from 'src/modules/prisma/prisma.interface';
-import { LoginDto, RegisterDto, ResendEmailVerificationDto } from './auth.dto';
+import {
+  LoginDto,
+  RegisterDto,
+  ResendEmailVerificationDto,
+  TotpLoginDto,
+} from './auth.dto';
 import { AuthService } from './auth.service';
 import { Public } from './public.decorator';
 
@@ -22,7 +27,13 @@ export class AuthController {
     @Ip() ip: string,
     @Headers('User-Agent') userAgent: string,
   ): Promise<{ accessToken: string }> {
-    return this.authService.login(ip, userAgent, data.email, data.password);
+    return this.authService.login(
+      ip,
+      userAgent,
+      data.email,
+      data.password,
+      data.code,
+    );
   }
 
   @Post('register')
@@ -57,5 +68,19 @@ export class AuthController {
   })
   async resendVerify(@Body() data: ResendEmailVerificationDto) {
     return this.authService.sendEmailVerification(data.email, true);
+  }
+
+  @Post('totp-login')
+  @RateLimit({
+    points: 10,
+    duration: 60,
+    errorMessage: 'Wait for 60 seconds before trying to login again',
+  })
+  async totpLogin(
+    @Body() data: TotpLoginDto,
+    @Ip() ip: string,
+    @Headers('User-Agent') userAgent: string,
+  ): Promise<{ accessToken: string }> {
+    return this.authService.loginWithTotp(ip, userAgent, data.token, data.code);
   }
 }

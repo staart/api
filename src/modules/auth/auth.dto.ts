@@ -94,4 +94,20 @@ export class LoginDto {
   @MinLength(8)
   @IsOptional()
   password?: string;
+
+  @IsString()
+  @Length(6)
+  @IsOptional()
+  code?: string;
+}
+
+export class TotpLoginDto {
+  @IsString()
+  @IsNotEmpty()
+  token: string;
+
+  @IsString()
+  @Length(6)
+  @IsNotEmpty()
+  code: string;
 }

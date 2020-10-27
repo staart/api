@@ -1,13 +1,17 @@
 import {
+  BadRequestException,
   HttpException,
   HttpStatus,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import { ConfigService } from '@nestjs/config';
+import qrcode from 'qrcode';
 import { JwtService } from '@nestjs/jwt';
+import { authenticator } from 'otplib';
 import { users } from '@prisma/client';
 import { compare, hash } from 'bcrypt';
 import { safeEmail } from 'src/helpers/safe-email';
@@ -26,7 +30,12 @@ export class AuthService {
     private configService: ConfigService,
     private jwtService: JwtService,
     private pwnedService: PwnedService,
-  ) {}
+  ) {
+    authenticator.options.window = [
+      this.configService.get<number>('security.totpWindowPast'),
+      this.configService.get<number>('security.totpWindowFuture'),
+    ];
+  }
 
   async validateUser(email: string, password?: string): Promise<number> {
     const emailSafe = safeEmail(email);
@@ -51,17 +60,12 @@ export class AuthService {
     userAgent: string,
     email: string,
     password?: string,
+    code?: string,
   ) {
     const id = await this.validateUser(email, password);
     if (!id) throw new UnauthorizedException();
-    const token = randomStringGenerator();
-    await this.prisma.sessions.create({
-      data: { token, ipAddress, userAgent, user: { connect: { id } } },
-    });
-    return {
-      accessToken: await this.getAccessToken(id),
-      refreshToken: token,
-    };
+    if (code) return this.loginWithTotp(ipAddress, userAgent, id, code);
+    return this.loginResponse(ipAddress, userAgent, id);
   }
 
   async register(data: RegisterDto): Promise<Expose<users>> {
@@ -145,6 +149,62 @@ export class AuthService {
     };
   }
 
+  /** Get the two-factor authentication QR code */
+  async getTotpQrCode(userId: number) {
+    const secret = randomStringGenerator();
+    await this.prisma.users.update({
+      where: { id: userId },
+      data: { twoFactorSecret: secret },
+    });
+    const otpauth = authenticator.keyuri(
+      userId.toString(),
+      this.configService.get<string>('meta.totpServiceName'),
+      secret,
+    );
+    return qrcode.toDataURL(otpauth);
+  }
+
+  /** Enable two-factor authentication */
+  async enableTotp(userId: number, code: string) {
+    const user = await this.prisma.users.findOne({
+      where: { id: userId },
+      select: { twoFactorSecret: true, twoFactorEnabled: true },
+    });
+    if (!user) throw new NotFoundException();
+    if (!user.twoFactorEnabled)
+      throw new BadRequestException(
+        'Two-factor authentication is already enabled',
+      );
+    if (!authenticator.check(code, user.twoFactorSecret))
+      throw new UnauthorizedException(
+        'Two-factor authentication code is invalid',
+      );
+    return this.prisma.users.update({
+      where: { id: userId },
+      data: { twoFactorEnabled: true },
+    });
+  }
+
+  async loginWithTotp(
+    ipAddress: string,
+    userAgent: string,
+    token: string,
+    code: string,
+  ) {
+    const user = await this.prisma.users.findOne({
+      where: { id: userId },
+      select: { twoFactorSecret: true, twoFactorEnabled: true },
+    });
+    if (!user) throw new NotFoundException();
+    if (!user.twoFactorEnabled)
+      throw new BadRequestException('Two-factor authentication is not enabled');
+    if (!authenticator.check(code, user.twoFactorSecret))
+      throw new UnauthorizedException(
+        'Two-factor authentication code is invalid',
+      );
+    return this.loginResponse(ipAddress, userAgent, userId);
+  }
+
   private async getAccessToken(userId: number): Promise<string> {
     const scopes = await this.getScopes(userId);
     const payload: AccessTokenClaims = {
@@ -154,6 +214,21 @@ export class AuthService {
     return this.jwtService.sign(payload, {
       expiresIn: this.configService.get<string>('security.accessTokenExpiry'),
     });
+  }
+
+  private async loginResponse(
+    ipAddress: string,
+    userAgent: string,
+    id: number,
+  ) {
+    const token = randomStringGenerator();
+    await this.prisma.sessions.create({
+      data: { token, ipAddress, userAgent, user: { connect: { id } } },
+    });
+    return {
+      accessToken: await this.getAccessToken(id),
+      refreshToken: token,
+    };
   }
 
   async hashAndValidatePassword(
