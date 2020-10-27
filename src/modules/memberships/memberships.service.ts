@@ -12,6 +12,7 @@ import {
   membershipsWhereInput,
   membershipsWhereUniqueInput,
 } from '@prisma/client';
+import { safeEmail } from 'src/helpers/safe-email';
 import { Expose } from 'src/modules/prisma/prisma.interface';
 import { AuthService } from '../auth/auth.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -135,7 +136,7 @@ export class MembershipsService {
   }
 
   async createGroupMembership(groupId: number, data: CreateMembershipInput) {
-    const emailSafe = this.users.getSafeEmail(data.email);
+    const emailSafe = safeEmail(data.email);
     let user = this.prisma.expose(
       await this.prisma.users.findFirst({
         where: { emails: { some: { emailSafe } } },

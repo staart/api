@@ -11,6 +11,7 @@ import {
   emailsWhereInput,
   emailsWhereUniqueInput,
 } from '@prisma/client';
+import { safeEmail } from 'src/helpers/safe-email';
 import { Expose } from 'src/modules/prisma/prisma.interface';
 import { AuthService } from '../auth/auth.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -28,7 +29,7 @@ export class EmailsService {
     userId: number,
     data: Omit<Omit<emailsCreateInput, 'emailSafe'>, 'user'>,
   ): Promise<emails> {
-    const emailSafe = this.users.getSafeEmail(data.email);
+    const emailSafe = safeEmail(data.email);
     const result = await this.prisma.emails.create({
       data: { ...data, emailSafe, user: { connect: { id: userId } } },
     });

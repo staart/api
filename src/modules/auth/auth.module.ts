@@ -4,7 +4,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { EmailModule } from '../email/email.module';
 import { PrismaModule } from '../prisma/prisma.module';
-import { UsersService } from '../user/user.service';
+import { PwnedModule } from '../pwned/pwned.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
@@ -15,11 +15,13 @@ import { JwtStrategy } from './jwt.strategy';
     PrismaModule,
     EmailModule,
     ConfigModule,
+    PwnedModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET ?? 'staart',
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, UsersService, JwtStrategy],
+  exports: [AuthService],
+  providers: [AuthService, JwtStrategy],
 })
 export class AuthModule {}

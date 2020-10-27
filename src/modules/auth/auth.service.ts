@@ -17,12 +17,12 @@ import { JwtService } from '@nestjs/jwt';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import { AccessTokenClaims } from './auth.interface';
 import { PwnedService } from '../pwned/pwned.service';
+import { safeEmail } from 'src/helpers/safe-email';
 
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
-    private users: UsersService,
     private email: EmailService,
     private configService: ConfigService,
     private jwtService: JwtService,
@@ -30,7 +30,7 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, password?: string): Promise<number> {
-    const emailSafe = this.users.getSafeEmail(email);
+    const emailSafe = safeEmail(email);
     const user = await this.prisma.users.findFirst({
       where: { emails: { some: { emailSafe } } },
       select: { id: true, password: true, emails: true },
@@ -67,7 +67,7 @@ export class AuthService {
 
   async register(data: RegisterDto): Promise<Expose<users>> {
     const email = data.email;
-    const emailSafe = this.users.getSafeEmail(email);
+    const emailSafe = safeEmail(email);
     const ignorePwnedPassword = !!data.ignorePwnedPassword;
     delete data.email;
     delete data.ignorePwnedPassword;
@@ -98,7 +98,7 @@ export class AuthService {
   }
 
   async sendEmailVerification(email: string, resend = false) {
-    const emailSafe = this.users.getSafeEmail(email);
+    const emailSafe = safeEmail(email);
     const emailDetails = await this.prisma.emails.findFirst({
       where: { emailSafe },
       include: { user: true },
