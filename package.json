@@ -28,6 +28,7 @@
     "@nestjs/passport": "^7.1.0",
     "@nestjs/platform-express": "^7.0.0",
     "@nestjs/schedule": "^0.4.1",
+    "@nestjs/swagger": "^4.6.1",
     "@staart/mustache-markdown": "^3.0.3",
     "bcrypt": "^5.0.0",
     "class-transformer": "^0.3.1",
@@ -47,7 +48,8 @@
     "passport-local": "^1.0.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
-    "rxjs": "^6.5.4"
+    "rxjs": "^6.5.4",
+    "swagger-ui-express": "^4.1.4"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.0.0",
