@@ -21,6 +21,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { PwnedService } from '../pwned/pwned.service';
 import { RegisterDto } from './auth.dto';
 import { AccessTokenClaims } from './auth.interface';
+import { TokensService } from '../tokens/tokens.service';
+import { TWO_FACTOR_TOKEN } from '../tokens/tokens.constants';
 
 @Injectable()
 export class AuthService {
@@ -30,6 +32,7 @@ export class AuthService {
     private configService: ConfigService,
     private jwtService: JwtService,
     private pwnedService: PwnedService,
+    private tokensService: TokensService,
   ) {
     authenticator.options.window = [
       this.configService.get<number>('security.totpWindowPast'),
@@ -64,7 +67,7 @@ export class AuthService {
   ) {
     const id = await this.validateUser(email, password);
     if (!id) throw new UnauthorizedException();
-    if (code) return this.loginWithTotp(ipAddress, userAgent, id, code);
+    if (code) return this.loginUserWithTotpCode(ipAddress, userAgent, id, code);
     return this.loginResponse(ipAddress, userAgent, id);
   }
 
@@ -191,8 +194,21 @@ export class AuthService {
     token: string,
     code: string,
   ) {
+    const { id } = this.tokensService.verify<{ id: number }>(
+      TWO_FACTOR_TOKEN,
+      token,
+    );
+    return this.loginUserWithTotpCode(ipAddress, userAgent, id, code);
+  }
+
+  private async loginUserWithTotpCode(
+    ipAddress: string,
+    userAgent: string,
+    id: number,
+    code: string,
+  ) {
     const user = await this.prisma.users.findOne({
-      where: { id: userId },
+      where: { id },
       select: { twoFactorSecret: true, twoFactorEnabled: true },
     });
     if (!user) throw new NotFoundException();
@@ -202,7 +218,7 @@ export class AuthService {
       throw new UnauthorizedException(
         'Two-factor authentication code is invalid',
       );
-    return this.loginResponse(ipAddress, userAgent, userId);
+    return this.loginResponse(ipAddress, userAgent, id);
   }
 
   private async getAccessToken(userId: number): Promise<string> {
