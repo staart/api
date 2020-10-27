@@ -16,7 +16,7 @@ import { GroupsModule } from './modules/groups/groups.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
 import { SessionsModule } from './modules/sessions/sessions.module';
 import { TasksModule } from './modules/tasks/tasks.module';
-import { UsersModule } from './modules/user/user.module';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [

@@ -16,7 +16,7 @@ import {
 import { Expose } from 'src/modules/prisma/prisma.interface';
 import { AuthService } from '../auth/auth.service';
 import { compare } from 'bcrypt';
-import { PasswordUpdateInput } from './user.interface';
+import { PasswordUpdateInput } from './users.interface';
 
 @Injectable()
 export class UsersService {

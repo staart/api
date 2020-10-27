@@ -5,7 +5,7 @@ import { AuthService } from '../auth/auth.service';
 import { EmailModule } from '../email/email.module';
 import { PrismaModule } from '../prisma/prisma.module';
 import { PwnedModule } from '../pwned/pwned.module';
-import { UsersService } from '../user/user.service';
+import { UsersService } from '../users/users.service';
 import { EmailController } from './emails.controller';
 import { EmailsService } from './emails.service';
 

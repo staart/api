@@ -15,8 +15,8 @@ import { OptionalIntPipe } from 'src/pipes/optional-int.pipe';
 import { OrderByPipe } from 'src/pipes/order-by.pipe';
 import { WherePipe } from 'src/pipes/where.pipe';
 import { Scopes } from '../auth/scope.decorator';
-import { UpdateUserDto } from './user.dto';
-import { UsersService } from './user.service';
+import { UpdateUserDto } from './users.dto';
+import { UsersService } from './users.service';
 
 @Controller('users')
 export class UserController {
