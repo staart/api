@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { ScheduleModule } from '@nestjs/schedule';
 import { RateLimiterInterceptor, RateLimiterModule } from 'nestjs-rate-limiter';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -14,6 +15,7 @@ import { EmailsModule } from './modules/emails/emails.module';
 import { GroupsModule } from './modules/groups/groups.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
 import { SessionsModule } from './modules/sessions/sessions.module';
+import { TasksModule } from './modules/tasks/tasks.module';
 import { UsersModule } from './modules/user/user.module';
 
 @Module({
@@ -21,7 +23,9 @@ import { UsersModule } from './modules/user/user.module';
     ConfigModule.forRoot({
       load: [configuration],
     }),
+    ScheduleModule.forRoot(),
     PrismaModule,
+    TasksModule,
     UsersModule,
     AuthModule,
     RateLimiterModule.register({

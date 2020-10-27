@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EmailConfig, EmailOptions } from './email.interface';
 import PQueue from 'p-queue';
@@ -12,6 +12,7 @@ import { render } from '@staart/mustache-markdown';
 
 @Injectable()
 export class EmailService {
+  private readonly logger = new Logger(EmailService.name);
   private transport: Mail;
   private config: EmailConfig;
   private queue = new PQueue({ concurrency: 1 });
@@ -35,7 +36,7 @@ export class EmailService {
           {
             retries: 3,
             onFailedAttempt: error => {
-              console.log(
+              this.logger.error(
                 `Email to ${options.to} failed, retrying (${error.retriesLeft} attempts left)`,
                 error.name,
               );

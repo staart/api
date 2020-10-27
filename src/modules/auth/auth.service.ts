@@ -5,19 +5,18 @@ import {
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
+import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 import { users } from '@prisma/client';
+import { compare, hash } from 'bcrypt';
+import { safeEmail } from 'src/helpers/safe-email';
 import { EmailService } from '../email/email.service';
 import { Expose } from '../prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
-import { UsersService } from '../user/user.service';
-import { RegisterDto } from './auth.dto';
-import { compare, hash } from 'bcrypt';
-import { JwtService } from '@nestjs/jwt';
-import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
-import { AccessTokenClaims } from './auth.interface';
 import { PwnedService } from '../pwned/pwned.service';
-import { safeEmail } from 'src/helpers/safe-email';
+import { RegisterDto } from './auth.dto';
+import { AccessTokenClaims } from './auth.interface';
 
 @Injectable()
 export class AuthService {

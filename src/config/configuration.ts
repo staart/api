@@ -5,6 +5,7 @@ export default () => ({
     jwtSecret: process.env.JWT_SECRET ?? 'staart',
     accessTokenExpiry: process.env.ACCESS_TOKEN_EXPIRY ?? '1h',
     passwordPwnedCheck: !!process.env.PASSWORD_PWNED_CHECK,
+    unusedRefreshTokenExpiryDays: process.env.DELETE_EXPIRED_SESSIONS ?? 30,
   },
   email: {
     name: process.env.EMAIL_NAME ?? 'Staart',
