@@ -27,6 +27,7 @@
     "@nestjs/jwt": "^7.1.0",
     "@nestjs/passport": "^7.1.0",
     "@nestjs/platform-express": "^7.0.0",
+    "@nestjs/schedule": "^0.4.1",
     "@staart/mustache-markdown": "^3.0.3",
     "bcrypt": "^5.0.0",
     "class-transformer": "^0.3.1",
