@@ -33,6 +33,7 @@
     "class-transformer": "^0.3.1",
     "class-validator": "^0.12.2",
     "handlebars": "^4.7.6",
+    "helmet": "^4.1.1",
     "hibp": "^9.0.0",
     "mem": "^8.0.0",
     "minimatch": "^3.0.4",
