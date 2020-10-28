@@ -62,7 +62,7 @@
   },
   "dependencies": {
     "@anandchowdhary/cosmic": "^1.0.1",
-    "@prisma/client": "^2.9.0",
+    "@prisma/client": "^2.10.0",
     "@sentry/node": "^5.27.1",
     "@staart/config": "^1.0.1",
     "@staart/disposable-email": "^2.0.3",
