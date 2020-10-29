@@ -3,8 +3,6 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
 import { RateLimiterInterceptor, RateLimiterModule } from 'nestjs-rate-limiter';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import configuration from './config/configuration';
 import { AccessTokensModule } from './modules/access-tokens/access-tokens.module';
 import { AuthModule } from './modules/auth/auth.module';
@@ -38,9 +36,7 @@ import { UsersModule } from './modules/users/users.module';
     EmailsModule,
     GroupsModule,
   ],
-  controllers: [AppController],
   providers: [
-    AppService,
     {
       provide: APP_INTERCEPTOR,
       useClass: RateLimiterInterceptor,
