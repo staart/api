@@ -6,4 +6,4 @@ Someone (hopefully you) requested to another link to confirm your email, so here
 
 <a href="{{ link }}" class="btn btn-primary">Verify my email</a>
 
-If you didn't request this email, you can just ignore it.
+Note that this link is valid for {{ days }} days only. If you didn't request this email, you can just ignore it.

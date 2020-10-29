@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { v4 } from 'uuid';
 import {
@@ -16,10 +16,11 @@ export class TokensService {
 
   signJwt(
     subject: string,
-    payload: string | object | Buffer,
+    payload: number | string | object | Buffer,
     expiresIn?: string,
     options?: SignOptions,
   ) {
+    if (typeof payload === 'number') payload = payload.toString();
     return sign(payload, this.configService.get<string>('security.jwtSecret'), {
       ...options,
       subject,
@@ -28,11 +29,15 @@ export class TokensService {
   }
 
   verify<T>(subject: string, token: string, options?: VerifyOptions) {
-    return (verify(
-      token,
-      this.configService.get<string>('security.jwtSecret'),
-      { ...options, subject },
-    ) as any) as T;
+    try {
+      return (verify(
+        token,
+        this.configService.get<string>('security.jwtSecret'),
+        { ...options, subject },
+      ) as any) as T;
+    } catch (error) {
+      throw new UnauthorizedException('This token is invalid');
+    }
   }
 
   decode<T>(token: string, options?: DecodeOptions) {

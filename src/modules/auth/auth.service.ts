@@ -20,7 +20,11 @@ import { EmailService } from '../email/email.service';
 import { Expose } from '../prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
 import { PwnedService } from '../pwned/pwned.service';
-import { TWO_FACTOR_TOKEN } from '../tokens/tokens.constants';
+import {
+  TWO_FACTOR_TOKEN,
+  PASSWORD_RESET_TOKEN,
+  EMAIL_VERIFY_TOKEN,
+} from '../tokens/tokens.constants';
 import { TokensService } from '../tokens/tokens.service';
 import { RegisterDto } from './auth.dto';
 import { AccessTokenClaims } from './auth.interface';
@@ -78,6 +82,15 @@ export class AuthService {
 
   async register(data: RegisterDto): Promise<Expose<users>> {
     const email = data.email;
+    data.name = data.name
+      .split(' ')
+      .map((word, index) =>
+        index === 0 || index === data.name.split(' ').length
+          ? (word.charAt(0) ?? '').toUpperCase() +
+            (word.slice(1) ?? '').toLowerCase()
+          : word,
+      )
+      .join(' ');
     const emailSafe = safeEmail(email);
     const ignorePwnedPassword = !!data.ignorePwnedPassword;
     delete data.email;
@@ -131,9 +144,14 @@ export class AuthService {
         : 'auth/email-verification',
       data: {
         name: emailDetails.user.name,
+        days: 7,
         link: `${this.configService.get<string>(
           'frontendUrl',
-        )}/auth/verify-email?token=`,
+        )}/auth/verify-email?token=${this.tokensService.signJwt(
+          EMAIL_VERIFY_TOKEN,
+          emailDetails.user.id,
+          '7d',
+        )}`,
       },
     });
     return { queued: true };
@@ -218,6 +236,51 @@ export class AuthService {
       token,
     );
     return this.loginUserWithTotpCode(ipAddress, userAgent, id, code);
+  }
+
+  async requestPasswordReset(email: string) {
+    const emailSafe = safeEmail(email);
+    const emailDetails = await this.prisma.emails.findFirst({
+      where: { emailSafe },
+      include: { user: true },
+    });
+    if (!emailDetails)
+      throw new HttpException(
+        'There is no user for this email',
+        HttpStatus.NOT_FOUND,
+      );
+    this.email.send({
+      to: `"${emailDetails.user.name}" <${email}>`,
+      template: 'auth/password-reset',
+      data: {
+        name: emailDetails.user.name,
+        minutes: 30,
+        link: `${this.configService.get<string>(
+          'frontendUrl',
+        )}/auth/reset-password?token=${this.tokensService.signJwt(
+          PASSWORD_RESET_TOKEN,
+          emailDetails.user.id,
+          '30m',
+        )}`,
+      },
+    });
+    return { queued: true };
+  }
+
+  async resetPassword(
+    ipAddress: string,
+    userAgent: string,
+    token: string,
+    password: string,
+    ignorePwnedPassword?: boolean,
+  ) {
+    const id = this.tokensService.verify<number>(PASSWORD_RESET_TOKEN, token);
+    password = await this.hashAndValidatePassword(
+      password,
+      !!ignorePwnedPassword,
+    );
+    await this.prisma.users.update({ where: { id }, data: { password } });
+    return this.loginResponse(ipAddress, userAgent, id);
   }
 
   private async loginUserWithTotpCode(

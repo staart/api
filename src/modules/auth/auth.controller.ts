@@ -3,9 +3,11 @@ import { users } from '@prisma/client';
 import { RateLimit } from 'nestjs-rate-limiter';
 import { Expose } from 'src/modules/prisma/prisma.interface';
 import {
+  ForgotPasswordDto,
   LoginDto,
   RegisterDto,
   ResendEmailVerificationDto,
+  ResetPasswordDto,
   TotpLoginDto,
 } from './auth.dto';
 import { AuthService } from './auth.service';
@@ -78,6 +80,36 @@ export class AuthController {
   })
   async resendVerify(@Body() data: ResendEmailVerificationDto) {
     return this.authService.sendEmailVerification(data.email, true);
+  }
+
+  @Post('forgot-password')
+  @RateLimit({
+    points: 10,
+    duration: 60,
+    errorMessage: 'Wait for 60 seconds before resetting another password',
+  })
+  async forgotPassword(@Body() data: ForgotPasswordDto) {
+    return this.authService.requestPasswordReset(data.email);
+  }
+
+  @Post('reset-password')
+  @RateLimit({
+    points: 10,
+    duration: 60,
+    errorMessage: 'Wait for 60 seconds before resetting another password',
+  })
+  async resetPassword(
+    @Ip() ip: string,
+    @Headers('User-Agent') userAgent: string,
+    @Body() data: ResetPasswordDto,
+  ) {
+    return this.authService.resetPassword(
+      ip,
+      userAgent,
+      data.token,
+      data.password,
+      data.ignorePwnedPassword,
+    );
   }
 
   @Post('totp-login')
