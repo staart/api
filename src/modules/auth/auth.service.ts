@@ -200,10 +200,11 @@ export class AuthService {
       throw new UnauthorizedException(
         'Two-factor authentication code is invalid',
       );
-    return this.prisma.users.update({
+    const result = await this.prisma.users.update({
       where: { id: userId },
       data: { twoFactorEnabled: true },
     });
+    return this.prisma.expose<users>(result);
   }
 
   async loginWithTotp(
