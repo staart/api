@@ -1,4 +1,4 @@
-import { STAART_PUBLIC_ENDPOINT } from 'src/app.constants';
+import { STAART_PUBLIC_ENDPOINT } from './auth.constants';
 
 export function Public() {
   return (
