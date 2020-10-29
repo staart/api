@@ -157,6 +157,19 @@ export class AuthService {
     };
   }
 
+  async logout(token: string) {
+    if (!token) throw new UnprocessableEntityException();
+    const session = await this.prisma.sessions.findFirst({
+      where: { token },
+      select: { id: true, user: { select: { id: true } } },
+    });
+    if (!session)
+      throw new HttpException('Session not found', HttpStatus.NOT_FOUND);
+    await this.prisma.sessions.delete({
+      where: { id: session.id },
+    });
+  }
+
   /** Get the two-factor authentication QR code */
   async getTotpQrCode(userId: number) {
     const secret = randomStringGenerator();

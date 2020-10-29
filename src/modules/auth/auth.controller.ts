@@ -60,6 +60,16 @@ export class AuthController {
     return this.authService.refresh(ip, userAgent, refreshToken);
   }
 
+  @Post('logout')
+  @RateLimit({
+    points: 5,
+    duration: 60,
+    errorMessage: 'Wait for 60 seconds before trying to logout again',
+  })
+  async logout(@Body('token') refreshToken: string): Promise<void> {
+    return this.authService.logout(refreshToken);
+  }
+
   @Post('resend-email-verification')
   @RateLimit({
     points: 1,
