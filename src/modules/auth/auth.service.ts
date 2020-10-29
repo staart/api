@@ -11,7 +11,7 @@ import { randomStringGenerator } from '@nestjs/common/utils/random-string-genera
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Authenticator } from '@otplib/core';
-import { users } from '@prisma/client';
+import { emails, users } from '@prisma/client';
 import { compare, hash } from 'bcrypt';
 import { authenticator } from 'otplib';
 import qrcode from 'qrcode';
@@ -21,9 +21,9 @@ import { Expose } from '../prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
 import { PwnedService } from '../pwned/pwned.service';
 import {
-  TWO_FACTOR_TOKEN,
-  PASSWORD_RESET_TOKEN,
   EMAIL_VERIFY_TOKEN,
+  PASSWORD_RESET_TOKEN,
+  TWO_FACTOR_TOKEN,
 } from '../tokens/tokens.constants';
 import { TokensService } from '../tokens/tokens.service';
 import { RegisterDto } from './auth.dto';
@@ -281,6 +281,15 @@ export class AuthService {
     );
     await this.prisma.users.update({ where: { id }, data: { password } });
     return this.loginResponse(ipAddress, userAgent, id);
+  }
+
+  async verifyEmail(token: string) {
+    const id = this.tokensService.verify<number>(EMAIL_VERIFY_TOKEN, token);
+    const result = await this.prisma.emails.update({
+      where: { id },
+      data: { isVerified: true },
+    });
+    return this.prisma.expose<emails>(result);
   }
 
   private async loginUserWithTotpCode(

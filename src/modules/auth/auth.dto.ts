@@ -132,3 +132,9 @@ export class TotpLoginDto {
   @IsNotEmpty()
   code: string;
 }
+
+export class VerifyEmailDto {
+  @IsString()
+  @IsNotEmpty()
+  token: string;
+}

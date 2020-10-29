@@ -9,6 +9,7 @@ import {
   ResendEmailVerificationDto,
   ResetPasswordDto,
   TotpLoginDto,
+  VerifyEmailDto,
 } from './auth.dto';
 import { AuthService } from './auth.service';
 import { Public } from './public.decorator';
@@ -80,6 +81,11 @@ export class AuthController {
   })
   async resendVerify(@Body() data: ResendEmailVerificationDto) {
     return this.authService.sendEmailVerification(data.email, true);
+  }
+
+  @Post('verify-email')
+  async verifyEmail(@Body() data: VerifyEmailDto) {
+    return this.authService.verifyEmail(data.token);
   }
 
   @Post('forgot-password')
