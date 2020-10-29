@@ -5,27 +5,30 @@ import {
   Injectable,
   NotFoundException,
   UnauthorizedException,
-  UnprocessableEntityException,
+  UnprocessableEntityException
 } from '@nestjs/common';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import { ConfigService } from '@nestjs/config';
-import qrcode from 'qrcode';
 import { JwtService } from '@nestjs/jwt';
-import { authenticator } from 'otplib';
+import type { Authenticator } from '@otplib/core';
 import { users } from '@prisma/client';
 import { compare, hash } from 'bcrypt';
+import { authenticator } from 'otplib';
+import qrcode from 'qrcode';
 import { safeEmail } from 'src/helpers/safe-email';
 import { EmailService } from '../email/email.service';
 import { Expose } from '../prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
 import { PwnedService } from '../pwned/pwned.service';
+import { TWO_FACTOR_TOKEN } from '../tokens/tokens.constants';
+import { TokensService } from '../tokens/tokens.service';
 import { RegisterDto } from './auth.dto';
 import { AccessTokenClaims } from './auth.interface';
-import { TokensService } from '../tokens/tokens.service';
-import { TWO_FACTOR_TOKEN } from '../tokens/tokens.constants';
 
 @Injectable()
 export class AuthService {
+  authenticator: Authenticator;
+
   constructor(
     private prisma: PrismaService,
     private email: EmailService,
@@ -34,10 +37,10 @@ export class AuthService {
     private pwnedService: PwnedService,
     private tokensService: TokensService,
   ) {
-    authenticator.options.window = [
+    this.authenticator = authenticator.create({ window: [
       this.configService.get<number>('security.totpWindowPast'),
       this.configService.get<number>('security.totpWindowFuture'),
-    ];
+    ] });
   }
 
   async validateUser(email: string, password?: string): Promise<number> {
@@ -159,7 +162,7 @@ export class AuthService {
       where: { id: userId },
       data: { twoFactorSecret: secret },
     });
-    const otpauth = authenticator.keyuri(
+    const otpauth = this.authenticator.keyuri(
       userId.toString(),
       this.configService.get<string>('meta.totpServiceName'),
       secret,
@@ -178,7 +181,7 @@ export class AuthService {
       throw new BadRequestException(
         'Two-factor authentication is already enabled',
       );
-    if (!authenticator.check(code, user.twoFactorSecret))
+    if (!this.authenticator.check(code, user.twoFactorSecret))
       throw new UnauthorizedException(
         'Two-factor authentication code is invalid',
       );
@@ -214,7 +217,7 @@ export class AuthService {
     if (!user) throw new NotFoundException();
     if (!user.twoFactorEnabled)
       throw new BadRequestException('Two-factor authentication is not enabled');
-    if (!authenticator.check(code, user.twoFactorSecret))
+    if (!this.authenticator.check(code, user.twoFactorSecret))
       throw new UnauthorizedException(
         'Two-factor authentication code is invalid',
       );

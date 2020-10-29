@@ -5,6 +5,7 @@ import { AuthService } from '../auth/auth.service';
 import { EmailModule } from '../email/email.module';
 import { PrismaModule } from '../prisma/prisma.module';
 import { PwnedModule } from '../pwned/pwned.module';
+import { TokensModule } from '../tokens/tokens.module';
 import { UsersService } from '../users/users.service';
 import { EmailController } from './emails.controller';
 import { EmailsService } from './emails.service';
@@ -15,6 +16,7 @@ import { EmailsService } from './emails.service';
     EmailModule,
     ConfigModule,
     PwnedModule,
+    TokensModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET ?? 'staart',
     }),
