@@ -8,7 +8,7 @@ import { PrismaService } from '../prisma/prisma.service';
 export class MultiFactorAuthenticationService {
   constructor(private prisma: PrismaService, private auth: AuthService) {}
 
-  async requestTwoFactorAuthentication(userId: number): Promise<string> {
+  async requestTotpMfa(userId: number): Promise<string> {
     const enabled = await this.prisma.users.findOne({
       where: { id: userId },
       select: { twoFactorEnabled: true },
@@ -20,14 +20,11 @@ export class MultiFactorAuthenticationService {
     return this.auth.getTotpQrCode(userId);
   }
 
-  async enableTwoFactorAuthentication(
-    userId: number,
-    token: string,
-  ): Promise<Expose<users>> {
+  async enableTotpMfa(userId: number, token: string): Promise<Expose<users>> {
     return this.auth.enableTotp(userId, token);
   }
 
-  async disableTwoFactorAuthentication(userId: number): Promise<Expose<users>> {
+  async disableTotpMfa(userId: number): Promise<Expose<users>> {
     const enabled = await this.prisma.users.findOne({
       where: { id: userId },
       select: { twoFactorEnabled: true },

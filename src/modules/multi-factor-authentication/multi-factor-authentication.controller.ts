@@ -9,7 +9,7 @@ import {
 import { users } from '@prisma/client';
 import { Expose } from 'src/modules/prisma/prisma.interface';
 import { Scopes } from '../auth/scope.decorator';
-import { EnableTwoFactorAuthenticationDto } from './multi-factor-authentication.dto';
+import { EnableTotpMfaDto } from './multi-factor-authentication.dto';
 import { MultiFactorAuthenticationService } from './multi-factor-authentication.service';
 
 @Controller('users/:userId/multi-factor-authentication')
@@ -18,29 +18,25 @@ export class MultiFactorAuthenticationController {
     private multiFactorAuthenticationService: MultiFactorAuthenticationService,
   ) {}
 
-  @Post('2fa')
-  @Scopes('user-{userId}:write-2fa')
+  @Post('totp')
+  @Scopes('user-{userId}:write-totp')
   async enable2FA(
     @Param('userId', ParseIntPipe) userId: number,
-    @Body() body: EnableTwoFactorAuthenticationDto,
+    @Body() body: EnableTotpMfaDto,
   ): Promise<Expose<users> | string> {
     if (body.token)
-      return this.multiFactorAuthenticationService.enableTwoFactorAuthentication(
+      return this.multiFactorAuthenticationService.enableTotpMfa(
         userId,
         body.token,
       );
-    return this.multiFactorAuthenticationService.requestTwoFactorAuthentication(
-      userId,
-    );
+    return this.multiFactorAuthenticationService.requestTotpMfa(userId);
   }
 
-  @Delete('2fa')
-  @Scopes('user-{userId}:delete-2fa')
+  @Delete('totp')
+  @Scopes('user-{userId}:delete-totp')
   async disable2FA(
     @Param('userId', ParseIntPipe) userId: number,
   ): Promise<Expose<users>> {
-    return this.multiFactorAuthenticationService.disableTwoFactorAuthentication(
-      userId,
-    );
+    return this.multiFactorAuthenticationService.disableTotpMfa(userId);
   }
 }

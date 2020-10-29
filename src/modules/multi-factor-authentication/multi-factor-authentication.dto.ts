@@ -1,6 +1,6 @@
 import { IsOptional, IsString } from 'class-validator';
 
-export class EnableTwoFactorAuthenticationDto {
+export class EnableTotpMfaDto {
   @IsString()
   @IsOptional()
   token?: string;
