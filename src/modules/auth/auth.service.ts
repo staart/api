@@ -5,12 +5,12 @@ import {
   Injectable,
   NotFoundException,
   UnauthorizedException,
-  UnprocessableEntityException
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import type { Authenticator } from '@otplib/core';
+import { Authenticator } from '@otplib/core';
 import { users } from '@prisma/client';
 import { compare, hash } from 'bcrypt';
 import { authenticator } from 'otplib';
@@ -37,10 +37,12 @@ export class AuthService {
     private pwnedService: PwnedService,
     private tokensService: TokensService,
   ) {
-    this.authenticator = authenticator.create({ window: [
-      this.configService.get<number>('security.totpWindowPast'),
-      this.configService.get<number>('security.totpWindowFuture'),
-    ] });
+    this.authenticator = authenticator.create({
+      window: [
+        this.configService.get<number>('security.totpWindowPast'),
+        this.configService.get<number>('security.totpWindowFuture'),
+      ],
+    });
   }
 
   async validateUser(email: string, password?: string): Promise<number> {
