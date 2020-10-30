@@ -6,7 +6,7 @@ import {
   ParseIntPipe,
   Query,
 } from '@nestjs/common';
-import { approvedLocations } from '@prisma/client';
+import { approvedSubnets } from '@prisma/client';
 import { Expose } from 'src/modules/prisma/prisma.interface';
 import { CursorPipe } from 'src/pipes/cursor.pipe';
 import { OptionalIntPipe } from 'src/pipes/optional-int.pipe';
@@ -28,7 +28,7 @@ export class ApprovedSubnetController {
     @Query('cursor', CursorPipe) cursor?: Record<string, number | string>,
     @Query('where', WherePipe) where?: Record<string, number | string>,
     @Query('orderBy', OrderByPipe) orderBy?: Record<string, 'asc' | 'desc'>,
-  ): Promise<Expose<approvedLocations>[]> {
+  ): Promise<Expose<approvedSubnets>[]> {
     return this.approvedSubnetsService.getApprovedSubnets(userId, {
       skip,
       take,
@@ -43,7 +43,7 @@ export class ApprovedSubnetController {
   async get(
     @Param('userId', ParseIntPipe) userId: number,
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<Expose<approvedLocations>> {
+  ): Promise<Expose<approvedSubnets>> {
     return this.approvedSubnetsService.getApprovedSubnet(userId, Number(id));
   }
 
@@ -52,7 +52,7 @@ export class ApprovedSubnetController {
   async remove(
     @Param('userId', ParseIntPipe) userId: number,
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<Expose<approvedLocations>> {
+  ): Promise<Expose<approvedSubnets>> {
     return this.approvedSubnetsService.deleteApprovedSubnet(userId, Number(id));
   }
 }

@@ -5,10 +5,10 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import {
-  approvedLocations,
-  approvedLocationsOrderByInput,
-  approvedLocationsWhereInput,
-  approvedLocationsWhereUniqueInput,
+  approvedSubnets,
+  approvedSubnetsOrderByInput,
+  approvedSubnetsWhereInput,
+  approvedSubnetsWhereUniqueInput,
 } from '@prisma/client';
 import { Expose } from 'src/modules/prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
@@ -22,64 +22,64 @@ export class ApprovedSubnetsService {
     params: {
       skip?: number;
       take?: number;
-      cursor?: approvedLocationsWhereUniqueInput;
-      where?: approvedLocationsWhereInput;
-      orderBy?: approvedLocationsOrderByInput;
+      cursor?: approvedSubnetsWhereUniqueInput;
+      where?: approvedSubnetsWhereInput;
+      orderBy?: approvedSubnetsOrderByInput;
     },
-  ): Promise<Expose<approvedLocations>[]> {
+  ): Promise<Expose<approvedSubnets>[]> {
     const { skip, take, cursor, where, orderBy } = params;
-    const approvedLocations = await this.prisma.approvedLocations.findMany({
+    const approvedSubnets = await this.prisma.approvedSubnets.findMany({
       skip,
       take,
       cursor,
       where: { ...where, user: { id: userId } },
       orderBy,
     });
-    return approvedLocations.map(user =>
-      this.prisma.expose<approvedLocations>(user),
+    return approvedSubnets.map(user =>
+      this.prisma.expose<approvedSubnets>(user),
     );
   }
 
   async getApprovedSubnet(
     userId: number,
     id: number,
-  ): Promise<Expose<approvedLocations> | null> {
-    const approvedLocation = await this.prisma.approvedLocations.findOne({
+  ): Promise<Expose<approvedSubnets> | null> {
+    const approvedSubnet = await this.prisma.approvedSubnets.findOne({
       where: { id },
     });
-    if (!approvedLocation)
+    if (!approvedSubnet)
       throw new HttpException('ApprovedSubnet not found', HttpStatus.NOT_FOUND);
-    if (approvedLocation.userId !== userId) throw new UnauthorizedException();
-    if (!approvedLocation)
+    if (approvedSubnet.userId !== userId) throw new UnauthorizedException();
+    if (!approvedSubnet)
       throw new HttpException('ApprovedSubnet not found', HttpStatus.NOT_FOUND);
-    return this.prisma.expose<approvedLocations>(approvedLocation);
+    return this.prisma.expose<approvedSubnets>(approvedSubnet);
   }
 
   async deleteApprovedSubnet(
     userId: number,
     id: number,
-  ): Promise<Expose<approvedLocations>> {
-    const testApprovedSubnet = await this.prisma.approvedLocations.findOne({
+  ): Promise<Expose<approvedSubnets>> {
+    const testApprovedSubnet = await this.prisma.approvedSubnets.findOne({
       where: { id },
     });
     if (!testApprovedSubnet)
       throw new HttpException('ApprovedSubnet not found', HttpStatus.NOT_FOUND);
     if (testApprovedSubnet.userId !== userId) throw new UnauthorizedException();
-    const approvedLocation = await this.prisma.approvedLocations.delete({
+    const approvedSubnet = await this.prisma.approvedSubnets.delete({
       where: { id },
     });
-    return this.prisma.expose<approvedLocations>(approvedLocation);
+    return this.prisma.expose<approvedSubnets>(approvedSubnet);
   }
 
   async approveNewSubnet(userId: number, ipAddress: string) {
     const subnet = anonymize(ipAddress);
-    const approved = await this.prisma.approvedLocations.create({
+    const approved = await this.prisma.approvedSubnets.create({
       data: {
         user: { connect: { id: userId } },
         subnet,
         createdAt: new Date(),
       },
     });
-    return this.prisma.expose<approvedLocations>(approved);
+    return this.prisma.expose<approvedSubnets>(approved);
   }
 }
