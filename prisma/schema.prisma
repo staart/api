@@ -147,6 +147,7 @@ model approvedSubnets {
   region      String?
   timezone    String?
   countryCode String?
+  updatedAt   DateTime @updatedAt
   user        users    @relation("userApprovedSubnets", fields: [userId], references: [id])
   userId      Int
 }
