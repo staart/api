@@ -12,6 +12,9 @@ import { TokensModule } from '../tokens/tokens.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
+import { ApiKeyStrategy } from './api-key.strategy';
+import { ApiKeysModule } from '../api-keys/api-keys.module';
+import { ApiKeysService } from '../api-keys/api-keys.service';
 
 @Module({
   imports: [
@@ -21,6 +24,7 @@ import { JwtStrategy } from './jwt.strategy';
     TokensModule,
     ConfigModule,
     PwnedModule,
+    // ApiKeysModule,
     GeolocationModule,
     ApprovedSubnetsModule,
     JwtModule.register({
@@ -29,6 +33,12 @@ import { JwtStrategy } from './jwt.strategy';
   ],
   controllers: [AuthController],
   exports: [AuthService],
-  providers: [AuthService, JwtStrategy, ApprovedSubnetsService],
+  providers: [
+    AuthService,
+    // ApiKeysService,
+    // ApiKeyStrategy,
+    JwtStrategy,
+    ApprovedSubnetsService,
+  ],
 })
 export class AuthModule {}

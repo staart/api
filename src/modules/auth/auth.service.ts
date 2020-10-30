@@ -172,7 +172,7 @@ export class AuthService {
         'There is no user for this email',
         HttpStatus.NOT_FOUND,
       );
-    if (!emailDetails.isVerified)
+    if (emailDetails.isVerified)
       throw new HttpException(
         'This email is already verified',
         HttpStatus.BAD_REQUEST,

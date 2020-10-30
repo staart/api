@@ -64,6 +64,15 @@ export class ApiKeysService {
     return this.prisma.expose<apiKeys>(apiKey);
   }
 
+  async getApiKeyFromKey(key: string): Promise<Expose<apiKeys>> {
+    const apiKey = await this.prisma.apiKeys.findFirst({
+      where: { apiKey: key },
+    });
+    if (!apiKey)
+      throw new HttpException('ApiKey not found', HttpStatus.NOT_FOUND);
+    return this.prisma.expose<apiKeys>(apiKey);
+  }
+
   async updateApiKey(
     groupId: number,
     id: number,
