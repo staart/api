@@ -6,6 +6,11 @@ export interface AccessTokenClaims {
   scopes: string[];
 }
 
+export interface TokenResponse {
+  accessToken: string;
+  refreshToken: string;
+}
+
 export interface AccessTokenParsed {
   id: number;
   scopes: string[];

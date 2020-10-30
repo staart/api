@@ -11,6 +11,7 @@ import {
   TotpLoginDto,
   VerifyEmailDto,
 } from './auth.dto';
+import { TokenResponse } from './auth.interface';
 import { AuthService } from './auth.service';
 import { Public } from './public.decorator';
 
@@ -29,7 +30,7 @@ export class AuthController {
     @Body() data: LoginDto,
     @Ip() ip: string,
     @Headers('User-Agent') userAgent: string,
-  ): Promise<{ accessToken: string }> {
+  ): Promise<TokenResponse> {
     return this.authService.login(
       ip,
       userAgent,
@@ -62,7 +63,7 @@ export class AuthController {
     @Ip() ip: string,
     @Headers('User-Agent') userAgent: string,
     @Body('token') refreshToken: string,
-  ): Promise<{ accessToken: string }> {
+  ): Promise<TokenResponse> {
     return this.authService.refresh(ip, userAgent, refreshToken);
   }
 
@@ -74,6 +75,20 @@ export class AuthController {
   })
   async logout(@Body('token') refreshToken: string): Promise<void> {
     return this.authService.logout(refreshToken);
+  }
+
+  @Post('approve-subnet')
+  @RateLimit({
+    points: 5,
+    duration: 60,
+    errorMessage: 'Wait for 60 seconds before trying to logout again',
+  })
+  async approveSubnet(
+    @Ip() ip: string,
+    @Headers('User-Agent') userAgent: string,
+    @Body('token') token: string,
+  ): Promise<TokenResponse> {
+    return this.authService.approveSubnet(ip, userAgent, token);
   }
 
   @Post('resend-email-verification')
@@ -131,7 +146,7 @@ export class AuthController {
     @Body() data: TotpLoginDto,
     @Ip() ip: string,
     @Headers('User-Agent') userAgent: string,
-  ): Promise<{ accessToken: string }> {
+  ): Promise<TokenResponse> {
     return this.authService.loginWithTotp(ip, userAgent, data.token, data.code);
   }
 }

@@ -13,25 +13,25 @@ import { JwtService } from '@nestjs/jwt';
 import { Authenticator } from '@otplib/core';
 import { emails, users } from '@prisma/client';
 import { compare, hash } from 'bcrypt';
+import anonymize from 'ip-anonymize';
 import { authenticator } from 'otplib';
 import qrcode from 'qrcode';
 import { safeEmail } from 'src/helpers/safe-email';
+import { ApprovedSubnetsService } from '../approved-subnets/approved-subnets.service';
 import { EmailService } from '../email/email.service';
+import { GeolocationService } from '../geolocation/geolocation.service';
 import { Expose } from '../prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
 import { PwnedService } from '../pwned/pwned.service';
 import {
+  APPROVE_SUBNET_TOKEN,
   EMAIL_VERIFY_TOKEN,
   PASSWORD_RESET_TOKEN,
   TWO_FACTOR_TOKEN,
-  APPROVE_SUBNET_TOKEN,
 } from '../tokens/tokens.constants';
 import { TokensService } from '../tokens/tokens.service';
 import { RegisterDto } from './auth.dto';
-import { AccessTokenClaims } from './auth.interface';
-import anonymize from 'ip-anonymize';
-import { GeolocationService } from '../geolocation/geolocation.service';
-import { ApprovedSubnetsService } from '../approved-subnets/approved-subnets.service';
+import { AccessTokenClaims, TokenResponse } from './auth.interface';
 
 @Injectable()
 export class AuthService {
@@ -184,7 +184,11 @@ export class AuthService {
     return { queued: true };
   }
 
-  async refresh(ipAddress: string, userAgent: string, token: string) {
+  async refresh(
+    ipAddress: string,
+    userAgent: string,
+    token: string,
+  ): Promise<TokenResponse> {
     if (!token) throw new UnprocessableEntityException();
     const session = await this.prisma.sessions.findFirst({
       where: { token },
@@ -213,6 +217,13 @@ export class AuthService {
     await this.prisma.sessions.delete({
       where: { id: session.id },
     });
+  }
+
+  async approveSubnet(ipAddress: string, userAgent: string, token: string) {
+    if (!token) throw new UnprocessableEntityException();
+    const id = this.tokensService.verify<number>(APPROVE_SUBNET_TOKEN, token);
+    await this.approvedSubnetsService.approveNewSubnet(id, ipAddress);
+    return this.loginResponse(ipAddress, userAgent, id);
   }
 
   /** Get the two-factor authentication QR code */
@@ -359,7 +370,7 @@ export class AuthService {
     ipAddress: string,
     userAgent: string,
     id: number,
-  ) {
+  ): Promise<TokenResponse> {
     const token = randomStringGenerator();
     await this.prisma.sessions.create({
       data: { token, ipAddress, userAgent, user: { connect: { id } } },
