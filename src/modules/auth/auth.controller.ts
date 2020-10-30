@@ -11,7 +11,7 @@ import {
   TotpLoginDto,
   VerifyEmailDto,
 } from './auth.dto';
-import { TokenResponse } from './auth.interface';
+import { TokenResponse, TotpTokenResponse } from './auth.interface';
 import { AuthService } from './auth.service';
 import { Public } from './public.decorator';
 
@@ -30,7 +30,7 @@ export class AuthController {
     @Body() data: LoginDto,
     @Ip() ip: string,
     @Headers('User-Agent') userAgent: string,
-  ): Promise<TokenResponse> {
+  ): Promise<TokenResponse | TotpTokenResponse> {
     return this.authService.login(
       ip,
       userAgent,

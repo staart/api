@@ -11,6 +11,7 @@ export default () => ({
     jwtSecret: process.env.JWT_SECRET ?? 'staart',
     totpWindowPast: process.env.TOTP_WINDOW_PAST ?? 1,
     totpWindowFuture: process.env.TOTP_WINDOW_PAST ?? 0,
+    mfaTokenExpiry: process.env.MFA_TOKEN_EXPIRY ?? '10m',
     accessTokenExpiry: process.env.ACCESS_TOKEN_EXPIRY ?? '1h',
     passwordPwnedCheck: !!process.env.PASSWORD_PWNED_CHECK,
     unusedRefreshTokenExpiryDays: process.env.DELETE_EXPIRED_SESSIONS ?? 30,

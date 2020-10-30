@@ -26,12 +26,20 @@ import { PwnedService } from '../pwned/pwned.service';
 import {
   APPROVE_SUBNET_TOKEN,
   EMAIL_VERIFY_TOKEN,
+  MULTI_FACTOR_TOKEN,
   PASSWORD_RESET_TOKEN,
-  TWO_FACTOR_TOKEN,
+  EMAIL_MFA_TOKEN,
 } from '../tokens/tokens.constants';
 import { TokensService } from '../tokens/tokens.service';
 import { RegisterDto } from './auth.dto';
-import { AccessTokenClaims, TokenResponse } from './auth.interface';
+import {
+  AccessTokenClaims,
+  MfaTokenPayload,
+  MfaTypes,
+  TokenResponse,
+  TotpTokenResponse,
+  ValidatedUser,
+} from './auth.interface';
 
 @Injectable()
 export class AuthService {
@@ -55,7 +63,7 @@ export class AuthService {
     });
   }
 
-  async validateUser(email: string, password?: string) {
+  async validateUser(email: string, password?: string): Promise<ValidatedUser> {
     const emailSafe = safeEmail(email);
     const user = await this.prisma.users.findFirst({
       where: { emails: { some: { emailSafe } } },
@@ -64,7 +72,10 @@ export class AuthService {
         password: true,
         emails: true,
         twoFactorEnabled: true,
+        twoFactorSecret: true,
         checkLocationOnLogin: true,
+        prefersEmail: true,
+        name: true,
       },
     });
     if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -77,9 +88,12 @@ export class AuthService {
       );
     if (await compare(password, user.password))
       return {
+        name: user.name,
         id: user.id,
         twoFactorEnabled: user.twoFactorEnabled,
+        twoFactorSecret: user.twoFactorSecret,
         checkLocationOnLogin: user.checkLocationOnLogin,
+        prefersEmailAddress: user.prefersEmail.emailSafe,
       };
     return null;
   }
@@ -90,13 +104,12 @@ export class AuthService {
     email: string,
     password?: string,
     code?: string,
-  ) {
+  ): Promise<TokenResponse | TotpTokenResponse> {
     const user = await this.validateUser(email, password);
     if (!user) throw new UnauthorizedException();
     if (code)
       return this.loginUserWithTotpCode(ipAddress, userAgent, user.id, code);
-    if (user.twoFactorEnabled) {
-    }
+    if (user.twoFactorEnabled) return this.mfaResponse(user);
     await this.checkLoginSubnet(
       ipAddress,
       userAgent,
@@ -206,7 +219,7 @@ export class AuthService {
     };
   }
 
-  async logout(token: string) {
+  async logout(token: string): Promise<void> {
     if (!token) throw new UnprocessableEntityException();
     const session = await this.prisma.sessions.findFirst({
       where: { token },
@@ -219,15 +232,22 @@ export class AuthService {
     });
   }
 
-  async approveSubnet(ipAddress: string, userAgent: string, token: string) {
+  async approveSubnet(
+    ipAddress: string,
+    userAgent: string,
+    token: string,
+  ): Promise<TokenResponse> {
     if (!token) throw new UnprocessableEntityException();
     const id = this.tokensService.verify<number>(APPROVE_SUBNET_TOKEN, token);
     await this.approvedSubnetsService.approveNewSubnet(id, ipAddress);
     return this.loginResponse(ipAddress, userAgent, id);
   }
 
-  /** Get the two-factor authentication QR code */
-  async getTotpQrCode(userId: number) {
+  /**
+   * Get the two-factor authentication QR code
+   * @returns Data URI string with QR code image
+   */
+  async getTotpQrCode(userId: number): Promise<string> {
     const secret = randomStringGenerator();
     await this.prisma.users.update({
       where: { id: userId },
@@ -242,7 +262,7 @@ export class AuthService {
   }
 
   /** Enable two-factor authentication */
-  async enableTotp(userId: number, code: string) {
+  async enableTotp(userId: number, code: string): Promise<Expose<users>> {
     const user = await this.prisma.users.findOne({
       where: { id: userId },
       select: { twoFactorSecret: true, twoFactorEnabled: true },
@@ -268,9 +288,9 @@ export class AuthService {
     userAgent: string,
     token: string,
     code: string,
-  ) {
-    const { id } = this.tokensService.verify<{ id: number }>(
-      TWO_FACTOR_TOKEN,
+  ): Promise<TokenResponse> {
+    const { id } = this.tokensService.verify<MfaTokenPayload>(
+      MULTI_FACTOR_TOKEN,
       token,
     );
     return this.loginUserWithTotpCode(ipAddress, userAgent, id, code);
@@ -311,7 +331,7 @@ export class AuthService {
     token: string,
     password: string,
     ignorePwnedPassword?: boolean,
-  ) {
+  ): Promise<TokenResponse> {
     const id = this.tokensService.verify<number>(PASSWORD_RESET_TOKEN, token);
     password = await this.hashAndValidatePassword(
       password,
@@ -322,7 +342,7 @@ export class AuthService {
     return this.loginResponse(ipAddress, userAgent, id);
   }
 
-  async verifyEmail(token: string) {
+  async verifyEmail(token: string): Promise<Expose<emails>> {
     const id = this.tokensService.verify<number>(EMAIL_VERIFY_TOKEN, token);
     const result = await this.prisma.emails.update({
       where: { id },
@@ -336,7 +356,7 @@ export class AuthService {
     userAgent: string,
     id: number,
     code: string,
-  ) {
+  ): Promise<TokenResponse> {
     const user = await this.prisma.users.findOne({
       where: { id },
       select: {
@@ -379,6 +399,36 @@ export class AuthService {
       accessToken: await this.getAccessToken(id),
       refreshToken: token,
     };
+  }
+
+  private async mfaResponse(user: ValidatedUser): Promise<TotpTokenResponse> {
+    const type: MfaTypes = user.twoFactorSecret ? 'TOTP' : 'EMAIL';
+    const mfaTokenPayload: MfaTokenPayload = { type, id: user.id };
+    const totpToken = this.tokensService.signJwt(
+      MULTI_FACTOR_TOKEN,
+      mfaTokenPayload,
+      this.configService.get<string>('security.mfaTokenExpiry'),
+    );
+    if (type === 'EMAIL') {
+      this.email.send({
+        to: `"${user.name}" <${user.prefersEmailAddress}>`,
+        template: 'auth/mfa-code',
+        data: {
+          name: user.name,
+          minutes: parseInt(
+            this.configService.get<string>('security.mfaTokenExpiry'),
+          ),
+          link: `${this.configService.get<string>(
+            'frontendUrl',
+          )}/auth/token-login?token=${this.tokensService.signJwt(
+            EMAIL_MFA_TOKEN,
+            user.id,
+            '30m',
+          )}`,
+        },
+      });
+    }
+    return { totpToken, type, multiFactorRequired: true };
   }
 
   private async checkLoginSubnet(
