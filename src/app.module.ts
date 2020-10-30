@@ -5,6 +5,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { RateLimiterInterceptor, RateLimiterModule } from 'nestjs-rate-limiter';
 import configuration from './config/configuration';
 import { AccessTokensModule } from './modules/access-tokens/access-tokens.module';
+import { ApiKeysModule } from './modules/api-keys/api-keys.module';
 import { ApprovedSubnetsModule } from './modules/approved-subnets/approved-subnets.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { JwtAuthGuard } from './modules/auth/jwt-auth.guard';
@@ -39,6 +40,7 @@ import { UsersModule } from './modules/users/users.module';
     EmailsModule,
     GroupsModule,
     MultiFactorAuthenticationModule,
+    ApiKeysModule,
     ApprovedSubnetsModule,
     GeolocationModule,
   ],
