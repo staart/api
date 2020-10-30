@@ -13,10 +13,16 @@ import {
 import { Expose } from 'src/modules/prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
 import anonymize from 'ip-anonymize';
+import { hash } from 'bcrypt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ApprovedSubnetsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private configService: ConfigService,
+  ) {}
+
   async getApprovedSubnets(
     userId: number,
     params: {
@@ -72,7 +78,10 @@ export class ApprovedSubnetsService {
   }
 
   async approveNewSubnet(userId: number, ipAddress: string) {
-    const subnet = anonymize(ipAddress);
+    const subnet = await hash(
+      anonymize(ipAddress),
+      this.configService.get<number>('security.saltRounds'),
+    );
     const approved = await this.prisma.approvedSubnets.create({
       data: {
         user: { connect: { id: userId } },

@@ -352,9 +352,14 @@ export class AuthService {
   ): Promise<void> {
     if (!checkLocationOnLogin) return;
     const subnet = anonymize(ipAddress);
-    const isApproved = await this.prisma.approvedSubnets.findFirst({
-      where: { user: { id }, subnet },
+    const previousSubnets = await this.prisma.approvedSubnets.findMany({
+      where: { user: { id } },
     });
+    let isApproved = false;
+    for await (const item of previousSubnets) {
+      if (!isApproved)
+        if (await compare(subnet, item.subnet)) isApproved = true;
+    }
     if (!isApproved) {
       const user = await this.prisma.users.findOne({
         where: { id },

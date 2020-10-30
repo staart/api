@@ -1,5 +1,11 @@
 import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
-import { emails, PrismaClient, sessions, users } from '@prisma/client';
+import {
+  approvedSubnets,
+  emails,
+  PrismaClient,
+  sessions,
+  users,
+} from '@prisma/client';
 import { Expose } from 'src/modules/prisma/prisma.interface';
 
 @Injectable()
@@ -20,6 +26,7 @@ export class PrismaService extends PrismaClient
     delete ((item as any) as users).twoFactorSecret;
     delete ((item as any) as sessions).token;
     delete ((item as any) as emails).emailSafe;
+    delete ((item as any) as approvedSubnets).subnet;
     return item;
   }
 }
