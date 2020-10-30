@@ -36,7 +36,7 @@ export class GeolocationService implements OnModuleDestroy {
   }
 
   private async getUnsafeLocation(ipAddress: string) {
-    if (this.lookup)
+    if (!this.lookup)
       this.lookup = await geolite2.open<CityResponse>('GeoLite2-City', path => {
         return maxmind.open(path);
       });

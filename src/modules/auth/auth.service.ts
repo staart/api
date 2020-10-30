@@ -155,6 +155,11 @@ export class AuthService {
           create: { email: email, emailSafe },
         },
       },
+      include: { emails: { select: { id: true } } },
+    });
+    await this.prisma.users.update({
+      where: { id: user.id },
+      data: { prefersEmail: { connect: { id: user.emails[0]?.id } } },
     });
     await this.sendEmailVerification(email);
     await this.approvedSubnetsService.approveNewSubnet(user.id, ipAddress);
