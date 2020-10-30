@@ -17,6 +17,7 @@ import { GroupsModule } from './modules/groups/groups.module';
 import { MultiFactorAuthenticationModule } from './modules/multi-factor-authentication/multi-factor-authentication.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
 import { SessionsModule } from './modules/sessions/sessions.module';
+import { StripeModule } from './modules/stripe/stripe.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { UsersModule } from './modules/users/users.module';
 
@@ -43,6 +44,7 @@ import { UsersModule } from './modules/users/users.module';
     ApiKeysModule,
     ApprovedSubnetsModule,
     GeolocationModule,
+    StripeModule,
   ],
   providers: [
     {
