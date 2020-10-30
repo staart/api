@@ -23,13 +23,21 @@ export class MultiFactorAuthenticationController {
   async enable2FA(
     @Param('userId', ParseIntPipe) userId: number,
     @Body() body: EnableTotpMfaDto,
-  ): Promise<Expose<users> | string> {
+  ): Promise<string[] | string> {
     if (body.token)
       return this.multiFactorAuthenticationService.enableTotpMfa(
         userId,
         body.token,
       );
     return this.multiFactorAuthenticationService.requestTotpMfa(userId);
+  }
+
+  @Post('totp/regenerate')
+  @Scopes('user-{userId}:write-totp')
+  async regenerateBackupCodes(
+    @Param('userId', ParseIntPipe) userId: number,
+  ): Promise<string[]> {
+    return this.multiFactorAuthenticationService.regenerateBackupCodes(userId);
   }
 
   @Delete('totp')
