@@ -71,7 +71,7 @@ model users {
   updatedAt            DateTime             @updatedAt
   emails               emails[]             @relation("userEmails")
   accessTokens         accessTokens[]       @relation("userAccessTokens")
-  approvedLocations    approvedLocations[]  @relation("userApprovedLocations")
+  approvedSubnets    approvedSubnets[]  @relation("userApprovedSubnets")
   backupCodes          backupCodes[]        @relation("userBackupCodes")
   identities           identities[]         @relation("userIdentities")
   memberships          memberships[]        @relation("userMemberships")
@@ -139,12 +139,16 @@ model apiKeys {
   updatedAt            DateTime @updatedAt
 }
 
-model approvedLocations {
-  createdAt DateTime @default(now())
-  id        Int      @id @default(autoincrement())
-  subnet    String
-  user      users    @relation("userApprovedLocations", fields: [userId], references: [id])
-  userId    Int
+model approvedSubnets {
+  createdAt   DateTime @default(now())
+  id          Int      @id @default(autoincrement())
+  subnet      String
+  city        String?
+  region      String?
+  timezone    String?
+  countryCode String?
+  user        users    @relation("userApprovedSubnets", fields: [userId], references: [id])
+  userId      Int
 }
 
 model backupCodes {
