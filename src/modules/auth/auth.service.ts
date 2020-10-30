@@ -189,7 +189,7 @@ export class AuthService {
           'frontendUrl',
         )}/auth/verify-email?token=${this.tokensService.signJwt(
           EMAIL_VERIFY_TOKEN,
-          emailDetails.user.id,
+          { id: emailDetails.user.id },
           '7d',
         )}`,
       },
@@ -238,7 +238,10 @@ export class AuthService {
     token: string,
   ): Promise<TokenResponse> {
     if (!token) throw new UnprocessableEntityException();
-    const id = this.tokensService.verify<number>(APPROVE_SUBNET_TOKEN, token);
+    const { id } = this.tokensService.verify<{ id: number }>(
+      APPROVE_SUBNET_TOKEN,
+      token,
+    );
     await this.approvedSubnetsService.approveNewSubnet(id, ipAddress);
     return this.loginResponse(ipAddress, userAgent, id);
   }
@@ -330,7 +333,7 @@ export class AuthService {
           'frontendUrl',
         )}/auth/reset-password?token=${this.tokensService.signJwt(
           PASSWORD_RESET_TOKEN,
-          emailDetails.user.id,
+          { id: emailDetails.user.id },
           '30m',
         )}`,
       },
@@ -345,7 +348,10 @@ export class AuthService {
     password: string,
     ignorePwnedPassword?: boolean,
   ): Promise<TokenResponse> {
-    const id = this.tokensService.verify<number>(PASSWORD_RESET_TOKEN, token);
+    const { id } = this.tokensService.verify<{ id: number }>(
+      PASSWORD_RESET_TOKEN,
+      token,
+    );
     password = await this.hashAndValidatePassword(
       password,
       !!ignorePwnedPassword,
@@ -356,7 +362,10 @@ export class AuthService {
   }
 
   async verifyEmail(token: string): Promise<Expose<emails>> {
-    const id = this.tokensService.verify<number>(EMAIL_VERIFY_TOKEN, token);
+    const { id } = this.tokensService.verify<{ id: number }>(
+      EMAIL_VERIFY_TOKEN,
+      token,
+    );
     const result = await this.prisma.emails.update({
       where: { id },
       data: { isVerified: true },
@@ -478,7 +487,7 @@ export class AuthService {
             'frontendUrl',
           )}/auth/token-login?token=${this.tokensService.signJwt(
             EMAIL_MFA_TOKEN,
-            user.id,
+            { id: user.id },
             '30m',
           )}`,
         },
@@ -529,7 +538,7 @@ export class AuthService {
             'frontendUrl',
           )}/auth/reset-password?token=${this.tokensService.signJwt(
             APPROVE_SUBNET_TOKEN,
-            id,
+            { id },
             '30m',
           )}`,
         },
