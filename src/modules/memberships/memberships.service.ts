@@ -149,7 +149,8 @@ export class MembershipsService {
         where: { emails: { some: { emailSafe } } },
       }),
     );
-    if (!user) user = await this.auth.register(ipAddress, data);
+    if (!user)
+      user = await this.auth.register(ipAddress, { name: data.email, ...data });
     const result = await this.prisma.memberships.create({
       data: {
         role: data.role,

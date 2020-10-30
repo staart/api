@@ -4,6 +4,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  MinLength,
 } from 'class-validator';
 
 export class UpdateMembershipDto {
@@ -14,13 +15,14 @@ export class UpdateMembershipDto {
 }
 
 export class CreateGroupMembershipDto {
-  @IsString()
-  @IsNotEmpty()
-  name: string;
-
   @IsEmail()
   @IsNotEmpty()
   email: string;
+
+  @IsString()
+  @IsOptional()
+  @MinLength(3)
+  name?: string;
 
   @IsString()
   @IsIn(['OWNER', 'ADMIN', 'MEMBER'])
