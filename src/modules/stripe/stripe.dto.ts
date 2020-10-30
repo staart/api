@@ -1,4 +1,5 @@
 import {
+  IsEmail,
   IsNotEmpty,
   IsObject,
   IsOptional,
@@ -34,12 +35,35 @@ class Address {
   state?: string;
 }
 
+export class CreateBillingDto {
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @IsString()
+  @IsOptional()
+  phone?: string;
+
+  @IsString()
+  @IsOptional()
+  promotion_code?: string;
+
+  @IsObject()
+  @ValidateNested()
+  @IsOptional()
+  address?: Address;
+}
+
 export class UpdateBillingDto {
   @IsString()
   @IsOptional()
   default_source?: string;
 
-  @IsString()
+  @IsEmail()
   @IsOptional()
   email?: string;
 
@@ -59,4 +83,22 @@ export class UpdateBillingDto {
   @ValidateNested()
   @IsOptional()
   address?: Address;
+}
+
+export class ReplaceBillingDto {
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @IsString()
+  @IsNotEmpty()
+  phone: string;
+
+  @IsObject()
+  @ValidateNested()
+  address: Address;
 }

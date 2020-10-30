@@ -1,35 +1,67 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
   Patch,
+  Post,
+  Put,
 } from '@nestjs/common';
-import { Expose } from 'src/modules/prisma/prisma.interface';
 import Stripe from 'stripe';
 import { Scopes } from '../auth/scope.decorator';
-import { UpdateBillingDto } from './stripe.dto';
+import {
+  CreateBillingDto,
+  ReplaceBillingDto,
+  UpdateBillingDto,
+} from './stripe.dto';
 import { StripeService } from './stripe.service';
 
 @Controller('groups/:groupId/billing')
 export class StripeBillingController {
   constructor(private stripeService: StripeService) {}
 
+  @Post()
+  @Scopes('group-{groupId}:write-billing')
+  async createBillingAccount(
+    @Param('groupId', ParseIntPipe) groupId: number,
+    @Body() data: CreateBillingDto,
+  ): Promise<Stripe.Customer> {
+    return this.stripeService.createCustomer(groupId, data);
+  }
+
   @Get()
   @Scopes('group-{groupId}:read-billing')
-  async billingInfo(
+  async getBillingAccount(
     @Param('groupId', ParseIntPipe) groupId: number,
-  ): Promise<Expose<Stripe.Customer>> {
+  ): Promise<Stripe.Customer> {
     return this.stripeService.getCustomer(groupId);
   }
 
   @Patch()
   @Scopes('group-{groupId}:write-billing')
-  async updateBillingInfo(
+  async updateBillingAccount(
     @Param('groupId', ParseIntPipe) groupId: number,
     @Body() data: UpdateBillingDto,
-  ): Promise<Expose<Stripe.Customer>> {
+  ): Promise<Stripe.Customer> {
     return this.stripeService.updateCustomer(groupId, data);
+  }
+
+  @Put()
+  @Scopes('group-{groupId}:write-billing')
+  async replaceBillingAccount(
+    @Param('groupId', ParseIntPipe) groupId: number,
+    @Body() data: ReplaceBillingDto,
+  ): Promise<Stripe.Customer> {
+    return this.stripeService.updateCustomer(groupId, data);
+  }
+
+  @Delete()
+  @Scopes('group-{groupId}:delete-billing')
+  async deleteBillingAccount(
+    @Param('groupId', ParseIntPipe) groupId: number,
+  ): Promise<Stripe.DeletedCustomer> {
+    return this.stripeService.deleteCustomer(groupId);
   }
 }
