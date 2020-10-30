@@ -373,6 +373,8 @@ export class AuthService {
     const user = await this.prisma.users.findOne({
       where: { id },
       select: {
+        name: true,
+        prefersEmail: true,
         twoFactorSecret: true,
         twoFactorEnabled: true,
         checkLocationOnLogin: true,
@@ -381,7 +383,48 @@ export class AuthService {
     if (!user) throw new NotFoundException();
     if (!user.twoFactorEnabled)
       throw new BadRequestException('Two-factor authentication is not enabled');
-    if (!this.authenticator.check(code, user.twoFactorSecret))
+    if (this.authenticator.check(code, user.twoFactorSecret))
+      return this.loginResponse(ipAddress, userAgent, id);
+    const backupCodes = await this.prisma.backupCodes.findMany({
+      where: { user: { id } },
+    });
+    let usedBackupCode = false;
+    for await (const backupCode of backupCodes) {
+      if (await compare(code, backupCode.code)) {
+        if (!usedBackupCode) {
+          if (backupCode.isUsed)
+            throw new UnauthorizedException(
+              'This backup code has previously been used',
+            );
+          usedBackupCode = true;
+          await this.prisma.backupCodes.update({
+            where: { id: backupCode.id },
+            data: { isUsed: true },
+          });
+          const location = await this.geolocationService.getLocation(ipAddress);
+          const locationName =
+            [
+              location?.city?.names?.en,
+              location?.subdivisions[0]?.names?.en,
+              location?.country?.names?.en,
+            ]
+              .filter(i => i)
+              .join(', ') || 'Unknown location';
+          this.email.send({
+            to: `"${user.name}" <${user.prefersEmail.emailSafe}>`,
+            template: 'auth/used-backup-code',
+            data: {
+              name: user.name,
+              locationName,
+              link: `${this.configService.get<string>(
+                'frontendUrl',
+              )}/users/${id}/sessions`,
+            },
+          });
+        }
+      }
+    }
+    if (!usedBackupCode)
       throw new UnauthorizedException(
         'Two-factor authentication code is invalid',
       );
