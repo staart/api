@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { ApprovedSubnetsModule } from '../approved-subnets/approved-subnets.module';
 import { EmailModule } from '../email/email.module';
 import { GeolocationModule } from '../geolocation/geolocation.module';
 import { PrismaModule } from '../prisma/prisma.module';
@@ -20,6 +21,7 @@ import { JwtStrategy } from './jwt.strategy';
     ConfigModule,
     PwnedModule,
     GeolocationModule,
+    ApprovedSubnetsModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET ?? 'staart',
     }),

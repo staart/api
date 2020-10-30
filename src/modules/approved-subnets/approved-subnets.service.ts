@@ -13,7 +13,7 @@ import {
 import { Expose } from 'src/modules/prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
 import anonymize from 'ip-anonymize';
-import { hash } from 'bcrypt';
+import { compare, hash } from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { GeolocationService } from '../geolocation/geolocation.service';
 
@@ -97,5 +97,24 @@ export class ApprovedSubnetsService {
       },
     });
     return this.prisma.expose<approvedSubnets>(approved);
+  }
+
+  /**
+   * Upsert a new subnet
+   * If this subnet already exists, skip; otherwise add it
+   */
+  async upsertNewSubnet(
+    userId: number,
+    ipAddress: string,
+  ): Promise<Expose<approvedSubnets>> {
+    const subnet = anonymize(ipAddress);
+    const previousSubnets = await this.prisma.approvedSubnets.findMany({
+      where: { user: { id: userId } },
+    });
+    for await (const item of previousSubnets) {
+      if (await compare(subnet, item.subnet))
+        return this.prisma.expose<approvedSubnets>(item);
+    }
+    return this.approveNewSubnet(userId, ipAddress);
   }
 }

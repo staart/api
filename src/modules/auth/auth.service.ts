@@ -31,6 +31,7 @@ import { RegisterDto } from './auth.dto';
 import { AccessTokenClaims } from './auth.interface';
 import anonymize from 'ip-anonymize';
 import { GeolocationService } from '../geolocation/geolocation.service';
+import { ApprovedSubnetsService } from '../approved-subnets/approved-subnets.service';
 
 @Injectable()
 export class AuthService {
@@ -44,6 +45,7 @@ export class AuthService {
     private pwnedService: PwnedService,
     private tokensService: TokensService,
     private geolocationService: GeolocationService,
+    private approvedSubnetsService: ApprovedSubnetsService,
   ) {
     this.authenticator = authenticator.create({
       window: [
@@ -53,11 +55,17 @@ export class AuthService {
     });
   }
 
-  async validateUser(email: string, password?: string): Promise<number> {
+  async validateUser(email: string, password?: string) {
     const emailSafe = safeEmail(email);
     const user = await this.prisma.users.findFirst({
       where: { emails: { some: { emailSafe } } },
-      select: { id: true, password: true, emails: true },
+      select: {
+        id: true,
+        password: true,
+        emails: true,
+        twoFactorEnabled: true,
+        checkLocationOnLogin: true,
+      },
     });
     if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     if (!user.emails.find(i => i.emailSafe === emailSafe)?.isVerified)
@@ -67,7 +75,12 @@ export class AuthService {
         'Logging in without passwords is not supported',
         HttpStatus.NOT_IMPLEMENTED,
       );
-    if (await compare(password, user.password)) return user.id;
+    if (await compare(password, user.password))
+      return {
+        id: user.id,
+        twoFactorEnabled: user.twoFactorEnabled,
+        checkLocationOnLogin: user.checkLocationOnLogin,
+      };
     return null;
   }
 
@@ -78,13 +91,22 @@ export class AuthService {
     password?: string,
     code?: string,
   ) {
-    const id = await this.validateUser(email, password);
-    if (!id) throw new UnauthorizedException();
-    if (code) return this.loginUserWithTotpCode(ipAddress, userAgent, id, code);
-    return this.loginResponse(ipAddress, userAgent, id);
+    const user = await this.validateUser(email, password);
+    if (!user) throw new UnauthorizedException();
+    if (code)
+      return this.loginUserWithTotpCode(ipAddress, userAgent, user.id, code);
+    if (user.twoFactorEnabled) {
+    }
+    await this.checkLoginSubnet(
+      ipAddress,
+      userAgent,
+      user.checkLocationOnLogin,
+      user.id,
+    );
+    return this.loginResponse(ipAddress, userAgent, user.id);
   }
 
-  async register(data: RegisterDto): Promise<Expose<users>> {
+  async register(ipAddress: string, data: RegisterDto): Promise<Expose<users>> {
     const email = data.email;
     data.name = data.name
       .split(' ')
@@ -122,6 +144,7 @@ export class AuthService {
       },
     });
     await this.sendEmailVerification(email);
+    await this.approvedSubnetsService.approveNewSubnet(user.id, ipAddress);
     return this.prisma.expose(user);
   }
 
@@ -284,6 +307,7 @@ export class AuthService {
       !!ignorePwnedPassword,
     );
     await this.prisma.users.update({ where: { id }, data: { password } });
+    await this.approvedSubnetsService.upsertNewSubnet(id, ipAddress);
     return this.loginResponse(ipAddress, userAgent, id);
   }
 

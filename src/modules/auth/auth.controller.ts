@@ -45,8 +45,11 @@ export class AuthController {
     duration: 60,
     errorMessage: 'Wait for 60 seconds before trying to create an account',
   })
-  async register(@Body() data: RegisterDto): Promise<Expose<users>> {
-    return this.authService.register(data);
+  async register(
+    @Ip() ip: string,
+    @Body() data: RegisterDto,
+  ): Promise<Expose<users>> {
+    return this.authService.register(ip, data);
   }
 
   @Post('refresh')
