@@ -39,6 +39,7 @@
     "hibp": "^9.0.0",
     "ip-anonymize": "^0.1.0",
     "jsonwebtoken": "^8.5.1",
+    "maxmind": "^4.3.1",
     "mem": "^8.0.0",
     "minimatch": "^3.0.4",
     "nestjs-rate-limiter": "^2.5.6",
