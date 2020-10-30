@@ -4,6 +4,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import {
   groupsCreateInput,
   memberships,
@@ -15,17 +16,19 @@ import {
 import { safeEmail } from 'src/helpers/safe-email';
 import { Expose } from 'src/modules/prisma/prisma.interface';
 import { AuthService } from '../auth/auth.service';
+import { EmailService } from '../email/email.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { UsersService } from '../users/users.service';
 import { CreateMembershipInput } from './memberships.interface';
 
 @Injectable()
 export class MembershipsService {
   constructor(
     private prisma: PrismaService,
-    private users: UsersService,
     private auth: AuthService,
+    private email: EmailService,
+    private configService: ConfigService,
   ) {}
+
   async getMemberships(params: {
     skip?: number;
     take?: number;
@@ -147,13 +150,26 @@ export class MembershipsService {
       }),
     );
     if (!user) user = await this.auth.register(ipAddress, data);
-    return this.prisma.memberships.create({
+    const result = await this.prisma.memberships.create({
       data: {
         role: data.role,
         group: { connect: { id: groupId } },
         user: { connect: { id: user.id } },
       },
+      include: { group: { select: { name: true } } },
     });
+    this.email.send({
+      to: `"${user.name}" <${emailSafe}>`,
+      template: 'groups/invitation',
+      data: {
+        name: user.name,
+        group: result.group.name,
+        link: `${this.configService.get<string>(
+          'frontendUrl',
+        )}/groups/${groupId}`,
+      },
+    });
+    return this.prisma.expose<memberships>(result);
   }
 
   /** Verify whether a group membership can be deleted */
