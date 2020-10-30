@@ -13,7 +13,7 @@ import { UpdateBillingDto } from './stripe.dto';
 import { StripeService } from './stripe.service';
 
 @Controller('groups/:groupId/billing')
-export class StripeController {
+export class StripeBillingController {
   constructor(private stripeService: StripeService) {}
 
   @Get()
