@@ -69,4 +69,6 @@ export class ApprovedSubnetsService {
     });
     return this.prisma.expose<approvedLocations>(approvedLocation);
   }
+
+  async approveNewSubnet(userId: number, ipAddress: string) {}
 }

@@ -36,6 +36,7 @@
     "handlebars": "^4.7.6",
     "helmet": "^4.1.1",
     "hibp": "^9.0.0",
+    "ip-anonymize": "^0.1.0",
     "jsonwebtoken": "^8.5.1",
     "mem": "^8.0.0",
     "minimatch": "^3.0.4",
