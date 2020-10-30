@@ -296,6 +296,19 @@ export class AuthService {
     return this.loginUserWithTotpCode(ipAddress, userAgent, id, code);
   }
 
+  async loginWithEmailToken(
+    ipAddress: string,
+    userAgent: string,
+    token: string,
+  ): Promise<TokenResponse> {
+    const { id } = this.tokensService.verify<MfaTokenPayload>(
+      EMAIL_MFA_TOKEN,
+      token,
+    );
+    await this.approvedSubnetsService.upsertNewSubnet(id, ipAddress);
+    return this.loginResponse(ipAddress, userAgent, id);
+  }
+
   async requestPasswordReset(email: string) {
     const emailSafe = safeEmail(email);
     const emailDetails = await this.prisma.emails.findFirst({

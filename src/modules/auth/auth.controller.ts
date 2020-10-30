@@ -1,4 +1,12 @@
-import { Body, Controller, Headers, Ip, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Headers,
+  Ip,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { users } from '@prisma/client';
 import { RateLimit } from 'nestjs-rate-limiter';
 import { Expose } from 'src/modules/prisma/prisma.interface';
@@ -148,5 +156,33 @@ export class AuthController {
     @Headers('User-Agent') userAgent: string,
   ): Promise<TokenResponse> {
     return this.authService.loginWithTotp(ip, userAgent, data.token, data.code);
+  }
+
+  @Get('token-login')
+  @RateLimit({
+    points: 10,
+    duration: 60,
+    errorMessage: 'Wait for 60 seconds before trying to login again',
+  })
+  async emailTokenLoginGet(
+    @Query('token') token: string,
+    @Ip() ip: string,
+    @Headers('User-Agent') userAgent: string,
+  ): Promise<TokenResponse> {
+    return this.authService.loginWithEmailToken(ip, userAgent, token);
+  }
+
+  @Post('token-login')
+  @RateLimit({
+    points: 10,
+    duration: 60,
+    errorMessage: 'Wait for 60 seconds before trying to login again',
+  })
+  async emailTokenLoginPost(
+    @Body('token') token: string,
+    @Ip() ip: string,
+    @Headers('User-Agent') userAgent: string,
+  ): Promise<TokenResponse> {
+    return this.authService.loginWithEmailToken(ip, userAgent, token);
   }
 }
