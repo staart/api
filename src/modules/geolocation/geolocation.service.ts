@@ -8,8 +8,8 @@ import { ConfigService } from '@nestjs/config';
 export class GeolocationService implements OnModuleDestroy {
   constructor(private configService: ConfigService) {}
 
-  lookup: Reader<CityResponse> | null = null;
-  lru = new QuickLRU<string, Partial<CityResponse>>({
+  private lookup: Reader<CityResponse> | null = null;
+  private lru = new QuickLRU<string, Partial<CityResponse>>({
     maxSize: this.configService.get<number>('caching.geolocationLruSize'),
   });
 

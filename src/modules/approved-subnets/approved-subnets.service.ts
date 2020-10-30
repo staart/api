@@ -15,12 +15,14 @@ import { PrismaService } from '../prisma/prisma.service';
 import anonymize from 'ip-anonymize';
 import { hash } from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
+import { GeolocationService } from '../geolocation/geolocation.service';
 
 @Injectable()
 export class ApprovedSubnetsService {
   constructor(
     private prisma: PrismaService,
     private configService: ConfigService,
+    private geolocationService: GeolocationService,
   ) {}
 
   async getApprovedSubnets(
@@ -82,10 +84,15 @@ export class ApprovedSubnetsService {
       anonymize(ipAddress),
       this.configService.get<number>('security.saltRounds'),
     );
+    const location = await this.geolocationService.getLocation(ipAddress);
     const approved = await this.prisma.approvedSubnets.create({
       data: {
         user: { connect: { id: userId } },
         subnet,
+        city: location?.city?.names?.en,
+        region: location?.subdivisions.pop()?.names?.en,
+        timezone: location?.location?.time_zone,
+        countryCode: location?.country?.iso_code,
         createdAt: new Date(),
       },
     });
