@@ -135,14 +135,18 @@ export class MembershipsService {
     });
   }
 
-  async createGroupMembership(groupId: number, data: CreateMembershipInput) {
+  async createGroupMembership(
+    ipAddress: string,
+    groupId: number,
+    data: CreateMembershipInput,
+  ) {
     const emailSafe = safeEmail(data.email);
     let user = this.prisma.expose(
       await this.prisma.users.findFirst({
         where: { emails: { some: { emailSafe } } },
       }),
     );
-    if (!user) user = await this.auth.register(data);
+    if (!user) user = await this.auth.register(ipAddress, data);
     return this.prisma.memberships.create({
       data: {
         role: data.role,

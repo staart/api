@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Ip,
   Param,
   ParseIntPipe,
   Patch,
@@ -29,10 +30,11 @@ export class GroupMembershipController {
   @Post()
   @Scopes('group-{groupId}:write-membership')
   async create(
+    @Ip() ip: string,
     @Param('groupId', ParseIntPipe) groupId: number,
     @Body() data: CreateGroupMembershipDto,
   ): Promise<Expose<memberships>> {
-    return this.membershipsService.createGroupMembership(groupId, data);
+    return this.membershipsService.createGroupMembership(ip, groupId, data);
   }
 
   @Get()

@@ -11,6 +11,7 @@ import { JwtAuthGuard } from './modules/auth/jwt-auth.guard';
 import { ScopesGuard } from './modules/auth/scope.guard';
 import { EmailModule } from './modules/email/email.module';
 import { EmailsModule } from './modules/emails/emails.module';
+import { GeolocationModule } from './modules/geolocation/geolocation.module';
 import { GroupsModule } from './modules/groups/groups.module';
 import { MultiFactorAuthenticationModule } from './modules/multi-factor-authentication/multi-factor-authentication.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
@@ -39,6 +40,7 @@ import { UsersModule } from './modules/users/users.module';
     GroupsModule,
     MultiFactorAuthenticationModule,
     ApprovedSubnetsModule,
+    GeolocationModule,
   ],
   providers: [
     {

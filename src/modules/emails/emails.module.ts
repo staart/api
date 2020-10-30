@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { ApprovedSubnetsService } from '../approved-subnets/approved-subnets.service';
 import { AuthService } from '../auth/auth.service';
 import { EmailModule } from '../email/email.module';
+import { GeolocationService } from '../geolocation/geolocation.service';
 import { PrismaModule } from '../prisma/prisma.module';
 import { PwnedModule } from '../pwned/pwned.module';
 import { TokensModule } from '../tokens/tokens.module';
@@ -22,6 +24,12 @@ import { EmailsService } from './emails.service';
     }),
   ],
   controllers: [EmailController],
-  providers: [EmailsService, UsersService, AuthService],
+  providers: [
+    EmailsService,
+    UsersService,
+    AuthService,
+    GeolocationService,
+    ApprovedSubnetsService,
+  ],
 })
 export class EmailsModule {}

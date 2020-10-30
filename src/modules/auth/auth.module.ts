@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { ApprovedSubnetsModule } from '../approved-subnets/approved-subnets.module';
+import { ApprovedSubnetsService } from '../approved-subnets/approved-subnets.service';
 import { EmailModule } from '../email/email.module';
 import { GeolocationModule } from '../geolocation/geolocation.module';
 import { PrismaModule } from '../prisma/prisma.module';
@@ -28,6 +29,6 @@ import { JwtStrategy } from './jwt.strategy';
   ],
   controllers: [AuthController],
   exports: [AuthService],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, ApprovedSubnetsService],
 })
 export class AuthModule {}
