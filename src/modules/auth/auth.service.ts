@@ -24,10 +24,12 @@ import {
   EMAIL_VERIFY_TOKEN,
   PASSWORD_RESET_TOKEN,
   TWO_FACTOR_TOKEN,
+  APPROVE_SUBNET_TOKEN,
 } from '../tokens/tokens.constants';
 import { TokensService } from '../tokens/tokens.service';
 import { RegisterDto } from './auth.dto';
 import { AccessTokenClaims } from './auth.interface';
+import anonymize from 'ip-anonymize';
 
 @Injectable()
 export class AuthService {
@@ -300,7 +302,11 @@ export class AuthService {
   ) {
     const user = await this.prisma.users.findOne({
       where: { id },
-      select: { twoFactorSecret: true, twoFactorEnabled: true },
+      select: {
+        twoFactorSecret: true,
+        twoFactorEnabled: true,
+        checkLocationOnLogin: true,
+      },
     });
     if (!user) throw new NotFoundException();
     if (!user.twoFactorEnabled)
@@ -336,6 +342,43 @@ export class AuthService {
       accessToken: await this.getAccessToken(id),
       refreshToken: token,
     };
+  }
+
+  private async checkLoginSubnet(
+    ipAddress: string,
+    _: string, // userAgent
+    checkLocationOnLogin: boolean,
+    id: number,
+  ): Promise<void> {
+    if (!checkLocationOnLogin) return;
+    const subnet = anonymize(ipAddress);
+    const isApproved = await this.prisma.approvedLocations.findFirst({
+      where: { user: { id }, subnet },
+    });
+    if (!isApproved) {
+      const user = await this.prisma.users.findOne({
+        where: { id },
+        select: { name: true, prefersEmail: true },
+      });
+      if (!user) throw new NotFoundException('User not found');
+      this.email.send({
+        to: `"${user.name}" <${user.prefersEmail.emailSafe}>`,
+        template: 'auth/approve-subnets',
+        data: {
+          name: user.name,
+          subnet,
+          minutes: 30,
+          link: `${this.configService.get<string>(
+            'frontendUrl',
+          )}/auth/reset-password?token=${this.tokensService.signJwt(
+            APPROVE_SUBNET_TOKEN,
+            id,
+            '30m',
+          )}`,
+        },
+      });
+      throw new UnauthorizedException('Verify this location before logging in');
+    }
   }
 
   async hashAndValidatePassword(

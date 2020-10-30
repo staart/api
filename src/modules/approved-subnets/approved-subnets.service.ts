@@ -12,6 +12,7 @@ import {
 } from '@prisma/client';
 import { Expose } from 'src/modules/prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
+import anonymize from 'ip-anonymize';
 
 @Injectable()
 export class ApprovedSubnetsService {
@@ -70,5 +71,15 @@ export class ApprovedSubnetsService {
     return this.prisma.expose<approvedLocations>(approvedLocation);
   }
 
-  async approveNewSubnet(userId: number, ipAddress: string) {}
+  async approveNewSubnet(userId: number, ipAddress: string) {
+    const subnet = anonymize(ipAddress);
+    const approved = await this.prisma.approvedLocations.create({
+      data: {
+        user: { connect: { id: userId } },
+        subnet,
+        createdAt: new Date(),
+      },
+    });
+    return this.prisma.expose<approvedLocations>(approved);
+  }
 }
