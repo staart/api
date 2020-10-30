@@ -30,6 +30,7 @@ import { TokensService } from '../tokens/tokens.service';
 import { RegisterDto } from './auth.dto';
 import { AccessTokenClaims } from './auth.interface';
 import anonymize from 'ip-anonymize';
+import { GeolocationService } from '../geolocation/geolocation.service';
 
 @Injectable()
 export class AuthService {
@@ -42,6 +43,7 @@ export class AuthService {
     private jwtService: JwtService,
     private pwnedService: PwnedService,
     private tokensService: TokensService,
+    private geolocationService: GeolocationService,
   ) {
     this.authenticator = authenticator.create({
       window: [
@@ -366,12 +368,21 @@ export class AuthService {
         select: { name: true, prefersEmail: true },
       });
       if (!user) throw new NotFoundException('User not found');
+      const location = await this.geolocationService.getLocation(ipAddress);
+      const locationName =
+        [
+          location?.city?.names?.en,
+          location?.subdivisions[0]?.names?.en,
+          location?.country?.names?.en,
+        ]
+          .filter(i => i)
+          .join(', ') || 'Unknown location';
       this.email.send({
         to: `"${user.name}" <${user.prefersEmail.emailSafe}>`,
         template: 'auth/approve-subnets',
         data: {
           name: user.name,
-          subnet,
+          locationName,
           minutes: 30,
           link: `${this.configService.get<string>(
             'frontendUrl',

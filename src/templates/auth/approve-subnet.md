@@ -2,7 +2,7 @@
 
 Hi {{name}},
 
-Someone (hopefully you) logged in to your account from a new location ({{ subnet }}), so you'll have to approve it.
+Someone (hopefully you) logged in to your account from a new location ({{ locationName }}), so you'll have to approve it.
 
 <a href="{{ link }}" class="btn btn-primary">Approve this login</a>
 

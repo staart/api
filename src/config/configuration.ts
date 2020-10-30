@@ -3,6 +3,9 @@ export default () => ({
   meta: {
     totpServiceName: process.env.TOPT_SERVICE_NAME ?? 'Staart',
   },
+  caching: {
+    geolocationLruSize: process.env.GEOLOCATION_LRU_SIZE ?? 100,
+  },
   security: {
     saltRounds: process.env.SALT_ROUNDS ?? 10,
     jwtSecret: process.env.JWT_SECRET ?? 'staart',
