@@ -558,7 +558,10 @@ export class AuthService {
   ): Promise<string> {
     if (!ignorePwnedPassword) {
       if (!this.configService.get<boolean>('security.passwordPwnedCheck'))
-        return;
+        return await hash(
+          password,
+          this.configService.get<number>('security.saltRounds'),
+        );
       if (!(await this.pwnedService.isPasswordSafe(password)))
         throw new HttpException(
           'This password has been compromised in a data breach.',

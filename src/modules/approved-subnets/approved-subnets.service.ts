@@ -93,7 +93,6 @@ export class ApprovedSubnetsService {
         region: location?.subdivisions.pop()?.names?.en,
         timezone: location?.location?.time_zone,
         countryCode: location?.country?.iso_code,
-        createdAt: new Date(),
       },
     });
     return this.prisma.expose<approvedSubnets>(approved);
