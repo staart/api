@@ -49,6 +49,7 @@
     "p-queue": "^6.6.2",
     "p-retry": "^4.2.0",
     "passport": "^0.4.1",
+    "passport-headerapikey": "^1.2.2",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "qrcode": "^1.4.4",
