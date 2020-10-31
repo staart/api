@@ -67,6 +67,37 @@ export class StripeService {
     return result;
   }
 
+  async getInvoices(
+    groupId: number,
+    params: {
+      take?: number;
+      cursor?: { id: string };
+    },
+  ): Promise<Stripe.Invoice[]> {
+    const stripeId = await this.stripeId(groupId);
+    const result = await this.stripe.invoices.list({
+      customer: stripeId,
+      limit: params.take,
+      starting_after: params.cursor?.id,
+    });
+    return this.list<Stripe.Invoice>(result);
+  }
+
+  async getInvoice(
+    groupId: number,
+    invoiceId: string,
+  ): Promise<Stripe.Invoice> {
+    const stripeId = await this.stripeId(groupId);
+    const result = await this.stripe.invoices.retrieve(invoiceId);
+    if (result.customer !== stripeId)
+      throw new NotFoundException('Invoice not found');
+    return result;
+  }
+
+  private list<T>(result: Stripe.Response<Stripe.ApiList<T>>) {
+    return result.data;
+  }
+
   /** Get the Stripe customer ID from a group or throw an error */
   private async stripeId(groupId: number): Promise<string> {
     const group = await this.prisma.groups.findOne({
