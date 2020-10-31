@@ -1,5 +1,8 @@
 import { ConfigFactory } from '@nestjs/config/dist/interfaces';
 import { Configuration } from './configuration.interface';
+import { config } from 'dotenv';
+import dotenvExpand from 'dotenv-expand';
+dotenvExpand(config());
 
 export const int = (val: string | undefined, num: number): number =>
   val ? (isNaN(parseInt(val)) ? num : parseInt(val)) : num;
