@@ -13,7 +13,7 @@ import {
   apiKeysWhereInput,
   apiKeysWhereUniqueInput,
 } from '@prisma/client';
-import { Expose } from 'src/modules/prisma/prisma.interface';
+import { Expose } from '../../../src/modules/prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -48,13 +48,10 @@ export class ApiKeysService {
       where: { ...where, group: { id: groupId } },
       orderBy,
     });
-    return apiKeys.map(group => this.prisma.expose<apiKeys>(group));
+    return apiKeys.map((group) => this.prisma.expose<apiKeys>(group));
   }
 
-  async getApiKey(
-    groupId: number,
-    id: number,
-  ): Promise<Expose<apiKeys> | null> {
+  async getApiKey(groupId: number, id: number): Promise<Expose<apiKeys>> {
     const apiKey = await this.prisma.apiKeys.findOne({
       where: { id },
     });

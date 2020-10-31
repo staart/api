@@ -7,7 +7,7 @@ import {
   groupsWhereInput,
   groupsWhereUniqueInput,
 } from '@prisma/client';
-import { Expose } from 'src/modules/prisma/prisma.interface';
+import { Expose } from '../../../src/modules/prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -43,10 +43,10 @@ export class GroupsService {
       where,
       orderBy,
     });
-    return groups.map(user => this.prisma.expose<groups>(user));
+    return groups.map((user) => this.prisma.expose<groups>(user));
   }
 
-  async getGroup(id: number): Promise<Expose<groups> | null> {
+  async getGroup(id: number): Promise<Expose<groups>> {
     const group = await this.prisma.groups.findOne({
       where: { id },
     });

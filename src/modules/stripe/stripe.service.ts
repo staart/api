@@ -9,21 +9,28 @@ import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class StripeService {
-  stripe = new Stripe(this.configService.get<string>('payments.stripeApiKey'), {
-    apiVersion: null,
-  });
+  stripe: Stripe;
 
   constructor(
     private configService: ConfigService,
     private prisma: PrismaService,
-  ) {}
+  ) {
+    const stripeApiKey = this.configService.get<string>(
+      'payments.stripeApiKey',
+    );
+    if (!stripeApiKey) throw new Error('Stripe API key not found');
+    this.stripe = new Stripe(stripeApiKey, {
+      apiVersion: '2020-08-27',
+    });
+  }
 
   async createCustomer(groupId: number, data: Stripe.CustomerCreateParams) {
-    const team = await this.prisma.groups.findOne({
+    const group = await this.prisma.groups.findOne({
       where: { id: groupId },
       select: { attributes: true },
     });
-    const attributes = team.attributes as { stripeCustomerId?: string };
+    if (!group) throw new NotFoundException('Group not found');
+    const attributes = group.attributes as { stripeCustomerId?: string };
     if (attributes?.stripeCustomerId)
       throw new BadRequestException('Billing account is already set up');
     const result = await this.stripe.customers.create(data);
@@ -62,11 +69,12 @@ export class StripeService {
 
   /** Get the Stripe customer ID from a group or throw an error */
   private async stripeId(groupId: number): Promise<string> {
-    const team = await this.prisma.groups.findOne({
+    const group = await this.prisma.groups.findOne({
       where: { id: groupId },
       select: { attributes: true },
     });
-    const attributes = team.attributes as { stripeCustomerId?: string };
+    if (!group) throw new NotFoundException('Group not found');
+    const attributes = group.attributes as { stripeCustomerId?: string };
     if (!attributes?.stripeCustomerId)
       throw new BadRequestException('Billing account is not set up');
     return attributes.stripeCustomerId;

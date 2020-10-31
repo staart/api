@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import { ConfigService } from '@nestjs/config';
 import { users } from '@prisma/client';
@@ -20,6 +24,7 @@ export class MultiFactorAuthenticationService {
       where: { id: userId },
       select: { twoFactorEnabled: true },
     });
+    if (!enabled) throw new NotFoundException('User not found');
     if (enabled.twoFactorEnabled)
       throw new BadRequestException(
         'Two-factor authentication is already enabled',
@@ -37,6 +42,7 @@ export class MultiFactorAuthenticationService {
       where: { id: userId },
       select: { twoFactorEnabled: true },
     });
+    if (!enabled) throw new NotFoundException('User not found');
     if (!enabled.twoFactorEnabled)
       throw new BadRequestException('Two-factor authentication is not enabled');
     const user = await this.prisma.users.update({
@@ -54,7 +60,7 @@ export class MultiFactorAuthenticationService {
       codes.push(unsafeCode);
       const code = await hash(
         unsafeCode,
-        this.configService.get<number>('security.saltRounds'),
+        this.configService.get<number>('security.saltRounds') ?? 10,
       );
       await this.prisma.backupCodes.create({
         data: { user: { connect: { id } }, code },

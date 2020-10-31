@@ -2,6 +2,7 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -12,9 +13,10 @@ import {
   membershipsUpdateInput,
   membershipsWhereInput,
   membershipsWhereUniqueInput,
+  users,
 } from '@prisma/client';
-import { safeEmail } from 'src/helpers/safe-email';
-import { Expose } from 'src/modules/prisma/prisma.interface';
+import { safeEmail } from '../../../src/helpers/safe-email';
+import { Expose } from '../../../src/modules/prisma/prisma.interface';
 import { AuthService } from '../auth/auth.service';
 import { EmailService } from '../email/email.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -45,13 +47,13 @@ export class MembershipsService {
       orderBy,
       include: { group: true },
     });
-    return memberships.map(user => this.prisma.expose<memberships>(user));
+    return memberships.map((user) => this.prisma.expose<memberships>(user));
   }
 
   async getUserMembership(
     userId: number,
     id: number,
-  ): Promise<Expose<memberships> | null> {
+  ): Promise<Expose<memberships>> {
     const membership = await this.prisma.memberships.findOne({
       where: { id },
       include: { group: true },
@@ -65,7 +67,7 @@ export class MembershipsService {
   async getGroupMembership(
     groupId: number,
     id: number,
-  ): Promise<Expose<memberships> | null> {
+  ): Promise<Expose<memberships>> {
     const membership = await this.prisma.memberships.findOne({
       where: { id },
       include: { group: true },
@@ -144,11 +146,12 @@ export class MembershipsService {
     data: CreateMembershipInput,
   ) {
     const emailSafe = safeEmail(data.email);
-    let user = this.prisma.expose(
-      await this.prisma.users.findFirst({
-        where: { emails: { some: { emailSafe } } },
-      }),
-    );
+    const userResult = await this.prisma.users.findFirst({
+      where: { emails: { some: { emailSafe } } },
+    });
+    let user: Expose<users> | null = userResult
+      ? this.prisma.expose<users>(userResult)
+      : null;
     if (!user)
       user = await this.auth.register(ipAddress, { name: data.email, ...data });
     const result = await this.prisma.memberships.create({
@@ -189,9 +192,10 @@ export class MembershipsService {
     const membership = await this.prisma.memberships.findOne({
       where: { id: membershipId },
     });
+    if (!membership) throw new NotFoundException('Membership not found');
     if (
       membership.role === 'OWNER' &&
-      memberships.filter(i => i.role === 'OWNER').length === 1
+      memberships.filter((i) => i.role === 'OWNER').length === 1
     )
       throw new HttpException(
         'You cannot remove the sole owner of a group',

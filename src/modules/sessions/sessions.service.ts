@@ -10,7 +10,7 @@ import {
   sessionsWhereInput,
   sessionsWhereUniqueInput,
 } from '@prisma/client';
-import { Expose } from 'src/modules/prisma/prisma.interface';
+import { Expose } from '../../../src/modules/prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -34,13 +34,10 @@ export class SessionsService {
       where: { ...where, user: { id: userId } },
       orderBy,
     });
-    return sessions.map(user => this.prisma.expose<sessions>(user));
+    return sessions.map((user) => this.prisma.expose<sessions>(user));
   }
 
-  async getSession(
-    userId: number,
-    id: number,
-  ): Promise<Expose<sessions> | null> {
+  async getSession(userId: number, id: number): Promise<Expose<sessions>> {
     const session = await this.prisma.sessions.findOne({
       where: { id },
     });

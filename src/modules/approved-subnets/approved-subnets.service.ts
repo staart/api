@@ -10,7 +10,7 @@ import {
   approvedSubnetsWhereInput,
   approvedSubnetsWhereUniqueInput,
 } from '@prisma/client';
-import { Expose } from 'src/modules/prisma/prisma.interface';
+import { Expose } from '../../../src/modules/prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
 import anonymize from 'ip-anonymize';
 import { compare, hash } from 'bcrypt';
@@ -43,7 +43,7 @@ export class ApprovedSubnetsService {
       where: { ...where, user: { id: userId } },
       orderBy,
     });
-    return approvedSubnets.map(user =>
+    return approvedSubnets.map((user) =>
       this.prisma.expose<approvedSubnets>(user),
     );
   }
@@ -51,7 +51,7 @@ export class ApprovedSubnetsService {
   async getApprovedSubnet(
     userId: number,
     id: number,
-  ): Promise<Expose<approvedSubnets> | null> {
+  ): Promise<Expose<approvedSubnets>> {
     const approvedSubnet = await this.prisma.approvedSubnets.findOne({
       where: { id },
     });
@@ -82,7 +82,7 @@ export class ApprovedSubnetsService {
   async approveNewSubnet(userId: number, ipAddress: string) {
     const subnet = await hash(
       anonymize(ipAddress),
-      this.configService.get<number>('security.saltRounds'),
+      this.configService.get<number>('security.saltRounds') ?? 10,
     );
     const location = await this.geolocationService.getLocation(ipAddress);
     const approved = await this.prisma.approvedSubnets.create({
@@ -90,7 +90,7 @@ export class ApprovedSubnetsService {
         user: { connect: { id: userId } },
         subnet,
         city: location?.city?.names?.en,
-        region: location?.subdivisions.pop()?.names?.en,
+        region: location?.subdivisions?.pop()?.names?.en,
         timezone: location?.location?.time_zone,
         countryCode: location?.country?.iso_code,
       },

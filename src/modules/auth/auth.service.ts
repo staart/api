@@ -16,7 +16,7 @@ import { compare, hash } from 'bcrypt';
 import anonymize from 'ip-anonymize';
 import { authenticator } from 'otplib';
 import qrcode from 'qrcode';
-import { safeEmail } from 'src/helpers/safe-email';
+import { safeEmail } from '../../../src/helpers/safe-email';
 import { ApprovedSubnetsService } from '../approved-subnets/approved-subnets.service';
 import { EmailService } from '../email/email.service';
 import { GeolocationService } from '../geolocation/geolocation.service';
@@ -57,13 +57,16 @@ export class AuthService {
   ) {
     this.authenticator = authenticator.create({
       window: [
-        this.configService.get<number>('security.totpWindowPast'),
-        this.configService.get<number>('security.totpWindowFuture'),
+        this.configService.get<number>('security.totpWindowPast') ?? 0,
+        this.configService.get<number>('security.totpWindowFuture') ?? 0,
       ],
     });
   }
 
-  async validateUser(email: string, password?: string): Promise<ValidatedUser> {
+  async validateUser(
+    email: string,
+    password?: string,
+  ): Promise<ValidatedUser | null> {
     const emailSafe = safeEmail(email);
     const user = await this.prisma.users.findFirst({
       where: { emails: { some: { emailSafe } } },
@@ -79,13 +82,15 @@ export class AuthService {
       },
     });
     if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-    if (!user.emails.find(i => i.emailSafe === emailSafe)?.isVerified)
+    if (!user.emails.find((i) => i.emailSafe === emailSafe)?.isVerified)
       throw new UnauthorizedException('This email is not verified');
     if (!password || !user.password)
       throw new HttpException(
         'Logging in without passwords is not supported',
         HttpStatus.NOT_IMPLEMENTED,
       );
+    if (!user.prefersEmail)
+      throw new BadRequestException('User has no email attached to it');
     if (await compare(password, user.password))
       return {
         name: user.name,
@@ -119,8 +124,11 @@ export class AuthService {
     return this.loginResponse(ipAddress, userAgent, user.id);
   }
 
-  async register(ipAddress: string, data: RegisterDto): Promise<Expose<users>> {
-    const email = data.email;
+  async register(
+    ipAddress: string,
+    _data: RegisterDto,
+  ): Promise<Expose<users>> {
+    const { email, ...data } = _data;
     data.name = data.name
       .split(' ')
       .map((word, index) =>
@@ -132,12 +140,12 @@ export class AuthService {
       .join(' ');
     const emailSafe = safeEmail(email);
     const ignorePwnedPassword = !!data.ignorePwnedPassword;
-    delete data.email;
     delete data.ignorePwnedPassword;
-    data.password = await this.hashAndValidatePassword(
-      data.password,
-      ignorePwnedPassword,
-    );
+    if (data.password)
+      data.password = await this.hashAndValidatePassword(
+        data.password,
+        ignorePwnedPassword,
+      );
 
     const testUser = await this.prisma.users.findFirst({
       where: { emails: { some: { emailSafe } } },
@@ -263,7 +271,7 @@ export class AuthService {
     });
     const otpauth = this.authenticator.keyuri(
       userId.toString(),
-      this.configService.get<string>('meta.totpServiceName'),
+      this.configService.get<string>('meta.totpServiceName') ?? '',
       secret,
     );
     return qrcode.toDataURL(otpauth);
@@ -280,13 +288,15 @@ export class AuthService {
       throw new BadRequestException(
         'Two-factor authentication is already enabled',
       );
+    if (!user.twoFactorSecret)
+      user.twoFactorSecret = randomStringGenerator() as string;
     if (!this.authenticator.check(code, user.twoFactorSecret))
       throw new UnauthorizedException(
         'Two-factor authentication code is invalid',
       );
     const result = await this.prisma.users.update({
       where: { id: userId },
-      data: { twoFactorEnabled: true },
+      data: { twoFactorEnabled: true, twoFactorSecret: user.twoFactorSecret },
     });
     return this.prisma.expose<users>(result);
   }
@@ -395,7 +405,7 @@ export class AuthService {
       },
     });
     if (!user) throw new NotFoundException();
-    if (!user.twoFactorEnabled)
+    if (!user.twoFactorEnabled || !user.twoFactorSecret)
       throw new BadRequestException('Two-factor authentication is not enabled');
     if (this.authenticator.check(code, user.twoFactorSecret))
       return this.loginResponse(ipAddress, userAgent, id);
@@ -419,22 +429,23 @@ export class AuthService {
           const locationName =
             [
               location?.city?.names?.en,
-              location?.subdivisions[0]?.names?.en,
+              (location?.subdivisions ?? [])[0]?.names?.en,
               location?.country?.names?.en,
             ]
-              .filter(i => i)
+              .filter((i) => i)
               .join(', ') || 'Unknown location';
-          this.email.send({
-            to: `"${user.name}" <${user.prefersEmail.emailSafe}>`,
-            template: 'auth/used-backup-code',
-            data: {
-              name: user.name,
-              locationName,
-              link: `${this.configService.get<string>(
-                'frontendUrl',
-              )}/users/${id}/sessions`,
-            },
-          });
+          if (user.prefersEmail)
+            this.email.send({
+              to: `"${user.name}" <${user.prefersEmail.emailSafe}>`,
+              template: 'auth/used-backup-code',
+              data: {
+                name: user.name,
+                locationName,
+                link: `${this.configService.get<string>(
+                  'frontendUrl',
+                )}/users/${id}/sessions`,
+              },
+            });
         }
       }
     }
@@ -486,7 +497,7 @@ export class AuthService {
         data: {
           name: user.name,
           minutes: parseInt(
-            this.configService.get<string>('security.mfaTokenExpiry'),
+            this.configService.get<string>('security.mfaTokenExpiry') ?? '',
           ),
           link: `${this.configService.get<string>(
             'frontendUrl',
@@ -527,27 +538,28 @@ export class AuthService {
       const locationName =
         [
           location?.city?.names?.en,
-          location?.subdivisions[0]?.names?.en,
+          (location?.subdivisions ?? [])[0]?.names?.en,
           location?.country?.names?.en,
         ]
-          .filter(i => i)
+          .filter((i) => i)
           .join(', ') || 'Unknown location';
-      this.email.send({
-        to: `"${user.name}" <${user.prefersEmail.emailSafe}>`,
-        template: 'auth/approve-subnets',
-        data: {
-          name: user.name,
-          locationName,
-          minutes: 30,
-          link: `${this.configService.get<string>(
-            'frontendUrl',
-          )}/auth/reset-password?token=${this.tokensService.signJwt(
-            APPROVE_SUBNET_TOKEN,
-            { id },
-            '30m',
-          )}`,
-        },
-      });
+      if (user.prefersEmail)
+        this.email.send({
+          to: `"${user.name}" <${user.prefersEmail.emailSafe}>`,
+          template: 'auth/approve-subnets',
+          data: {
+            name: user.name,
+            locationName,
+            minutes: 30,
+            link: `${this.configService.get<string>(
+              'frontendUrl',
+            )}/auth/reset-password?token=${this.tokensService.signJwt(
+              APPROVE_SUBNET_TOKEN,
+              { id },
+              '30m',
+            )}`,
+          },
+        });
       throw new UnauthorizedException('Verify this location before logging in');
     }
   }
@@ -560,7 +572,7 @@ export class AuthService {
       if (!this.configService.get<boolean>('security.passwordPwnedCheck'))
         return await hash(
           password,
-          this.configService.get<number>('security.saltRounds'),
+          this.configService.get<number>('security.saltRounds') ?? 10,
         );
       if (!(await this.pwnedService.isPasswordSafe(password)))
         throw new HttpException(
@@ -570,7 +582,7 @@ export class AuthService {
     }
     return await hash(
       password,
-      this.configService.get<number>('security.saltRounds'),
+      this.configService.get<number>('security.saltRounds') ?? 10,
     );
   }
 
@@ -580,7 +592,7 @@ export class AuthService {
       where: { user: { id: userId } },
       select: { id: true, role: true, group: { select: { id: true } } },
     });
-    memberships.forEach(membership => {
+    memberships.forEach((membership) => {
       scopes.push(`membership-${membership.id}:*`);
       if (membership.role === 'OWNER')
         scopes.push(`group-${membership.group.id}:*`);

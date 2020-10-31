@@ -13,7 +13,7 @@ import {
   accessTokensWhereInput,
   accessTokensWhereUniqueInput,
 } from '@prisma/client';
-import { Expose } from 'src/modules/prisma/prisma.interface';
+import { Expose } from '../../../src/modules/prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -47,13 +47,13 @@ export class AccessTokensService {
       where: { ...where, user: { id: userId } },
       orderBy,
     });
-    return accessTokens.map(user => this.prisma.expose<accessTokens>(user));
+    return accessTokens.map((user) => this.prisma.expose<accessTokens>(user));
   }
 
   async getAccessToken(
     userId: number,
     id: number,
-  ): Promise<Expose<accessTokens> | null> {
+  ): Promise<Expose<accessTokens>> {
     const accessToken = await this.prisma.accessTokens.findOne({
       where: { id },
     });

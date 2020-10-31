@@ -5,7 +5,7 @@ import {
   HttpStatus,
   ArgumentMetadata,
 } from '@nestjs/common';
-import { parseObjectLiteral } from 'src/helpers/parse-object-literal';
+import { parseObjectLiteral } from '../helpers/parse-object-literal';
 
 /** Convert a string like "id: 12, b: 'Anand'" to { id: 12, name: "Anand" } */
 @Injectable()
@@ -18,10 +18,10 @@ export class WherePipe implements PipeTransform {
     try {
       const rules = parseObjectLiteral(value);
       const items: Record<string, number | string> = {};
-      rules.forEach(rule => {
+      rules.forEach((rule) => {
         const num = Number(rule[1]);
         if (!isNaN(num)) items[rule[0]] = num;
-        else items[rule[0]] = rule[1];
+        else if (rule[1]) items[rule[0]] = rule[1];
       });
       return items;
     } catch (_) {

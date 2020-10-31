@@ -38,7 +38,7 @@ export interface ValidatedUser {
   id: number;
   name: string;
   twoFactorEnabled: boolean;
-  twoFactorSecret?: string;
+  twoFactorSecret: string | null;
   checkLocationOnLogin: boolean;
   prefersEmailAddress: string;
 }

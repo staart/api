@@ -17,7 +17,7 @@ export class UpdateMembershipDto {
 export class CreateGroupMembershipDto {
   @IsEmail()
   @IsNotEmpty()
-  email: string;
+  email!: string;
 
   @IsString()
   @IsOptional()

@@ -13,7 +13,7 @@ import {
   usersWhereInput,
   usersOrderByInput,
 } from '@prisma/client';
-import { Expose } from 'src/modules/prisma/prisma.interface';
+import { Expose } from '../../../src/modules/prisma/prisma.interface';
 import { AuthService } from '../auth/auth.service';
 import { compare } from 'bcrypt';
 import { PasswordUpdateInput } from './users.interface';
@@ -22,7 +22,7 @@ import { PasswordUpdateInput } from './users.interface';
 export class UsersService {
   constructor(private prisma: PrismaService, private auth: AuthService) {}
 
-  async getUser(id: number): Promise<Expose<users> | null> {
+  async getUser(id: number): Promise<Expose<users>> {
     const user = await this.prisma.users.findOne({
       where: { id },
     });
@@ -45,7 +45,7 @@ export class UsersService {
       where,
       orderBy,
     });
-    return users.map(user => this.prisma.expose<users>(user));
+    return users.map((user) => this.prisma.expose<users>(user));
   }
 
   async createUser(data: usersCreateInput): Promise<users> {

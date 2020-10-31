@@ -11,7 +11,7 @@ import {
 class Address {
   @IsString()
   @IsNotEmpty()
-  line1: string;
+  line1!: string;
 
   @IsString()
   @IsOptional()
@@ -38,11 +38,11 @@ class Address {
 export class CreateBillingDto {
   @IsEmail()
   @IsNotEmpty()
-  email: string;
+  email!: string;
 
   @IsString()
   @IsNotEmpty()
-  name: string;
+  name!: string;
 
   @IsString()
   @IsOptional()
@@ -88,17 +88,17 @@ export class UpdateBillingDto {
 export class ReplaceBillingDto {
   @IsEmail()
   @IsNotEmpty()
-  email: string;
+  email!: string;
 
   @IsString()
   @IsNotEmpty()
-  name: string;
+  name!: string;
 
   @IsString()
   @IsNotEmpty()
-  phone: string;
+  phone!: string;
 
   @IsObject()
   @ValidateNested()
-  address: Address;
+  address!: Address;
 }

@@ -1,14 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EmailConfig, EmailOptions } from './email.interface';
-import PQueue from 'p-queue';
-import pRetry from 'p-retry';
+import { render } from '@staart/mustache-markdown';
+import { promises as fs } from 'fs';
+import mem from 'mem';
 import nodemailer from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
-import { promises as fs } from 'fs';
+import PQueue from 'p-queue';
+import pRetry from 'p-retry';
 import { join } from 'path';
-import mem from 'mem';
-import { render } from '@staart/mustache-markdown';
+import { EmailConfig, EmailOptions } from './email.interface';
 
 @Injectable()
 export class EmailService {
@@ -19,7 +19,9 @@ export class EmailService {
   private readTemplate = mem(this.readTemplateUnmemoized);
 
   constructor(private configService: ConfigService) {
-    this.config = this.configService.get<EmailConfig>('email');
+    const emailConfig = this.configService.get<EmailConfig>('email');
+    if (emailConfig) this.config = emailConfig;
+    else throw new Error('Email configuration not found');
     this.transport = nodemailer.createTransport(this.config);
   }
 
@@ -35,7 +37,7 @@ export class EmailService {
             }),
           {
             retries: 3,
-            onFailedAttempt: error => {
+            onFailedAttempt: (error) => {
               this.logger.error(
                 `Email to ${options.to} failed, retrying (${error.retriesLeft} attempts left)`,
                 error.name,
@@ -53,10 +55,7 @@ export class EmailService {
       const layout = await this.readTemplate('layout.html');
       let template = await this.readTemplate(options.template);
       if (template.startsWith('#')) {
-        const subject = template
-          .split('\n', 1)[0]
-          .replace('#', '')
-          .trim();
+        const subject = template.split('\n', 1)[0].replace('#', '').trim();
         if (subject) {
           options.subject = options.subject ?? subject;
           template = template.replace(`# ${template.split('\n', 1)[0]}`, '');

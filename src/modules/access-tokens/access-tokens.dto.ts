@@ -53,24 +53,24 @@ export class UpdateAccessTokenDto {
 export class ReplaceAccessTokenDto {
   @IsString()
   @IsNotEmpty()
-  description: string;
+  description!: string;
 
   @IsString()
   @IsNotEmpty()
-  name: string;
+  name!: string;
 
   @IsArray()
   @IsString({ each: true })
   @IsNotEmpty()
-  scopes: string[];
+  scopes!: string[];
 
   @IsArray()
   @IsString({ each: true })
   @IsNotEmpty()
-  ipRestrictions: string[];
+  ipRestrictions!: string[];
 
   @IsArray()
   @IsString({ each: true })
   @IsNotEmpty()
-  referrerRestrictions: string[];
+  referrerRestrictions!: string[];
 }

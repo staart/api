@@ -10,7 +10,8 @@ export class GeolocationService implements OnModuleDestroy {
 
   private lookup: Reader<CityResponse> | null = null;
   private lru = new QuickLRU<string, Partial<CityResponse>>({
-    maxSize: this.configService.get<number>('caching.geolocationLruSize'),
+    maxSize:
+      this.configService.get<number>('caching.geolocationLruSize') ?? 100,
   });
 
   onModuleDestroy() {
@@ -19,7 +20,7 @@ export class GeolocationService implements OnModuleDestroy {
 
   /** Get the geolocation from an IP address */
   async getLocation(ipAddress: string): Promise<Partial<CityResponse>> {
-    if (this.lru.has(ipAddress)) return this.lru.get(ipAddress);
+    if (this.lru.has(ipAddress)) return this.lru.get(ipAddress) ?? {};
     const result = await this.getSafeLocation(ipAddress);
     this.lru.set(ipAddress, result);
     return result;
@@ -35,11 +36,16 @@ export class GeolocationService implements OnModuleDestroy {
     }
   }
 
-  private async getUnsafeLocation(ipAddress: string) {
+  private async getUnsafeLocation(
+    ipAddress: string,
+  ): Promise<Partial<CityResponse>> {
     if (!this.lookup)
-      this.lookup = await geolite2.open<CityResponse>('GeoLite2-City', path => {
-        return maxmind.open(path);
-      });
-    return this.lookup.get(ipAddress);
+      this.lookup = await geolite2.open<CityResponse>(
+        'GeoLite2-City',
+        (path) => {
+          return maxmind.open(path);
+        },
+      );
+    return this.lookup.get(ipAddress) ?? {};
   }
 }

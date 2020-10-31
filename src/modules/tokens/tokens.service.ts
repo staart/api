@@ -21,18 +21,22 @@ export class TokensService {
     options?: SignOptions,
   ) {
     if (typeof payload === 'number') payload = payload.toString();
-    return sign(payload, this.configService.get<string>('security.jwtSecret'), {
-      ...options,
-      subject,
-      expiresIn,
-    });
+    return sign(
+      payload,
+      this.configService.get<string>('security.jwtSecret') ?? '',
+      {
+        ...options,
+        subject,
+        expiresIn,
+      },
+    );
   }
 
   verify<T>(subject: string, token: string, options?: VerifyOptions) {
     try {
       return (verify(
         token,
-        this.configService.get<string>('security.jwtSecret'),
+        this.configService.get<string>('security.jwtSecret') ?? '',
         { ...options, subject },
       ) as any) as T;
     } catch (error) {

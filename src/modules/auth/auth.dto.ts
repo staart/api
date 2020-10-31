@@ -16,11 +16,11 @@ export class RegisterDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(3)
-  name: string;
+  name!: string;
 
   @IsEmail()
   @IsNotEmpty()
-  email: string;
+  email!: string;
 
   @IsBoolean()
   @IsOptional()
@@ -82,24 +82,24 @@ export class RegisterDto {
 export class ResendEmailVerificationDto {
   @IsEmail()
   @IsNotEmpty()
-  email: string;
+  email!: string;
 }
 
 export class ForgotPasswordDto {
   @IsEmail()
   @IsNotEmpty()
-  email: string;
+  email!: string;
 }
 
 export class ResetPasswordDto {
   @IsString()
   @IsNotEmpty()
-  token: string;
+  token!: string;
 
   @IsString()
   @MinLength(8)
   @IsNotEmpty()
-  password: string;
+  password!: string;
 
   @IsBoolean()
   @IsOptional()
@@ -109,7 +109,7 @@ export class ResetPasswordDto {
 export class LoginDto {
   @IsEmail()
   @IsNotEmpty()
-  email: string;
+  email!: string;
 
   @IsString()
   @MinLength(8)
@@ -125,16 +125,16 @@ export class LoginDto {
 export class TotpLoginDto {
   @IsString()
   @IsNotEmpty()
-  token: string;
+  token!: string;
 
   @IsString()
   @Length(6)
   @IsNotEmpty()
-  code: string;
+  code!: string;
 }
 
 export class VerifyEmailDto {
   @IsString()
   @IsNotEmpty()
-  token: string;
+  token!: string;
 }

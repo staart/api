@@ -22,7 +22,7 @@ export class CreateGroupDto {
 
   @IsString()
   @IsNotEmpty()
-  name: string;
+  name!: string;
 
   @IsBoolean()
   @IsOptional()
@@ -34,7 +34,7 @@ export class CreateGroupDto {
 
   @IsObject()
   @IsOptional()
-  attributes: Record<string, any>;
+  attributes?: Record<string, any>;
 }
 
 export class UpdateGroupDto {
@@ -64,35 +64,35 @@ export class UpdateGroupDto {
 
   @IsObject()
   @IsOptional()
-  attributes: Record<string, any>;
+  attributes?: Record<string, any>;
 }
 
 export class ReplaceGroupDto {
   @IsBoolean()
   @IsNotEmpty()
-  autoJoinDomain: boolean;
+  autoJoinDomain!: boolean;
 
   @IsBoolean()
   @IsNotEmpty()
-  forceTwoFactor: boolean;
+  forceTwoFactor!: boolean;
 
   @IsArray()
   @IsNotEmpty()
-  ipRestrictions: string;
+  ipRestrictions!: string;
 
   @IsString()
   @IsNotEmpty()
-  name: string;
+  name!: string;
 
   @IsBoolean()
   @IsNotEmpty()
-  onlyAllowDomain: boolean;
+  onlyAllowDomain!: boolean;
 
   @IsString()
   @IsNotEmpty()
-  profilePictureUrl: string;
+  profilePictureUrl!: string;
 
   @IsObject()
   @IsNotEmpty()
-  attributes: Record<string, any>;
+  attributes!: Record<string, any>;
 }

@@ -14,10 +14,10 @@ export class TasksService {
   @Cron(CronExpression.EVERY_DAY_AT_1PM)
   async deleteOldSessions() {
     const now = new Date();
-    now.setDate(
-      now.getDate() -
-        this.configService.get<number>('security.unusedRefreshTokenExpiryDays'),
-    );
+    const unusedRefreshTokenExpiryDays =
+      this.configService.get<number>('security.unusedRefreshTokenExpiryDays') ??
+      30;
+    now.setDate(now.getDate() - unusedRefreshTokenExpiryDays);
     const deleted = await this.prisma.sessions.deleteMany({
       where: { updatedAt: { lte: now } },
     });

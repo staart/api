@@ -11,8 +11,8 @@ import {
   emailsWhereInput,
   emailsWhereUniqueInput,
 } from '@prisma/client';
-import { safeEmail } from 'src/helpers/safe-email';
-import { Expose } from 'src/modules/prisma/prisma.interface';
+import { safeEmail } from '../../../src/helpers/safe-email';
+import { Expose } from '../../../src/modules/prisma/prisma.interface';
 import { AuthService } from '../auth/auth.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';
@@ -55,10 +55,10 @@ export class EmailsService {
       where: { ...where, user: { id: userId } },
       orderBy,
     });
-    return emails.map(user => this.prisma.expose<emails>(user));
+    return emails.map((user) => this.prisma.expose<emails>(user));
   }
 
-  async getEmail(userId: number, id: number): Promise<Expose<emails> | null> {
+  async getEmail(userId: number, id: number): Promise<Expose<emails>> {
     const email = await this.prisma.emails.findOne({
       where: { id },
     });

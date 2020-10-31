@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import {
   approvedSubnets,
   emails,
@@ -6,10 +6,11 @@ import {
   sessions,
   users,
 } from '@prisma/client';
-import { Expose } from 'src/modules/prisma/prisma.interface';
+import { Expose } from './prisma.interface';
 
 @Injectable()
-export class PrismaService extends PrismaClient
+export class PrismaService
+  extends PrismaClient
   implements OnModuleInit, OnModuleDestroy {
   async onModuleInit() {
     await this.$connect();
@@ -21,12 +22,12 @@ export class PrismaService extends PrismaClient
 
   /** Delete sensitive keys from an object */
   expose<T>(item: T): Expose<T> {
-    if (!item) return null;
-    delete ((item as any) as users).password;
-    delete ((item as any) as users).twoFactorSecret;
-    delete ((item as any) as sessions).token;
-    delete ((item as any) as emails).emailSafe;
-    delete ((item as any) as approvedSubnets).subnet;
+    if (!item) return {} as T;
+    delete ((item as any) as Partial<users>).password;
+    delete ((item as any) as Partial<users>).twoFactorSecret;
+    delete ((item as any) as Partial<sessions>).token;
+    delete ((item as any) as Partial<emails>).emailSafe;
+    delete ((item as any) as Partial<approvedSubnets>).subnet;
     return item;
   }
 }
