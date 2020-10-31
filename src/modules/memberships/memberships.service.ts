@@ -15,8 +15,8 @@ import {
   membershipsWhereUniqueInput,
   users,
 } from '@prisma/client';
-import { safeEmail } from '../../../src/helpers/safe-email';
-import { Expose } from '../../../src/modules/prisma/prisma.interface';
+import { safeEmail } from '../../helpers/safe-email';
+import { Expose } from '../../modules/prisma/prisma.interface';
 import { AuthService } from '../auth/auth.service';
 import { EmailService } from '../email/email.service';
 import { PrismaService } from '../prisma/prisma.service';

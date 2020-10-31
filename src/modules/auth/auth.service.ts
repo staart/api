@@ -16,7 +16,7 @@ import { compare, hash } from 'bcrypt';
 import anonymize from 'ip-anonymize';
 import { authenticator } from 'otplib';
 import qrcode from 'qrcode';
-import { safeEmail } from '../../../src/helpers/safe-email';
+import { safeEmail } from '../../helpers/safe-email';
 import { ApprovedSubnetsService } from '../approved-subnets/approved-subnets.service';
 import { EmailService } from '../email/email.service';
 import { GeolocationService } from '../geolocation/geolocation.service';

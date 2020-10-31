@@ -13,7 +13,7 @@ import {
   usersWhereInput,
   usersOrderByInput,
 } from '@prisma/client';
-import { Expose } from '../../../src/modules/prisma/prisma.interface';
+import { Expose } from '../../modules/prisma/prisma.interface';
 import { AuthService } from '../auth/auth.service';
 import { compare } from 'bcrypt';
 import { PasswordUpdateInput } from './users.interface';

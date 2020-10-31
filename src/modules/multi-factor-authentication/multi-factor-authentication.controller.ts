@@ -7,7 +7,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { users } from '@prisma/client';
-import { Expose } from '../../../src/modules/prisma/prisma.interface';
+import { Expose } from '../../modules/prisma/prisma.interface';
 import { Scopes } from '../auth/scope.decorator';
 import { EnableTotpMfaDto } from './multi-factor-authentication.dto';
 import { MultiFactorAuthenticationService } from './multi-factor-authentication.service';

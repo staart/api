@@ -10,7 +10,7 @@ import {
   approvedSubnetsWhereInput,
   approvedSubnetsWhereUniqueInput,
 } from '@prisma/client';
-import { Expose } from '../../../src/modules/prisma/prisma.interface';
+import { Expose } from '../../modules/prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
 import anonymize from 'ip-anonymize';
 import { compare, hash } from 'bcrypt';

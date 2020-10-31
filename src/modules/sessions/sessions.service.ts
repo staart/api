@@ -10,7 +10,7 @@ import {
   sessionsWhereInput,
   sessionsWhereUniqueInput,
 } from '@prisma/client';
-import { Expose } from '../../../src/modules/prisma/prisma.interface';
+import { Expose } from '../../modules/prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()

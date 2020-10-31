@@ -7,11 +7,11 @@ import {
   Query,
 } from '@nestjs/common';
 import { approvedSubnets } from '@prisma/client';
-import { Expose } from '../../../src/modules/prisma/prisma.interface';
-import { CursorPipe } from '../../../src/pipes/cursor.pipe';
-import { OptionalIntPipe } from '../../../src/pipes/optional-int.pipe';
-import { OrderByPipe } from '../../../src/pipes/order-by.pipe';
-import { WherePipe } from '../../../src/pipes/where.pipe';
+import { Expose } from '../../modules/prisma/prisma.interface';
+import { CursorPipe } from '../../pipes/cursor.pipe';
+import { OptionalIntPipe } from '../../pipes/optional-int.pipe';
+import { OrderByPipe } from '../../pipes/order-by.pipe';
+import { WherePipe } from '../../pipes/where.pipe';
 import { Scopes } from '../auth/scope.decorator';
 import { ApprovedSubnetsService } from './approved-subnets.service';
 
