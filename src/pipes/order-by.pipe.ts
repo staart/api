@@ -19,8 +19,9 @@ export class OrderByPipe implements PipeTransform {
       const orderBy: Record<string, 'asc' | 'desc'> = {};
       rules.forEach((rule) => {
         const [key, order] = rule.split(' ') as [string, 'asc' | 'desc'];
-        if (!['asc', 'desc'].includes(order)) throw new Error();
-        orderBy[key] = order;
+        if (!['asc', 'desc'].includes(order.toLocaleLowerCase()))
+          throw new Error('Order should be "ASC" or "DESC"');
+        orderBy[key] = order.toLocaleLowerCase() as 'asc' | 'desc';
       });
       return orderBy;
     } catch (_) {
