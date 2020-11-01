@@ -32,6 +32,12 @@ export interface Configuration {
     };
   };
 
+  sms: {
+    smsServiceName: string;
+    twilioAccountSid: string;
+    twilioAuthToken: string;
+  };
+
   payments: {
     stripeApiKey: string;
     stripeProductId: string;

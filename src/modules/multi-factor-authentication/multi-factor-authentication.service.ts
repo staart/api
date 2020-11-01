@@ -5,11 +5,12 @@ import {
 } from '@nestjs/common';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import { ConfigService } from '@nestjs/config';
-import { users } from '@prisma/client';
+import { MfaMethod, users } from '@prisma/client';
 import { hash } from 'bcrypt';
 import { AuthService } from '../auth/auth.service';
 import { Expose } from '../prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
+import { TwilioService } from '../twilio/twilio.service';
 
 @Injectable()
 export class MultiFactorAuthenticationService {
@@ -17,6 +18,7 @@ export class MultiFactorAuthenticationService {
     private prisma: PrismaService,
     private auth: AuthService,
     private configService: ConfigService,
+    private twilioService: TwilioService,
   ) {}
 
   async requestTotpMfa(userId: number): Promise<string> {
@@ -32,12 +34,39 @@ export class MultiFactorAuthenticationService {
     return this.auth.getTotpQrCode(userId);
   }
 
-  async enableTotpMfa(userId: number, token: string): Promise<string[]> {
-    await this.auth.enableTotp(userId, token);
+  async requestSmsMfa(userId: number, phone: string): Promise<void> {
+    const enabled = await this.prisma.users.findOne({
+      where: { id: userId },
+      select: { twoFactorMethod: true },
+    });
+    if (!enabled) throw new NotFoundException('User not found');
+    if (enabled.twoFactorMethod !== 'NONE')
+      throw new BadRequestException(
+        'Two-factor authentication is already enabled',
+      );
+    const secret = randomStringGenerator() as string;
+    await this.prisma.users.update({
+      where: { id: userId },
+      data: { twoFactorSecret: secret, twoFactorPhone: phone },
+    });
+    this.twilioService.send({
+      to: phone,
+      body: `${this.auth.getOneTimePassword(secret)} is your ${
+        this.configService.get<string>('sms.smsServiceName') ?? ''
+      } verification code.`,
+    });
+  }
+
+  async enableMfa(
+    method: MfaMethod,
+    userId: number,
+    token: string,
+  ): Promise<string[]> {
+    await this.auth.enableMfaMethod(method, userId, token);
     return this.regenerateBackupCodes(userId);
   }
 
-  async disableTotpMfa(userId: number): Promise<Expose<users>> {
+  async disableMfa(userId: number): Promise<Expose<users>> {
     const enabled = await this.prisma.users.findOne({
       where: { id: userId },
       select: { twoFactorMethod: true },

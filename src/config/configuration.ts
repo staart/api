@@ -36,6 +36,11 @@ const configuration: Configuration = {
       pass: process.env.EMAIL_PASSWORD ?? '',
     },
   },
+  sms: {
+    smsServiceName: process.env.SMS_SERVICE_NAME ?? '',
+    twilioAccountSid: process.env.TWILIO_ACCOUNT_SID ?? '',
+    twilioAuthToken: process.env.TWILIO_AUTH_TOKEN ?? '',
+  },
   payments: {
     stripeApiKey: process.env.STRIPE_API_KEY ?? '',
     stripeProductId: process.env.STRIPE_PRODUCT_ID ?? '',

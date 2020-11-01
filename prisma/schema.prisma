@@ -38,6 +38,7 @@ enum UserRole {
 
 enum MfaMethod {
   NONE
+  SMS
   TOTP
   EMAIL
 }
@@ -72,6 +73,7 @@ model users {
   role                 UserRole             @default(USER)
   timezone             String               @default("America/Los_Angeles")
   twoFactorMethod      MfaMethod            @default(NONE)
+  twoFactorPhone       String?
   twoFactorSecret      String?
   attributes           Json?
   updatedAt            DateTime             @updatedAt

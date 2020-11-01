@@ -263,7 +263,7 @@ export class AuthService {
    * @returns Data URI string with QR code image
    */
   async getTotpQrCode(userId: number): Promise<string> {
-    const secret = randomStringGenerator();
+    const secret = randomStringGenerator() as string;
     await this.prisma.users.update({
       where: { id: userId },
       data: { twoFactorSecret: secret },
@@ -277,7 +277,11 @@ export class AuthService {
   }
 
   /** Enable two-factor authentication */
-  async enableTotp(userId: number, code: string): Promise<Expose<users>> {
+  async enableMfaMethod(
+    method: MfaMethod,
+    userId: number,
+    code: string,
+  ): Promise<Expose<users>> {
     const user = await this.prisma.users.findOne({
       where: { id: userId },
       select: { twoFactorSecret: true, twoFactorMethod: true },
@@ -295,7 +299,7 @@ export class AuthService {
       );
     const result = await this.prisma.users.update({
       where: { id: userId },
-      data: { twoFactorMethod: 'TOTP', twoFactorSecret: user.twoFactorSecret },
+      data: { twoFactorMethod: method, twoFactorSecret: user.twoFactorSecret },
     });
     return this.prisma.expose<users>(result);
   }
@@ -385,6 +389,10 @@ export class AuthService {
       data: { isVerified: true },
     });
     return this.prisma.expose<emails>(result);
+  }
+
+  getOneTimePassword(secret: string): string {
+    return this.authenticator.generate(secret);
   }
 
   private async loginUserWithTotpCode(
