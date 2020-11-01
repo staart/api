@@ -36,6 +36,12 @@ enum UserRole {
   USER
 }
 
+enum MfaMethod {
+  NONE
+  TOTP
+  EMAIL
+}
+
 enum MembershipRole {
   OWNER
   ADMIN
@@ -65,13 +71,13 @@ model users {
   profilePictureUrl    String               @default("https://unavatar.now.sh/fallback.png")
   role                 UserRole             @default(USER)
   timezone             String               @default("America/Los_Angeles")
-  twoFactorEnabled     Boolean              @default(false)
+  twoFactorMethod      MfaMethod            @default(NONE)
   twoFactorSecret      String?
   attributes           Json?
   updatedAt            DateTime             @updatedAt
   emails               emails[]             @relation("userEmails")
   accessTokens         accessTokens[]       @relation("userAccessTokens")
-  approvedSubnets    approvedSubnets[]  @relation("userApprovedSubnets")
+  approvedSubnets      approvedSubnets[]    @relation("userApprovedSubnets")
   backupCodes          backupCodes[]        @relation("userBackupCodes")
   identities           identities[]         @relation("userIdentities")
   memberships          memberships[]        @relation("userMemberships")
