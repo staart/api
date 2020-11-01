@@ -4,7 +4,6 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import {
   apiKeys,
   apiKeysCreateInput,
@@ -15,16 +14,20 @@ import {
 } from '@prisma/client';
 import { Expose } from '../../modules/prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
+import { TokensService } from '../tokens/tokens.service';
 
 @Injectable()
 export class ApiKeysService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private tokensService: TokensService,
+  ) {}
 
   async createApiKey(
     groupId: number,
     data: Omit<Omit<apiKeysCreateInput, 'apiKey'>, 'group'>,
   ): Promise<apiKeys> {
-    const apiKey = randomStringGenerator();
+    const apiKey = this.tokensService.generateUuid();
     return this.prisma.apiKeys.create({
       data: { ...data, apiKey, group: { connect: { id: groupId } } },
     });

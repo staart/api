@@ -3,7 +3,6 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import { ConfigService } from '@nestjs/config';
 import { MfaMethod, users } from '@prisma/client';
 import { hash } from 'bcrypt';
@@ -11,6 +10,7 @@ import { AuthService } from '../auth/auth.service';
 import { EmailService } from '../email/email.service';
 import { Expose } from '../prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
+import { TokensService } from '../tokens/tokens.service';
 import { TwilioService } from '../twilio/twilio.service';
 
 @Injectable()
@@ -21,6 +21,7 @@ export class MultiFactorAuthenticationService {
     private configService: ConfigService,
     private twilioService: TwilioService,
     private emailService: EmailService,
+    private tokensService: TokensService,
   ) {}
 
   async requestTotpMfa(userId: number): Promise<string> {
@@ -46,7 +47,7 @@ export class MultiFactorAuthenticationService {
       throw new BadRequestException(
         'Two-factor authentication is already enabled',
       );
-    const secret = randomStringGenerator() as string;
+    const secret = this.tokensService.generateUuid();
     await this.prisma.users.update({
       where: { id: userId },
       data: { twoFactorSecret: secret, twoFactorPhone: phone },
@@ -74,7 +75,7 @@ export class MultiFactorAuthenticationService {
       throw new BadRequestException(
         'Two-factor authentication is already enabled',
       );
-    const secret = randomStringGenerator() as string;
+    const secret = this.tokensService.generateUuid();
     await this.prisma.users.update({
       where: { id: userId },
       data: { twoFactorSecret: secret },
@@ -119,7 +120,7 @@ export class MultiFactorAuthenticationService {
     await this.prisma.backupCodes.deleteMany({ where: { user: { id } } });
     const codes: string[] = [];
     for await (const _ of [...Array(10)]) {
-      const unsafeCode = randomStringGenerator();
+      const unsafeCode = this.tokensService.generateUuid();
       codes.push(unsafeCode);
       const code = await hash(
         unsafeCode,

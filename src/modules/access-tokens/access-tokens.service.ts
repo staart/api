@@ -4,7 +4,6 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import {
   accessTokens,
   accessTokensCreateInput,
@@ -15,15 +14,20 @@ import {
 } from '@prisma/client';
 import { Expose } from '../../modules/prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
+import { TokensService } from '../tokens/tokens.service';
 
 @Injectable()
 export class AccessTokensService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private tokensService: TokensService,
+  ) {}
+
   async createAccessToken(
     userId: number,
     data: Omit<Omit<accessTokensCreateInput, 'accessToken'>, 'user'>,
   ): Promise<accessTokens> {
-    const accessToken = randomStringGenerator();
+    const accessToken = this.tokensService.generateUuid();
     return this.prisma.accessTokens.create({
       data: { ...data, accessToken, user: { connect: { id: userId } } },
     });

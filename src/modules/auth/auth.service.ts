@@ -7,7 +7,6 @@ import {
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Authenticator } from '@otplib/core';
@@ -263,7 +262,7 @@ export class AuthService {
    * @returns Data URI string with QR code image
    */
   async getTotpQrCode(userId: number): Promise<string> {
-    const secret = randomStringGenerator() as string;
+    const secret = this.tokensService.generateUuid();
     await this.prisma.users.update({
       where: { id: userId },
       data: { twoFactorSecret: secret },
@@ -292,7 +291,7 @@ export class AuthService {
         'Two-factor authentication is already enabled',
       );
     if (!user.twoFactorSecret)
-      user.twoFactorSecret = randomStringGenerator() as string;
+      user.twoFactorSecret = this.tokensService.generateUuid();
     if (!this.authenticator.check(code, user.twoFactorSecret))
       throw new UnauthorizedException(
         'Two-factor authentication code is invalid',
@@ -479,7 +478,7 @@ export class AuthService {
     userAgent: string,
     id: number,
   ): Promise<TokenResponse> {
-    const token = randomStringGenerator();
+    const token = this.tokensService.generateUuid();
     await this.prisma.sessions.create({
       data: { token, ipAddress, userAgent, user: { connect: { id } } },
     });
