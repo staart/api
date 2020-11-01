@@ -1,5 +1,6 @@
 import {
   IsBoolean,
+  IsEnum,
   IsIn,
   IsLocale,
   IsObject,
@@ -68,9 +69,9 @@ export class UpdateUserDto {
   @IsOptional()
   timezone?: string;
 
-  @IsBoolean()
+  @IsEnum(['NONE', 'TOTP', 'EMAIL'])
   @IsOptional()
-  twoFactorEnabled?: boolean;
+  twoFactorMethod?: string;
 
   @IsObject()
   @IsOptional()

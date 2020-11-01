@@ -66,10 +66,6 @@ export class RegisterDto {
   @IsOptional()
   timezone?: string;
 
-  @IsBoolean()
-  @IsOptional()
-  twoFactorEnabled?: boolean;
-
   @IsObject()
   @IsOptional()
   attributes?: Record<string, any>;

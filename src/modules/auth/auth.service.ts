@@ -11,7 +11,7 @@ import { randomStringGenerator } from '@nestjs/common/utils/random-string-genera
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Authenticator } from '@otplib/core';
-import { emails, users } from '@prisma/client';
+import { emails, MfaMethod, users } from '@prisma/client';
 import { compare, hash } from 'bcrypt';
 import anonymize from 'ip-anonymize';
 import { authenticator } from 'otplib';
@@ -35,7 +35,6 @@ import { RegisterDto } from './auth.dto';
 import {
   AccessTokenClaims,
   MfaTokenPayload,
-  MfaTypes,
   TokenResponse,
   TotpTokenResponse,
   ValidatedUser,
@@ -74,7 +73,7 @@ export class AuthService {
         id: true,
         password: true,
         emails: true,
-        twoFactorEnabled: true,
+        twoFactorMethod: true,
         twoFactorSecret: true,
         checkLocationOnLogin: true,
         prefersEmail: true,
@@ -95,7 +94,7 @@ export class AuthService {
       return {
         name: user.name,
         id: user.id,
-        twoFactorEnabled: user.twoFactorEnabled,
+        twoFactorMethod: user.twoFactorMethod,
         twoFactorSecret: user.twoFactorSecret,
         checkLocationOnLogin: user.checkLocationOnLogin,
         prefersEmailAddress: user.prefersEmail.emailSafe,
@@ -114,7 +113,7 @@ export class AuthService {
     if (!user) throw new UnauthorizedException();
     if (code)
       return this.loginUserWithTotpCode(ipAddress, userAgent, user.id, code);
-    if (user.twoFactorEnabled) return this.mfaResponse(user);
+    if (user.twoFactorMethod !== 'NONE') return this.mfaResponse(user);
     await this.checkLoginSubnet(
       ipAddress,
       userAgent,
@@ -281,10 +280,10 @@ export class AuthService {
   async enableTotp(userId: number, code: string): Promise<Expose<users>> {
     const user = await this.prisma.users.findOne({
       where: { id: userId },
-      select: { twoFactorSecret: true, twoFactorEnabled: true },
+      select: { twoFactorSecret: true, twoFactorMethod: true },
     });
     if (!user) throw new NotFoundException();
-    if (!user.twoFactorEnabled)
+    if (user.twoFactorMethod !== 'NONE')
       throw new BadRequestException(
         'Two-factor authentication is already enabled',
       );
@@ -296,7 +295,7 @@ export class AuthService {
       );
     const result = await this.prisma.users.update({
       where: { id: userId },
-      data: { twoFactorEnabled: true, twoFactorSecret: user.twoFactorSecret },
+      data: { twoFactorMethod: 'TOTP', twoFactorSecret: user.twoFactorSecret },
     });
     return this.prisma.expose<users>(result);
   }
@@ -400,12 +399,12 @@ export class AuthService {
         name: true,
         prefersEmail: true,
         twoFactorSecret: true,
-        twoFactorEnabled: true,
+        twoFactorMethod: true,
         checkLocationOnLogin: true,
       },
     });
     if (!user) throw new NotFoundException();
-    if (!user.twoFactorEnabled || !user.twoFactorSecret)
+    if (user.twoFactorMethod === 'NONE' || !user.twoFactorSecret)
       throw new BadRequestException('Two-factor authentication is not enabled');
     if (this.authenticator.check(code, user.twoFactorSecret))
       return this.loginResponse(ipAddress, userAgent, id);
@@ -483,14 +482,16 @@ export class AuthService {
   }
 
   private async mfaResponse(user: ValidatedUser): Promise<TotpTokenResponse> {
-    const type: MfaTypes = user.twoFactorSecret ? 'TOTP' : 'EMAIL';
-    const mfaTokenPayload: MfaTokenPayload = { type, id: user.id };
+    const mfaTokenPayload: MfaTokenPayload = {
+      type: user.twoFactorMethod,
+      id: user.id,
+    };
     const totpToken = this.tokensService.signJwt(
       MULTI_FACTOR_TOKEN,
       mfaTokenPayload,
       this.configService.get<string>('security.mfaTokenExpiry'),
     );
-    if (type === 'EMAIL') {
+    if (user.twoFactorMethod === 'EMAIL') {
       this.email.send({
         to: `"${user.name}" <${user.prefersEmailAddress}>`,
         template: 'auth/mfa-code',
@@ -509,7 +510,7 @@ export class AuthService {
         },
       });
     }
-    return { totpToken, type, multiFactorRequired: true };
+    return { totpToken, type: user.twoFactorMethod, multiFactorRequired: true };
   }
 
   private async checkLoginSubnet(

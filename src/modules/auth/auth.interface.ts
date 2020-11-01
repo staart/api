@@ -1,5 +1,6 @@
-import { Request as ExpressRequest } from 'express';
 import { Request as NestRequest } from '@nestjs/common';
+import { MfaMethod } from '@prisma/client';
+import { Request as ExpressRequest } from 'express';
 
 export interface AccessTokenClaims {
   sub: string;
@@ -13,7 +14,7 @@ export interface TokenResponse {
 
 export interface TotpTokenResponse {
   totpToken: string;
-  type: MfaTypes;
+  type: MfaMethod;
   multiFactorRequired: true;
 }
 
@@ -22,11 +23,9 @@ export interface AccessTokenParsed {
   scopes: string[];
 }
 
-export type MfaTypes = 'TOTP' | 'EMAIL';
-
 export interface MfaTokenPayload {
   id: number;
-  type: MfaTypes;
+  type: MfaMethod;
 }
 
 type CombinedRequest = ExpressRequest & typeof NestRequest;
@@ -37,7 +36,7 @@ export interface UserRequest extends CombinedRequest {
 export interface ValidatedUser {
   id: number;
   name: string;
-  twoFactorEnabled: boolean;
+  twoFactorMethod: MfaMethod;
   twoFactorSecret: string | null;
   checkLocationOnLogin: boolean;
   prefersEmailAddress: string;

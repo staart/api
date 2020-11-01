@@ -22,10 +22,10 @@ export class MultiFactorAuthenticationService {
   async requestTotpMfa(userId: number): Promise<string> {
     const enabled = await this.prisma.users.findOne({
       where: { id: userId },
-      select: { twoFactorEnabled: true },
+      select: { twoFactorMethod: true },
     });
     if (!enabled) throw new NotFoundException('User not found');
-    if (enabled.twoFactorEnabled)
+    if (enabled.twoFactorMethod !== 'NONE')
       throw new BadRequestException(
         'Two-factor authentication is already enabled',
       );
@@ -40,14 +40,14 @@ export class MultiFactorAuthenticationService {
   async disableTotpMfa(userId: number): Promise<Expose<users>> {
     const enabled = await this.prisma.users.findOne({
       where: { id: userId },
-      select: { twoFactorEnabled: true },
+      select: { twoFactorMethod: true },
     });
     if (!enabled) throw new NotFoundException('User not found');
-    if (!enabled.twoFactorEnabled)
+    if (enabled.twoFactorMethod === 'NONE')
       throw new BadRequestException('Two-factor authentication is not enabled');
     const user = await this.prisma.users.update({
       where: { id: userId },
-      data: { twoFactorEnabled: false, twoFactorSecret: null },
+      data: { twoFactorMethod: 'NONE', twoFactorSecret: null },
     });
     return this.prisma.expose<users>(user);
   }
