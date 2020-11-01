@@ -1,3 +1,4 @@
+import { MfaMethod } from '@prisma/client';
 import {
   IsBoolean,
   IsEnum,
@@ -71,7 +72,7 @@ export class UpdateUserDto {
 
   @IsEnum(['NONE', 'TOTP', 'EMAIL'])
   @IsOptional()
-  twoFactorMethod?: string;
+  twoFactorMethod?: MfaMethod;
 
   @IsObject()
   @IsOptional()
