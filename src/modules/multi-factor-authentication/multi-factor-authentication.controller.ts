@@ -23,7 +23,7 @@ export class MultiFactorAuthenticationController {
   ) {}
 
   @Post('regenerate')
-  @Scopes('user-{userId}:write-mfa')
+  @Scopes('user-{userId}:write-mfa-regenerate')
   async regenerateBackupCodes(
     @Param('userId', ParseIntPipe) userId: number,
   ): Promise<string[]> {
@@ -39,7 +39,7 @@ export class MultiFactorAuthenticationController {
   }
 
   @Post('totp')
-  @Scopes('user-{userId}:write-mfa')
+  @Scopes('user-{userId}:write-mfa-totp')
   async enableTotp(
     @Param('userId', ParseIntPipe) userId: number,
     @Body() body: EnableTotpMfaDto,
@@ -54,7 +54,7 @@ export class MultiFactorAuthenticationController {
   }
 
   @Post('sms')
-  @Scopes('user-{userId}:write-mfa')
+  @Scopes('user-{userId}:write-mfa-sms')
   async enableSms(
     @Param('userId', ParseIntPipe) userId: number,
     @Body() body: EnableSmsMfaDto,
@@ -71,5 +71,20 @@ export class MultiFactorAuthenticationController {
         body.phone,
       );
     throw new BadRequestError('Phone number or token is required');
+  }
+
+  @Post('email')
+  @Scopes('user-{userId}:write-mfa-email')
+  async enableEmail(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Body() body: EnableTotpMfaDto,
+  ): Promise<string[] | void> {
+    if (body.token)
+      return this.multiFactorAuthenticationService.enableMfa(
+        'EMAIL',
+        userId,
+        body.token,
+      );
+    return this.multiFactorAuthenticationService.requestEmailMfa(userId);
   }
 }

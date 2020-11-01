@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { MfaMethod, users } from '@prisma/client';
 import { hash } from 'bcrypt';
 import { AuthService } from '../auth/auth.service';
+import { EmailService } from '../email/email.service';
 import { Expose } from '../prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
 import { TwilioService } from '../twilio/twilio.service';
@@ -19,6 +20,7 @@ export class MultiFactorAuthenticationService {
     private auth: AuthService,
     private configService: ConfigService,
     private twilioService: TwilioService,
+    private emailService: EmailService,
   ) {}
 
   async requestTotpMfa(userId: number): Promise<string> {
@@ -49,11 +51,43 @@ export class MultiFactorAuthenticationService {
       where: { id: userId },
       data: { twoFactorSecret: secret, twoFactorPhone: phone },
     });
-    this.twilioService.send({
+    return this.twilioService.send({
       to: phone,
       body: `${this.auth.getOneTimePassword(secret)} is your ${
         this.configService.get<string>('sms.smsServiceName') ?? ''
       } verification code.`,
+    });
+  }
+
+  async requestEmailMfa(userId: number): Promise<void> {
+    const user = await this.prisma.users.findOne({
+      where: { id: userId },
+      select: {
+        twoFactorMethod: true,
+        prefersEmail: true,
+        name: true,
+        id: true,
+      },
+    });
+    if (!user) throw new NotFoundException('User not found');
+    if (user.twoFactorMethod !== 'NONE')
+      throw new BadRequestException(
+        'Two-factor authentication is already enabled',
+      );
+    const secret = randomStringGenerator() as string;
+    await this.prisma.users.update({
+      where: { id: userId },
+      data: { twoFactorSecret: secret },
+    });
+    if (!user.prefersEmail)
+      throw new BadRequestException('User has no email attached to it');
+    return this.emailService.send({
+      to: `"${user.name}" <${user.prefersEmail.emailSafe}>`,
+      template: 'auth/enable-email-mfa',
+      data: {
+        name: user.name,
+        code: this.auth.getOneTimePassword(secret),
+      },
     });
   }
 
