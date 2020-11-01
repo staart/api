@@ -59,6 +59,7 @@
     "rxjs": "^6.6.3",
     "stripe": "^8.119.0",
     "swagger-ui-express": "^4.1.4",
+    "twilio": "^3.50.0",
     "uuid": "^8.3.1"
   },
   "devDependencies": {
