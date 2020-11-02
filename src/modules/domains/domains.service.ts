@@ -23,6 +23,7 @@ import {
   DOMAIN_VERIFICATION_TXT,
 } from './domains.constants';
 import { DomainVerificationMethods } from './domains.interface';
+import { URL } from 'url';
 
 @Injectable()
 export class DomainsService {
@@ -37,6 +38,8 @@ export class DomainsService {
     groupId: number,
     data: Omit<Omit<domainsCreateInput, 'group'>, 'verificationCode'>,
   ): Promise<domains> {
+    const fullUrl = new URL(data.domain);
+    data.domain = fullUrl.hostname;
     const verificationCode = this.tokensService.generateUuid();
     return this.prisma.domains.create({
       data: {
