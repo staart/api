@@ -45,6 +45,7 @@
     "minimatch": "^3.0.4",
     "nestjs-rate-limiter": "^2.5.6",
     "nodemailer": "^6.4.14",
+    "normalize-email": "^1.1.1",
     "object-literal-parse": "^2.1.0",
     "otplib": "^12.0.1",
     "p-queue": "^6.6.2",
