@@ -1,9 +1,16 @@
-import { Module } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
 import { RateLimiterInterceptor, RateLimiterModule } from 'nestjs-rate-limiter';
 import configuration from './config/configuration';
+import { JsonBodyMiddleware } from './middleware/json-body.middleware';
+import { RawBodyMiddleware } from './middleware/raw-body.middleware';
 import { AccessTokensModule } from './modules/access-tokens/access-tokens.module';
 import { ApiKeysModule } from './modules/api-keys/api-keys.module';
 import { ApprovedSubnetsModule } from './modules/approved-subnets/approved-subnets.module';
@@ -65,4 +72,15 @@ import { UsersModule } from './modules/users/users.module';
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  public configure(consumer: MiddlewareConsumer): void {
+    consumer
+      .apply(RawBodyMiddleware)
+      .forRoutes({
+        path: '/webhooks/stripe',
+        method: RequestMethod.POST,
+      })
+      .apply(JsonBodyMiddleware)
+      .forRoutes('*');
+  }
+}
