@@ -11,9 +11,15 @@ import {
   domainsWhereInput,
   domainsWhereUniqueInput,
 } from '@prisma/client';
+import { BadRequestError } from 'passport-headerapikey';
+import { DnsService } from '../dns/dns.service';
 import { Expose } from '../prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
 import { TokensService } from '../tokens/tokens.service';
+import {
+  DOMAIN_VERIFICATION_HTML,
+  DOMAIN_VERIFICATION_TXT,
+} from './domains.constants';
 import { DomainVerificationMethods } from './domains.interface';
 
 @Injectable()
@@ -21,6 +27,7 @@ export class DomainsService {
   constructor(
     private prisma: PrismaService,
     private tokensService: TokensService,
+    private dnsService: DnsService,
   ) {}
 
   async createDomain(
@@ -79,6 +86,22 @@ export class DomainsService {
     if (!domain)
       throw new HttpException('Domain not found', HttpStatus.NOT_FOUND);
     if (domain.groupId !== groupId) throw new UnauthorizedException();
+    if (method === DOMAIN_VERIFICATION_TXT) {
+      const txtRecords = await this.dnsService.lookup(domain.domain, 'TXT');
+      if (JSON.stringify(txtRecords).includes(domain.verificationCode)) {
+        await this.prisma.domains.update({
+          where: { id },
+          data: { isVerified: true },
+        });
+      } else throw new BadRequestError('TXT record not found');
+    } else if (method === DOMAIN_VERIFICATION_HTML) {
+      if ('ok') {
+        await this.prisma.domains.update({
+          where: { id },
+          data: { isVerified: true },
+        });
+      } else throw new BadRequestError('HTML file not found');
+    } else throw new BadRequestError('Type should be TXT or HTML');
     return domain;
   }
 
