@@ -93,4 +93,12 @@ export class AccessTokenController {
   ): Promise<Expose<accessTokens>> {
     return this.accessTokensService.deleteAccessToken(userId, Number(id));
   }
+
+  @Get('scopes')
+  @Scopes('user-{userId}:read-access-token-{id}')
+  async scopes(
+    @Param('userId', ParseIntPipe) userId: number,
+  ): Promise<Record<string, string>> {
+    return this.accessTokensService.getAccessTokenScopes(userId);
+  }
 }

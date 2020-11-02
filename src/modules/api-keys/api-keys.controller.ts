@@ -93,4 +93,12 @@ export class ApiKeyController {
   ): Promise<Expose<apiKeys>> {
     return this.apiKeysService.deleteApiKey(groupId, Number(id));
   }
+
+  @Get('scopes')
+  @Scopes('group-{groupId}:write-api-key-*')
+  async scopes(
+    @Param('groupId', ParseIntPipe) groupId: number,
+  ): Promise<Record<string, string>> {
+    return this.apiKeysService.getApiKeyScopes(groupId);
+  }
 }
