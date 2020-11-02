@@ -20,6 +20,7 @@ import {
   DOMAIN_VERIFICATION_HTML,
   DOMAIN_VERIFICATION_TXT,
 } from './domains.constants';
+import got from 'got';
 import { DomainVerificationMethods } from './domains.interface';
 
 @Injectable()
