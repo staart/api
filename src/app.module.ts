@@ -10,6 +10,7 @@ import { ApprovedSubnetsModule } from './modules/approved-subnets/approved-subne
 import { AuthModule } from './modules/auth/auth.module';
 import { JwtAuthGuard } from './modules/auth/jwt-auth.guard';
 import { ScopesGuard } from './modules/auth/scope.guard';
+import { DnsModule } from './modules/dns/dns.module';
 import { DomainsModule } from './modules/domains/domains.module';
 import { EmailModule } from './modules/email/email.module';
 import { EmailsModule } from './modules/emails/emails.module';
@@ -45,6 +46,7 @@ import { UsersModule } from './modules/users/users.module';
     ApiKeysModule,
     ApprovedSubnetsModule,
     DomainsModule,
+    DnsModule,
     GeolocationModule,
     StripeModule,
   ],
