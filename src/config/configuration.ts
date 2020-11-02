@@ -11,6 +11,8 @@ const configuration: Configuration = {
   frontendUrl: process.env.FRONTEND_URL ?? 'http://localhost:3000',
   meta: {
     totpServiceName: process.env.TOPT_SERVICE_NAME ?? 'Staart',
+    domainVerificationFile:
+      process.env.DOMAIN_VERIFICATION_FILE ?? 'staart-verify.txt',
   },
   caching: {
     geolocationLruSize: int(process.env.GEOLOCATION_LRU_SIZE, 100),

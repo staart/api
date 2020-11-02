@@ -5,6 +5,7 @@ export interface Configuration {
 
   meta: {
     totpServiceName: string;
+    domainVerificationFile: string;
   };
 
   caching: {

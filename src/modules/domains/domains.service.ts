@@ -4,6 +4,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import {
   domains,
   domainsCreateInput,
@@ -11,6 +12,7 @@ import {
   domainsWhereInput,
   domainsWhereUniqueInput,
 } from '@prisma/client';
+import got from 'got';
 import { BadRequestError } from 'passport-headerapikey';
 import { DnsService } from '../dns/dns.service';
 import { Expose } from '../prisma/prisma.interface';
@@ -20,7 +22,6 @@ import {
   DOMAIN_VERIFICATION_HTML,
   DOMAIN_VERIFICATION_TXT,
 } from './domains.constants';
-import got from 'got';
 import { DomainVerificationMethods } from './domains.interface';
 
 @Injectable()
@@ -29,6 +30,7 @@ export class DomainsService {
     private prisma: PrismaService,
     private tokensService: TokensService,
     private dnsService: DnsService,
+    private configService: ConfigService,
   ) {}
 
   async createDomain(
@@ -96,7 +98,16 @@ export class DomainsService {
         });
       } else throw new BadRequestError('TXT record not found');
     } else if (method === DOMAIN_VERIFICATION_HTML) {
-      if ('ok') {
+      let verified = false;
+      try {
+        const { body } = await got(
+          `http://${domain.domain}/.well-known/${this.configService.get<string>(
+            'meta.domainVerificationFile' ?? 'staart-verify.txt',
+          )}`,
+        );
+        verified = body.includes(domain.verificationCode);
+      } catch (error) {}
+      if (verified) {
         await this.prisma.domains.update({
           where: { id },
           data: { isVerified: true },
