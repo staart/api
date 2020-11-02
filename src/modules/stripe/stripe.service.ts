@@ -94,6 +94,33 @@ export class StripeService {
     return result;
   }
 
+  async getSubscriptions(
+    groupId: number,
+    params: {
+      take?: number;
+      cursor?: { id: string };
+    },
+  ): Promise<Stripe.Subscription[]> {
+    const stripeId = await this.stripeId(groupId);
+    const result = await this.stripe.subscriptions.list({
+      customer: stripeId,
+      limit: params.take,
+      starting_after: params.cursor?.id,
+    });
+    return this.list<Stripe.Subscription>(result);
+  }
+
+  async getSubscription(
+    groupId: number,
+    subscriptionId: string,
+  ): Promise<Stripe.Subscription> {
+    const stripeId = await this.stripeId(groupId);
+    const result = await this.stripe.subscriptions.retrieve(subscriptionId);
+    if (result.customer !== stripeId)
+      throw new NotFoundException('Subscription not found');
+    return result;
+  }
+
   async getSources(
     groupId: number,
     params: {
@@ -128,18 +155,58 @@ export class StripeService {
   async createSession(
     groupId: number,
     mode: Stripe.Checkout.SessionCreateParams.Mode,
+    price?: string,
   ): Promise<Stripe.Checkout.Session> {
     const stripeId = await this.stripeId(groupId);
-    const result = await this.stripe.checkout.sessions.create({
+    const data: Stripe.Checkout.SessionCreateParams = {
       customer: stripeId,
       mode,
       payment_method_types: this.configService.get<
         Array<Stripe.Checkout.SessionCreateParams.PaymentMethodType>
       >('payments.paymentMethodTypes') ?? ['card'],
-      success_url: '',
-      cancel_url: '',
-    });
+      success_url: `${this.configService.get<string>(
+        'frontendUrl',
+      )}/groups/${groupId}/subscription`,
+      cancel_url: `${this.configService.get<string>(
+        'frontendUrl',
+      )}/groups/${groupId}/subscription`,
+    };
+    if (mode === 'subscription') data.line_items = [{ quantity: 1, price }];
+    const result = await this.stripe.checkout.sessions.create(data);
     return result;
+  }
+
+  async cancelSubscription(
+    groupId: number,
+    subscriptionId: string,
+  ): Promise<Stripe.Subscription> {
+    const stripeId = await this.stripeId(groupId);
+    const result = await this.stripe.subscriptions.retrieve(subscriptionId);
+    if (result.customer !== stripeId)
+      throw new NotFoundException('Subscription not found');
+    return this.stripe.subscriptions.update(subscriptionId, {
+      cancel_at_period_end: true,
+    });
+  }
+
+  async plans(groupId: number, product?: string): Promise<Stripe.Plan[]> {
+    const stripeId = await this.stripeId(groupId);
+    const plans = await this.stripe.plans.list({ product });
+    return plans.data.filter((plan) => {
+      let show = true;
+      ['special', 'internal'].forEach((word) => {
+        if (plan.nickname.toLowerCase().includes(word)) show = false;
+      });
+      const tokens = plan.nickname
+        .toLowerCase()
+        .replace(/[^a-zA-Z0-9]/g, ' ')
+        .replace(/\s\s+/g, ' ')
+        .split(' ');
+      [stripeId, groupId.toString()].forEach((word) => {
+        if (tokens.includes(word)) show = true;
+      });
+      return show;
+    });
   }
 
   private list<T>(result: Stripe.Response<Stripe.ApiList<T>>) {
