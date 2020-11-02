@@ -209,6 +209,14 @@ export class StripeService {
     });
   }
 
+  async handleWebhook(signature: string, payload: any) {
+    this.stripe.webhooks.constructEvent(
+      payload,
+      signature,
+      this.configService.get<string>('payments.stripeEndpointSecret') ?? '',
+    );
+  }
+
   private list<T>(result: Stripe.Response<Stripe.ApiList<T>>) {
     return result.data;
   }

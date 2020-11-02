@@ -44,6 +44,7 @@ export interface Configuration {
   payments: {
     stripeApiKey: string;
     stripeProductId: string;
+    stripeEndpointSecret: string;
     paymentMethodTypes: Array<
       Stripe.Checkout.SessionCreateParams.PaymentMethodType
     >;
