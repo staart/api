@@ -44,6 +44,7 @@ const configuration: Configuration = {
   payments: {
     stripeApiKey: process.env.STRIPE_API_KEY ?? '',
     stripeProductId: process.env.STRIPE_PRODUCT_ID ?? '',
+    paymentMethodTypes: ['card'],
   },
 };
 

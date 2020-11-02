@@ -94,6 +94,54 @@ export class StripeService {
     return result;
   }
 
+  async getSources(
+    groupId: number,
+    params: {
+      take?: number;
+      cursor?: { id: string };
+    },
+  ): Promise<Stripe.CustomerSource[]> {
+    const stripeId = await this.stripeId(groupId);
+    const result = await this.stripe.customers.listSources(stripeId, {
+      limit: params.take,
+      starting_after: params.cursor?.id,
+    });
+    return this.list<Stripe.CustomerSource>(result);
+  }
+
+  async getSource(groupId: number, sourceId: string): Promise<Stripe.Source> {
+    const stripeId = await this.stripeId(groupId);
+    const result = await this.stripe.sources.retrieve(sourceId);
+    if (result.customer !== stripeId)
+      throw new NotFoundException('Source not found');
+    return result;
+  }
+
+  async deleteSource(groupId: number, sourceId: string): Promise<void> {
+    const stripeId = await this.stripeId(groupId);
+    const result = await this.stripe.sources.retrieve(sourceId);
+    if (result.customer !== stripeId)
+      throw new NotFoundException('Source not found');
+    await this.stripe.customers.deleteSource(stripeId, sourceId);
+  }
+
+  async createSession(
+    groupId: number,
+    mode: Stripe.Checkout.SessionCreateParams.Mode,
+  ): Promise<Stripe.Checkout.Session> {
+    const stripeId = await this.stripeId(groupId);
+    const result = await this.stripe.checkout.sessions.create({
+      customer: stripeId,
+      mode,
+      payment_method_types: this.configService.get<
+        Array<Stripe.Checkout.SessionCreateParams.PaymentMethodType>
+      >('payments.paymentMethodTypes') ?? ['card'],
+      success_url: '',
+      cancel_url: '',
+    });
+    return result;
+  }
+
   private list<T>(result: Stripe.Response<Stripe.ApiList<T>>) {
     return result.data;
   }

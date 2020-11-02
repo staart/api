@@ -1,3 +1,5 @@
+import Stripe from 'stripe';
+
 export interface Configuration {
   frontendUrl: string;
 
@@ -41,5 +43,8 @@ export interface Configuration {
   payments: {
     stripeApiKey: string;
     stripeProductId: string;
+    paymentMethodTypes: Array<
+      Stripe.Checkout.SessionCreateParams.PaymentMethodType
+    >;
   };
 }
