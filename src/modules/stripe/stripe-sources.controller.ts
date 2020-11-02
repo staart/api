@@ -18,7 +18,7 @@ export class StripeBillingController {
   constructor(private stripeService: StripeService) {}
 
   @Post()
-  @Scopes('group-{groupId}:write-source')
+  @Scopes('group-{groupId}:write-source-*')
   async create(
     @Param('groupId', ParseIntPipe) groupId: number,
   ): Promise<Stripe.Checkout.Session> {
@@ -26,7 +26,7 @@ export class StripeBillingController {
   }
 
   @Get()
-  @Scopes('group-{groupId}:read-source')
+  @Scopes('group-{groupId}:read-source-*')
   async getAll(
     @Param('groupId', ParseIntPipe) groupId: number,
     @Query('take', OptionalIntPipe) take?: number,

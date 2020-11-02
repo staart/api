@@ -29,7 +29,7 @@ export class ApiKeyController {
   constructor(private apiKeysService: ApiKeysService) {}
 
   @Post()
-  @Scopes('group-{groupId}:write-api-key')
+  @Scopes('group-{groupId}:write-api-key-*')
   async create(
     @Param('groupId', ParseIntPipe) groupId: number,
     @Body() data: CreateApiKeyDto,
@@ -38,7 +38,7 @@ export class ApiKeyController {
   }
 
   @Get()
-  @Scopes('group-{groupId}:read-api-key')
+  @Scopes('group-{groupId}:read-api-key-*')
   async getAll(
     @Param('groupId', ParseIntPipe) groupId: number,
     @Query('skip', OptionalIntPipe) skip?: number,

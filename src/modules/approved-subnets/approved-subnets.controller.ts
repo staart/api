@@ -20,7 +20,7 @@ export class ApprovedSubnetController {
   constructor(private approvedSubnetsService: ApprovedSubnetsService) {}
 
   @Get()
-  @Scopes('user-{userId}:read-approved-location')
+  @Scopes('user-{userId}:read-approved-subnet-*')
   async getAll(
     @Param('userId', ParseIntPipe) userId: number,
     @Query('skip', OptionalIntPipe) skip?: number,
@@ -39,7 +39,7 @@ export class ApprovedSubnetController {
   }
 
   @Get(':id')
-  @Scopes('user-{userId}:read-approved-location-{id}')
+  @Scopes('user-{userId}:read-approved-subnet-{id}')
   async get(
     @Param('userId', ParseIntPipe) userId: number,
     @Param('id', ParseIntPipe) id: number,
@@ -48,7 +48,7 @@ export class ApprovedSubnetController {
   }
 
   @Delete(':id')
-  @Scopes('user-{userId}:delete-approved-location-{id}')
+  @Scopes('user-{userId}:delete-approved-subnet-{id}')
   async remove(
     @Param('userId', ParseIntPipe) userId: number,
     @Param('id', ParseIntPipe) id: number,

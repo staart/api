@@ -24,7 +24,7 @@ export class GroupController {
   constructor(private groupsService: GroupsService) {}
 
   @Get()
-  @Scopes('group:read')
+  @Scopes('group-*:read-info')
   async getAll(
     @Query('skip', OptionalIntPipe) skip?: number,
     @Query('take', OptionalIntPipe) take?: number,

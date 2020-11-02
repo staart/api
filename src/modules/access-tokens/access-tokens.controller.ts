@@ -29,7 +29,7 @@ export class AccessTokenController {
   constructor(private accessTokensService: AccessTokensService) {}
 
   @Post()
-  @Scopes('user-{userId}:write-access-token')
+  @Scopes('user-{userId}:write-access-token-*')
   async create(
     @Param('userId', ParseIntPipe) userId: number,
     @Body() data: CreateAccessTokenDto,
@@ -38,7 +38,7 @@ export class AccessTokenController {
   }
 
   @Get()
-  @Scopes('user-{userId}:read-access-token')
+  @Scopes('user-{userId}:read-access-token-*')
   async getAll(
     @Param('userId', ParseIntPipe) userId: number,
     @Query('skip', OptionalIntPipe) skip?: number,

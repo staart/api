@@ -23,7 +23,7 @@ export class EmailController {
   constructor(private emailsService: EmailsService) {}
 
   @Post()
-  @Scopes('user-{userId}:write-email')
+  @Scopes('user-{userId}:write-email-*')
   async create(
     @Param('userId', ParseIntPipe) userId: number,
     @Body() data: CreateEmailDto,
@@ -32,7 +32,7 @@ export class EmailController {
   }
 
   @Get()
-  @Scopes('user-{userId}:read-email')
+  @Scopes('user-{userId}:read-email-*')
   async getAll(
     @Param('userId', ParseIntPipe) userId: number,
     @Query('skip', OptionalIntPipe) skip?: number,

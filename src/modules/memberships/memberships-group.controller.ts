@@ -28,7 +28,7 @@ export class GroupMembershipController {
   constructor(private membershipsService: MembershipsService) {}
 
   @Post()
-  @Scopes('group-{groupId}:write-membership')
+  @Scopes('group-{groupId}:write-membership-*')
   async create(
     @Ip() ip: string,
     @Param('groupId', ParseIntPipe) groupId: number,
@@ -38,7 +38,7 @@ export class GroupMembershipController {
   }
 
   @Get()
-  @Scopes('group-{groupId}:read-membership')
+  @Scopes('group-{groupId}:read-membership-*')
   async getAll(
     @Param('groupId', ParseIntPipe) groupId: number,
     @Query('skip', OptionalIntPipe) skip?: number,
@@ -66,7 +66,7 @@ export class GroupMembershipController {
   }
 
   @Patch(':id')
-  @Scopes('group-{groupId}:read-membership-{id}')
+  @Scopes('group-{groupId}:write-membership-{id}')
   async update(
     @Body() data: UpdateMembershipDto,
     @Param('groupId', ParseIntPipe) groupId: number,

@@ -31,7 +31,7 @@ export class MultiFactorAuthenticationController {
   }
 
   @Delete()
-  @Scopes('user-{userId}:delete-mfa')
+  @Scopes('user-{userId}:delete-mfa-*')
   async disable2FA(
     @Param('userId', ParseIntPipe) userId: number,
   ): Promise<Expose<users>> {

@@ -10,7 +10,7 @@ export class StripeBillingController {
   constructor(private stripeService: StripeService) {}
 
   @Get()
-  @Scopes('group-{groupId}:read-invoice')
+  @Scopes('group-{groupId}:read-invoice-*')
   async getAll(
     @Param('groupId', ParseIntPipe) groupId: number,
     @Query('take', OptionalIntPipe) take?: number,

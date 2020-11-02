@@ -20,7 +20,7 @@ export class SessionController {
   constructor(private sessionsService: SessionsService) {}
 
   @Get()
-  @Scopes('user-{userId}:read-session')
+  @Scopes('user-{userId}:read-session-*')
   async getAll(
     @Param('userId', ParseIntPipe) userId: number,
     @Query('skip', OptionalIntPipe) skip?: number,

@@ -23,7 +23,7 @@ export class UserController {
   constructor(private usersService: UsersService) {}
 
   @Get()
-  @Scopes('user:read')
+  @Scopes('user-*:read-info')
   async getAll(
     @Query('skip', OptionalIntPipe) skip?: number,
     @Query('take', OptionalIntPipe) take?: number,
