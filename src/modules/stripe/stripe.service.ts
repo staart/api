@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -10,6 +11,7 @@ import { PrismaService } from '../prisma/prisma.service';
 @Injectable()
 export class StripeService {
   stripe: Stripe;
+  logger = new Logger('stripe');
 
   constructor(
     private configService: ConfigService,
@@ -209,12 +211,20 @@ export class StripeService {
     });
   }
 
-  async handleWebhook(signature: string, payload: any) {
-    this.stripe.webhooks.constructEvent(
+  async handleWebhook(
+    signature: string,
+    payload: Buffer,
+  ): Promise<{ received: true }> {
+    const event = this.stripe.webhooks.constructEvent(
       payload,
       signature,
       this.configService.get<string>('payments.stripeEndpointSecret') ?? '',
     );
+    switch (event.type) {
+      default:
+        this.logger.warn(`Unhandled event type ${event.type}`);
+    }
+    return { received: true };
   }
 
   private list<T>(result: Stripe.Response<Stripe.ApiList<T>>) {
