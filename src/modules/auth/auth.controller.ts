@@ -144,7 +144,7 @@ export class AuthController {
     );
   }
 
-  @Post('totp-login')
+  @Post('login/totp')
   @RateLimit({
     points: 10,
     duration: 60,
@@ -158,21 +158,7 @@ export class AuthController {
     return this.authService.loginWithTotp(ip, userAgent, data.token, data.code);
   }
 
-  @Get('token-login')
-  @RateLimit({
-    points: 10,
-    duration: 60,
-    errorMessage: 'Wait for 60 seconds before trying to login again',
-  })
-  async emailTokenLoginGet(
-    @Query('token') token: string,
-    @Ip() ip: string,
-    @Headers('User-Agent') userAgent: string,
-  ): Promise<TokenResponse> {
-    return this.authService.loginWithEmailToken(ip, userAgent, token);
-  }
-
-  @Post('token-login')
+  @Post('login/token')
   @RateLimit({
     points: 10,
     duration: 60,

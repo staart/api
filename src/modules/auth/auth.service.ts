@@ -127,24 +127,7 @@ export class AuthService {
     _data: RegisterDto,
   ): Promise<Expose<users>> {
     const { email, ...data } = _data;
-    data.name = data.name
-      .split(' ')
-      .map((word, index) =>
-        index === 0 || index === data.name.split(' ').length
-          ? (word.charAt(0) ?? '').toUpperCase() +
-            (word.slice(1) ?? '').toLowerCase()
-          : word,
-      )
-      .join(' ');
     const emailSafe = safeEmail(email);
-    const ignorePwnedPassword = !!data.ignorePwnedPassword;
-    delete data.ignorePwnedPassword;
-    if (data.password)
-      data.password = await this.hashAndValidatePassword(
-        data.password,
-        ignorePwnedPassword,
-      );
-
     const testUser = await this.prisma.users.findFirst({
       where: { emails: { some: { emailSafe } } },
     });
@@ -152,6 +135,24 @@ export class AuthService {
       throw new HttpException(
         'A user with this email already exists',
         HttpStatus.CONFLICT,
+      );
+    const ignorePwnedPassword = !!data.ignorePwnedPassword;
+    delete data.ignorePwnedPassword;
+
+    if (data.name)
+      data.name = data.name
+        .split(' ')
+        .map((word, index) =>
+          index === 0 || index === data.name.split(' ').length
+            ? (word.charAt(0) ?? '').toUpperCase() +
+              (word.slice(1) ?? '').toLowerCase()
+            : word,
+        )
+        .join(' ');
+    if (data.password)
+      data.password = await this.hashAndValidatePassword(
+        data.password,
+        ignorePwnedPassword,
       );
 
     const user = await this.prisma.users.create({
@@ -163,10 +164,11 @@ export class AuthService {
       },
       include: { emails: { select: { id: true } } },
     });
-    await this.prisma.users.update({
-      where: { id: user.id },
-      data: { prefersEmail: { connect: { id: user.emails[0]?.id } } },
-    });
+    if (user.emails[0]?.id)
+      await this.prisma.users.update({
+        where: { id: user.id },
+        data: { prefersEmail: { connect: { id: user.emails[0].id } } },
+      });
     await this.sendEmailVerification(email);
     await this.approvedSubnetsService.approveNewSubnet(user.id, ipAddress);
     return this.prisma.expose(user);
