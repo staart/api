@@ -12,6 +12,8 @@ import { JwtService } from '@nestjs/jwt';
 import { Authenticator } from '@otplib/core';
 import { emails, MfaMethod, users } from '@prisma/client';
 import { compare, hash } from 'bcrypt';
+import { createHash } from 'crypto';
+import got from 'got/dist/source';
 import anonymize from 'ip-anonymize';
 import { authenticator } from 'otplib';
 import qrcode from 'qrcode';
@@ -168,6 +170,18 @@ export class AuthService {
       `https://ui-avatars.com/api/?name=${initials}&background=${randomColor({
         luminosity: 'light',
       })}&color=000000`;
+
+    for await (const emailString of [email, emailSafe]) {
+      const md5Email = createHash('md5').update(emailString).digest('hex');
+      try {
+        const img = await got(
+          `https://www.gravatar.com/avatar/${md5Email}?d=404`,
+          { responseType: 'buffer' },
+        );
+        if (img.body.byteLength > 1)
+          data.profilePictureUrl = `https://www.gravatar.com/avatar/${md5Email}?d=mp`;
+      } catch (error) {}
+    }
 
     const user = await this.prisma.users.create({
       data: {
