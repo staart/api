@@ -1,0 +1,6 @@
+@baseUrl = http://localhost:3000
+@userId = 1
+
+GET {{baseUrl}}/users/{{userId}}
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyMSIsInNjb3BlcyI6WyJ1c2VyLTE6KiJdLCJpYXQiOjE2MDQ0MDY1NjksImV4cCI6MTYwNDQxMDE2OX0.AMBGQtM4pfdyJSopI9jnV_5bZbHTkgwuOrC1ttyYvwk

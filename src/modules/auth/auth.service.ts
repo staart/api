@@ -28,6 +28,7 @@ import {
   MULTI_FACTOR_TOKEN,
   PASSWORD_RESET_TOKEN,
   EMAIL_MFA_TOKEN,
+  LOGIN_ACCESS_TOKEN,
 } from '../tokens/tokens.constants';
 import { TokensService } from '../tokens/tokens.service';
 import { RegisterDto } from './auth.dto';
@@ -467,7 +468,7 @@ export class AuthService {
   private async getAccessToken(userId: number): Promise<string> {
     const scopes = await this.getScopes(userId);
     const payload: AccessTokenClaims = {
-      sub: `user${userId}`,
+      sub: LOGIN_ACCESS_TOKEN,
       scopes,
     };
     return this.jwtService.sign(payload, {
