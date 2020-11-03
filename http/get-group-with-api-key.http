@@ -1,0 +1,6 @@
+@baseUrl = http://localhost:3000
+@groupId = 1
+
+GET {{baseUrl}}/groups/{{groupId}}
+content-type: application/json
+X-Api-Key: {{$dotenv HTTP_TEST_API_KEY}}
