@@ -3,7 +3,7 @@
 
 POST {{baseUrl}}/users/{{userId}}/memberships
 content-type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyMSIsInNjb3BlcyI6WyJ1c2VyLTE6KiJdLCJpYXQiOjE2MDQ0MDY1NjksImV4cCI6MTYwNDQxMDE2OX0.AMBGQtM4pfdyJSopI9jnV_5bZbHTkgwuOrC1ttyYvwk
+Authorization: Bearer {{$dotenv HTTP_TEST_ACCESS_TOKEN}}
 
 {
   "name": "Koj"

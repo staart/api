@@ -5,5 +5,5 @@ content-type: application/json
 
 {
   "email": "staart@anandchowdhary.com",
-  "password": "anandchowdhary"
+  "password": "{{$dotenv HTTP_TEST_PASSWORD}}"
 }
