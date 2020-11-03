@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { ApiKeysModule } from '../api-keys/api-keys.module';
 import { ApprovedSubnetsModule } from '../approved-subnets/approved-subnets.module';
 import { ApprovedSubnetsService } from '../approved-subnets/approved-subnets.service';
 import { EmailModule } from '../email/email.module';
@@ -12,9 +13,6 @@ import { TokensModule } from '../tokens/tokens.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
-import { ApiKeyStrategy } from './api-key.strategy';
-import { ApiKeysModule } from '../api-keys/api-keys.module';
-import { ApiKeysService } from '../api-keys/api-keys.service';
 
 @Module({
   imports: [
@@ -24,7 +22,7 @@ import { ApiKeysService } from '../api-keys/api-keys.service';
     TokensModule,
     ConfigModule,
     PwnedModule,
-    // ApiKeysModule,
+    ApiKeysModule,
     GeolocationModule,
     ApprovedSubnetsModule,
     JwtModule.register({
@@ -33,12 +31,6 @@ import { ApiKeysService } from '../api-keys/api-keys.service';
   ],
   controllers: [AuthController],
   exports: [AuthService],
-  providers: [
-    AuthService,
-    // ApiKeysService,
-    // ApiKeyStrategy,
-    JwtStrategy,
-    ApprovedSubnetsService,
-  ],
+  providers: [AuthService, JwtStrategy, ApprovedSubnetsService],
 })
 export class AuthModule {}
