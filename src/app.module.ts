@@ -23,6 +23,7 @@ import { EmailModule } from './modules/email/email.module';
 import { EmailsModule } from './modules/emails/emails.module';
 import { GeolocationModule } from './modules/geolocation/geolocation.module';
 import { GroupsModule } from './modules/groups/groups.module';
+import { MembershipsModule } from './modules/memberships/memberships.module';
 import { MultiFactorAuthenticationModule } from './modules/multi-factor-authentication/multi-factor-authentication.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
 import { SessionsModule } from './modules/sessions/sessions.module';
@@ -55,6 +56,7 @@ import { UsersModule } from './modules/users/users.module';
     DomainsModule,
     DnsModule,
     GeolocationModule,
+    MembershipsModule,
     StripeModule,
   ],
   providers: [
