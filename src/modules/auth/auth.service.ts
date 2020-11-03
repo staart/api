@@ -15,6 +15,7 @@ import { compare, hash } from 'bcrypt';
 import anonymize from 'ip-anonymize';
 import { authenticator } from 'otplib';
 import qrcode from 'qrcode';
+import randomColor from 'randomcolor';
 import { safeEmail } from '../../helpers/safe-email';
 import { ApprovedSubnetsService } from '../approved-subnets/approved-subnets.service';
 import { EmailService } from '../email/email.service';
@@ -24,11 +25,11 @@ import { PrismaService } from '../prisma/prisma.service';
 import { PwnedService } from '../pwned/pwned.service';
 import {
   APPROVE_SUBNET_TOKEN,
+  EMAIL_MFA_TOKEN,
   EMAIL_VERIFY_TOKEN,
+  LOGIN_ACCESS_TOKEN,
   MULTI_FACTOR_TOKEN,
   PASSWORD_RESET_TOKEN,
-  EMAIL_MFA_TOKEN,
-  LOGIN_ACCESS_TOKEN,
 } from '../tokens/tokens.constants';
 import { TokensService } from '../tokens/tokens.service';
 import { RegisterDto } from './auth.dto';
@@ -155,6 +156,18 @@ export class AuthService {
         data.password,
         ignorePwnedPassword,
       );
+    let initials = data.name.trim().substr(0, 2).toUpperCase();
+    if (data.name.includes(' '))
+      initials = data.name
+        .split(' ')
+        .map((i) => i.trim().substr(0, 1))
+        .join('')
+        .toUpperCase();
+    data.profilePictureUrl =
+      data.profilePictureUrl ??
+      `https://ui-avatars.com/api/?name=${initials}&background=${randomColor({
+        luminosity: 'light',
+      })}&color=000000`;
 
     const user = await this.prisma.users.create({
       data: {

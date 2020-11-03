@@ -41,6 +41,28 @@ export class DomainsService {
     const fullUrl = new URL(data.domain);
     data.domain = fullUrl.hostname;
     const verificationCode = this.tokensService.generateUuid();
+    const currentProfilePicture = await this.prisma.groups.findOne({
+      where: { id: groupId },
+      select: { profilePictureUrl: true },
+    });
+    if (
+      currentProfilePicture.profilePictureUrl.startsWith(
+        'https://ui-avatars.com',
+      )
+    )
+      try {
+        const img = await got('https://logo.clearbit.com/${data.domain}', {
+          responseType: 'buffer',
+        });
+        if (img.body.byteLength > 1)
+          await this.prisma.groups.update({
+            where: { id: groupId },
+            data: {
+              profilePictureUrl: `https://logo.clearbit.com/${data.domain}`,
+            },
+          });
+      } catch (error) {}
+
     return this.prisma.domains.create({
       data: {
         ...data,

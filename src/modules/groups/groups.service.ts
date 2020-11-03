@@ -9,6 +9,7 @@ import {
 } from '@prisma/client';
 import { Expose } from '../../modules/prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
+import randomColor from 'randomcolor';
 
 @Injectable()
 export class GroupsService {
@@ -18,6 +19,18 @@ export class GroupsService {
     userId: number,
     data: Omit<Omit<groupsCreateInput, 'group'>, 'user'>,
   ): Promise<groups> {
+    let initials = data.name.trim().substr(0, 2).toUpperCase();
+    if (data.name.includes(' '))
+      initials = data.name
+        .split(' ')
+        .map((i) => i.trim().substr(0, 1))
+        .join('')
+        .toUpperCase();
+    data.profilePictureUrl =
+      data.profilePictureUrl ??
+      `https://ui-avatars.com/api/?name=${initials}&background=${randomColor({
+        luminosity: 'light',
+      })}&color=000000`;
     return this.prisma.groups.create({
       data: {
         ...data,
