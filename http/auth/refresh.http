@@ -1,0 +1,8 @@
+@baseUrl = http://localhost:3000
+
+POST {{baseUrl}}/auth/refresh
+content-type: application/json
+
+{
+  "token": "1398916a-2840-46ef-9659-68556f1d82a2"
+}
