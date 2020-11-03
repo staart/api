@@ -56,6 +56,14 @@ export class AccessTokenController {
     });
   }
 
+  @Get('scopes')
+  @Scopes('user-{userId}:read-access-token-{id}')
+  async scopes(
+    @Param('userId', ParseIntPipe) userId: number,
+  ): Promise<Record<string, string>> {
+    return this.accessTokensService.getAccessTokenScopes(userId);
+  }
+
   @Get(':id')
   @Scopes('user-{userId}:read-access-token-{id}')
   async get(
@@ -92,13 +100,5 @@ export class AccessTokenController {
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Expose<accessTokens>> {
     return this.accessTokensService.deleteAccessToken(userId, Number(id));
-  }
-
-  @Get('scopes')
-  @Scopes('user-{userId}:read-access-token-{id}')
-  async scopes(
-    @Param('userId', ParseIntPipe) userId: number,
-  ): Promise<Record<string, string>> {
-    return this.accessTokensService.getAccessTokenScopes(userId);
   }
 }

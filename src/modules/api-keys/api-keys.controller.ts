@@ -56,6 +56,14 @@ export class ApiKeyController {
     });
   }
 
+  @Get('scopes')
+  @Scopes('group-{groupId}:write-api-key-*')
+  async scopes(
+    @Param('groupId', ParseIntPipe) groupId: number,
+  ): Promise<Record<string, string>> {
+    return this.apiKeysService.getApiKeyScopes(groupId);
+  }
+
   @Get(':id')
   @Scopes('group-{groupId}:read-api-key-{id}')
   async get(
@@ -92,13 +100,5 @@ export class ApiKeyController {
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Expose<apiKeys>> {
     return this.apiKeysService.deleteApiKey(groupId, Number(id));
-  }
-
-  @Get('scopes')
-  @Scopes('group-{groupId}:write-api-key-*')
-  async scopes(
-    @Param('groupId', ParseIntPipe) groupId: number,
-  ): Promise<Record<string, string>> {
-    return this.apiKeysService.getApiKeyScopes(groupId);
   }
 }
