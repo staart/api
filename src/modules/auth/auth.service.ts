@@ -482,6 +482,7 @@ export class AuthService {
     const scopes = await this.getScopes(userId);
     const payload: AccessTokenClaims = {
       sub: LOGIN_ACCESS_TOKEN,
+      id: userId,
       scopes,
     };
     return this.jwtService.sign(payload, {

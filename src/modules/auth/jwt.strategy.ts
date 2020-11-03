@@ -2,6 +2,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AccessTokenClaims, AccessTokenParsed } from './auth.interface';
+import { LOGIN_ACCESS_TOKEN } from '../tokens/tokens.constants';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -14,9 +15,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: AccessTokenClaims): Promise<AccessTokenParsed> {
-    const { sub, scopes } = payload;
-    const id = Number(sub.replace('user', ''));
-    if (isNaN(id)) throw new UnauthorizedException();
+    const { sub, id, scopes } = payload;
+    if (sub !== LOGIN_ACCESS_TOKEN) throw new UnauthorizedException();
     return { id, scopes };
   }
 }
