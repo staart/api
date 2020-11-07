@@ -2,6 +2,7 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import {
@@ -12,16 +13,18 @@ import {
   webhooksWhereInput,
   webhooksWhereUniqueInput,
 } from '@prisma/client';
+import got from 'got';
+import PQueue from 'p-queue';
+import pRetry from 'p-retry';
 import { Expose } from '../prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
-import { StripeService } from '../stripe/stripe.service';
 
 @Injectable()
 export class WebhooksService {
-  constructor(
-    private prisma: PrismaService,
-    private stripeService: StripeService,
-  ) {}
+  private readonly logger = new Logger(WebhooksService.name);
+  private queue = new PQueue({ concurrency: 1 });
+
+  constructor(private prisma: PrismaService) {}
 
   async createWebhook(
     groupId: number,
@@ -115,5 +118,49 @@ export class WebhooksService {
   async getWebhookScopes(groupId: number): Promise<Record<string, string>> {
     const scopes: Record<string, string> = {};
     return scopes;
+  }
+
+  triggerWebhook(groupId: number, event: string) {
+    this.prisma.webhooks
+      .findMany({
+        where: { group: { id: groupId }, isActive: true, event },
+      })
+      .then((webhooks) => {
+        webhooks.forEach((webhook) =>
+          this.queue
+            .add(() =>
+              pRetry(() => this.callWebhook(webhook, event), {
+                retries: 3,
+                onFailedAttempt: (error) => {
+                  this.logger.error(
+                    `Triggering webhoook failed, retrying (${error.retriesLeft} attempts left)`,
+                    error.name,
+                  );
+                  if (error.retriesLeft === 0)
+                    this.prisma.webhooks
+                      .update({
+                        where: { id: webhook.id },
+                        data: { isActive: false },
+                      })
+                      .then(() => {})
+                      .catch(() => {});
+                },
+              }),
+            )
+            .then(() => {})
+            .catch(() => {}),
+        );
+      })
+      .catch((error) => this.logger.error('Unable to get webhooks', error));
+  }
+
+  private async callWebhook(webhook: webhooks, event: string) {
+    if (webhook.contentType === 'application/json')
+      await got(webhook.url, { method: 'POST', json: { event } });
+    else await got(webhook.url, { method: 'POST', body: event });
+    await this.prisma.webhooks.update({
+      where: { id: webhook.id },
+      data: { lastFiredAt: new Date() },
+    });
   }
 }
