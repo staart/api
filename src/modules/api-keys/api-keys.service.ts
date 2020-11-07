@@ -192,6 +192,7 @@ export class ApiKeysService {
       ] = `Delete payment method: ${source.id}`;
     }
 
+    scopes[`group-${groupId}:read-audit-log-*`] = 'Read audit logs';
     return scopes;
   }
 }

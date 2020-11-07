@@ -14,6 +14,7 @@ import { RawBodyMiddleware } from './middleware/raw-body.middleware';
 import { AccessTokensModule } from './modules/access-tokens/access-tokens.module';
 import { ApiKeysModule } from './modules/api-keys/api-keys.module';
 import { ApprovedSubnetsModule } from './modules/approved-subnets/approved-subnets.module';
+import { AuditLogsModule } from './modules/audit-logs/audit-logs.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { JwtAuthGuard } from './modules/auth/jwt-auth.guard';
 import { ScopesGuard } from './modules/auth/scope.guard';
@@ -58,6 +59,7 @@ import { UsersModule } from './modules/users/users.module';
     GeolocationModule,
     MembershipsModule,
     StripeModule,
+    AuditLogsModule,
   ],
   providers: [
     {
