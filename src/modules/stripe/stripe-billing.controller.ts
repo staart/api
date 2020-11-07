@@ -10,6 +10,7 @@ import {
   Put,
 } from '@nestjs/common';
 import Stripe from 'stripe';
+import { AuditLog } from '../audit-logs/audit-log.decorator';
 import { Scopes } from '../auth/scope.decorator';
 import {
   CreateBillingDto,
@@ -23,6 +24,7 @@ export class StripeBillingController {
   constructor(private stripeService: StripeService) {}
 
   @Post()
+  @AuditLog('create-billing')
   @Scopes('group-{groupId}:write-billing')
   async createBillingAccount(
     @Param('groupId', ParseIntPipe) groupId: number,
@@ -40,6 +42,7 @@ export class StripeBillingController {
   }
 
   @Patch()
+  @AuditLog('update-billing')
   @Scopes('group-{groupId}:write-billing')
   async updateBillingAccount(
     @Param('groupId', ParseIntPipe) groupId: number,
@@ -49,6 +52,7 @@ export class StripeBillingController {
   }
 
   @Put()
+  @AuditLog('update-billing')
   @Scopes('group-{groupId}:write-billing')
   async replaceBillingAccount(
     @Param('groupId', ParseIntPipe) groupId: number,
@@ -58,6 +62,7 @@ export class StripeBillingController {
   }
 
   @Delete()
+  @AuditLog('delete-billing')
   @Scopes('group-{groupId}:delete-billing')
   async deleteBillingAccount(
     @Param('groupId', ParseIntPipe) groupId: number,

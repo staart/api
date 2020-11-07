@@ -16,6 +16,7 @@ import { CursorPipe } from '../../pipes/cursor.pipe';
 import { OptionalIntPipe } from '../../pipes/optional-int.pipe';
 import { OrderByPipe } from '../../pipes/order-by.pipe';
 import { WherePipe } from '../../pipes/where.pipe';
+import { AuditLog } from '../audit-logs/audit-log.decorator';
 import { Scopes } from '../auth/scope.decorator';
 import {
   CreateApiKeyDto,
@@ -29,6 +30,7 @@ export class ApiKeyController {
   constructor(private apiKeysService: ApiKeysService) {}
 
   @Post()
+  @AuditLog('create-api-key')
   @Scopes('group-{groupId}:write-api-key-*')
   async create(
     @Param('groupId', ParseIntPipe) groupId: number,
@@ -74,6 +76,7 @@ export class ApiKeyController {
   }
 
   @Patch(':id')
+  @AuditLog('update-api-key')
   @Scopes('group-{groupId}:write-api-key-{id}')
   async update(
     @Body() data: UpdateApiKeyDto,
@@ -84,6 +87,7 @@ export class ApiKeyController {
   }
 
   @Put(':id')
+  @AuditLog('update-api-key')
   @Scopes('group-{groupId}:write-api-key-{id}')
   async replace(
     @Body() data: ReplaceApiKeyDto,
@@ -94,6 +98,7 @@ export class ApiKeyController {
   }
 
   @Delete(':id')
+  @AuditLog('delete-api-key')
   @Scopes('group-{groupId}:delete-api-key-{id}')
   async remove(
     @Param('groupId', ParseIntPipe) groupId: number,

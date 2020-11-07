@@ -16,6 +16,7 @@ import { CursorPipe } from '../../pipes/cursor.pipe';
 import { OptionalIntPipe } from '../../pipes/optional-int.pipe';
 import { OrderByPipe } from '../../pipes/order-by.pipe';
 import { WherePipe } from '../../pipes/where.pipe';
+import { AuditLog } from '../audit-logs/audit-log.decorator';
 import { Scopes } from '../auth/scope.decorator';
 import {
   CreateGroupMembershipDto,
@@ -28,6 +29,7 @@ export class GroupMembershipController {
   constructor(private membershipsService: MembershipsService) {}
 
   @Post()
+  @AuditLog('add-membership')
   @Scopes('group-{groupId}:write-membership-*')
   async create(
     @Ip() ip: string,
@@ -66,6 +68,7 @@ export class GroupMembershipController {
   }
 
   @Patch(':id')
+  @AuditLog('update-membership')
   @Scopes('group-{groupId}:write-membership-{id}')
   async update(
     @Body() data: UpdateMembershipDto,
@@ -80,6 +83,7 @@ export class GroupMembershipController {
   }
 
   @Delete(':id')
+  @AuditLog('delete-membership')
   @Scopes('group-{groupId}:delete-membership-{id}')
   async remove(
     @Param('groupId', ParseIntPipe) groupId: number,

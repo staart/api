@@ -13,6 +13,7 @@ import { CursorPipe } from '../../pipes/cursor.pipe';
 import { OptionalIntPipe } from '../../pipes/optional-int.pipe';
 import { OrderByPipe } from '../../pipes/order-by.pipe';
 import { WherePipe } from '../../pipes/where.pipe';
+import { AuditLog } from '../audit-logs/audit-log.decorator';
 import { Scopes } from '../auth/scope.decorator';
 import { Expose } from '../prisma/prisma.interface';
 import {
@@ -27,6 +28,7 @@ export class DomainController {
   constructor(private domainsService: DomainsService) {}
 
   @Post()
+  @AuditLog('create-domain')
   @Scopes('group-{groupId}:write-domain-*')
   async create(
     @Param('groupId', ParseIntPipe) groupId: number,
@@ -64,6 +66,7 @@ export class DomainController {
   }
 
   @Delete(':id')
+  @AuditLog('delete-domain')
   @Scopes('group-{groupId}:delete-domain-{id}')
   async remove(
     @Param('groupId', ParseIntPipe) groupId: number,
@@ -73,6 +76,7 @@ export class DomainController {
   }
 
   @Post(':id/verify/txt')
+  @AuditLog('verify-domain-txt')
   @Scopes('group-{groupId}:write-domain-{id}')
   async verifyTxt(
     @Param('groupId', ParseIntPipe) groupId: number,
@@ -86,6 +90,7 @@ export class DomainController {
   }
 
   @Post(':id/verify/html')
+  @AuditLog('verify-domain-html')
   @Scopes('group-{groupId}:write-domain-{id}')
   async verifyHtml(
     @Param('groupId', ParseIntPipe) groupId: number,

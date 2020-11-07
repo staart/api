@@ -10,6 +10,7 @@ import {
 import Stripe from 'stripe';
 import { CursorPipe } from '../../pipes/cursor.pipe';
 import { OptionalIntPipe } from '../../pipes/optional-int.pipe';
+import { AuditLog } from '../audit-logs/audit-log.decorator';
 import { Scopes } from '../auth/scope.decorator';
 import { StripeService } from './stripe.service';
 
@@ -18,6 +19,7 @@ export class StripeBillingController {
   constructor(private stripeService: StripeService) {}
 
   @Post()
+  @AuditLog('write-source')
   @Scopes('group-{groupId}:write-source-*')
   async create(
     @Param('groupId', ParseIntPipe) groupId: number,
@@ -45,6 +47,7 @@ export class StripeBillingController {
   }
 
   @Delete(':id')
+  @AuditLog('delete-source')
   @Scopes('group-{groupId}:delete-source-{id}')
   async remove(
     @Param('groupId', ParseIntPipe) groupId: number,
