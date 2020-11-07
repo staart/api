@@ -164,6 +164,23 @@ export class ApiKeysService {
       ] = `Delete API key: ${apiKey.name ?? apiKey.apiKey}`;
     }
 
+    scopes[`group-${groupId}:write-webhook-*`] = 'Create and update webhooks';
+    scopes[`group-${groupId}:read-webhook-*`] = 'Read webhooks';
+    for await (const webhook of await this.prisma.webhooks.findMany({
+      where: { group: { id: groupId } },
+      select: { id: true, url: true },
+    })) {
+      scopes[
+        `group-${groupId}:read-webhook-${webhook.id}`
+      ] = `Read webhook: ${webhook.url}`;
+      scopes[
+        `group-${groupId}:write-webhook-${webhook.id}`
+      ] = `Write webhook: ${webhook.url}`;
+      scopes[
+        `group-${groupId}:delete-webhook-${webhook.id}`
+      ] = `Delete webhook: ${webhook.url}`;
+    }
+
     scopes[`group-${groupId}:write-billing`] = 'Write billing details';
     scopes[`group-${groupId}:read-billing`] = 'Read billing details';
     scopes[`group-${groupId}:delete-billing`] = 'Delete billing details';
