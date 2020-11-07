@@ -263,14 +263,22 @@ model webhooks {
 }
 
 model auditLogs {
-  createdAt DateTime @default(now())
-  event     String
-  id        Int      @id @default(autoincrement())
-  group     groups   @relation("groupAuditLog", fields: [groupId], references: [id])
-  groupId   Int
-  updatedAt DateTime @updatedAt
-  user      users    @relation("userAuditLog", fields: [userId], references: [id])
-  userId    Int
+  createdAt       DateTime @default(now())
+  event           String
+  id              Int      @id @default(autoincrement())
+  group           groups   @relation("groupAuditLog", fields: [groupId], references: [id])
+  groupId         Int
+  updatedAt       DateTime @updatedAt
+  user            users    @relation("userAuditLog", fields: [userId], references: [id])
+  userId          Int
+  ipAddress       String?
+  userAgent       String?
+  city            String?
+  region          String?
+  timezone        String?
+  countryCode     String?
+  browser         String?
+  operatingSystem String?
 
   @@index([userId], name: "userId")
   @@index([groupId], name: "groupId")
