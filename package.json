@@ -64,6 +64,7 @@
     "stripe": "^8.120.0",
     "swagger-ui-express": "^4.1.4",
     "twilio": "^3.51.0",
+    "ua-parser-js": "^0.7.22",
     "uuid": "^8.3.1"
   },
   "devDependencies": {
@@ -85,6 +86,7 @@
     "@types/randomcolor": "^0.5.5",
     "@types/request-ip": "0.0.35",
     "@types/supertest": "^2.0.10",
+    "@types/ua-parser-js": "^0.7.33",
     "@types/uuid": "^8.3.0",
     "@typescript-eslint/eslint-plugin": "4.6.1",
     "@typescript-eslint/parser": "4.6.1",
