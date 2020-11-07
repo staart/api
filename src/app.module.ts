@@ -32,6 +32,7 @@ import { SessionsModule } from './modules/sessions/sessions.module';
 import { StripeModule } from './modules/stripe/stripe.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { UsersModule } from './modules/users/users.module';
+import { WebhooksModule } from './modules/webhooks/webhooks.module';
 
 @Module({
   imports: [
@@ -61,6 +62,7 @@ import { UsersModule } from './modules/users/users.module';
     MembershipsModule,
     StripeModule,
     AuditLogsModule,
+    WebhooksModule,
   ],
   providers: [
     {
