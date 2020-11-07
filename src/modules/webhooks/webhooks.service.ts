@@ -115,8 +115,31 @@ export class WebhooksService {
     return this.prisma.expose<webhooks>(webhook);
   }
 
-  async getWebhookScopes(groupId: number): Promise<Record<string, string>> {
-    const scopes: Record<string, string> = {};
+  async getWebhookScopes(): Promise<Record<string, string>> {
+    const scopes: Record<string, string> = {
+      'create-api-key': 'Create API key',
+      'update-api-key': 'Update API key',
+      'delete-api-key': 'Delete API key',
+      'create-domain': 'Create domain',
+      'delete-domain': 'Delete domain',
+      'verify-domain-txt': 'Verify domain (TXT)',
+      'verify-domain-html': 'Verify domain (HTML)',
+      'update-info': 'Update info',
+      delete: 'Delete group',
+      'add-membership': 'Add membership',
+      'update-membership': 'Update membership',
+      'delete-membership': 'Delete membership',
+      'create-billing': 'Create billing',
+      'update-billing': 'Update billing',
+      'delete-billing': 'Delete billing',
+      'write-source': 'Write source',
+      'delete-source': 'Delete source',
+      'create-subscription': 'Create subscription',
+      'delete-subscription': 'Delete subscription',
+      'create-webhook': 'Create webhook',
+      'update-webhook': 'Update webhook',
+      'delete-webhook': 'Delete webhook',
+    };
     return scopes;
   }
 

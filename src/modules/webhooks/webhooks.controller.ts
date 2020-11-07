@@ -60,10 +60,8 @@ export class WebhookController {
 
   @Get('scopes')
   @Scopes('group-{groupId}:write-webhook-*')
-  async scopes(
-    @Param('groupId', ParseIntPipe) groupId: number,
-  ): Promise<Record<string, string>> {
-    return this.webhooksService.getWebhookScopes(groupId);
+  async scopes(): Promise<Record<string, string>> {
+    return this.webhooksService.getWebhookScopes();
   }
 
   @Get(':id')
