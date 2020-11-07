@@ -15,6 +15,7 @@ import { CursorPipe } from '../../pipes/cursor.pipe';
 import { OptionalIntPipe } from '../../pipes/optional-int.pipe';
 import { OrderByPipe } from '../../pipes/order-by.pipe';
 import { WherePipe } from '../../pipes/where.pipe';
+import { AuditLog } from '../audit-logs/audit-log.decorator';
 import { Scopes } from '../auth/scope.decorator';
 import { ReplaceGroupDto, UpdateGroupDto } from './groups.dto';
 import { GroupsService } from './groups.service';
@@ -42,6 +43,7 @@ export class GroupController {
   }
 
   @Get(':id')
+  @AuditLog('read-info')
   @Scopes('group-{id}:read-info')
   async get(@Param('id', ParseIntPipe) id: number): Promise<Expose<groups>> {
     return this.groupsService.getGroup(Number(id));

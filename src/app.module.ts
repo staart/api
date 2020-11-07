@@ -9,6 +9,7 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
 import { RateLimiterInterceptor, RateLimiterModule } from 'nestjs-rate-limiter';
 import configuration from './config/configuration';
+import { AuditLogger } from './interceptors/audit-log.interceptor';
 import { JsonBodyMiddleware } from './middleware/json-body.middleware';
 import { RawBodyMiddleware } from './middleware/raw-body.middleware';
 import { AccessTokensModule } from './modules/access-tokens/access-tokens.module';
@@ -73,6 +74,10 @@ import { UsersModule } from './modules/users/users.module';
     {
       provide: APP_GUARD,
       useClass: ScopesGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: AuditLogger,
     },
   ],
 })
