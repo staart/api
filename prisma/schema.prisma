@@ -84,6 +84,7 @@ model users {
   identities           identities[]         @relation("userIdentities")
   memberships          memberships[]        @relation("userMemberships")
   sessions             sessions[]           @relation("userSessions")
+  auditLogs            auditLogs[]          @relation("userAuditLog")
 }
 
 model groups {
@@ -101,6 +102,7 @@ model groups {
   domains           domains[]     @relation("groupDomains")
   memberships       memberships[] @relation("groupMemberships")
   webhooks          webhooks[]    @relation("groupWebhooks")
+  auditLogs         auditLogs[]   @relation("groupAuditLog")
 }
 
 model emails {
@@ -257,5 +259,19 @@ model webhooks {
   updatedAt   DateTime  @updatedAt
   url         String
 
+  @@index([groupId], name: "groupId")
+}
+
+model auditLogs {
+  createdAt DateTime @default(now())
+  event     String
+  id        Int      @id @default(autoincrement())
+  group     groups   @relation("groupAuditLog", fields: [groupId], references: [id])
+  groupId   Int
+  updatedAt DateTime @updatedAt
+  user      users    @relation("userAuditLog", fields: [userId], references: [id])
+  userId    Int
+
+  @@index([userId], name: "userId")
   @@index([groupId], name: "groupId")
 }
