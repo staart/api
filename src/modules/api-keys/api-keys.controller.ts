@@ -36,7 +36,7 @@ export class ApiKeyController {
     @Param('groupId', ParseIntPipe) groupId: number,
     @Body() data: CreateApiKeyDto,
   ): Promise<Expose<apiKeys>> {
-    return this.apiKeysService.createApiKey(groupId, data);
+    return this.apiKeysService.createApiKeyForGroup(groupId, data);
   }
 
   @Get()
@@ -49,7 +49,7 @@ export class ApiKeyController {
     @Query('where', WherePipe) where?: Record<string, number | string>,
     @Query('orderBy', OrderByPipe) orderBy?: Record<string, 'asc' | 'desc'>,
   ): Promise<Expose<apiKeys>[]> {
-    return this.apiKeysService.getApiKeys(groupId, {
+    return this.apiKeysService.getApiKeysForGroup(groupId, {
       skip,
       take,
       orderBy,
@@ -63,7 +63,7 @@ export class ApiKeyController {
   async scopes(
     @Param('groupId', ParseIntPipe) groupId: number,
   ): Promise<Record<string, string>> {
-    return this.apiKeysService.getApiKeyScopes(groupId);
+    return this.apiKeysService.getApiKeyScopesForGroup(groupId);
   }
 
   @Get(':id')
@@ -72,7 +72,7 @@ export class ApiKeyController {
     @Param('groupId', ParseIntPipe) groupId: number,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Expose<apiKeys>> {
-    return this.apiKeysService.getApiKey(groupId, Number(id));
+    return this.apiKeysService.getApiKeyForGroup(groupId, Number(id));
   }
 
   @Patch(':id')
@@ -83,7 +83,7 @@ export class ApiKeyController {
     @Param('groupId', ParseIntPipe) groupId: number,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Expose<apiKeys>> {
-    return this.apiKeysService.updateApiKey(groupId, Number(id), data);
+    return this.apiKeysService.updateApiKeyForGroup(groupId, Number(id), data);
   }
 
   @Put(':id')
@@ -94,7 +94,7 @@ export class ApiKeyController {
     @Param('groupId', ParseIntPipe) groupId: number,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Expose<apiKeys>> {
-    return this.apiKeysService.updateApiKey(groupId, Number(id), data);
+    return this.apiKeysService.updateApiKeyForGroup(groupId, Number(id), data);
   }
 
   @Delete(':id')
@@ -104,6 +104,6 @@ export class ApiKeyController {
     @Param('groupId', ParseIntPipe) groupId: number,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Expose<apiKeys>> {
-    return this.apiKeysService.deleteApiKey(groupId, Number(id));
+    return this.apiKeysService.deleteApiKeyForGroup(groupId, Number(id));
   }
 }
