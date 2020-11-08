@@ -1,7 +1,6 @@
 import {
-  HttpException,
-  HttpStatus,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import {
@@ -62,8 +61,7 @@ export class EmailsService {
     const email = await this.prisma.emails.findOne({
       where: { id },
     });
-    if (!email)
-      throw new HttpException('Email not found', HttpStatus.NOT_FOUND);
+    if (!email) throw new NotFoundException('Email not found');
     if (email.userId !== userId) throw new UnauthorizedException();
     return this.prisma.expose<emails>(email);
   }
@@ -72,8 +70,7 @@ export class EmailsService {
     const testEmail = await this.prisma.emails.findOne({
       where: { id },
     });
-    if (!testEmail)
-      throw new HttpException('Email not found', HttpStatus.NOT_FOUND);
+    if (!testEmail) throw new NotFoundException('Email not found');
     if (testEmail.userId !== userId) throw new UnauthorizedException();
     const email = await this.prisma.emails.delete({
       where: { id },

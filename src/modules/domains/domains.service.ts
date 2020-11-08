@@ -1,8 +1,7 @@
 import {
   BadRequestException,
-  HttpException,
-  HttpStatus,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -14,6 +13,7 @@ import {
   domainsWhereUniqueInput,
 } from '@prisma/client';
 import got from 'got';
+import { URL } from 'url';
 import { DnsService } from '../dns/dns.service';
 import { Expose } from '../prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
@@ -23,7 +23,6 @@ import {
   DOMAIN_VERIFICATION_TXT,
 } from './domains.constants';
 import { DomainVerificationMethods } from './domains.interface';
-import { URL } from 'url';
 
 @Injectable()
 export class DomainsService {
@@ -97,8 +96,7 @@ export class DomainsService {
     const domain = await this.prisma.domains.findOne({
       where: { id },
     });
-    if (!domain)
-      throw new HttpException('Domain not found', HttpStatus.NOT_FOUND);
+    if (!domain) throw new NotFoundException('Domain not found');
     if (domain.groupId !== groupId) throw new UnauthorizedException();
     return this.prisma.expose<domains>(domain);
   }
@@ -111,8 +109,7 @@ export class DomainsService {
     const domain = await this.prisma.domains.findOne({
       where: { id },
     });
-    if (!domain)
-      throw new HttpException('Domain not found', HttpStatus.NOT_FOUND);
+    if (!domain) throw new NotFoundException('Domain not found');
     if (domain.groupId !== groupId) throw new UnauthorizedException();
     if (method === DOMAIN_VERIFICATION_TXT) {
       const txtRecords = await this.dnsService.lookup(domain.domain, 'TXT');
@@ -146,8 +143,7 @@ export class DomainsService {
     const testDomain = await this.prisma.domains.findOne({
       where: { id },
     });
-    if (!testDomain)
-      throw new HttpException('Domain not found', HttpStatus.NOT_FOUND);
+    if (!testDomain) throw new NotFoundException('Domain not found');
     if (testDomain.groupId !== groupId) throw new UnauthorizedException();
     const domain = await this.prisma.domains.delete({
       where: { id },

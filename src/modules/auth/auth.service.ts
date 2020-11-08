@@ -1,9 +1,9 @@
 import {
   BadRequestException,
-  HttpException,
-  HttpStatus,
+  ConflictException,
   Injectable,
   NotFoundException,
+  NotImplementedException,
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
@@ -79,13 +79,12 @@ export class AuthService {
         prefersEmail: true,
       },
     });
-    if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    if (!user) throw new NotFoundException('User not found');
     if (!user.emails.find((i) => i.emailSafe === emailSafe)?.isVerified)
       throw new UnauthorizedException('This email is not verified');
     if (!password || !user.password)
-      throw new HttpException(
+      throw new NotImplementedException(
         'Logging in without passwords is not supported',
-        HttpStatus.NOT_IMPLEMENTED,
       );
     if (!user.prefersEmail)
       throw new BadRequestException('User has no email attached to it');
@@ -114,10 +113,7 @@ export class AuthService {
       where: { emails: { some: { emailSafe } } },
     });
     if (testUser)
-      throw new HttpException(
-        'A user with this email already exists',
-        HttpStatus.CONFLICT,
-      );
+      throw new ConflictException('A user with this email already exists');
     const ignorePwnedPassword = !!data.ignorePwnedPassword;
     delete data.ignorePwnedPassword;
 
@@ -187,15 +183,9 @@ export class AuthService {
       include: { user: true },
     });
     if (!emailDetails)
-      throw new HttpException(
-        'There is no user for this email',
-        HttpStatus.NOT_FOUND,
-      );
+      throw new NotFoundException('There is no user for this email');
     if (emailDetails.isVerified)
-      throw new HttpException(
-        'This email is already verified',
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new ConflictException('This email is already verified');
     this.email.send({
       to: `"${emailDetails.user.name}" <${email}>`,
       template: resend
@@ -226,8 +216,7 @@ export class AuthService {
       where: { token },
       include: { user: true },
     });
-    if (!session)
-      throw new HttpException('Session not found', HttpStatus.NOT_FOUND);
+    if (!session) throw new NotFoundException('Session not found');
     await this.prisma.sessions.updateMany({
       where: { token },
       data: { ipAddress, userAgent },
@@ -244,8 +233,7 @@ export class AuthService {
       where: { token },
       select: { id: true, user: { select: { id: true } } },
     });
-    if (!session)
-      throw new HttpException('Session not found', HttpStatus.NOT_FOUND);
+    if (!session) throw new NotFoundException('Session not found');
     await this.prisma.sessions.delete({
       where: { id: session.id },
     });
@@ -348,10 +336,7 @@ export class AuthService {
       include: { user: true },
     });
     if (!emailDetails)
-      throw new HttpException(
-        'There is no user for this email',
-        HttpStatus.NOT_FOUND,
-      );
+      throw new NotFoundException('There is no user for this email');
     this.email.send({
       to: `"${emailDetails.user.name}" <${email}>`,
       template: 'auth/password-reset',
@@ -596,9 +581,8 @@ export class AuthService {
           this.configService.get<number>('security.saltRounds') ?? 10,
         );
       if (!(await this.pwnedService.isPasswordSafe(password)))
-        throw new HttpException(
+        throw new BadRequestException(
           'This password has been compromised in a data breach.',
-          HttpStatus.BAD_REQUEST,
         );
     }
     return await hash(

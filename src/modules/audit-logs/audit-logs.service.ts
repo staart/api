@@ -1,7 +1,6 @@
 import {
-  HttpException,
-  HttpStatus,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import {
@@ -42,8 +41,7 @@ export class AuditLogsService {
     const auditLog = await this.prisma.auditLogs.findOne({
       where: { id },
     });
-    if (!auditLog)
-      throw new HttpException('AuditLog not found', HttpStatus.NOT_FOUND);
+    if (!auditLog) throw new NotFoundException('Audit log not found');
     if (auditLog.groupId !== groupId) throw new UnauthorizedException();
     return this.prisma.expose<auditLogs>(auditLog);
   }

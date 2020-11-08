@@ -1,21 +1,20 @@
 import {
-  HttpException,
-  HttpStatus,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import {
   approvedSubnets,
   approvedSubnetsOrderByInput,
   approvedSubnetsWhereInput,
   approvedSubnetsWhereUniqueInput,
 } from '@prisma/client';
-import { Expose } from '../../modules/prisma/prisma.interface';
-import { PrismaService } from '../prisma/prisma.service';
-import anonymize from 'ip-anonymize';
 import { compare, hash } from 'bcrypt';
-import { ConfigService } from '@nestjs/config';
+import anonymize from 'ip-anonymize';
+import { Expose } from '../../modules/prisma/prisma.interface';
 import { GeolocationService } from '../geolocation/geolocation.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class ApprovedSubnetsService {
@@ -56,10 +55,10 @@ export class ApprovedSubnetsService {
       where: { id },
     });
     if (!approvedSubnet)
-      throw new HttpException('ApprovedSubnet not found', HttpStatus.NOT_FOUND);
+      throw new NotFoundException('Approved subnet not found');
     if (approvedSubnet.userId !== userId) throw new UnauthorizedException();
     if (!approvedSubnet)
-      throw new HttpException('ApprovedSubnet not found', HttpStatus.NOT_FOUND);
+      throw new NotFoundException('Approved subnet not found');
     return this.prisma.expose<approvedSubnets>(approvedSubnet);
   }
 
@@ -71,7 +70,7 @@ export class ApprovedSubnetsService {
       where: { id },
     });
     if (!testApprovedSubnet)
-      throw new HttpException('ApprovedSubnet not found', HttpStatus.NOT_FOUND);
+      throw new NotFoundException('Approved subnet not found');
     if (testApprovedSubnet.userId !== userId) throw new UnauthorizedException();
     const approvedSubnet = await this.prisma.approvedSubnets.delete({
       where: { id },

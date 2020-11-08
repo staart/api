@@ -1,8 +1,7 @@
 import {
-  HttpException,
-  HttpStatus,
   Injectable,
   Logger,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import {
@@ -60,8 +59,7 @@ export class WebhooksService {
     const webhook = await this.prisma.webhooks.findOne({
       where: { id },
     });
-    if (!webhook)
-      throw new HttpException('Webhook not found', HttpStatus.NOT_FOUND);
+    if (!webhook) throw new NotFoundException('Webhook not found');
     if (webhook.groupId !== groupId) throw new UnauthorizedException();
     return this.prisma.expose<webhooks>(webhook);
   }
@@ -74,8 +72,7 @@ export class WebhooksService {
     const testWebhook = await this.prisma.webhooks.findOne({
       where: { id },
     });
-    if (!testWebhook)
-      throw new HttpException('Webhook not found', HttpStatus.NOT_FOUND);
+    if (!testWebhook) throw new NotFoundException('Webhook not found');
     if (testWebhook.groupId !== groupId) throw new UnauthorizedException();
     const webhook = await this.prisma.webhooks.update({
       where: { id },
@@ -92,8 +89,7 @@ export class WebhooksService {
     const testWebhook = await this.prisma.webhooks.findOne({
       where: { id },
     });
-    if (!testWebhook)
-      throw new HttpException('Webhook not found', HttpStatus.NOT_FOUND);
+    if (!testWebhook) throw new NotFoundException('Webhook not found');
     if (testWebhook.groupId !== groupId) throw new UnauthorizedException();
     const webhook = await this.prisma.webhooks.update({
       where: { id },
@@ -106,8 +102,7 @@ export class WebhooksService {
     const testWebhook = await this.prisma.webhooks.findOne({
       where: { id },
     });
-    if (!testWebhook)
-      throw new HttpException('Webhook not found', HttpStatus.NOT_FOUND);
+    if (!testWebhook) throw new NotFoundException('Webhook not found');
     if (testWebhook.groupId !== groupId) throw new UnauthorizedException();
     const webhook = await this.prisma.webhooks.delete({
       where: { id },

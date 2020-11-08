@@ -1,10 +1,9 @@
 import {
-  PipeTransform,
-  Injectable,
-  HttpException,
-  HttpStatus,
   ArgumentMetadata,
   BadGatewayException,
+  BadRequestException,
+  Injectable,
+  PipeTransform,
 } from '@nestjs/common';
 
 /** Convert a string like "name asc, address desc" to { name: "asc", address: "desc" } */
@@ -26,9 +25,8 @@ export class OrderByPipe implements PipeTransform {
       });
       return orderBy;
     } catch (_) {
-      throw new HttpException(
+      throw new BadRequestException(
         `"${metadata.data}" should be like "key1 asc, key2 desc", provided "${value}"`,
-        HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
   }

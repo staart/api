@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   groups,
   groupsCreateInput,
@@ -7,9 +7,9 @@ import {
   groupsWhereInput,
   groupsWhereUniqueInput,
 } from '@prisma/client';
+import randomColor from 'randomcolor';
 import { Expose } from '../../modules/prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
-import randomColor from 'randomcolor';
 
 @Injectable()
 export class GroupsService {
@@ -63,8 +63,7 @@ export class GroupsService {
     const group = await this.prisma.groups.findOne({
       where: { id },
     });
-    if (!group)
-      throw new HttpException('Group not found', HttpStatus.NOT_FOUND);
+    if (!group) throw new NotFoundException('Group not found');
     return this.prisma.expose<groups>(group);
   }
 
@@ -75,8 +74,7 @@ export class GroupsService {
     const testGroup = await this.prisma.groups.findOne({
       where: { id },
     });
-    if (!testGroup)
-      throw new HttpException('Group not found', HttpStatus.NOT_FOUND);
+    if (!testGroup) throw new NotFoundException('Group not found');
     const group = await this.prisma.groups.update({
       where: { id },
       data,
@@ -91,8 +89,7 @@ export class GroupsService {
     const testGroup = await this.prisma.groups.findOne({
       where: { id },
     });
-    if (!testGroup)
-      throw new HttpException('Group not found', HttpStatus.NOT_FOUND);
+    if (!testGroup) throw new NotFoundException('Group not found');
     const group = await this.prisma.groups.update({
       where: { id },
       data,
@@ -104,8 +101,7 @@ export class GroupsService {
     const testGroup = await this.prisma.groups.findOne({
       where: { id },
     });
-    if (!testGroup)
-      throw new HttpException('Group not found', HttpStatus.NOT_FOUND);
+    if (!testGroup) throw new NotFoundException('Group not found');
     const group = await this.prisma.groups.delete({
       where: { id },
     });

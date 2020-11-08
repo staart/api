@@ -1,7 +1,5 @@
 import {
   BadRequestException,
-  HttpException,
-  HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -39,7 +37,7 @@ export class UsersService {
     const user = await this.prisma.users.findOne({
       where: { id },
     });
-    if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    if (!user) throw new NotFoundException('User not found');
     return this.prisma.expose<users>(user);
   }
 

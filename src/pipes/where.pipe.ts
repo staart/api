@@ -1,9 +1,8 @@
 import {
-  PipeTransform,
-  Injectable,
-  HttpException,
-  HttpStatus,
   ArgumentMetadata,
+  BadRequestException,
+  Injectable,
+  PipeTransform,
 } from '@nestjs/common';
 import { parseObjectLiteral } from '../helpers/parse-object-literal';
 
@@ -25,9 +24,8 @@ export class WherePipe implements PipeTransform {
       });
       return items;
     } catch (_) {
-      throw new HttpException(
+      throw new BadRequestException(
         `"${metadata.data}" should be like "id 12, name Anand", provided "${value}"`,
-        HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
   }

@@ -1,7 +1,6 @@
 import {
-  HttpException,
-  HttpStatus,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -103,8 +102,7 @@ export class ApiKeysService {
     const apiKey = await this.prisma.apiKeys.findOne({
       where: { id },
     });
-    if (!apiKey)
-      throw new HttpException('ApiKey not found', HttpStatus.NOT_FOUND);
+    if (!apiKey) throw new NotFoundException('API key not found');
     if (apiKey.groupId !== groupId) throw new UnauthorizedException();
     return this.prisma.expose<apiKeys>(apiKey);
   }
@@ -112,8 +110,7 @@ export class ApiKeysService {
     const apiKey = await this.prisma.apiKeys.findOne({
       where: { id },
     });
-    if (!apiKey)
-      throw new HttpException('ApiKey not found', HttpStatus.NOT_FOUND);
+    if (!apiKey) throw new NotFoundException('API key not found');
     if (apiKey.userId !== userId) throw new UnauthorizedException();
     return this.prisma.expose<apiKeys>(apiKey);
   }
@@ -122,8 +119,7 @@ export class ApiKeysService {
     const apiKey = await this.prisma.apiKeys.findFirst({
       where: { apiKey: key },
     });
-    if (!apiKey)
-      throw new HttpException('ApiKey not found', HttpStatus.NOT_FOUND);
+    if (!apiKey) throw new NotFoundException('API key not found');
     if (this.lru.has(key)) return this.lru.get(key);
     this.lru.set(key, apiKey);
     return this.prisma.expose<apiKeys>(apiKey);
@@ -137,8 +133,7 @@ export class ApiKeysService {
     const testApiKey = await this.prisma.apiKeys.findOne({
       where: { id },
     });
-    if (!testApiKey)
-      throw new HttpException('ApiKey not found', HttpStatus.NOT_FOUND);
+    if (!testApiKey) throw new NotFoundException('API key not found');
     if (testApiKey.groupId !== groupId) throw new UnauthorizedException();
     data.scopes = this.cleanScopesForGroup(groupId, data.scopes);
     const apiKey = await this.prisma.apiKeys.update({
@@ -156,8 +151,7 @@ export class ApiKeysService {
     const testApiKey = await this.prisma.apiKeys.findOne({
       where: { id },
     });
-    if (!testApiKey)
-      throw new HttpException('ApiKey not found', HttpStatus.NOT_FOUND);
+    if (!testApiKey) throw new NotFoundException('API key not found');
     if (testApiKey.userId !== userId) throw new UnauthorizedException();
     data.scopes = this.cleanScopesForUser(userId, data.scopes);
     const apiKey = await this.prisma.apiKeys.update({
@@ -176,8 +170,7 @@ export class ApiKeysService {
     const testApiKey = await this.prisma.apiKeys.findOne({
       where: { id },
     });
-    if (!testApiKey)
-      throw new HttpException('ApiKey not found', HttpStatus.NOT_FOUND);
+    if (!testApiKey) throw new NotFoundException('API key not found');
     if (testApiKey.groupId !== groupId) throw new UnauthorizedException();
     data.scopes = this.cleanScopesForGroup(groupId, data.scopes);
     const apiKey = await this.prisma.apiKeys.update({
@@ -195,8 +188,7 @@ export class ApiKeysService {
     const testApiKey = await this.prisma.apiKeys.findOne({
       where: { id },
     });
-    if (!testApiKey)
-      throw new HttpException('ApiKey not found', HttpStatus.NOT_FOUND);
+    if (!testApiKey) throw new NotFoundException('API key not found');
     if (testApiKey.userId !== userId) throw new UnauthorizedException();
     data.scopes = this.cleanScopesForUser(userId, data.scopes);
     const apiKey = await this.prisma.apiKeys.update({
@@ -214,8 +206,7 @@ export class ApiKeysService {
     const testApiKey = await this.prisma.apiKeys.findOne({
       where: { id },
     });
-    if (!testApiKey)
-      throw new HttpException('ApiKey not found', HttpStatus.NOT_FOUND);
+    if (!testApiKey) throw new NotFoundException('API key not found');
     if (testApiKey.groupId !== groupId) throw new UnauthorizedException();
     const apiKey = await this.prisma.apiKeys.delete({
       where: { id },
@@ -230,8 +221,7 @@ export class ApiKeysService {
     const testApiKey = await this.prisma.apiKeys.findOne({
       where: { id },
     });
-    if (!testApiKey)
-      throw new HttpException('ApiKey not found', HttpStatus.NOT_FOUND);
+    if (!testApiKey) throw new NotFoundException('API key not found');
     if (testApiKey.userId !== userId) throw new UnauthorizedException();
     const apiKey = await this.prisma.apiKeys.delete({
       where: { id },

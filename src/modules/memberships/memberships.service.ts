@@ -1,6 +1,5 @@
 import {
-  HttpException,
-  HttpStatus,
+  BadRequestException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -58,8 +57,7 @@ export class MembershipsService {
       where: { id },
       include: { group: true },
     });
-    if (!membership)
-      throw new HttpException('Membership not found', HttpStatus.NOT_FOUND);
+    if (!membership) throw new NotFoundException('Membership not found');
     if (membership.userId !== userId) throw new UnauthorizedException();
     return this.prisma.expose<memberships>(membership);
   }
@@ -72,8 +70,7 @@ export class MembershipsService {
       where: { id },
       include: { group: true },
     });
-    if (!membership)
-      throw new HttpException('Membership not found', HttpStatus.NOT_FOUND);
+    if (!membership) throw new NotFoundException('Membership not found');
     if (membership.groupId !== groupId) throw new UnauthorizedException();
     return this.prisma.expose<memberships>(membership);
   }
@@ -85,8 +82,7 @@ export class MembershipsService {
     const testMembership = await this.prisma.memberships.findOne({
       where: { id },
     });
-    if (!testMembership)
-      throw new HttpException('Membership not found', HttpStatus.NOT_FOUND);
+    if (!testMembership) throw new NotFoundException('Membership not found');
     if (testMembership.userId !== userId) throw new UnauthorizedException();
     await this.verifyDeleteMembership(testMembership.groupId, id);
     const membership = await this.prisma.memberships.delete({
@@ -103,8 +99,7 @@ export class MembershipsService {
     const testMembership = await this.prisma.memberships.findOne({
       where: { id },
     });
-    if (!testMembership)
-      throw new HttpException('Membership not found', HttpStatus.NOT_FOUND);
+    if (!testMembership) throw new NotFoundException('Membership not found');
     if (testMembership.groupId !== groupId) throw new UnauthorizedException();
     const membership = await this.prisma.memberships.update({
       where: { id },
@@ -120,8 +115,7 @@ export class MembershipsService {
     const testMembership = await this.prisma.memberships.findOne({
       where: { id },
     });
-    if (!testMembership)
-      throw new HttpException('Membership not found', HttpStatus.NOT_FOUND);
+    if (!testMembership) throw new NotFoundException('Membership not found');
     if (testMembership.groupId !== groupId) throw new UnauthorizedException();
     await this.verifyDeleteMembership(testMembership.groupId, id);
     const membership = await this.prisma.memberships.delete({
@@ -185,9 +179,8 @@ export class MembershipsService {
       where: { group: { id: groupId } },
     });
     if (memberships.length === 1)
-      throw new HttpException(
-        'You cannot remove the sole member of a group',
-        HttpStatus.BAD_REQUEST,
+      throw new BadRequestException(
+        'You cannot delete the sole member for a group',
       );
     const membership = await this.prisma.memberships.findOne({
       where: { id: membershipId },
@@ -197,9 +190,8 @@ export class MembershipsService {
       membership.role === 'OWNER' &&
       memberships.filter((i) => i.role === 'OWNER').length === 1
     )
-      throw new HttpException(
-        'You cannot remove the sole owner of a group',
-        HttpStatus.BAD_REQUEST,
+      throw new BadRequestException(
+        'You cannot delete the sole owner for a group',
       );
   }
 }
