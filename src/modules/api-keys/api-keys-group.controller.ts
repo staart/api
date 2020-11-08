@@ -11,13 +11,13 @@ import {
   Query,
 } from '@nestjs/common';
 import { apiKeys } from '@prisma/client';
-import { Expose } from '../../modules/prisma/prisma.interface';
 import { CursorPipe } from '../../pipes/cursor.pipe';
 import { OptionalIntPipe } from '../../pipes/optional-int.pipe';
 import { OrderByPipe } from '../../pipes/order-by.pipe';
 import { WherePipe } from '../../pipes/where.pipe';
 import { AuditLog } from '../audit-logs/audit-log.decorator';
 import { Scopes } from '../auth/scope.decorator';
+import { Expose } from '../prisma/prisma.interface';
 import {
   CreateApiKeyDto,
   ReplaceApiKeyDto,
@@ -26,7 +26,7 @@ import {
 import { ApiKeysService } from './api-keys.service';
 
 @Controller('groups/:groupId/api-keys')
-export class ApiKeyController {
+export class ApiKeyGroupController {
   constructor(private apiKeysService: ApiKeysService) {}
 
   @Post()
