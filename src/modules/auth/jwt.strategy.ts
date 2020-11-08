@@ -1,12 +1,14 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
+import ipRangeCheck from 'ip-range-check';
+import minimatch from 'minimatch';
 import { Strategy } from 'passport-strategy';
+import { getClientIp } from 'request-ip';
 import { ApiKeysService } from '../api-keys/api-keys.service';
 import { LOGIN_ACCESS_TOKEN } from '../tokens/tokens.constants';
 import { TokensService } from '../tokens/tokens.service';
 import { AccessTokenClaims, AccessTokenParsed } from './auth.interface';
-import minimatch from 'minimatch';
 
 class StaartStrategy extends Strategy {
   name = 'jwt';
@@ -47,6 +49,16 @@ export class JwtStrategy extends PassportStrategy(StaartStrategy) {
           if (!referrerRestrictionsMet)
             return this.fail('Referrer restrictions not met', 401);
         }
+        if (
+          Array.isArray(apiKeyDetails.ipRestrictions) &&
+          apiKeyDetails.ipRestrictions.length
+        ) {
+          const ipAddress = getClientIp(request);
+          if (
+            !ipRangeCheck(ipAddress, apiKeyDetails.ipRestrictions as string[])
+          )
+            return this.fail('IP address restrictions not met', 401);
+        }
         return this.safeSuccess({
           type: 'api-key',
           id: apiKeyDetails.id,
@@ -66,7 +78,7 @@ export class JwtStrategy extends PassportStrategy(StaartStrategy) {
         LOGIN_ACCESS_TOKEN,
         bearerToken,
       ) as AccessTokenClaims;
-      const { sub, id, scopes } = payload;
+      const { id, scopes } = payload;
       return this.safeSuccess({ type: 'user', id, scopes });
     } catch (error) {}
 
