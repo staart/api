@@ -1,11 +1,12 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
-import { verify } from 'jsonwebtoken';
 import { Strategy } from 'passport-strategy';
 import { ApiKeysService } from '../api-keys/api-keys.service';
 import { LOGIN_ACCESS_TOKEN } from '../tokens/tokens.constants';
-import { AccessTokenClaims } from './auth.interface';
+import { TokensService } from '../tokens/tokens.service';
+import { AccessTokenClaims, AccessTokenParsed } from './auth.interface';
+import minimatch from 'minimatch';
 
 class StaartStrategy extends Strategy {
   name = 'jwt';
@@ -13,8 +14,15 @@ class StaartStrategy extends Strategy {
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(StaartStrategy) {
-  constructor(private apiKeyService: ApiKeysService) {
+  constructor(
+    private apiKeyService: ApiKeysService,
+    private tokensService: TokensService,
+  ) {
     super();
+  }
+
+  private safeSuccess(result: AccessTokenParsed) {
+    return this.success(result);
   }
 
   async authenticate(request: Request) {
@@ -25,13 +33,26 @@ export class JwtStrategy extends PassportStrategy(StaartStrategy) {
       request.headers.authorization;
     if (typeof apiKey === 'string') {
       if (apiKey.startsWith('Bearer ')) apiKey = apiKey.replace('Bearer ', '');
-      const apiKeyDetails = await this.apiKeyService.getApiKeyFromKey(apiKey);
-      if (apiKeyDetails)
-        return this.success({
+      try {
+        const apiKeyDetails = await this.apiKeyService.getApiKeyFromKey(apiKey);
+        const referer = request.headers.referer;
+        if (Array.isArray(apiKeyDetails.referrerRestrictions) && referer) {
+          let referrerRestrictionsMet = !apiKeyDetails.referrerRestrictions
+            .length;
+          apiKeyDetails.referrerRestrictions.forEach((restriction) => {
+            referrerRestrictionsMet =
+              referrerRestrictionsMet ||
+              minimatch(referer, restriction as string);
+          });
+          if (!referrerRestrictionsMet)
+            return this.fail('Referrer restrictions not met', 401);
+        }
+        return this.safeSuccess({
           type: 'api-key',
           id: apiKeyDetails.id,
-          scopes: apiKeyDetails.scopes,
+          scopes: apiKeyDetails.scopes as string[],
         });
+      } catch (error) {}
     }
 
     /** Bearer JWT authorization */
@@ -41,15 +62,14 @@ export class JwtStrategy extends PassportStrategy(StaartStrategy) {
     if (bearerToken.startsWith('Bearer '))
       bearerToken = bearerToken.replace('Bearer ', '');
     try {
-      const payload = verify(
+      const payload = this.tokensService.verify(
+        LOGIN_ACCESS_TOKEN,
         bearerToken,
-        process.env.JWT_SECRET,
       ) as AccessTokenClaims;
       const { sub, id, scopes } = payload;
-      if (sub !== LOGIN_ACCESS_TOKEN) throw new UnauthorizedException();
-      return this.success({ type: 'user', id, scopes });
+      return this.safeSuccess({ type: 'user', id, scopes });
     } catch (error) {}
 
-    return this.fail('Unable to parse token', 401);
+    return this.fail('Invalid token', 401);
   }
 }

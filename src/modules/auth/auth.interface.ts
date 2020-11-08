@@ -22,7 +22,7 @@ export interface TotpTokenResponse {
 export interface AccessTokenParsed {
   id: number;
   scopes: string[];
-  type: string;
+  type: 'user' | 'api-key';
 }
 
 export interface MfaTokenPayload {
