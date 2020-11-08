@@ -1,4 +1,5 @@
 import { PwnedService } from './pwned.service';
+import { randomBytes } from 'crypto';
 
 const pwnedService = new PwnedService();
 
@@ -10,7 +11,7 @@ describe('PwnedService', () => {
     });
     it('safe password', async () => {
       const safe = await pwnedService.isPasswordSafe(
-        Math.random().toString(36).slice(2),
+        randomBytes(10).toString(),
       );
       expect(safe).toBeTruthy();
     });
