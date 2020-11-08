@@ -1,10 +1,10 @@
 {
   "name": "api",
-  "version": "0.0.1",
-  "description": "",
-  "author": "",
-  "private": true,
-  "license": "UNLICENSED",
+  "version": "2.21.0",
+  "description": "SaaS backend framework with users, payments, APIs, and more",
+  "repository": "git@github.com:staart/api.git",
+  "author": "Anand Chowdhary <mail@anandchowdhary.com>",
+  "license": "MIT",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
