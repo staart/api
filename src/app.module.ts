@@ -17,8 +17,8 @@ import { ApiKeysModule } from './modules/api-keys/api-keys.module';
 import { ApprovedSubnetsModule } from './modules/approved-subnets/approved-subnets.module';
 import { AuditLogsModule } from './modules/audit-logs/audit-logs.module';
 import { AuthModule } from './modules/auth/auth.module';
-import { JwtAuthGuard } from './modules/auth/jwt-auth.guard';
 import { ScopesGuard } from './modules/auth/scope.guard';
+import { StaartAuthGuard } from './modules/auth/staart-auth.guard';
 import { DnsModule } from './modules/dns/dns.module';
 import { DomainsModule } from './modules/domains/domains.module';
 import { EmailModule } from './modules/email/email.module';
@@ -71,7 +71,7 @@ import { WebhooksModule } from './modules/webhooks/webhooks.module';
     },
     {
       provide: APP_GUARD,
-      useClass: JwtAuthGuard,
+      useClass: StaartAuthGuard,
     },
     {
       provide: APP_GUARD,

@@ -10,12 +10,12 @@ import { LOGIN_ACCESS_TOKEN } from '../tokens/tokens.constants';
 import { TokensService } from '../tokens/tokens.service';
 import { AccessTokenClaims, AccessTokenParsed } from './auth.interface';
 
-class StaartStrategy extends Strategy {
-  name = 'jwt';
+class StaartStrategyName extends Strategy {
+  name = 'staart';
 }
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(StaartStrategy) {
+export class StaartStrategy extends PassportStrategy(StaartStrategyName) {
   constructor(
     private apiKeyService: ApiKeysService,
     private tokensService: TokensService,

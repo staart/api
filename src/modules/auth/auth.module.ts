@@ -12,7 +12,7 @@ import { PwnedModule } from '../pwned/pwned.module';
 import { TokensModule } from '../tokens/tokens.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { JwtStrategy } from './jwt.strategy';
+import { StaartStrategy } from './staart.strategy';
 
 @Module({
   imports: [
@@ -31,6 +31,6 @@ import { JwtStrategy } from './jwt.strategy';
   ],
   controllers: [AuthController],
   exports: [AuthService],
-  providers: [AuthService, JwtStrategy, ApprovedSubnetsService],
+  providers: [AuthService, StaartStrategy, ApprovedSubnetsService],
 })
 export class AuthModule {}
