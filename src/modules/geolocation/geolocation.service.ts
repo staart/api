@@ -40,11 +40,8 @@ export class GeolocationService implements OnModuleDestroy {
     ipAddress: string,
   ): Promise<Partial<CityResponse>> {
     if (!this.lookup)
-      this.lookup = await geolite2.open<CityResponse>(
-        'GeoLite2-City',
-        (path) => {
-          return maxmind.open(path);
-        },
+      this.lookup = await geolite2.open<CityResponse>('GeoLite2-City', (path) =>
+        maxmind.open(path),
       );
     return this.lookup.get(ipAddress) ?? {};
   }
