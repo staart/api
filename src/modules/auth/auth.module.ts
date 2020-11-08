@@ -10,6 +10,7 @@ import { GeolocationModule } from '../geolocation/geolocation.module';
 import { PrismaModule } from '../prisma/prisma.module';
 import { PwnedModule } from '../pwned/pwned.module';
 import { TokensModule } from '../tokens/tokens.module';
+import { TwilioModule } from '../twilio/twilio.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { StaartStrategy } from './staart.strategy';
@@ -23,6 +24,7 @@ import { StaartStrategy } from './staart.strategy';
     ConfigModule,
     PwnedModule,
     ApiKeysModule,
+    TwilioModule,
     GeolocationModule,
     ApprovedSubnetsModule,
     JwtModule.register({

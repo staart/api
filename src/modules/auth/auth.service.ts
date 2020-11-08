@@ -18,20 +18,21 @@ import { authenticator } from 'otplib';
 import qrcode from 'qrcode';
 import randomColor from 'randomcolor';
 import {
+  COMPROMISED_PASSWORD,
   EMAIL_USER_CONFLICT,
-  INVALID_CREDENTIALS,
-  NO_EMAILS,
-  UNVERIFIED_EMAIL,
-  USER_NOT_FOUND,
   EMAIL_VERIFIED_CONFLICT,
+  INVALID_CREDENTIALS,
+  INVALID_MFA_CODE,
+  MFA_BACKUP_CODE_USED,
+  MFA_ENABLED_CONFLICT,
+  MFA_NOT_ENABLED,
+  MFA_PHONE_NOT_FOUND,
+  NO_EMAILS,
   NO_TOKEN_PROVIDED,
   SESSION_NOT_FOUND,
-  MFA_ENABLED_CONFLICT,
-  INVALID_MFA_CODE,
-  MFA_NOT_ENABLED,
-  MFA_BACKUP_CODE_USED,
+  UNVERIFIED_EMAIL,
   UNVERIFIED_LOCATION,
-  COMPROMISED_PASSWORD,
+  USER_NOT_FOUND,
 } from 'src/errors/errors.constants';
 import { safeEmail } from '../../helpers/safe-email';
 import { ApprovedSubnetsService } from '../approved-subnets/approved-subnets.service';
@@ -49,6 +50,7 @@ import {
   PASSWORD_RESET_TOKEN,
 } from '../tokens/tokens.constants';
 import { TokensService } from '../tokens/tokens.service';
+import { TwilioService } from '../twilio/twilio.service';
 import { RegisterDto } from './auth.dto';
 import {
   AccessTokenClaims,
@@ -70,6 +72,7 @@ export class AuthService {
     private tokensService: TokensService,
     private geolocationService: GeolocationService,
     private approvedSubnetsService: ApprovedSubnetsService,
+    private twilioService: TwilioService,
   ) {
     this.authenticator = authenticator.create({
       window: [
@@ -512,6 +515,15 @@ export class AuthService {
             '30m',
           )}`,
         },
+      });
+    } else if (user.twoFactorMethod === 'SMS' || forceMethod === 'SMS') {
+      if (!user.twoFactorPhone)
+        throw new BadRequestException(MFA_PHONE_NOT_FOUND);
+      this.twilioService.send({
+        to: user.twoFactorPhone,
+        body: `${this.getOneTimePassword(user.twoFactorSecret)} is your ${
+          this.configService.get<string>('sms.smsServiceName') ?? ''
+        } verification code.`,
       });
     }
     return { totpToken, type: user.twoFactorMethod, multiFactorRequired: true };

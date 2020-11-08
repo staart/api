@@ -8,6 +8,7 @@ import { GeolocationService } from '../geolocation/geolocation.service';
 import { PrismaModule } from '../prisma/prisma.module';
 import { PwnedModule } from '../pwned/pwned.module';
 import { TokensModule } from '../tokens/tokens.module';
+import { TwilioModule } from '../twilio/twilio.module';
 import { UsersService } from '../users/users.service';
 import { EmailController } from './emails.controller';
 import { EmailsService } from './emails.service';
@@ -17,6 +18,7 @@ import { EmailsService } from './emails.service';
     PrismaModule,
     EmailModule,
     ConfigModule,
+    TwilioModule,
     PwnedModule,
     TokensModule,
     JwtModule.register({
