@@ -19,7 +19,7 @@ import { UAParser } from 'ua-parser-js';
 
 @Injectable()
 export class AuditLogger implements NestInterceptor {
-  logger = new Logger('audit-logs');
+  logger = new Logger(AuditLogger.name);
 
   constructor(
     private readonly reflector: Reflector,

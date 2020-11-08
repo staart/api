@@ -11,7 +11,7 @@ import { PrismaService } from '../prisma/prisma.service';
 @Injectable()
 export class StripeService {
   stripe: Stripe;
-  logger = new Logger('stripe');
+  logger = new Logger(StripeService.name);
 
   constructor(
     private configService: ConfigService,

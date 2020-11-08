@@ -9,7 +9,7 @@ import { MessageListInstanceCreateOptions } from 'twilio/lib/rest/api/v2010/acco
 @Injectable()
 export class TwilioService {
   twilio: TwilioClient;
-  logger = new Logger('twilio');
+  logger = new Logger(TwilioService.name);
   private queue = new PQueue({ concurrency: 1 });
 
   constructor(private configService: ConfigService) {
