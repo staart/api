@@ -1,0 +1,13 @@
+name: Release Scheduler CI
+on:
+  schedule:
+    - cron: "0 0 * * 1"
+  workflow_dispatch:
+jobs:
+  releaseScheduler:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run release-scheduler
+        uses: koj-co/release-scheduler@master
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}

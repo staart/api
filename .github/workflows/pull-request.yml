@@ -1,0 +1,73 @@
+name: PR Generator CI
+on:
+  push:
+    branches-ignore:
+      - master
+      - production
+jobs:
+  auto-pull-request:
+    name: PullRequestAction
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate branch name
+        uses: actions/github-script@v3
+        id: set-branch-name
+        with:
+          script: |
+            const capitalize = (name) => name.charAt(0).toUpperCase() + name.slice(1);
+            const emoji = context.payload.ref.startsWith("refs/heads/feature")
+              ? "✨ "
+              : context.payload.ref.startsWith("refs/heads/hotfix")
+              ? "🚑 "
+              : context.payload.ref.startsWith("refs/heads/bug")
+              ? "🐛 "
+              : "";
+            return `${emoji}${capitalize(
+              context.payload.ref
+                .replace("refs/heads/", "")
+                .replace(/-/g, " ")
+                .replace("feature ", "")
+                .replace("bug ", "")
+                .replace("hotfix ", "")
+            )}`;
+          result-encoding: string
+      - name: Set branch name
+        run: echo "PULL_REQUEST_TITLE=${{steps.set-branch-name.outputs.result}}" >> $GITHUB_ENV
+      - name: Generate PR body
+        uses: actions/github-script@v3
+        id: set-pr-body
+        with:
+          script: |
+            return `I'm opening this pull request for this branch, pushed by @${
+              context.payload.head_commit.author.username
+            } with ${context.payload.commits.length} commit${
+              context.payload.commits.length === 1 ? "" : "s"
+            }.`;
+          result-encoding: string
+      - name: Set PR body
+        run: echo "PULL_REQUEST_BODY=${{steps.set-pr-body.outputs.result}}" >> $GITHUB_ENV
+      - name: Generate PR draft
+        uses: actions/github-script@v3
+        id: set-pr-draft
+        with:
+          script: |
+            return !context.payload.ref.startsWith("refs/heads/hotfix");
+      - name: Set PR draft
+        run: echo "PULL_REQUEST_DRAFT=${{steps.set-pr-draft.outputs.result}}" >> $GITHUB_ENV
+      - name: Determine whether to merge
+        uses: actions/github-script@v3
+        id: should-pr
+        with:
+          github-token: ${{ secrets.GH_PAT }}
+          script: |
+            return
+              context.payload.ref.startsWith("refs/heads/feature") ||
+              context.payload.ref.startsWith("refs/heads/hotfix") ||
+              context.payload.ref.startsWith("refs/heads/bug");
+      - name: pull-request-action
+        uses: vsoch/pull-request-action@1.0.11
+        if: always() && steps.should-pr.outputs.result
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          PULL_REQUEST_BRANCH: "master"
+          PULL_REQUEST_REVIEWERS: "AnandChowdhary"
