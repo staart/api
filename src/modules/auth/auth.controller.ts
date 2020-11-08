@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Headers,
-  Ip,
-  Post,
-  Query,
-} from '@nestjs/common';
+import { Body, Controller, Headers, Ip, Post } from '@nestjs/common';
 import { users } from '@prisma/client';
 import { RateLimit } from 'nestjs-rate-limiter';
 import { Expose } from '../../modules/prisma/prisma.interface';
