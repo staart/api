@@ -34,12 +34,3 @@ type CombinedRequest = ExpressRequest & typeof NestRequest;
 export interface UserRequest extends CombinedRequest {
   user: AccessTokenParsed;
 }
-
-export interface ValidatedUser {
-  id: number;
-  name: string;
-  twoFactorMethod: MfaMethod;
-  twoFactorSecret: string | null;
-  checkLocationOnLogin: boolean;
-  prefersEmailAddress: string;
-}
