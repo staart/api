@@ -78,7 +78,6 @@ model users {
   attributes           Json?
   updatedAt            DateTime             @updatedAt
   emails               emails[]             @relation("userEmails")
-  accessTokens         accessTokens[]       @relation("userAccessTokens")
   approvedSubnets      approvedSubnets[]    @relation("userApprovedSubnets")
   backupCodes          backupCodes[]        @relation("userBackupCodes")
   identities           identities[]         @relation("userIdentities")
@@ -117,22 +116,6 @@ model emails {
   userId     Int
 
   users users[] @relation("userPrefersEmail")
-  @@index([userId], name: "userId")
-}
-
-model accessTokens {
-  createdAt            DateTime @default(now())
-  description          String?
-  id                   Int      @id @default(autoincrement())
-  accessToken          String
-  name                 String?
-  scopes               Json?
-  updatedAt            DateTime @updatedAt
-  user                 users    @relation("userAccessTokens", fields: [userId], references: [id])
-  userId               Int
-  ipRestrictions       Json?
-  referrerRestrictions Json?
-
   @@index([userId], name: "userId")
 }
 
