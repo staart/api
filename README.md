@@ -10,11 +10,11 @@ Staart API is a Node.js backend starter for SaaS startups written in TypeScript.
 
 Staart API is build to work with [Staart UI](https://github.com/staart/ui), the frontend PWA starter for SaaS startups.
 
-**⚠️ v2 BETA WARNING:** The `master` branch and all 2.x releases are currently in beta. For production, use v1.x instead.
+**⚠️ v3 BETA WARNING:** The `master` branch and all 3.x releases are currently in beta. For production, use v1.x instead.
 
 ## ⭐ Features
 
-### 🆕 New in beta
+### 🆕 New in v2
 
 - Casbin-powered permission management
 - JWT-powered single-use coupon codes

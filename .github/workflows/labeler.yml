@@ -1,0 +1,18 @@
+name: Pull Request Labeler
+on:
+  - pull_request
+  - pull_request_review
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Label all PRs
+        uses: actions/labeler@master
+        with:
+          repo-token: "${{ secrets.GH_PAT }}"
+      - name: Label approved PRs
+        uses: koj-co/label-approved-action@master
+        with:
+          labels: "merge"
+        env:
+          GITHUB_TOKEN: "${{ secrets.GH_PAT }}"

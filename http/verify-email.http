@@ -1,0 +1,8 @@
+@baseUrl = http://localhost:3000/v1
+
+POST {{baseUrl}}/auth/verify-email
+content-type: application/json
+
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjA0NDA1NTc5LCJleHAiOjE2MDUwMTAzNzksInN1YiI6IkVNQUlMX1ZFUklGWV9UT0tFTiJ9.XHKCmXt142YH-rDnUFrzcvxGfHWA6njVfixZ-cQuoSo"
+}

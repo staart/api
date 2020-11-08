@@ -36,6 +36,13 @@ enum UserRole {
   USER
 }
 
+enum MfaMethod {
+  NONE
+  SMS
+  TOTP
+  EMAIL
+}
+
 enum MembershipRole {
   OWNER
   ADMIN
@@ -53,7 +60,7 @@ model users {
   countryCode          String               @default("us")
   createdAt            DateTime             @default(now())
   gender               Gender               @default(UNKNOWN)
-  id                   Int                  @default(autoincrement()) @id
+  id                   Int                  @id @default(autoincrement())
   name                 String
   notificationEmails   NotificationEmails   @default(ACCOUNT)
   password             String?
@@ -65,24 +72,26 @@ model users {
   profilePictureUrl    String               @default("https://unavatar.now.sh/fallback.png")
   role                 UserRole             @default(USER)
   timezone             String               @default("America/Los_Angeles")
-  twoFactorEnabled     Boolean              @default(false)
+  twoFactorMethod      MfaMethod            @default(NONE)
+  twoFactorPhone       String?
   twoFactorSecret      String?
   attributes           Json?
   updatedAt            DateTime             @updatedAt
   emails               emails[]             @relation("userEmails")
-  accessTokens         accessTokens[]       @relation("userAccessTokens")
-  approvedLocations    approvedLocations[]  @relation("userApprovedLocations")
+  approvedSubnets      approvedSubnets[]    @relation("userApprovedSubnets")
   backupCodes          backupCodes[]        @relation("userBackupCodes")
   identities           identities[]         @relation("userIdentities")
   memberships          memberships[]        @relation("userMemberships")
   sessions             sessions[]           @relation("userSessions")
+  auditLogs            auditLogs[]          @relation("userAuditLog")
+  apiKeys              apiKeys[]            @relation("userApiKeys")
 }
 
 model groups {
   autoJoinDomain    Boolean       @default(false)
   createdAt         DateTime      @default(now())
   forceTwoFactor    Boolean       @default(false)
-  id                Int           @default(autoincrement()) @id
+  id                Int           @id @default(autoincrement())
   ipRestrictions    String?
   name              String
   onlyAllowDomain   Boolean       @default(false)
@@ -93,62 +102,54 @@ model groups {
   domains           domains[]     @relation("groupDomains")
   memberships       memberships[] @relation("groupMemberships")
   webhooks          webhooks[]    @relation("groupWebhooks")
+  auditLogs         auditLogs[]   @relation("groupAuditLog")
 }
 
 model emails {
   createdAt  DateTime @default(now())
-  email      String
-  emailSafe  String
-  id         Int      @default(autoincrement()) @id
+  email      String   @unique
+  emailSafe  String   @unique
+  id         Int      @id @default(autoincrement())
   isVerified Boolean  @default(false)
   updatedAt  DateTime @updatedAt
   user       users    @relation("userEmails", fields: [userId], references: [id])
   userId     Int
 
-  @@index([userId], name: "userId")
   users users[] @relation("userPrefersEmail")
-}
-
-model accessTokens {
-  createdAt            DateTime @default(now())
-  description          String?
-  id                   Int      @default(autoincrement()) @id
-  accessToken          String
-  name                 String?
-  scopes               Json?
-  updatedAt            DateTime @updatedAt
-  user                 users    @relation("userAccessTokens", fields: [userId], references: [id])
-  userId               Int
-  ipRestrictions       Json?
-  referrerRestrictions Json?
-
   @@index([userId], name: "userId")
 }
 
 model apiKeys {
   createdAt            DateTime @default(now())
   description          String?
-  id                   Int      @default(autoincrement()) @id
+  id                   Int      @id @default(autoincrement())
   ipRestrictions       Json?
-  apiKey               String
+  apiKey               String   @unique
   name                 String?
-  group                groups   @relation("groupApiKeys", fields: [groupId], references: [id])
-  groupId              Int
+  group                groups?  @relation("groupApiKeys", fields: [groupId], references: [id])
+  groupId              Int?
+  user                 users?   @relation("userApiKeys", fields: [userId], references: [id])
+  userId               Int?
   referrerRestrictions Json?
   scopes               Json?
   updatedAt            DateTime @updatedAt
 }
 
-model approvedLocations {
-  createdAt DateTime @default(now())
-  id        Int      @default(autoincrement()) @id
-  subnet    String
-  user      users    @relation("userApprovedLocations", fields: [userId], references: [id])
-  userId    Int
+model approvedSubnets {
+  createdAt   DateTime @default(now())
+  id          Int      @id @default(autoincrement())
+  subnet      String
+  city        String?
+  region      String?
+  timezone    String?
+  countryCode String?
+  updatedAt   DateTime @updatedAt
+  user        users    @relation("userApprovedSubnets", fields: [userId], references: [id])
+  userId      Int
 }
 
 model backupCodes {
-  id        Int      @default(autoincrement()) @id
+  id        Int      @id @default(autoincrement())
   code      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -160,7 +161,7 @@ model backupCodes {
 }
 
 model couponCodes {
-  id               Int       @default(autoincrement()) @id
+  id               Int       @id @default(autoincrement())
   code             String
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
@@ -176,7 +177,7 @@ model couponCodes {
 model domains {
   createdAt        DateTime @default(now())
   domain           String
-  id               Int      @default(autoincrement()) @id
+  id               Int      @id @default(autoincrement())
   isVerified       Boolean  @default(false)
   group            groups   @relation("groupDomains", fields: [groupId], references: [id])
   groupId          Int
@@ -188,7 +189,7 @@ model domains {
 
 model identities {
   createdAt DateTime     @default(now())
-  id        Int          @default(autoincrement()) @id
+  id        Int          @id @default(autoincrement())
   loginName String
   type      IdentityType
   updatedAt DateTime     @updatedAt
@@ -200,7 +201,7 @@ model identities {
 
 model memberships {
   createdAt DateTime       @default(now())
-  id        Int            @default(autoincrement()) @id
+  id        Int            @id @default(autoincrement())
   group     groups         @relation("groupMemberships", fields: [groupId], references: [id])
   groupId   Int
   role      MembershipRole @default(MEMBER)
@@ -214,7 +215,7 @@ model memberships {
 
 model sessions {
   createdAt       DateTime @default(now())
-  id              Int      @default(autoincrement()) @id
+  id              Int      @id @default(autoincrement())
   ipAddress       String
   token           String
   updatedAt       DateTime @updatedAt
@@ -235,7 +236,7 @@ model webhooks {
   contentType String    @default("application/json")
   createdAt   DateTime  @default(now())
   event       String
-  id          Int       @default(autoincrement()) @id
+  id          Int       @id @default(autoincrement())
   isActive    Boolean   @default(false)
   lastFiredAt DateTime?
   group       groups    @relation("groupWebhooks", fields: [groupId], references: [id])
@@ -244,5 +245,27 @@ model webhooks {
   updatedAt   DateTime  @updatedAt
   url         String
 
+  @@index([groupId], name: "groupId")
+}
+
+model auditLogs {
+  createdAt       DateTime @default(now())
+  event           String
+  id              Int      @id @default(autoincrement())
+  group           groups?  @relation("groupAuditLog", fields: [groupId], references: [id])
+  groupId         Int?
+  updatedAt       DateTime @updatedAt
+  user            users?   @relation("userAuditLog", fields: [userId], references: [id])
+  userId          Int?
+  ipAddress       String?
+  userAgent       String?
+  city            String?
+  region          String?
+  timezone        String?
+  countryCode     String?
+  browser         String?
+  operatingSystem String?
+
+  @@index([userId], name: "userId")
   @@index([groupId], name: "groupId")
 }

@@ -1,0 +1,6 @@
+@baseUrl = http://localhost:3000/v1
+@groupId = 1
+
+GET {{baseUrl}}/groups/{{groupId}}
+content-type: application/json
+Authorization: Bearer {{$dotenv HTTP_TEST_ACCESS_TOKEN}}

@@ -1,0 +1,10 @@
+@baseUrl = http://localhost:3000/v1
+@userId = 1
+
+POST {{baseUrl}}/users/{{userId}}/access-tokens
+content-type: application/json
+Authorization: Bearer {{$dotenv HTTP_TEST_ACCESS_TOKEN}}
+
+{
+  "scopes": ["user-1:read-info"]
+}

@@ -1,0 +1,8 @@
+@baseUrl = http://localhost:3000/v1
+
+POST {{baseUrl}}/auth/refresh
+content-type: application/json
+
+{
+  "token": "{{$dotenv HTTP_TEST_REFRESH_TOKEN}}"
+}

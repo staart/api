@@ -1,0 +1,6 @@
+@baseUrl = http://localhost:3000/v1
+@userId = 1
+
+GET {{baseUrl}}/users/{{userId}}
+content-type: application/json
+X-Access-Token: {{$dotenv HTTP_TEST_USER_ACCESS_TOKEN}}
