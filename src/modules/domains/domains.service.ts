@@ -46,11 +46,10 @@ export class DomainsService {
       where: { id: groupId },
       select: { profilePictureUrl: true },
     });
-    if (
-      currentProfilePicture.profilePictureUrl.startsWith(
-        'https://ui-avatars.com',
-      )
-    )
+    const parsedProfilePicture = new URL(
+      currentProfilePicture.profilePictureUrl,
+    );
+    if (parsedProfilePicture.hostname === 'ui-avatars.com')
       try {
         const img = await got('https://logo.clearbit.com/${data.domain}', {
           responseType: 'buffer',
