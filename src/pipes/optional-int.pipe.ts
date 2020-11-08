@@ -4,6 +4,7 @@ import {
   Injectable,
   PipeTransform,
 } from '@nestjs/common';
+import { OPTIONAL_INT_PIPE_NUMBER } from 'src/errors/errors.constants';
 
 /** Convert a string like "1" to a number, but without NaN */
 @Injectable()
@@ -13,7 +14,7 @@ export class OptionalIntPipe implements PipeTransform {
     const num = Number(value);
     if (isNaN(num))
       throw new BadRequestException(
-        `"${metadata.data}" should be a number, provided "${value}"`,
+        OPTIONAL_INT_PIPE_NUMBER.replace('$key', metadata.data),
       );
     return num;
   }

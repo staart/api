@@ -33,6 +33,7 @@ export const MFA_ENABLED_CONFLICT =
   'Two-factor authentication is already enabled';
 export const MFA_NOT_ENABLED = 'MFA_NOT_ENABLED';
 export const MFA_BACKUP_CODE_USED = 'MFA_BACKUP_CODE_USED';
+export const MFA_PHONE_OR_TOKEN_REQUIRED = 'MFA_BACKUP_CODE_USED';
 export const UNVERIFIED_LOCATION = 'UNVERIFIED_LOCATION';
 
 export const CURRENT_PASSWORD_REQUIRED = 'Current password is required';
@@ -43,3 +44,9 @@ export const CANNOT_DELETE_SOLE_MEMBER = '';
 export const CANNOT_DELETE_SOLE_OWNER = '';
 
 export const BILLING_ACCOUNT_CREATED_CONFLICT = '';
+
+export const ORDER_BY_ASC_DESC = 'Order should be "ASC" or "DESC"';
+export const ORDER_BY_FORMAT = 'Order should be "ASC" or "DESC"';
+export const WHERE_PIPE_FORMAT = 'Order should be "ASC" or "DESC"';
+export const OPTIONAL_INT_PIPE_NUMBER = '$key should be a number';
+export const CURSOR_PIPE_FORMAT = `$key should be like "id 12, name Anand"`;

@@ -5,6 +5,10 @@ import {
   Injectable,
   PipeTransform,
 } from '@nestjs/common';
+import {
+  ORDER_BY_ASC_DESC,
+  ORDER_BY_FORMAT,
+} from 'src/errors/errors.constants';
 
 /** Convert a string like "name asc, address desc" to { name: "asc", address: "desc" } */
 @Injectable()
@@ -20,14 +24,12 @@ export class OrderByPipe implements PipeTransform {
       rules.forEach((rule) => {
         const [key, order] = rule.split(' ') as [string, 'asc' | 'desc'];
         if (!['asc', 'desc'].includes(order.toLocaleLowerCase()))
-          throw new BadGatewayException('Order should be "ASC" or "DESC"');
+          throw new BadGatewayException(ORDER_BY_ASC_DESC);
         orderBy[key] = order.toLocaleLowerCase() as 'asc' | 'desc';
       });
       return orderBy;
     } catch (_) {
-      throw new BadRequestException(
-        `"${metadata.data}" should be like "key1 asc, key2 desc", provided "${value}"`,
-      );
+      throw new BadRequestException(ORDER_BY_FORMAT);
     }
   }
 }

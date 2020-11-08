@@ -4,6 +4,7 @@ import {
   Injectable,
   PipeTransform,
 } from '@nestjs/common';
+import { WHERE_PIPE_FORMAT } from '../errors/errors.constants';
 import { parseObjectLiteral } from '../helpers/parse-object-literal';
 
 /** Convert a string like "id: 12, b: 'Anand'" to { id: 12, name: "Anand" } */
@@ -24,9 +25,7 @@ export class WherePipe implements PipeTransform {
       });
       return items;
     } catch (_) {
-      throw new BadRequestException(
-        `"${metadata.data}" should be like "id 12, name Anand", provided "${value}"`,
-      );
+      throw new BadRequestException(WHERE_PIPE_FORMAT);
     }
   }
 }

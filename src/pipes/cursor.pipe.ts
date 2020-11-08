@@ -4,6 +4,7 @@ import {
   Injectable,
   PipeTransform,
 } from '@nestjs/common';
+import { CURSOR_PIPE_FORMAT } from 'src/errors/errors.constants';
 import { parseObjectLiteral } from '../helpers/parse-object-literal';
 
 /** Convert a string like "id: 12, b: 'Anand'" to { id: 12, name: "Anand" } */
@@ -25,7 +26,7 @@ export class CursorPipe implements PipeTransform {
       return items;
     } catch (_) {
       throw new BadRequestException(
-        `"${metadata.data}" should be like "id 12, name Anand", provided "${value}"`,
+        CURSOR_PIPE_FORMAT.replace('$key', metadata.data),
       );
     }
   }

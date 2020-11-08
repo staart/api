@@ -11,6 +11,7 @@ import { auditLogsCreateInput } from '@prisma/client';
 import { getClientIp } from 'request-ip';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { GROUP_NOT_FOUND } from 'src/errors/errors.constants';
 import { STAART_AUDIT_LOG_DATA } from 'src/modules/audit-logs/audit-log.constants';
 import { UserRequest } from 'src/modules/auth/auth.interface';
 import { GeolocationService } from 'src/modules/geolocation/geolocation.service';
@@ -41,8 +42,7 @@ export class AuditLogger implements NestInterceptor {
             if (typeof auditLog === 'string') auditLog = [auditLog];
             const request = context.switchToHttp().getRequest() as UserRequest;
             const groupId = parseInt(request.params.id);
-            if (isNaN(groupId))
-              throw new BadGatewayException('Group ID is not a number');
+            if (isNaN(groupId)) throw new BadGatewayException(GROUP_NOT_FOUND);
             const ip = getClientIp(request);
             const location = await this.geolocationService.getLocation(ip);
             const userAgent = request.get('user-agent');

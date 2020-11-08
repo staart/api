@@ -8,6 +8,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { users } from '@prisma/client';
+import { MFA_PHONE_OR_TOKEN_REQUIRED } from '../../errors/errors.constants';
 import { Expose } from '../../modules/prisma/prisma.interface';
 import { Scopes } from '../auth/scope.decorator';
 import {
@@ -70,7 +71,7 @@ export class MultiFactorAuthenticationController {
         userId,
         body.phone,
       );
-    throw new BadRequestException('Phone number or token is required');
+    throw new BadRequestException(MFA_PHONE_OR_TOKEN_REQUIRED);
   }
 
   @Post('email')
