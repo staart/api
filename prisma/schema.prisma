@@ -107,8 +107,8 @@ model groups {
 
 model emails {
   createdAt  DateTime @default(now())
-  email      String
-  emailSafe  String
+  email      String   @unique
+  emailSafe  String   @unique
   id         Int      @id @default(autoincrement())
   isVerified Boolean  @default(false)
   updatedAt  DateTime @updatedAt
@@ -124,7 +124,7 @@ model apiKeys {
   description          String?
   id                   Int      @id @default(autoincrement())
   ipRestrictions       Json?
-  apiKey               String
+  apiKey               String   @unique
   name                 String?
   group                groups?  @relation("groupApiKeys", fields: [groupId], references: [id])
   groupId              Int?
