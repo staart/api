@@ -388,6 +388,23 @@ export class ApiKeysService {
       ] = `Delete subnet: ${subnet.subnet}`;
     }
 
+    scopes[`user-${userId}:write-api-key-*`] = 'Create and update API keys';
+    scopes[`user-${userId}:read-api-key-*`] = 'Read API keys';
+    for await (const apiKey of await this.prisma.apiKeys.findMany({
+      where: { user: { id: userId } },
+      select: { id: true, name: true, apiKey: true },
+    })) {
+      scopes[`user-${userId}:read-api-key-${apiKey.id}`] = `Read API key: ${
+        apiKey.name ?? apiKey.apiKey
+      }`;
+      scopes[`user-${userId}:write-api-key-${apiKey.id}`] = `Write API key: ${
+        apiKey.name ?? apiKey.apiKey
+      }`;
+      scopes[`user-${userId}:delete-api-key-${apiKey.id}`] = `Delete API key: ${
+        apiKey.name ?? apiKey.apiKey
+      }`;
+    }
+
     scopes[`user-${userId}:delete-mfa-*`] =
       'Disable multi-factor authentication';
     scopes[`user-${userId}:write-mfa-regenerate`] =
