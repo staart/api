@@ -85,6 +85,7 @@ model users {
   memberships          memberships[]        @relation("userMemberships")
   sessions             sessions[]           @relation("userSessions")
   auditLogs            auditLogs[]          @relation("userAuditLog")
+  apiKeys              apiKeys[]            @relation("userApiKeys")
 }
 
 model groups {
@@ -142,8 +143,10 @@ model apiKeys {
   ipRestrictions       Json?
   apiKey               String
   name                 String?
-  group                groups   @relation("groupApiKeys", fields: [groupId], references: [id])
-  groupId              Int
+  group                groups?  @relation("groupApiKeys", fields: [groupId], references: [id])
+  groupId              Int?
+  user                 users?   @relation("userApiKeys", fields: [userId], references: [id])
+  userId               Int?
   referrerRestrictions Json?
   scopes               Json?
   updatedAt            DateTime @updatedAt
