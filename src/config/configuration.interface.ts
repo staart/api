@@ -10,6 +10,7 @@ export interface Configuration {
 
   caching: {
     geolocationLruSize: number;
+    apiKeyLruSize: number;
   };
 
   security: {

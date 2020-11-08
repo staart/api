@@ -4,6 +4,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import {
   apiKeys,
   apiKeysCreateInput,
@@ -12,6 +13,7 @@ import {
   apiKeysWhereInput,
   apiKeysWhereUniqueInput,
 } from '@prisma/client';
+import QuickLRU from 'quick-lru';
 import { Expose } from '../../modules/prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
 import { StripeService } from '../stripe/stripe.service';
@@ -19,10 +21,15 @@ import { TokensService } from '../tokens/tokens.service';
 
 @Injectable()
 export class ApiKeysService {
+  private lru = new QuickLRU<string, apiKeys>({
+    maxSize: this.configService.get<number>('caching.apiKeyLruSize') ?? 100,
+  });
+
   constructor(
     private prisma: PrismaService,
     private tokensService: TokensService,
     private stripeService: StripeService,
+    private configService: ConfigService,
   ) {}
 
   async createApiKey(
@@ -72,6 +79,8 @@ export class ApiKeysService {
     });
     if (!apiKey)
       throw new HttpException('ApiKey not found', HttpStatus.NOT_FOUND);
+    if (this.lru.has(key)) return this.lru.get(key);
+    this.lru.set(key, apiKey);
     return this.prisma.expose<apiKeys>(apiKey);
   }
 
@@ -90,6 +99,7 @@ export class ApiKeysService {
       where: { id },
       data,
     });
+    this.lru.delete(testApiKey.apiKey);
     return this.prisma.expose<apiKeys>(apiKey);
   }
 
@@ -108,6 +118,7 @@ export class ApiKeysService {
       where: { id },
       data,
     });
+    this.lru.delete(testApiKey.apiKey);
     return this.prisma.expose<apiKeys>(apiKey);
   }
 
@@ -121,6 +132,7 @@ export class ApiKeysService {
     const apiKey = await this.prisma.apiKeys.delete({
       where: { id },
     });
+    this.lru.delete(testApiKey.apiKey);
     return this.prisma.expose<apiKeys>(apiKey);
   }
 

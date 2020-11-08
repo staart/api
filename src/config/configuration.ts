@@ -16,6 +16,7 @@ const configuration: Configuration = {
   },
   caching: {
     geolocationLruSize: int(process.env.GEOLOCATION_LRU_SIZE, 100),
+    apiKeyLruSize: int(process.env.API_KEY_LRU_SIZE, 100),
   },
   security: {
     saltRounds: int(process.env.SALT_ROUNDS, 10),
