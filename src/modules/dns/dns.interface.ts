@@ -1,4 +1,4 @@
-import { MxRecord, NaptrRecord, SoaRecord, SrvRecord, AnyRecord } from 'dns';
+import { AnyRecord, MxRecord, NaptrRecord, SoaRecord, SrvRecord } from 'dns';
 
 export type RecordType =
   | 'A'

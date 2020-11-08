@@ -14,8 +14,8 @@ import {
 } from '@prisma/client';
 import got from 'got';
 import {
-  DOMAIN_NOT_VERIFIED,
   DOMAIN_NOT_FOUND,
+  DOMAIN_NOT_VERIFIED,
   UNAUTHORIZED_RESOURCE,
 } from 'src/errors/errors.constants';
 import { URL } from 'url';
@@ -23,10 +23,7 @@ import { DnsService } from '../dns/dns.service';
 import { Expose } from '../prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
 import { TokensService } from '../tokens/tokens.service';
-import {
-  DOMAIN_VERIFICATION_HTML,
-  DOMAIN_VERIFICATION_TXT,
-} from './domains.constants';
+import { DOMAIN_VERIFICATION_TXT } from './domains.constants';
 import { DomainVerificationMethods } from './domains.interface';
 
 @Injectable()

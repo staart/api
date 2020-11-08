@@ -1,7 +1,7 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { AccessTokenParsed, UserRequest } from './auth.interface';
 import minimatch from 'minimatch';
+import { AccessTokenParsed, UserRequest } from './auth.interface';
 
 @Injectable()
 export class ScopesGuard implements CanActivate {

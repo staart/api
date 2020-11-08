@@ -11,13 +11,13 @@ import {
   Query,
 } from '@nestjs/common';
 import { webhooks } from '@prisma/client';
-import { Expose } from '../prisma/prisma.interface';
 import { CursorPipe } from '../../pipes/cursor.pipe';
 import { OptionalIntPipe } from '../../pipes/optional-int.pipe';
 import { OrderByPipe } from '../../pipes/order-by.pipe';
 import { WherePipe } from '../../pipes/where.pipe';
 import { AuditLog } from '../audit-logs/audit-log.decorator';
 import { Scopes } from '../auth/scope.decorator';
+import { Expose } from '../prisma/prisma.interface';
 import {
   CreateWebhookDto,
   ReplaceWebhookDto,

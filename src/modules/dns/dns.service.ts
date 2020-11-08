@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import dns from 'dns';
-import { RecordType, RecordResult } from './dns.interface';
+import { RecordResult, RecordType } from './dns.interface';
 
 @Injectable()
 export class DnsService {

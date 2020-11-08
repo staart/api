@@ -1,8 +1,8 @@
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
-import maxmind, { Reader, CityResponse } from 'maxmind';
-import geolite2 from 'geolite2-redist';
-import QuickLRU from 'quick-lru';
 import { ConfigService } from '@nestjs/config';
+import geolite2 from 'geolite2-redist';
+import maxmind, { CityResponse, Reader } from 'maxmind';
+import QuickLRU from 'quick-lru';
 
 @Injectable()
 export class GeolocationService implements OnModuleDestroy {

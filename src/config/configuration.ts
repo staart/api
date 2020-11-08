@@ -1,7 +1,7 @@
 import { ConfigFactory } from '@nestjs/config/dist/interfaces';
-import { Configuration } from './configuration.interface';
 import { config } from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
+import { Configuration } from './configuration.interface';
 dotenvExpand(config());
 
 export const int = (val: string | undefined, num: number): number =>

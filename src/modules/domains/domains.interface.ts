@@ -1,6 +1,6 @@
 import {
-  DOMAIN_VERIFICATION_TXT,
   DOMAIN_VERIFICATION_HTML,
+  DOMAIN_VERIFICATION_TXT,
 } from './domains.constants';
 
 export type DomainVerificationMethods =

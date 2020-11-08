@@ -1,10 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import twilio from 'twilio';
 import PQueue from 'p-queue';
 import pRetry from 'p-retry';
-import TwilioClient from 'twilio/lib/rest/Twilio';
+import twilio from 'twilio';
 import { MessageListInstanceCreateOptions } from 'twilio/lib/rest/api/v2010/account/message';
+import TwilioClient from 'twilio/lib/rest/Twilio';
 
 @Injectable()
 export class TwilioService {

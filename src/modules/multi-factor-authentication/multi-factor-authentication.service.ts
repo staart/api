@@ -8,7 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { MfaMethod, users } from '@prisma/client';
 import { hash } from 'bcrypt';
 import {
-ConflictException MFA_ENABLED_CONFLICT,
+  MFA_ENABLED_CONFLICT,
   MFA_NOT_ENABLED,
   NO_EMAILS,
   USER_NOT_FOUND,
