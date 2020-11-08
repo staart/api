@@ -11,5 +11,6 @@ import { ApiKeysService } from './api-keys.service';
   imports: [PrismaModule, TokensModule, StripeModule, ConfigModule],
   controllers: [ApiKeyGroupController, ApiKeyUserController],
   providers: [ApiKeysService],
+  exports: [ApiKeysService],
 })
 export class ApiKeysModule {}

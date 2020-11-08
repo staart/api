@@ -22,6 +22,7 @@ export interface TotpTokenResponse {
 export interface AccessTokenParsed {
   id: number;
   scopes: string[];
+  type: string;
 }
 
 export interface MfaTokenPayload {
