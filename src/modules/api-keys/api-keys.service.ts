@@ -12,6 +12,8 @@ import {
   apiKeysUpdateInput,
   apiKeysWhereInput,
   apiKeysWhereUniqueInput,
+  InputJsonValue,
+  JsonValue,
 } from '@prisma/client';
 import QuickLRU from 'quick-lru';
 import { Expose } from '../../modules/prisma/prisma.interface';
@@ -37,6 +39,7 @@ export class ApiKeysService {
     data: Omit<Omit<apiKeysCreateInput, 'apiKey'>, 'group'>,
   ): Promise<apiKeys> {
     const apiKey = this.tokensService.generateUuid();
+    data.scopes = this.cleanScopesForGroup(groupId, data.scopes);
     return this.prisma.apiKeys.create({
       data: { ...data, apiKey, group: { connect: { id: groupId } } },
     });
@@ -46,6 +49,7 @@ export class ApiKeysService {
     data: Omit<Omit<apiKeysCreateInput, 'apiKey'>, 'user'>,
   ): Promise<apiKeys> {
     const apiKey = this.tokensService.generateUuid();
+    data.scopes = this.cleanScopesForUser(userId, data.scopes);
     return this.prisma.apiKeys.create({
       data: { ...data, apiKey, user: { connect: { id: userId } } },
     });
@@ -136,6 +140,7 @@ export class ApiKeysService {
     if (!testApiKey)
       throw new HttpException('ApiKey not found', HttpStatus.NOT_FOUND);
     if (testApiKey.groupId !== groupId) throw new UnauthorizedException();
+    data.scopes = this.cleanScopesForGroup(groupId, data.scopes);
     const apiKey = await this.prisma.apiKeys.update({
       where: { id },
       data,
@@ -154,6 +159,7 @@ export class ApiKeysService {
     if (!testApiKey)
       throw new HttpException('ApiKey not found', HttpStatus.NOT_FOUND);
     if (testApiKey.userId !== userId) throw new UnauthorizedException();
+    data.scopes = this.cleanScopesForUser(userId, data.scopes);
     const apiKey = await this.prisma.apiKeys.update({
       where: { id },
       data,
@@ -173,6 +179,7 @@ export class ApiKeysService {
     if (!testApiKey)
       throw new HttpException('ApiKey not found', HttpStatus.NOT_FOUND);
     if (testApiKey.groupId !== groupId) throw new UnauthorizedException();
+    data.scopes = this.cleanScopesForGroup(groupId, data.scopes);
     const apiKey = await this.prisma.apiKeys.update({
       where: { id },
       data,
@@ -191,6 +198,7 @@ export class ApiKeysService {
     if (!testApiKey)
       throw new HttpException('ApiKey not found', HttpStatus.NOT_FOUND);
     if (testApiKey.userId !== userId) throw new UnauthorizedException();
+    data.scopes = this.cleanScopesForUser(userId, data.scopes);
     const apiKey = await this.prisma.apiKeys.update({
       where: { id },
       data,
@@ -232,94 +240,115 @@ export class ApiKeysService {
     return this.prisma.expose<apiKeys>(apiKey);
   }
 
+  private cleanScopesForGroup(
+    groupId: number,
+    scopes: InputJsonValue,
+  ): JsonValue[] {
+    if (!Array.isArray(scopes)) return [];
+    return scopes
+      .map((scope) => {
+        if (typeof scope === 'string') {
+          if (!scope.startsWith(`group-${groupId}:`))
+            scope = `group-${groupId}:${scope}`;
+          return scope;
+        }
+      })
+      .filter((scope) => !!scope);
+  }
+  private cleanScopesForUser(
+    userId: number,
+    scopes: InputJsonValue,
+  ): JsonValue[] {
+    if (!Array.isArray(scopes)) return [];
+    return scopes
+      .map((scope) => {
+        if (typeof scope === 'string') {
+          if (!scope.startsWith(`user-${userId}:`))
+            scope = `user-${userId}:${scope}`;
+          return scope;
+        }
+      })
+      .filter((scope) => !!scope);
+  }
+
   async getApiKeyScopesForGroup(
     groupId: number,
   ): Promise<Record<string, string>> {
     const scopes: Record<string, string> = {};
-    scopes[`group-${groupId}:read-info`] = 'Read group details';
-    scopes[`group-${groupId}:write-info`] = 'Update group details';
-    scopes[`group-${groupId}:delete`] = 'Delete group';
+    scopes[`read-info`] = 'Read group details';
+    scopes[`write-info`] = 'Update group details';
+    scopes[`delete`] = 'Delete group';
 
-    scopes[`group-${groupId}:write-membership-*`] = 'Invite and update members';
-    scopes[`group-${groupId}:read-membership-*`] = 'Read members';
+    scopes[`write-membership-*`] = 'Invite and update members';
+    scopes[`read-membership-*`] = 'Read members';
     for await (const membership of await this.prisma.memberships.findMany({
       where: { group: { id: groupId } },
       select: { id: true, user: true },
     })) {
       scopes[
-        `group-${groupId}:read-membership-${membership.id}`
+        `read-membership-${membership.id}`
       ] = `Read membership: ${membership.user.name}`;
       scopes[
-        `group-${groupId}:write-membership-${membership.id}`
+        `write-membership-${membership.id}`
       ] = `Update membership: ${membership.user.name}`;
       scopes[
-        `group-${groupId}:delete-membership-${membership.id}`
+        `delete-membership-${membership.id}`
       ] = `Delete membership: ${membership.user.name}`;
     }
 
-    scopes[`group-${groupId}:write-api-key-*`] = 'Create and update API keys';
-    scopes[`group-${groupId}:read-api-key-*`] = 'Read API keys';
+    scopes[`write-api-key-*`] = 'Create and update API keys';
+    scopes[`read-api-key-*`] = 'Read API keys';
     for await (const apiKey of await this.prisma.apiKeys.findMany({
       where: { group: { id: groupId } },
       select: { id: true, name: true, apiKey: true },
     })) {
-      scopes[`group-${groupId}:read-api-key-${apiKey.id}`] = `Read API key: ${
+      scopes[`read-api-key-${apiKey.id}`] = `Read API key: ${
         apiKey.name ?? apiKey.apiKey
       }`;
-      scopes[`group-${groupId}:write-api-key-${apiKey.id}`] = `Write API key: ${
+      scopes[`write-api-key-${apiKey.id}`] = `Write API key: ${
         apiKey.name ?? apiKey.apiKey
       }`;
-      scopes[
-        `group-${groupId}:delete-api-key-${apiKey.id}`
-      ] = `Delete API key: ${apiKey.name ?? apiKey.apiKey}`;
+      scopes[`delete-api-key-${apiKey.id}`] = `Delete API key: ${
+        apiKey.name ?? apiKey.apiKey
+      }`;
     }
 
-    scopes[`group-${groupId}:write-webhook-*`] = 'Create and update webhooks';
-    scopes[`group-${groupId}:read-webhook-*`] = 'Read webhooks';
+    scopes[`write-webhook-*`] = 'Create and update webhooks';
+    scopes[`read-webhook-*`] = 'Read webhooks';
     for await (const webhook of await this.prisma.webhooks.findMany({
       where: { group: { id: groupId } },
       select: { id: true, url: true },
     })) {
-      scopes[
-        `group-${groupId}:read-webhook-${webhook.id}`
-      ] = `Read webhook: ${webhook.url}`;
-      scopes[
-        `group-${groupId}:write-webhook-${webhook.id}`
-      ] = `Write webhook: ${webhook.url}`;
-      scopes[
-        `group-${groupId}:delete-webhook-${webhook.id}`
-      ] = `Delete webhook: ${webhook.url}`;
+      scopes[`read-webhook-${webhook.id}`] = `Read webhook: ${webhook.url}`;
+      scopes[`write-webhook-${webhook.id}`] = `Write webhook: ${webhook.url}`;
+      scopes[`delete-webhook-${webhook.id}`] = `Delete webhook: ${webhook.url}`;
     }
 
-    scopes[`group-${groupId}:write-billing`] = 'Write billing details';
-    scopes[`group-${groupId}:read-billing`] = 'Read billing details';
-    scopes[`group-${groupId}:delete-billing`] = 'Delete billing details';
+    scopes[`write-billing`] = 'Write billing details';
+    scopes[`read-billing`] = 'Read billing details';
+    scopes[`delete-billing`] = 'Delete billing details';
 
-    scopes[`group-${groupId}:read-invoice-*`] = 'Read invoices';
+    scopes[`read-invoice-*`] = 'Read invoices';
     for await (const invoice of await this.stripeService.getInvoices(
       groupId,
       {},
     )) {
-      scopes[
-        `group-${groupId}:read-invoice-${invoice.id}`
-      ] = `Read invoice: ${invoice.number}`;
+      scopes[`read-invoice-${invoice.id}`] = `Read invoice: ${invoice.number}`;
     }
 
-    scopes[`group-${groupId}:write-source-*`] = 'Write payment methods';
-    scopes[`group-${groupId}:read-source-*`] = 'Read payment methods';
+    scopes[`write-source-*`] = 'Write payment methods';
+    scopes[`read-source-*`] = 'Read payment methods';
     for await (const source of await this.stripeService.getSources(
       groupId,
       {},
     )) {
+      scopes[`read-source-${source.id}`] = `Read payment method: ${source.id}`;
       scopes[
-        `group-${groupId}:read-source-${source.id}`
-      ] = `Read payment method: ${source.id}`;
-      scopes[
-        `group-${groupId}:delete-source-${source.id}`
+        `delete-source-${source.id}`
       ] = `Delete payment method: ${source.id}`;
     }
 
-    scopes[`group-${groupId}:read-audit-log-*`] = 'Read audit logs';
+    scopes[`read-audit-log-*`] = 'Read audit logs';
     return scopes;
   }
 
@@ -327,91 +356,85 @@ export class ApiKeysService {
     userId: number,
   ): Promise<Record<string, string>> {
     const scopes: Record<string, string> = {};
-    scopes[`user-${userId}:read-info`] = 'Read user details';
-    scopes[`user-${userId}:write-info`] = 'Update user details';
-    scopes[`user-${userId}:delete`] = 'Delete user';
+    scopes[`read-info`] = 'Read user details';
+    scopes[`write-info`] = 'Update user details';
+    scopes[`delete`] = 'Delete user';
 
-    scopes[`user-${userId}:write-membership-*`] = 'Create new groups';
-    scopes[`user-${userId}:read-membership-*`] = 'Read group memberships';
+    scopes[`write-membership-*`] = 'Create new groups';
+    scopes[`read-membership-*`] = 'Read group memberships';
     for await (const membership of await this.prisma.memberships.findMany({
       where: { user: { id: userId } },
       select: { id: true, group: true },
     })) {
       scopes[
-        `user-${userId}:read-membership-${membership.id}`
+        `read-membership-${membership.id}`
       ] = `Read membership: ${membership.group.name}`;
       scopes[
-        `user-${userId}:write-membership-${membership.id}`
+        `write-membership-${membership.id}`
       ] = `Update membership: ${membership.group.name}`;
       scopes[
-        `user-${userId}:delete-membership-${membership.id}`
+        `delete-membership-${membership.id}`
       ] = `Delete membership: ${membership.group.name}`;
     }
 
-    scopes[`user-${userId}:write-email-*`] = 'Create and update emails';
-    scopes[`user-${userId}:read-email-*`] = 'Read emails';
+    scopes[`write-email-*`] = 'Create and update emails';
+    scopes[`read-email-*`] = 'Read emails';
     for await (const email of await this.prisma.emails.findMany({
       where: { user: { id: userId } },
       select: { id: true, email: true },
     })) {
-      scopes[
-        `user-${userId}:read-email-${email.id}`
-      ] = `Read email: ${email.email}`;
-      scopes[
-        `user-${userId}:delete-email-${email.id}`
-      ] = `Delete email: ${email.email}`;
+      scopes[`read-email-${email.id}`] = `Read email: ${email.email}`;
+      scopes[`delete-email-${email.id}`] = `Delete email: ${email.email}`;
     }
 
-    scopes[`user-${userId}:read-session-*`] = 'Read sessions';
+    scopes[`read-session-*`] = 'Read sessions';
     for await (const session of await this.prisma.sessions.findMany({
       where: { user: { id: userId } },
       select: { id: true, browser: true },
     })) {
-      scopes[`user-${userId}:read-session-${session.id}`] = `Read session: ${
+      scopes[`read-session-${session.id}`] = `Read session: ${
         session.browser ?? session.id
       }`;
-      scopes[
-        `user-${userId}:delete-session-${session.id}`
-      ] = `Delete session: ${session.browser ?? session.id}`;
+      scopes[`delete-session-${session.id}`] = `Delete session: ${
+        session.browser ?? session.id
+      }`;
     }
 
-    scopes[`user-${userId}:read-approved-subnet-*`] = 'Read approvedSubnets';
+    scopes[`read-approved-subnet-*`] = 'Read approvedSubnets';
     for await (const subnet of await this.prisma.approvedSubnets.findMany({
       where: { user: { id: userId } },
       select: { id: true, subnet: true },
     })) {
       scopes[
-        `user-${userId}:read-approved-subnet-${subnet.id}`
+        `read-approved-subnet-${subnet.id}`
       ] = `Read subnet: ${subnet.subnet}`;
       scopes[
-        `user-${userId}:delete-approved-subnet-${subnet.id}`
+        `delete-approved-subnet-${subnet.id}`
       ] = `Delete subnet: ${subnet.subnet}`;
     }
 
-    scopes[`user-${userId}:write-api-key-*`] = 'Create and update API keys';
-    scopes[`user-${userId}:read-api-key-*`] = 'Read API keys';
+    scopes[`write-api-key-*`] = 'Create and update API keys';
+    scopes[`read-api-key-*`] = 'Read API keys';
     for await (const apiKey of await this.prisma.apiKeys.findMany({
       where: { user: { id: userId } },
       select: { id: true, name: true, apiKey: true },
     })) {
-      scopes[`user-${userId}:read-api-key-${apiKey.id}`] = `Read API key: ${
+      scopes[`read-api-key-${apiKey.id}`] = `Read API key: ${
         apiKey.name ?? apiKey.apiKey
       }`;
-      scopes[`user-${userId}:write-api-key-${apiKey.id}`] = `Write API key: ${
+      scopes[`write-api-key-${apiKey.id}`] = `Write API key: ${
         apiKey.name ?? apiKey.apiKey
       }`;
-      scopes[`user-${userId}:delete-api-key-${apiKey.id}`] = `Delete API key: ${
+      scopes[`delete-api-key-${apiKey.id}`] = `Delete API key: ${
         apiKey.name ?? apiKey.apiKey
       }`;
     }
 
-    scopes[`user-${userId}:delete-mfa-*`] =
-      'Disable multi-factor authentication';
-    scopes[`user-${userId}:write-mfa-regenerate`] =
-      'Regenerate MFA backup codes';
-    scopes[`user-${userId}:write-mfa-totp`] = 'Enable TOTP-based MFA';
-    scopes[`user-${userId}:write-mfa-sms`] = 'Enable SMS-based MFA';
-    scopes[`user-${userId}:write-mfa-email`] = 'Enable email-based MFA';
+    scopes[`delete-mfa-*`] = 'Disable multi-factor authentication';
+    scopes[`write-mfa-regenerate`] = 'Regenerate MFA backup codes';
+    scopes[`write-mfa-totp`] = 'Enable TOTP-based MFA';
+    scopes[`write-mfa-sms`] = 'Enable SMS-based MFA';
+    scopes[`write-mfa-email`] = 'Enable email-based MFA';
 
     return scopes;
   }
