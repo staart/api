@@ -9,5 +9,6 @@ import { WebhooksService } from './webhooks.service';
   imports: [PrismaModule, TokensModule, StripeModule],
   controllers: [WebhookController],
   providers: [WebhooksService],
+  exports: [WebhooksService],
 })
 export class WebhooksModule {}
