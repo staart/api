@@ -4,6 +4,7 @@ import {
   HttpException,
   HttpStatus,
   ArgumentMetadata,
+  BadGatewayException,
 } from '@nestjs/common';
 
 /** Convert a string like "name asc, address desc" to { name: "asc", address: "desc" } */
@@ -20,7 +21,7 @@ export class OrderByPipe implements PipeTransform {
       rules.forEach((rule) => {
         const [key, order] = rule.split(' ') as [string, 'asc' | 'desc'];
         if (!['asc', 'desc'].includes(order.toLocaleLowerCase()))
-          throw new Error('Order should be "ASC" or "DESC"');
+          throw new BadGatewayException('Order should be "ASC" or "DESC"');
         orderBy[key] = order.toLocaleLowerCase() as 'asc' | 'desc';
       });
       return orderBy;

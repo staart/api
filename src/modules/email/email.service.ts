@@ -21,7 +21,6 @@ export class EmailService {
   constructor(private configService: ConfigService) {
     const emailConfig = this.configService.get<EmailConfig>('email');
     if (emailConfig) this.config = emailConfig;
-    else throw new Error('Email configuration not found');
     this.transport = nodemailer.createTransport(this.config);
   }
 

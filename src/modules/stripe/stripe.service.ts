@@ -20,7 +20,6 @@ export class StripeService {
     const stripeApiKey = this.configService.get<string>(
       'payments.stripeApiKey',
     );
-    if (!stripeApiKey) throw new Error('Stripe API key not found');
     this.stripe = new Stripe(stripeApiKey, {
       apiVersion: '2020-08-27',
     });

@@ -1,4 +1,5 @@
 import {
+  BadGatewayException,
   CallHandler,
   ExecutionContext,
   Injectable,
@@ -41,7 +42,7 @@ export class AuditLogger implements NestInterceptor {
             const request = context.switchToHttp().getRequest() as UserRequest;
             const groupId = parseInt(request.params.id);
             if (isNaN(groupId))
-              throw new Error(`Group ID is not a number: ${request.params.id}`);
+              throw new BadGatewayException('Group ID is not a number');
             const ip = getClientIp(request);
             const location = await this.geolocationService.getLocation(ip);
             const userAgent = request.get('user-agent');

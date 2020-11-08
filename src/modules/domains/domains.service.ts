@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -13,7 +14,6 @@ import {
   domainsWhereUniqueInput,
 } from '@prisma/client';
 import got from 'got';
-import { BadRequestError } from 'passport-headerapikey';
 import { DnsService } from '../dns/dns.service';
 import { Expose } from '../prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
@@ -121,7 +121,7 @@ export class DomainsService {
           where: { id },
           data: { isVerified: true },
         });
-      } else throw new BadRequestError('TXT record not found');
+      } else throw new BadRequestException('TXT record not found');
     } else if (method === DOMAIN_VERIFICATION_HTML) {
       let verified = false;
       try {
@@ -137,8 +137,8 @@ export class DomainsService {
           where: { id },
           data: { isVerified: true },
         });
-      } else throw new BadRequestError('HTML file not found');
-    } else throw new BadRequestError('Type should be TXT or HTML');
+      } else throw new BadRequestException('HTML file not found');
+    } else throw new BadRequestException('Type should be TXT or HTML');
     return domain;
   }
 

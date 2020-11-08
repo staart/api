@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -7,7 +8,6 @@ import {
   Post,
 } from '@nestjs/common';
 import { users } from '@prisma/client';
-import { BadRequestError } from 'passport-headerapikey';
 import { Expose } from '../../modules/prisma/prisma.interface';
 import { Scopes } from '../auth/scope.decorator';
 import {
@@ -70,7 +70,7 @@ export class MultiFactorAuthenticationController {
         userId,
         body.phone,
       );
-    throw new BadRequestError('Phone number or token is required');
+    throw new BadRequestException('Phone number or token is required');
   }
 
   @Post('email')
