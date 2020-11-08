@@ -14,9 +14,8 @@ import {
 } from '@prisma/client';
 import got from 'got';
 import {
-  DOMAIN_HTML_NOT_FOUND,
+  DOMAIN_NOT_VERIFIED,
   DOMAIN_NOT_FOUND,
-  DOMAIN_TXT_NOT_FOUND,
   UNAUTHORIZED_RESOURCE,
 } from 'src/errors/errors.constants';
 import { URL } from 'url';
@@ -126,7 +125,7 @@ export class DomainsService {
           where: { id },
           data: { isVerified: true },
         });
-      } else throw new BadRequestException(DOMAIN_TXT_NOT_FOUND);
+      } else throw new BadRequestException(DOMAIN_NOT_VERIFIED);
     } else {
       let verified = false;
       try {
@@ -142,7 +141,7 @@ export class DomainsService {
           where: { id },
           data: { isVerified: true },
         });
-      } else throw new BadRequestException(DOMAIN_HTML_NOT_FOUND);
+      } else throw new BadRequestException(DOMAIN_NOT_VERIFIED);
     }
     return domain;
   }

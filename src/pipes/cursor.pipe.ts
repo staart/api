@@ -10,10 +10,7 @@ import { parseObjectLiteral } from '../helpers/parse-object-literal';
 /** Convert a string like "id: 12, b: 'Anand'" to { id: 12, name: "Anand" } */
 @Injectable()
 export class CursorPipe implements PipeTransform {
-  transform(
-    value: string,
-    metadata: ArgumentMetadata,
-  ): Record<string, number | string> | undefined {
+  transform(value: string): Record<string, number | string> | undefined {
     if (value == null) return undefined;
     try {
       const rules = parseObjectLiteral(value);
@@ -25,9 +22,7 @@ export class CursorPipe implements PipeTransform {
       });
       return items;
     } catch (_) {
-      throw new BadRequestException(
-        CURSOR_PIPE_FORMAT.replace('$key', metadata.data),
-      );
+      throw new BadRequestException(CURSOR_PIPE_FORMAT);
     }
   }
 }

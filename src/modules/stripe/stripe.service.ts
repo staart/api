@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   Logger,
   NotFoundException,
@@ -42,7 +43,7 @@ export class StripeService {
     if (!group) throw new NotFoundException(GROUP_NOT_FOUND);
     const attributes = group.attributes as { stripeCustomerId?: string };
     if (attributes?.stripeCustomerId)
-      throw new BadRequestException(BILLING_ACCOUNT_CREATED_CONFLICT);
+      throw new ConflictException(BILLING_ACCOUNT_CREATED_CONFLICT);
     const result = await this.stripe.customers.create(data);
     await this.prisma.groups.update({
       where: { id: groupId },

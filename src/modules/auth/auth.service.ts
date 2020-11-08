@@ -296,7 +296,7 @@ export class AuthService {
     });
     if (!user) throw new NotFoundException(USER_NOT_FOUND);
     if (user.twoFactorMethod !== 'NONE')
-      throw new BadRequestException(MFA_ENABLED_CONFLICT);
+      throw new ConflictException(MFA_ENABLED_CONFLICT);
     if (!user.twoFactorSecret)
       user.twoFactorSecret = this.tokensService.generateUuid();
     if (!this.authenticator.check(code, user.twoFactorSecret))

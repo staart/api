@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -7,7 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { MfaMethod, users } from '@prisma/client';
 import { hash } from 'bcrypt';
 import {
-  MFA_ENABLED_CONFLICT,
+ConflictException MFA_ENABLED_CONFLICT,
   MFA_NOT_ENABLED,
   NO_EMAILS,
   USER_NOT_FOUND,
@@ -37,7 +38,7 @@ export class MultiFactorAuthenticationService {
     });
     if (!enabled) throw new NotFoundException(USER_NOT_FOUND);
     if (enabled.twoFactorMethod !== 'NONE')
-      throw new BadRequestException(MFA_ENABLED_CONFLICT);
+      throw new ConflictException(MFA_ENABLED_CONFLICT);
     return this.auth.getTotpQrCode(userId);
   }
 
@@ -48,7 +49,7 @@ export class MultiFactorAuthenticationService {
     });
     if (!enabled) throw new NotFoundException(USER_NOT_FOUND);
     if (enabled.twoFactorMethod !== 'NONE')
-      throw new BadRequestException(MFA_ENABLED_CONFLICT);
+      throw new ConflictException(MFA_ENABLED_CONFLICT);
     const secret = this.tokensService.generateUuid();
     await this.prisma.users.update({
       where: { id: userId },
@@ -74,7 +75,7 @@ export class MultiFactorAuthenticationService {
     });
     if (!user) throw new NotFoundException(USER_NOT_FOUND);
     if (user.twoFactorMethod !== 'NONE')
-      throw new BadRequestException(MFA_ENABLED_CONFLICT);
+      throw new ConflictException(MFA_ENABLED_CONFLICT);
     const secret = this.tokensService.generateUuid();
     await this.prisma.users.update({
       where: { id: userId },
