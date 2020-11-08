@@ -39,6 +39,7 @@
     "helmet": "^4.2.0",
     "hibp": "^9.0.0",
     "ip-anonymize": "^0.1.0",
+    "ip-range-check": "^0.2.0",
     "jsonwebtoken": "^8.5.1",
     "maxmind": "^4.3.1",
     "mem": "^8.0.0",
