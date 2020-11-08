@@ -24,6 +24,7 @@ const configuration: Configuration = {
     totpWindowPast: int(process.env.TOTP_WINDOW_PAST, 1),
     totpWindowFuture: int(process.env.TOTP_WINDOW_PAST, 0),
     mfaTokenExpiry: process.env.MFA_TOKEN_EXPIRY ?? '10m',
+    mergeUsersTokenExpiry: process.env.MERGE_USERS_TOKEN_EXPIRY ?? '30m',
     accessTokenExpiry: process.env.ACCESS_TOKEN_EXPIRY ?? '1h',
     passwordPwnedCheck: !!process.env.PASSWORD_PWNED_CHECK,
     unusedRefreshTokenExpiryDays: int(process.env.DELETE_EXPIRED_SESSIONS, 30),

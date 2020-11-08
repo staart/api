@@ -3,24 +3,37 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { ConfigService } from '@nestjs/config';
 import {
-  usersUpdateInput,
+  emailsDelegate,
   users,
   usersCreateInput,
-  usersWhereUniqueInput,
-  usersWhereInput,
   usersOrderByInput,
+  usersUpdateInput,
+  usersWhereInput,
+  usersWhereUniqueInput,
 } from '@prisma/client';
+import { compare } from 'bcrypt';
+import { safeEmail } from '../../helpers/safe-email';
 import { Expose } from '../../modules/prisma/prisma.interface';
 import { AuthService } from '../auth/auth.service';
-import { compare } from 'bcrypt';
+import { EmailService } from '../email/email.service';
+import { PrismaService } from '../prisma/prisma.service';
+import { MERGE_ACCOUNTS_TOKEN } from '../tokens/tokens.constants';
+import { TokensService } from '../tokens/tokens.service';
 import { PasswordUpdateInput } from './users.interface';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService, private auth: AuthService) {}
+  constructor(
+    private prisma: PrismaService,
+    private auth: AuthService,
+    private email: EmailService,
+    private configService: ConfigService,
+    private tokensService: TokensService,
+  ) {}
 
   async getUser(id: number): Promise<Expose<users>> {
     const user = await this.prisma.users.findOne({
@@ -92,5 +105,85 @@ export class UsersService {
       where: { id },
     });
     return this.prisma.expose<users>(user);
+  }
+
+  async requestMerge(userId: number, email: string): Promise<void> {
+    const emailSafe = safeEmail(email);
+    const user = await this.prisma.users.findFirst({
+      where: { emails: { some: { emailSafe } } },
+      include: { prefersEmail: true },
+    });
+    if (!user) throw new NotFoundException('User not found');
+    const minutes = parseInt(
+      this.configService.get<string>('security.mergeUsersTokenExpiry') ?? '',
+    );
+    return this.email.send({
+      to: `"${user.name}" <${user.prefersEmail.email}>`,
+      template: 'auth/mfa-code',
+      data: {
+        name: user.name,
+        minutes,
+        link: `${this.configService.get<string>(
+          'frontendUrl',
+        )}/auth/merge-accounts?token=${this.tokensService.signJwt(
+          MERGE_ACCOUNTS_TOKEN,
+          { baseUserId: userId, mergeUserId: user.id },
+          `${minutes}m`,
+        )}`,
+      },
+    });
+  }
+
+  async mergeUsers(token: string): Promise<void> {
+    let baseUserId: number | undefined = undefined;
+    let mergeUserId: number | undefined = undefined;
+    try {
+      const result = this.tokensService.verify<{
+        baseUserId: number;
+        mergeUserId: number;
+      }>(MERGE_ACCOUNTS_TOKEN, token);
+      baseUserId = result.baseUserId;
+      mergeUserId = result.mergeUserId;
+    } catch (error) {}
+    if (!baseUserId || !mergeUserId) throw new BadRequestException();
+    return this.merge(baseUserId, mergeUserId);
+  }
+
+  private async merge(baseUserId: number, mergeUserId: number): Promise<void> {
+    const baseUser = await this.prisma.users.findOne({
+      where: { id: baseUserId },
+    });
+    const mergeUser = await this.prisma.users.findOne({
+      where: { id: mergeUserId },
+    });
+    if (!baseUser || !mergeUser) throw new NotFoundException('User not found');
+
+    const combinedUser = { ...baseUser };
+    Object.keys(mergeUser).forEach((key) => {
+      if (mergeUser[key]) combinedUser[key] = mergeUser[key];
+    });
+    await this.prisma.users.update({
+      where: { id: baseUserId },
+      data: combinedUser,
+    });
+
+    for await (const dataType of [
+      this.prisma.memberships,
+      this.prisma.emails,
+      this.prisma.sessions,
+      this.prisma.approvedSubnets,
+      this.prisma.backupCodes,
+      this.prisma.identities,
+      this.prisma.auditLogs,
+    ]) {
+      for await (const item of await (dataType as emailsDelegate).findMany({
+        where: { user: { id: mergeUserId } },
+        select: { id: true },
+      }))
+        await (dataType as emailsDelegate).update({
+          where: { id: item.id },
+          data: { user: { connect: { id: baseUserId } } },
+        });
+    }
   }
 }

@@ -19,6 +19,7 @@ export interface Configuration {
     totpWindowPast: number;
     totpWindowFuture: number;
     mfaTokenExpiry: string;
+    mergeUsersTokenExpiry: string;
     accessTokenExpiry: string;
     passwordPwnedCheck: boolean;
     unusedRefreshTokenExpiryDays: number;

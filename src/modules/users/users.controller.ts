@@ -6,9 +6,11 @@ import {
   Param,
   ParseIntPipe,
   Patch,
+  Post,
   Query,
 } from '@nestjs/common';
 import { users } from '@prisma/client';
+import { RateLimit } from 'nestjs-rate-limiter';
 import { Expose } from '../../modules/prisma/prisma.interface';
 import { CursorPipe } from '../../pipes/cursor.pipe';
 import { OptionalIntPipe } from '../../pipes/optional-int.pipe';
@@ -53,5 +55,30 @@ export class UserController {
   @Scopes('user-{id}:delete')
   async remove(@Param('id', ParseIntPipe) id: number): Promise<Expose<users>> {
     return this.usersService.deleteUser(Number(id));
+  }
+
+  @Post(':id/merge-request')
+  @Scopes('user-{id}:merge')
+  @RateLimit({
+    points: 10,
+    duration: 60,
+    errorMessage: 'Wait for 60 seconds before trying to merge again',
+  })
+  async mergeRequest(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('email') email: string,
+  ): Promise<void> {
+    return this.usersService.requestMerge(Number(id), email);
+  }
+
+  @Post('merge')
+  @Scopes('user-{id}:merge')
+  @RateLimit({
+    points: 10,
+    duration: 60,
+    errorMessage: 'Wait for 60 seconds before trying to merge again',
+  })
+  async merge(@Body('token') token: string): Promise<void> {
+    return this.usersService.mergeUsers(token);
   }
 }
