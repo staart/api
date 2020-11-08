@@ -60,6 +60,7 @@ jobs:
         with:
           github-token: ${{ secrets.GH_PAT }}
           script: |
+            console.log(context.payload.ref);
             return
               context.payload.ref.startsWith("refs/heads/feature") ||
               context.payload.ref.startsWith("refs/heads/hotfix") ||
@@ -69,5 +70,5 @@ jobs:
         if: always() && steps.should-pr.outputs.result
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
-          PULL_REQUEST_BRANCH: "master"
-          PULL_REQUEST_REVIEWERS: "AnandChowdhary"
+          PULL_REQUEST_BRANCH: 'master'
+          PULL_REQUEST_REVIEWERS: 'AnandChowdhary'
