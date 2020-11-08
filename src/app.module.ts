@@ -12,7 +12,6 @@ import configuration from './config/configuration';
 import { AuditLogger } from './interceptors/audit-log.interceptor';
 import { JsonBodyMiddleware } from './middleware/json-body.middleware';
 import { RawBodyMiddleware } from './middleware/raw-body.middleware';
-import { AccessTokensModule } from './modules/access-tokens/access-tokens.module';
 import { ApiKeysModule } from './modules/api-keys/api-keys.module';
 import { ApprovedSubnetsModule } from './modules/approved-subnets/approved-subnets.module';
 import { AuditLogsModule } from './modules/audit-logs/audit-logs.module';
@@ -50,7 +49,6 @@ import { WebhooksModule } from './modules/webhooks/webhooks.module';
     }),
     EmailModule,
     SessionsModule,
-    AccessTokensModule,
     EmailsModule,
     GroupsModule,
     MultiFactorAuthenticationModule,
