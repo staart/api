@@ -26,6 +26,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);
 
+  app.setGlobalPrefix('v1');
   app.use(responseTime());
   app.useStaticAssets(join(__dirname, '..', 'static'));
 
