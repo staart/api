@@ -1,5 +1,5 @@
 {
-  "name": "api",
+  "name": "@staart/api",
   "version": "3.0.0",
   "description": "SaaS backend framework with users, payments, APIs, and more",
   "repository": "git@github.com:staart/api.git",
