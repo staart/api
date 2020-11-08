@@ -1,3 +1,9 @@
+## [v3.0.1](https://github.com/staart/api/compare/v3.0.0...v3.0.1) (2020-11-08)
+
+### 🐛 Bug fixes
+
+- [`ac17d989`](https://github.com/staart/api/commit/ac17d989)  Fix CWE-20 in URL parsing
+
 ## [v3.0.0](https://github.com/staart/api/compare/v2.21.0...v3.0.0) (2020-11-08)
 
 ### ✨ New features
