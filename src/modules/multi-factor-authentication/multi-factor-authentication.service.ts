@@ -6,6 +6,12 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { MfaMethod, users } from '@prisma/client';
 import { hash } from 'bcrypt';
+import {
+  MFA_ENABLED_CONFLICT,
+  MFA_NOT_ENABLED,
+  NO_EMAILS,
+  USER_NOT_FOUND,
+} from 'src/errors/errors.constants';
 import { AuthService } from '../auth/auth.service';
 import { EmailService } from '../email/email.service';
 import { Expose } from '../prisma/prisma.interface';
@@ -29,11 +35,9 @@ export class MultiFactorAuthenticationService {
       where: { id: userId },
       select: { twoFactorMethod: true },
     });
-    if (!enabled) throw new NotFoundException('User not found');
+    if (!enabled) throw new NotFoundException(USER_NOT_FOUND);
     if (enabled.twoFactorMethod !== 'NONE')
-      throw new BadRequestException(
-        'Two-factor authentication is already enabled',
-      );
+      throw new BadRequestException(MFA_ENABLED_CONFLICT);
     return this.auth.getTotpQrCode(userId);
   }
 
@@ -42,11 +46,9 @@ export class MultiFactorAuthenticationService {
       where: { id: userId },
       select: { twoFactorMethod: true },
     });
-    if (!enabled) throw new NotFoundException('User not found');
+    if (!enabled) throw new NotFoundException(USER_NOT_FOUND);
     if (enabled.twoFactorMethod !== 'NONE')
-      throw new BadRequestException(
-        'Two-factor authentication is already enabled',
-      );
+      throw new BadRequestException(MFA_ENABLED_CONFLICT);
     const secret = this.tokensService.generateUuid();
     await this.prisma.users.update({
       where: { id: userId },
@@ -70,18 +72,15 @@ export class MultiFactorAuthenticationService {
         id: true,
       },
     });
-    if (!user) throw new NotFoundException('User not found');
+    if (!user) throw new NotFoundException(USER_NOT_FOUND);
     if (user.twoFactorMethod !== 'NONE')
-      throw new BadRequestException(
-        'Two-factor authentication is already enabled',
-      );
+      throw new BadRequestException(MFA_ENABLED_CONFLICT);
     const secret = this.tokensService.generateUuid();
     await this.prisma.users.update({
       where: { id: userId },
       data: { twoFactorSecret: secret },
     });
-    if (!user.prefersEmail)
-      throw new BadRequestException('User has no email attached to it');
+    if (!user.prefersEmail) throw new BadRequestException(NO_EMAILS);
     return this.emailService.send({
       to: `"${user.name}" <${user.prefersEmail.emailSafe}>`,
       template: 'auth/enable-email-mfa',
@@ -106,9 +105,9 @@ export class MultiFactorAuthenticationService {
       where: { id: userId },
       select: { twoFactorMethod: true },
     });
-    if (!enabled) throw new NotFoundException('User not found');
+    if (!enabled) throw new NotFoundException(USER_NOT_FOUND);
     if (enabled.twoFactorMethod === 'NONE')
-      throw new BadRequestException('Two-factor authentication is not enabled');
+      throw new BadRequestException(MFA_NOT_ENABLED);
     const user = await this.prisma.users.update({
       where: { id: userId },
       data: { twoFactorMethod: 'NONE', twoFactorSecret: null },

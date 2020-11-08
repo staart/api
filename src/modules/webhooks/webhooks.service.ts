@@ -15,6 +15,10 @@ import {
 import got from 'got';
 import PQueue from 'p-queue';
 import pRetry from 'p-retry';
+import {
+  UNAUTHORIZED_RESOURCE,
+  WEBHOOK_NOT_FOUND,
+} from 'src/errors/errors.constants';
 import { Expose } from '../prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -59,8 +63,9 @@ export class WebhooksService {
     const webhook = await this.prisma.webhooks.findOne({
       where: { id },
     });
-    if (!webhook) throw new NotFoundException('Webhook not found');
-    if (webhook.groupId !== groupId) throw new UnauthorizedException();
+    if (!webhook) throw new NotFoundException(WEBHOOK_NOT_FOUND);
+    if (webhook.groupId !== groupId)
+      throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
     return this.prisma.expose<webhooks>(webhook);
   }
 
@@ -72,8 +77,9 @@ export class WebhooksService {
     const testWebhook = await this.prisma.webhooks.findOne({
       where: { id },
     });
-    if (!testWebhook) throw new NotFoundException('Webhook not found');
-    if (testWebhook.groupId !== groupId) throw new UnauthorizedException();
+    if (!testWebhook) throw new NotFoundException(WEBHOOK_NOT_FOUND);
+    if (testWebhook.groupId !== groupId)
+      throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
     const webhook = await this.prisma.webhooks.update({
       where: { id },
       data,
@@ -89,8 +95,9 @@ export class WebhooksService {
     const testWebhook = await this.prisma.webhooks.findOne({
       where: { id },
     });
-    if (!testWebhook) throw new NotFoundException('Webhook not found');
-    if (testWebhook.groupId !== groupId) throw new UnauthorizedException();
+    if (!testWebhook) throw new NotFoundException(WEBHOOK_NOT_FOUND);
+    if (testWebhook.groupId !== groupId)
+      throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
     const webhook = await this.prisma.webhooks.update({
       where: { id },
       data,
@@ -102,8 +109,9 @@ export class WebhooksService {
     const testWebhook = await this.prisma.webhooks.findOne({
       where: { id },
     });
-    if (!testWebhook) throw new NotFoundException('Webhook not found');
-    if (testWebhook.groupId !== groupId) throw new UnauthorizedException();
+    if (!testWebhook) throw new NotFoundException(WEBHOOK_NOT_FOUND);
+    if (testWebhook.groupId !== groupId)
+      throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
     const webhook = await this.prisma.webhooks.delete({
       where: { id },
     });

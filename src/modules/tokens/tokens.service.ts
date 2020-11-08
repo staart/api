@@ -1,14 +1,15 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { v4 } from 'uuid';
 import {
-  sign,
   decode,
-  verify,
-  SignOptions,
-  VerifyOptions,
   DecodeOptions,
+  sign,
+  SignOptions,
+  verify,
+  VerifyOptions,
 } from 'jsonwebtoken';
+import { v4 } from 'uuid';
+import { INVALID_TOKEN } from '../../errors/errors.constants';
 
 @Injectable()
 export class TokensService {
@@ -40,7 +41,7 @@ export class TokensService {
         { ...options, subject },
       ) as any) as T;
     } catch (error) {
-      throw new UnauthorizedException('This token is invalid');
+      throw new UnauthorizedException(INVALID_TOKEN);
     }
   }
 

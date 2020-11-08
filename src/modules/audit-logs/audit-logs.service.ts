@@ -9,6 +9,7 @@ import {
   auditLogsWhereInput,
   auditLogsWhereUniqueInput,
 } from '@prisma/client';
+import { UNAUTHORIZED_RESOURCE } from 'src/errors/errors.constants';
 import { Expose } from '../prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -41,8 +42,9 @@ export class AuditLogsService {
     const auditLog = await this.prisma.auditLogs.findOne({
       where: { id },
     });
-    if (!auditLog) throw new NotFoundException('Audit log not found');
-    if (auditLog.groupId !== groupId) throw new UnauthorizedException();
+    if (!auditLog) throw new NotFoundException(UNAUTHORIZED_RESOURCE);
+    if (auditLog.groupId !== groupId)
+      throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
     return this.prisma.expose<auditLogs>(auditLog);
   }
 }

@@ -9,6 +9,10 @@ import {
   sessionsWhereInput,
   sessionsWhereUniqueInput,
 } from '@prisma/client';
+import {
+  SESSION_NOT_FOUND,
+  UNAUTHORIZED_RESOURCE,
+} from 'src/errors/errors.constants';
 import { Expose } from '../../modules/prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -40,9 +44,10 @@ export class SessionsService {
     const session = await this.prisma.sessions.findOne({
       where: { id },
     });
-    if (!session) throw new NotFoundException('Session not found');
-    if (session.userId !== userId) throw new UnauthorizedException();
-    if (!session) throw new NotFoundException('Session not found');
+    if (!session) throw new NotFoundException(SESSION_NOT_FOUND);
+    if (session.userId !== userId)
+      throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
+    if (!session) throw new NotFoundException(SESSION_NOT_FOUND);
     return this.prisma.expose<sessions>(session);
   }
 
@@ -50,8 +55,9 @@ export class SessionsService {
     const testSession = await this.prisma.sessions.findOne({
       where: { id },
     });
-    if (!testSession) throw new NotFoundException('Session not found');
-    if (testSession.userId !== userId) throw new UnauthorizedException();
+    if (!testSession) throw new NotFoundException(SESSION_NOT_FOUND);
+    if (testSession.userId !== userId)
+      throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
     const session = await this.prisma.sessions.delete({
       where: { id },
     });

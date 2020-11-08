@@ -3,7 +3,6 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
-  NotImplementedException,
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
@@ -18,6 +17,22 @@ import anonymize from 'ip-anonymize';
 import { authenticator } from 'otplib';
 import qrcode from 'qrcode';
 import randomColor from 'randomcolor';
+import {
+  EMAIL_USER_CONFLICT,
+  INVALID_CREDENTIALS,
+  NO_EMAILS,
+  UNVERIFIED_EMAIL,
+  USER_NOT_FOUND,
+  EMAIL_VERIFIED_CONFLICT,
+  NO_TOKEN_PROVIDED,
+  SESSION_NOT_FOUND,
+  MFA_ENABLED_CONFLICT,
+  INVALID_MFA_CODE,
+  MFA_NOT_ENABLED,
+  MFA_BACKUP_CODE_USED,
+  UNVERIFIED_LOCATION,
+  COMPROMISED_PASSWORD,
+} from 'src/errors/errors.constants';
 import { safeEmail } from '../../helpers/safe-email';
 import { ApprovedSubnetsService } from '../approved-subnets/approved-subnets.service';
 import { EmailService } from '../email/email.service';
@@ -79,18 +94,13 @@ export class AuthService {
         prefersEmail: true,
       },
     });
-    if (!user) throw new NotFoundException('User not found');
+    if (!user) throw new NotFoundException(USER_NOT_FOUND);
     if (!user.emails.find((i) => i.emailSafe === emailSafe)?.isVerified)
-      throw new UnauthorizedException('This email is not verified');
-    if (!password || !user.password)
-      throw new NotImplementedException(
-        'Logging in without passwords is not supported',
-      );
-    if (!user.prefersEmail)
-      throw new BadRequestException('User has no email attached to it');
+      throw new UnauthorizedException(UNVERIFIED_EMAIL);
+    if (!password || !user.password) return this.mfaResponse(user, 'EMAIL');
+    if (!user.prefersEmail) throw new BadRequestException(NO_EMAILS);
     if (!(await compare(password, user.password)))
-      throw new UnauthorizedException('Invalid password');
-    if (!user) throw new UnauthorizedException();
+      throw new UnauthorizedException(INVALID_CREDENTIALS);
     if (code)
       return this.loginUserWithTotpCode(ipAddress, userAgent, user.id, code);
     if (user.twoFactorMethod !== 'NONE') return this.mfaResponse(user);
@@ -112,8 +122,7 @@ export class AuthService {
     const testUser = await this.prisma.users.findFirst({
       where: { emails: { some: { emailSafe } } },
     });
-    if (testUser)
-      throw new ConflictException('A user with this email already exists');
+    if (testUser) throw new ConflictException(EMAIL_USER_CONFLICT);
     const ignorePwnedPassword = !!data.ignorePwnedPassword;
     delete data.ignorePwnedPassword;
 
@@ -182,10 +191,9 @@ export class AuthService {
       where: { emailSafe },
       include: { user: true },
     });
-    if (!emailDetails)
-      throw new NotFoundException('There is no user for this email');
+    if (!emailDetails) throw new NotFoundException(USER_NOT_FOUND);
     if (emailDetails.isVerified)
-      throw new ConflictException('This email is already verified');
+      throw new ConflictException(EMAIL_VERIFIED_CONFLICT);
     this.email.send({
       to: `"${emailDetails.user.name}" <${email}>`,
       template: resend
@@ -211,12 +219,12 @@ export class AuthService {
     userAgent: string,
     token: string,
   ): Promise<TokenResponse> {
-    if (!token) throw new UnprocessableEntityException();
+    if (!token) throw new UnprocessableEntityException(NO_TOKEN_PROVIDED);
     const session = await this.prisma.sessions.findFirst({
       where: { token },
       include: { user: true },
     });
-    if (!session) throw new NotFoundException('Session not found');
+    if (!session) throw new NotFoundException(SESSION_NOT_FOUND);
     await this.prisma.sessions.updateMany({
       where: { token },
       data: { ipAddress, userAgent },
@@ -228,12 +236,12 @@ export class AuthService {
   }
 
   async logout(token: string): Promise<void> {
-    if (!token) throw new UnprocessableEntityException();
+    if (!token) throw new UnprocessableEntityException(NO_TOKEN_PROVIDED);
     const session = await this.prisma.sessions.findFirst({
       where: { token },
       select: { id: true, user: { select: { id: true } } },
     });
-    if (!session) throw new NotFoundException('Session not found');
+    if (!session) throw new NotFoundException(SESSION_NOT_FOUND);
     await this.prisma.sessions.delete({
       where: { id: session.id },
     });
@@ -244,13 +252,13 @@ export class AuthService {
     userAgent: string,
     token: string,
   ): Promise<TokenResponse> {
-    if (!token) throw new UnprocessableEntityException();
+    if (!token) throw new UnprocessableEntityException(NO_TOKEN_PROVIDED);
     const { id } = this.tokensService.verify<{ id: number }>(
       APPROVE_SUBNET_TOKEN,
       token,
     );
     const user = await this.prisma.users.findOne({ where: { id } });
-    if (!user) throw new NotFoundException('User not found');
+    if (!user) throw new NotFoundException(USER_NOT_FOUND);
     await this.approvedSubnetsService.approveNewSubnet(id, ipAddress);
     return this.loginResponse(ipAddress, userAgent, user);
   }
@@ -283,17 +291,13 @@ export class AuthService {
       where: { id: userId },
       select: { twoFactorSecret: true, twoFactorMethod: true },
     });
-    if (!user) throw new NotFoundException();
+    if (!user) throw new NotFoundException(USER_NOT_FOUND);
     if (user.twoFactorMethod !== 'NONE')
-      throw new BadRequestException(
-        'Two-factor authentication is already enabled',
-      );
+      throw new BadRequestException(MFA_ENABLED_CONFLICT);
     if (!user.twoFactorSecret)
       user.twoFactorSecret = this.tokensService.generateUuid();
     if (!this.authenticator.check(code, user.twoFactorSecret))
-      throw new UnauthorizedException(
-        'Two-factor authentication code is invalid',
-      );
+      throw new UnauthorizedException(INVALID_MFA_CODE);
     const result = await this.prisma.users.update({
       where: { id: userId },
       data: { twoFactorMethod: method, twoFactorSecret: user.twoFactorSecret },
@@ -324,7 +328,7 @@ export class AuthService {
       token,
     );
     const user = await this.prisma.users.findOne({ where: { id } });
-    if (!user) throw new NotFoundException('User not found');
+    if (!user) throw new NotFoundException(USER_NOT_FOUND);
     await this.approvedSubnetsService.upsertNewSubnet(id, ipAddress);
     return this.loginResponse(ipAddress, userAgent, user);
   }
@@ -335,8 +339,7 @@ export class AuthService {
       where: { emailSafe },
       include: { user: true },
     });
-    if (!emailDetails)
-      throw new NotFoundException('There is no user for this email');
+    if (!emailDetails) throw new NotFoundException(USER_NOT_FOUND);
     this.email.send({
       to: `"${emailDetails.user.name}" <${email}>`,
       template: 'auth/password-reset',
@@ -367,7 +370,7 @@ export class AuthService {
       token,
     );
     const user = await this.prisma.users.findOne({ where: { id } });
-    if (!user) throw new NotFoundException('User not found');
+    if (!user) throw new NotFoundException(USER_NOT_FOUND);
     password = await this.hashAndValidatePassword(
       password,
       !!ignorePwnedPassword,
@@ -403,9 +406,9 @@ export class AuthService {
       where: { id },
       include: { prefersEmail: true },
     });
-    if (!user) throw new NotFoundException();
+    if (!user) throw new NotFoundException(USER_NOT_FOUND);
     if (user.twoFactorMethod === 'NONE' || !user.twoFactorSecret)
-      throw new BadRequestException('Two-factor authentication is not enabled');
+      throw new BadRequestException(MFA_NOT_ENABLED);
     if (this.authenticator.check(code, user.twoFactorSecret))
       return this.loginResponse(ipAddress, userAgent, user);
     const backupCodes = await this.prisma.backupCodes.findMany({
@@ -416,9 +419,7 @@ export class AuthService {
       if (await compare(code, backupCode.code)) {
         if (!usedBackupCode) {
           if (backupCode.isUsed)
-            throw new UnauthorizedException(
-              'This backup code has previously been used',
-            );
+            throw new UnauthorizedException(MFA_BACKUP_CODE_USED);
           usedBackupCode = true;
           await this.prisma.backupCodes.update({
             where: { id: backupCode.id },
@@ -448,10 +449,7 @@ export class AuthService {
         }
       }
     }
-    if (!usedBackupCode)
-      throw new UnauthorizedException(
-        'Two-factor authentication code is invalid',
-      );
+    if (!usedBackupCode) throw new UnauthorizedException(INVALID_MFA_CODE);
     return this.loginResponse(ipAddress, userAgent, user);
   }
 
@@ -486,6 +484,7 @@ export class AuthService {
     user: users & {
       prefersEmail: emails;
     },
+    forceMethod?: MfaMethod,
   ): Promise<TotpTokenResponse> {
     const mfaTokenPayload: MfaTokenPayload = {
       type: user.twoFactorMethod,
@@ -496,7 +495,7 @@ export class AuthService {
       mfaTokenPayload,
       this.configService.get<string>('security.mfaTokenExpiry'),
     );
-    if (user.twoFactorMethod === 'EMAIL') {
+    if (user.twoFactorMethod === 'EMAIL' || forceMethod === 'EMAIL') {
       this.email.send({
         to: `"${user.name}" <${user.prefersEmail.email}>`,
         template: 'auth/mfa-code',
@@ -539,7 +538,7 @@ export class AuthService {
         where: { id },
         select: { name: true, prefersEmail: true },
       });
-      if (!user) throw new NotFoundException('User not found');
+      if (!user) throw new NotFoundException(USER_NOT_FOUND);
       const location = await this.geolocationService.getLocation(ipAddress);
       const locationName =
         [
@@ -566,7 +565,7 @@ export class AuthService {
             )}`,
           },
         });
-      throw new UnauthorizedException('Verify this location before logging in');
+      throw new UnauthorizedException(UNVERIFIED_LOCATION);
     }
   }
 
@@ -581,9 +580,7 @@ export class AuthService {
           this.configService.get<number>('security.saltRounds') ?? 10,
         );
       if (!(await this.pwnedService.isPasswordSafe(password)))
-        throw new BadRequestException(
-          'This password has been compromised in a data breach.',
-        );
+        throw new BadRequestException(COMPROMISED_PASSWORD);
     }
     return await hash(
       password,

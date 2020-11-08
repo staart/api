@@ -14,6 +14,11 @@ import {
   usersWhereUniqueInput,
 } from '@prisma/client';
 import { compare } from 'bcrypt';
+import {
+  CURRENT_PASSWORD_REQUIRED,
+  INVALID_CREDENTIALS,
+  USER_NOT_FOUND,
+} from '../../errors/errors.constants';
 import { safeEmail } from '../../helpers/safe-email';
 import { Expose } from '../../modules/prisma/prisma.interface';
 import { AuthService } from '../auth/auth.service';
@@ -37,7 +42,7 @@ export class UsersService {
     const user = await this.prisma.users.findOne({
       where: { id },
     });
-    if (!user) throw new NotFoundException('User not found');
+    if (!user) throw new NotFoundException(USER_NOT_FOUND);
     return this.prisma.expose<users>(user);
   }
 
@@ -72,7 +77,7 @@ export class UsersService {
     const transformed: usersUpdateInput & PasswordUpdateInput = data;
     if (data.newPassword) {
       if (!data.currentPassword)
-        throw new BadRequestException('Current password is required');
+        throw new BadRequestException(CURRENT_PASSWORD_REQUIRED);
       const previousPassword = (
         await this.prisma.users.findOne({
           where: { id },
@@ -81,7 +86,7 @@ export class UsersService {
       )?.password;
       if (previousPassword)
         if (!(await compare(data.currentPassword, previousPassword)))
-          throw new BadRequestException('Current password is incorrect');
+          throw new BadRequestException(INVALID_CREDENTIALS);
       transformed.password = await this.auth.hashAndValidatePassword(
         data.newPassword,
         !!data.ignorePwnedPassword,
@@ -111,7 +116,7 @@ export class UsersService {
       where: { emails: { some: { emailSafe } } },
       include: { prefersEmail: true },
     });
-    if (!user) throw new NotFoundException('User not found');
+    if (!user) throw new NotFoundException(USER_NOT_FOUND);
     const minutes = parseInt(
       this.configService.get<string>('security.mergeUsersTokenExpiry') ?? '',
     );
@@ -143,7 +148,8 @@ export class UsersService {
       baseUserId = result.baseUserId;
       mergeUserId = result.mergeUserId;
     } catch (error) {}
-    if (!baseUserId || !mergeUserId) throw new BadRequestException();
+    if (!baseUserId || !mergeUserId)
+      throw new BadRequestException(USER_NOT_FOUND);
     return this.merge(baseUserId, mergeUserId);
   }
 
@@ -154,7 +160,7 @@ export class UsersService {
     const mergeUser = await this.prisma.users.findOne({
       where: { id: mergeUserId },
     });
-    if (!baseUser || !mergeUser) throw new NotFoundException('User not found');
+    if (!baseUser || !mergeUser) throw new NotFoundException(USER_NOT_FOUND);
 
     const combinedUser = { ...baseUser };
     Object.keys(mergeUser).forEach((key) => {

@@ -5,6 +5,15 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import {
+  BILLING_ACCOUNT_CREATED_CONFLICT,
+  GROUP_NOT_FOUND,
+  CUSTOMER_NOT_FOUND,
+  INVOICE_NOT_FOUND,
+  SUBSCRIPTION_NOT_FOUND,
+  SOURCE_NOT_FOUND,
+  BILLING_NOT_FOUND,
+} from 'src/errors/errors.constants';
 import Stripe from 'stripe';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -30,10 +39,10 @@ export class StripeService {
       where: { id: groupId },
       select: { attributes: true },
     });
-    if (!group) throw new NotFoundException('Group not found');
+    if (!group) throw new NotFoundException(GROUP_NOT_FOUND);
     const attributes = group.attributes as { stripeCustomerId?: string };
     if (attributes?.stripeCustomerId)
-      throw new BadRequestException('Billing account is already set up');
+      throw new BadRequestException(BILLING_ACCOUNT_CREATED_CONFLICT);
     const result = await this.stripe.customers.create(data);
     await this.prisma.groups.update({
       where: { id: groupId },
@@ -45,8 +54,7 @@ export class StripeService {
   async getCustomer(groupId: number) {
     const stripeId = await this.stripeId(groupId);
     const result = await this.stripe.customers.retrieve(stripeId);
-    if (result.deleted)
-      throw new NotFoundException('This customer has been deleted');
+    if (result.deleted) throw new NotFoundException(CUSTOMER_NOT_FOUND);
     return result as Stripe.Response<Stripe.Customer>;
   }
 
@@ -91,7 +99,7 @@ export class StripeService {
     const stripeId = await this.stripeId(groupId);
     const result = await this.stripe.invoices.retrieve(invoiceId);
     if (result.customer !== stripeId)
-      throw new NotFoundException('Invoice not found');
+      throw new NotFoundException(INVOICE_NOT_FOUND);
     return result;
   }
 
@@ -118,7 +126,7 @@ export class StripeService {
     const stripeId = await this.stripeId(groupId);
     const result = await this.stripe.subscriptions.retrieve(subscriptionId);
     if (result.customer !== stripeId)
-      throw new NotFoundException('Subscription not found');
+      throw new NotFoundException(SUBSCRIPTION_NOT_FOUND);
     return result;
   }
 
@@ -141,7 +149,7 @@ export class StripeService {
     const stripeId = await this.stripeId(groupId);
     const result = await this.stripe.sources.retrieve(sourceId);
     if (result.customer !== stripeId)
-      throw new NotFoundException('Source not found');
+      throw new NotFoundException(SOURCE_NOT_FOUND);
     return result;
   }
 
@@ -149,7 +157,7 @@ export class StripeService {
     const stripeId = await this.stripeId(groupId);
     const result = await this.stripe.sources.retrieve(sourceId);
     if (result.customer !== stripeId)
-      throw new NotFoundException('Source not found');
+      throw new NotFoundException(SOURCE_NOT_FOUND);
     await this.stripe.customers.deleteSource(stripeId, sourceId);
   }
 
@@ -184,7 +192,7 @@ export class StripeService {
     const stripeId = await this.stripeId(groupId);
     const result = await this.stripe.subscriptions.retrieve(subscriptionId);
     if (result.customer !== stripeId)
-      throw new NotFoundException('Subscription not found');
+      throw new NotFoundException(SUBSCRIPTION_NOT_FOUND);
     return this.stripe.subscriptions.update(subscriptionId, {
       cancel_at_period_end: true,
     });
@@ -236,10 +244,10 @@ export class StripeService {
       where: { id: groupId },
       select: { attributes: true },
     });
-    if (!group) throw new NotFoundException('Group not found');
+    if (!group) throw new NotFoundException(GROUP_NOT_FOUND);
     const attributes = group.attributes as { stripeCustomerId?: string };
     if (!attributes?.stripeCustomerId)
-      throw new BadRequestException('Billing account is not set up');
+      throw new BadRequestException(BILLING_NOT_FOUND);
     return attributes.stripeCustomerId;
   }
 }

@@ -12,6 +12,10 @@ import {
 } from '@prisma/client';
 import { compare, hash } from 'bcrypt';
 import anonymize from 'ip-anonymize';
+import {
+  APPROVED_SUBNET_NOT_FOUND,
+  UNAUTHORIZED_RESOURCE,
+} from 'src/errors/errors.constants';
 import { Expose } from '../../modules/prisma/prisma.interface';
 import { GeolocationService } from '../geolocation/geolocation.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -54,11 +58,10 @@ export class ApprovedSubnetsService {
     const approvedSubnet = await this.prisma.approvedSubnets.findOne({
       where: { id },
     });
-    if (!approvedSubnet)
-      throw new NotFoundException('Approved subnet not found');
-    if (approvedSubnet.userId !== userId) throw new UnauthorizedException();
-    if (!approvedSubnet)
-      throw new NotFoundException('Approved subnet not found');
+    if (!approvedSubnet) throw new NotFoundException(APPROVED_SUBNET_NOT_FOUND);
+    if (approvedSubnet.userId !== userId)
+      throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
+    if (!approvedSubnet) throw new NotFoundException(APPROVED_SUBNET_NOT_FOUND);
     return this.prisma.expose<approvedSubnets>(approvedSubnet);
   }
 
@@ -70,8 +73,9 @@ export class ApprovedSubnetsService {
       where: { id },
     });
     if (!testApprovedSubnet)
-      throw new NotFoundException('Approved subnet not found');
-    if (testApprovedSubnet.userId !== userId) throw new UnauthorizedException();
+      throw new NotFoundException(APPROVED_SUBNET_NOT_FOUND);
+    if (testApprovedSubnet.userId !== userId)
+      throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
     const approvedSubnet = await this.prisma.approvedSubnets.delete({
       where: { id },
     });

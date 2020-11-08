@@ -14,6 +14,12 @@ import {
   membershipsWhereUniqueInput,
   users,
 } from '@prisma/client';
+import {
+  CANNOT_DELETE_SOLE_MEMBER,
+  CANNOT_DELETE_SOLE_OWNER,
+  MEMBERSHIP_NOT_FOUND,
+  UNAUTHORIZED_RESOURCE,
+} from 'src/errors/errors.constants';
 import { safeEmail } from '../../helpers/safe-email';
 import { Expose } from '../../modules/prisma/prisma.interface';
 import { AuthService } from '../auth/auth.service';
@@ -57,8 +63,9 @@ export class MembershipsService {
       where: { id },
       include: { group: true },
     });
-    if (!membership) throw new NotFoundException('Membership not found');
-    if (membership.userId !== userId) throw new UnauthorizedException();
+    if (!membership) throw new NotFoundException(MEMBERSHIP_NOT_FOUND);
+    if (membership.userId !== userId)
+      throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
     return this.prisma.expose<memberships>(membership);
   }
 
@@ -70,8 +77,9 @@ export class MembershipsService {
       where: { id },
       include: { group: true },
     });
-    if (!membership) throw new NotFoundException('Membership not found');
-    if (membership.groupId !== groupId) throw new UnauthorizedException();
+    if (!membership) throw new NotFoundException(MEMBERSHIP_NOT_FOUND);
+    if (membership.groupId !== groupId)
+      throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
     return this.prisma.expose<memberships>(membership);
   }
 
@@ -82,8 +90,9 @@ export class MembershipsService {
     const testMembership = await this.prisma.memberships.findOne({
       where: { id },
     });
-    if (!testMembership) throw new NotFoundException('Membership not found');
-    if (testMembership.userId !== userId) throw new UnauthorizedException();
+    if (!testMembership) throw new NotFoundException(MEMBERSHIP_NOT_FOUND);
+    if (testMembership.userId !== userId)
+      throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
     await this.verifyDeleteMembership(testMembership.groupId, id);
     const membership = await this.prisma.memberships.delete({
       where: { id },
@@ -99,8 +108,9 @@ export class MembershipsService {
     const testMembership = await this.prisma.memberships.findOne({
       where: { id },
     });
-    if (!testMembership) throw new NotFoundException('Membership not found');
-    if (testMembership.groupId !== groupId) throw new UnauthorizedException();
+    if (!testMembership) throw new NotFoundException(MEMBERSHIP_NOT_FOUND);
+    if (testMembership.groupId !== groupId)
+      throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
     const membership = await this.prisma.memberships.update({
       where: { id },
       data,
@@ -115,8 +125,9 @@ export class MembershipsService {
     const testMembership = await this.prisma.memberships.findOne({
       where: { id },
     });
-    if (!testMembership) throw new NotFoundException('Membership not found');
-    if (testMembership.groupId !== groupId) throw new UnauthorizedException();
+    if (!testMembership) throw new NotFoundException(MEMBERSHIP_NOT_FOUND);
+    if (testMembership.groupId !== groupId)
+      throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
     await this.verifyDeleteMembership(testMembership.groupId, id);
     const membership = await this.prisma.memberships.delete({
       where: { id },
@@ -179,19 +190,15 @@ export class MembershipsService {
       where: { group: { id: groupId } },
     });
     if (memberships.length === 1)
-      throw new BadRequestException(
-        'You cannot delete the sole member for a group',
-      );
+      throw new BadRequestException(CANNOT_DELETE_SOLE_MEMBER);
     const membership = await this.prisma.memberships.findOne({
       where: { id: membershipId },
     });
-    if (!membership) throw new NotFoundException('Membership not found');
+    if (!membership) throw new NotFoundException(MEMBERSHIP_NOT_FOUND);
     if (
       membership.role === 'OWNER' &&
       memberships.filter((i) => i.role === 'OWNER').length === 1
     )
-      throw new BadRequestException(
-        'You cannot delete the sole owner for a group',
-      );
+      throw new BadRequestException(CANNOT_DELETE_SOLE_OWNER);
   }
 }

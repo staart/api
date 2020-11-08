@@ -8,6 +8,7 @@ import {
   groupsWhereUniqueInput,
 } from '@prisma/client';
 import randomColor from 'randomcolor';
+import { GROUP_NOT_FOUND } from 'src/errors/errors.constants';
 import { Expose } from '../../modules/prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -63,7 +64,7 @@ export class GroupsService {
     const group = await this.prisma.groups.findOne({
       where: { id },
     });
-    if (!group) throw new NotFoundException('Group not found');
+    if (!group) throw new NotFoundException(GROUP_NOT_FOUND);
     return this.prisma.expose<groups>(group);
   }
 
@@ -74,7 +75,7 @@ export class GroupsService {
     const testGroup = await this.prisma.groups.findOne({
       where: { id },
     });
-    if (!testGroup) throw new NotFoundException('Group not found');
+    if (!testGroup) throw new NotFoundException(GROUP_NOT_FOUND);
     const group = await this.prisma.groups.update({
       where: { id },
       data,
@@ -89,7 +90,7 @@ export class GroupsService {
     const testGroup = await this.prisma.groups.findOne({
       where: { id },
     });
-    if (!testGroup) throw new NotFoundException('Group not found');
+    if (!testGroup) throw new NotFoundException(GROUP_NOT_FOUND);
     const group = await this.prisma.groups.update({
       where: { id },
       data,
@@ -101,7 +102,7 @@ export class GroupsService {
     const testGroup = await this.prisma.groups.findOne({
       where: { id },
     });
-    if (!testGroup) throw new NotFoundException('Group not found');
+    if (!testGroup) throw new NotFoundException(GROUP_NOT_FOUND);
     const group = await this.prisma.groups.delete({
       where: { id },
     });

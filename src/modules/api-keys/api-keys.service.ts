@@ -15,6 +15,10 @@ import {
   JsonValue,
 } from '@prisma/client';
 import QuickLRU from 'quick-lru';
+import {
+  API_KEY_NOT_FOUND,
+  UNAUTHORIZED_RESOURCE,
+} from '../../errors/errors.constants';
 import { Expose } from '../../modules/prisma/prisma.interface';
 import { PrismaService } from '../prisma/prisma.service';
 import { StripeService } from '../stripe/stripe.service';
@@ -102,16 +106,18 @@ export class ApiKeysService {
     const apiKey = await this.prisma.apiKeys.findOne({
       where: { id },
     });
-    if (!apiKey) throw new NotFoundException('API key not found');
-    if (apiKey.groupId !== groupId) throw new UnauthorizedException();
+    if (!apiKey) throw new NotFoundException(API_KEY_NOT_FOUND);
+    if (apiKey.groupId !== groupId)
+      throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
     return this.prisma.expose<apiKeys>(apiKey);
   }
   async getApiKeyForUser(userId: number, id: number): Promise<Expose<apiKeys>> {
     const apiKey = await this.prisma.apiKeys.findOne({
       where: { id },
     });
-    if (!apiKey) throw new NotFoundException('API key not found');
-    if (apiKey.userId !== userId) throw new UnauthorizedException();
+    if (!apiKey) throw new NotFoundException(API_KEY_NOT_FOUND);
+    if (apiKey.userId !== userId)
+      throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
     return this.prisma.expose<apiKeys>(apiKey);
   }
 
@@ -119,7 +125,7 @@ export class ApiKeysService {
     const apiKey = await this.prisma.apiKeys.findFirst({
       where: { apiKey: key },
     });
-    if (!apiKey) throw new NotFoundException('API key not found');
+    if (!apiKey) throw new NotFoundException(API_KEY_NOT_FOUND);
     if (this.lru.has(key)) return this.lru.get(key);
     this.lru.set(key, apiKey);
     return this.prisma.expose<apiKeys>(apiKey);
@@ -133,8 +139,9 @@ export class ApiKeysService {
     const testApiKey = await this.prisma.apiKeys.findOne({
       where: { id },
     });
-    if (!testApiKey) throw new NotFoundException('API key not found');
-    if (testApiKey.groupId !== groupId) throw new UnauthorizedException();
+    if (!testApiKey) throw new NotFoundException(API_KEY_NOT_FOUND);
+    if (testApiKey.groupId !== groupId)
+      throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
     data.scopes = this.cleanScopesForGroup(groupId, data.scopes);
     const apiKey = await this.prisma.apiKeys.update({
       where: { id },
@@ -151,8 +158,9 @@ export class ApiKeysService {
     const testApiKey = await this.prisma.apiKeys.findOne({
       where: { id },
     });
-    if (!testApiKey) throw new NotFoundException('API key not found');
-    if (testApiKey.userId !== userId) throw new UnauthorizedException();
+    if (!testApiKey) throw new NotFoundException(API_KEY_NOT_FOUND);
+    if (testApiKey.userId !== userId)
+      throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
     data.scopes = this.cleanScopesForUser(userId, data.scopes);
     const apiKey = await this.prisma.apiKeys.update({
       where: { id },
@@ -170,8 +178,9 @@ export class ApiKeysService {
     const testApiKey = await this.prisma.apiKeys.findOne({
       where: { id },
     });
-    if (!testApiKey) throw new NotFoundException('API key not found');
-    if (testApiKey.groupId !== groupId) throw new UnauthorizedException();
+    if (!testApiKey) throw new NotFoundException(API_KEY_NOT_FOUND);
+    if (testApiKey.groupId !== groupId)
+      throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
     data.scopes = this.cleanScopesForGroup(groupId, data.scopes);
     const apiKey = await this.prisma.apiKeys.update({
       where: { id },
@@ -188,8 +197,9 @@ export class ApiKeysService {
     const testApiKey = await this.prisma.apiKeys.findOne({
       where: { id },
     });
-    if (!testApiKey) throw new NotFoundException('API key not found');
-    if (testApiKey.userId !== userId) throw new UnauthorizedException();
+    if (!testApiKey) throw new NotFoundException(API_KEY_NOT_FOUND);
+    if (testApiKey.userId !== userId)
+      throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
     data.scopes = this.cleanScopesForUser(userId, data.scopes);
     const apiKey = await this.prisma.apiKeys.update({
       where: { id },
@@ -206,8 +216,9 @@ export class ApiKeysService {
     const testApiKey = await this.prisma.apiKeys.findOne({
       where: { id },
     });
-    if (!testApiKey) throw new NotFoundException('API key not found');
-    if (testApiKey.groupId !== groupId) throw new UnauthorizedException();
+    if (!testApiKey) throw new NotFoundException(API_KEY_NOT_FOUND);
+    if (testApiKey.groupId !== groupId)
+      throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
     const apiKey = await this.prisma.apiKeys.delete({
       where: { id },
     });
@@ -221,8 +232,9 @@ export class ApiKeysService {
     const testApiKey = await this.prisma.apiKeys.findOne({
       where: { id },
     });
-    if (!testApiKey) throw new NotFoundException('API key not found');
-    if (testApiKey.userId !== userId) throw new UnauthorizedException();
+    if (!testApiKey) throw new NotFoundException(API_KEY_NOT_FOUND);
+    if (testApiKey.userId !== userId)
+      throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
     const apiKey = await this.prisma.apiKeys.delete({
       where: { id },
     });

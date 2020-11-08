@@ -13,6 +13,12 @@ import {
   domainsWhereUniqueInput,
 } from '@prisma/client';
 import got from 'got';
+import {
+  DOMAIN_HTML_NOT_FOUND,
+  DOMAIN_NOT_FOUND,
+  DOMAIN_TXT_NOT_FOUND,
+  UNAUTHORIZED_RESOURCE,
+} from 'src/errors/errors.constants';
 import { URL } from 'url';
 import { DnsService } from '../dns/dns.service';
 import { Expose } from '../prisma/prisma.interface';
@@ -96,8 +102,9 @@ export class DomainsService {
     const domain = await this.prisma.domains.findOne({
       where: { id },
     });
-    if (!domain) throw new NotFoundException('Domain not found');
-    if (domain.groupId !== groupId) throw new UnauthorizedException();
+    if (!domain) throw new NotFoundException(DOMAIN_NOT_FOUND);
+    if (domain.groupId !== groupId)
+      throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
     return this.prisma.expose<domains>(domain);
   }
 
@@ -109,8 +116,9 @@ export class DomainsService {
     const domain = await this.prisma.domains.findOne({
       where: { id },
     });
-    if (!domain) throw new NotFoundException('Domain not found');
-    if (domain.groupId !== groupId) throw new UnauthorizedException();
+    if (!domain) throw new NotFoundException(DOMAIN_NOT_FOUND);
+    if (domain.groupId !== groupId)
+      throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
     if (method === DOMAIN_VERIFICATION_TXT) {
       const txtRecords = await this.dnsService.lookup(domain.domain, 'TXT');
       if (JSON.stringify(txtRecords).includes(domain.verificationCode)) {
@@ -118,8 +126,8 @@ export class DomainsService {
           where: { id },
           data: { isVerified: true },
         });
-      } else throw new BadRequestException('TXT record not found');
-    } else if (method === DOMAIN_VERIFICATION_HTML) {
+      } else throw new BadRequestException(DOMAIN_TXT_NOT_FOUND);
+    } else {
       let verified = false;
       try {
         const { body } = await got(
@@ -134,8 +142,8 @@ export class DomainsService {
           where: { id },
           data: { isVerified: true },
         });
-      } else throw new BadRequestException('HTML file not found');
-    } else throw new BadRequestException('Type should be TXT or HTML');
+      } else throw new BadRequestException(DOMAIN_HTML_NOT_FOUND);
+    }
     return domain;
   }
 
@@ -143,8 +151,9 @@ export class DomainsService {
     const testDomain = await this.prisma.domains.findOne({
       where: { id },
     });
-    if (!testDomain) throw new NotFoundException('Domain not found');
-    if (testDomain.groupId !== groupId) throw new UnauthorizedException();
+    if (!testDomain) throw new NotFoundException(DOMAIN_NOT_FOUND);
+    if (testDomain.groupId !== groupId)
+      throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
     const domain = await this.prisma.domains.delete({
       where: { id },
     });

@@ -10,6 +10,10 @@ import {
   emailsWhereInput,
   emailsWhereUniqueInput,
 } from '@prisma/client';
+import {
+  EMAIL_NOT_FOUND,
+  UNAUTHORIZED_RESOURCE,
+} from 'src/errors/errors.constants';
 import { safeEmail } from '../../helpers/safe-email';
 import { Expose } from '../../modules/prisma/prisma.interface';
 import { AuthService } from '../auth/auth.service';
@@ -61,8 +65,9 @@ export class EmailsService {
     const email = await this.prisma.emails.findOne({
       where: { id },
     });
-    if (!email) throw new NotFoundException('Email not found');
-    if (email.userId !== userId) throw new UnauthorizedException();
+    if (!email) throw new NotFoundException(EMAIL_NOT_FOUND);
+    if (email.userId !== userId)
+      throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
     return this.prisma.expose<emails>(email);
   }
 
@@ -70,8 +75,9 @@ export class EmailsService {
     const testEmail = await this.prisma.emails.findOne({
       where: { id },
     });
-    if (!testEmail) throw new NotFoundException('Email not found');
-    if (testEmail.userId !== userId) throw new UnauthorizedException();
+    if (!testEmail) throw new NotFoundException(EMAIL_NOT_FOUND);
+    if (testEmail.userId !== userId)
+      throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
     const email = await this.prisma.emails.delete({
       where: { id },
     });
