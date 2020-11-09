@@ -1,27 +1,34 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { render } from '@staart/mustache-markdown';
+import { SES } from 'aws-sdk';
 import { promises as fs } from 'fs';
 import mem from 'mem';
 import nodemailer from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
+import SESTransport from 'nodemailer/lib/ses-transport';
 import PQueue from 'p-queue';
 import pRetry from 'p-retry';
 import { join } from 'path';
-import { MailConfig, MailOptions } from './mail.interface';
+import { Configuration } from '../../config/configuration.interface';
+import { MailOptions } from './mail.interface';
 
 @Injectable()
 export class MailService {
   private readonly logger = new Logger(MailService.name);
   private transport: Mail;
-  private config: MailConfig;
+  private config: Configuration['email'];
   private queue = new PQueue({ concurrency: 1 });
   private readTemplate = mem(this.readTemplateUnmemoized);
 
   constructor(private configService: ConfigService) {
-    const emailConfig = this.configService.get<MailConfig>('email');
-    if (emailConfig) this.config = emailConfig;
-    this.transport = nodemailer.createTransport(this.config);
+    this.config = this.configService.get<Configuration['email']>('email');
+    console.log(this.config);
+    if (this.config.ses)
+      this.transport = nodemailer.createTransport({
+        SES: new SES({ apiVersion: '2010-12-01' }),
+      } as SESTransport.Options);
+    else this.transport = nodemailer.createTransport(this.config.transport);
   }
 
   send(options: Mail.Options & MailOptions) {

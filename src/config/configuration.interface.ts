@@ -29,12 +29,15 @@ export interface Configuration {
   email: {
     name: string;
     from: string;
-    host: string;
-    port: number;
-    secure: boolean;
-    auth: {
-      user: string;
-      pass: string;
+    ses?: boolean;
+    transport?: {
+      host: string;
+      port: number;
+      secure: boolean;
+      auth: {
+        user: string;
+        pass: string;
+      };
     };
   };
 
