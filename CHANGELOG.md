@@ -1,3 +1,10 @@
+## [v3.1.1](https://github.com/staart/api/compare/v3.1.0...v3.1.1) (2020-11-09)
+
+### ♻️ Updates
+
+- [`fb081a2c`](https://github.com/staart/api/commit/fb081a2c)  Allow email configuration of SES
+- [`d576cf0e`](https://github.com/staart/api/commit/d576cf0e)  Change required config in SES
+
 ## [v3.1.0](https://github.com/staart/api/compare/v3.0.1...v3.1.0) (2020-11-09)
 
 ### ✨ New features
