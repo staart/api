@@ -28,6 +28,7 @@ const configuration: Configuration = {
     accessTokenExpiry: process.env.ACCESS_TOKEN_EXPIRY ?? '1h',
     passwordPwnedCheck: !!process.env.PASSWORD_PWNED_CHECK,
     unusedRefreshTokenExpiryDays: int(process.env.DELETE_EXPIRED_SESSIONS, 30),
+    inactiveUserDeleteDays: int(process.env.INACTIVE_USER_DELETE_DAYS, 30),
   },
   email: {
     name: process.env.EMAIL_NAME ?? 'Staart',

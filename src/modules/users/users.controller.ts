@@ -52,9 +52,9 @@ export class UserController {
   }
 
   @Delete(':id')
-  @Scopes('user-{id}:delete')
+  @Scopes('user-{id}:deactivate')
   async remove(@Param('id', ParseIntPipe) id: number): Promise<Expose<users>> {
-    return this.usersService.deleteUser(Number(id));
+    return this.usersService.deactivateUser(Number(id));
   }
 
   @Post(':id/merge-request')

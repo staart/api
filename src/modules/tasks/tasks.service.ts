@@ -24,4 +24,20 @@ export class TasksService {
     if (deleted.count)
       this.logger.debug(`Deleted ${deleted.count} expired sessions`);
   }
+
+  @Cron(CronExpression.EVERY_DAY_AT_2PM)
+  async deleteInactiveUsers() {
+    const now = new Date();
+    const inactiveUserDeleteDays =
+      this.configService.get<number>('security.inactiveUserDeleteDays') ?? 30;
+    now.setDate(now.getDate() - inactiveUserDeleteDays);
+    const deleted = await this.prisma.users.deleteMany({
+      where: {
+        active: false,
+        sessions: { every: { updatedAt: { lte: now } } },
+      },
+    });
+    if (deleted.count)
+      this.logger.debug(`Deleted ${deleted.count} inactive users`);
+  }
 }

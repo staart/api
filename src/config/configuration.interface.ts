@@ -23,6 +23,7 @@ export interface Configuration {
     accessTokenExpiry: string;
     passwordPwnedCheck: boolean;
     unusedRefreshTokenExpiryDays: number;
+    inactiveUserDeleteDays: number;
   };
 
   email: {

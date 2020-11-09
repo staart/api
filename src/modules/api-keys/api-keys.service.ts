@@ -360,7 +360,7 @@ export class ApiKeysService {
     const scopes: Record<string, string> = {};
     scopes[`read-info`] = 'Read user details';
     scopes[`write-info`] = 'Update user details';
-    scopes[`delete`] = 'Delete user';
+    scopes[`deactivate`] = 'Deactivate user';
 
     scopes[`write-membership-*`] = 'Create new groups';
     scopes[`read-membership-*`] = 'Read group memberships';

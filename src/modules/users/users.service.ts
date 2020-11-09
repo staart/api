@@ -103,9 +103,10 @@ export class UsersService {
     return this.prisma.expose<users>(user);
   }
 
-  async deleteUser(id: number): Promise<Expose<users>> {
-    const user = await this.prisma.users.delete({
+  async deactivateUser(id: number): Promise<Expose<users>> {
+    const user = await this.prisma.users.update({
       where: { id },
+      data: { active: false },
     });
     return this.prisma.expose<users>(user);
   }
