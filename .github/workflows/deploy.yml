@@ -1,0 +1,17 @@
+name: Deploy CI
+on:
+  push:
+    branches:
+      - deploy
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.3.4
+      - uses: akhileshns/heroku-deploy@v3.6.8
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: staart-api
+          heroku_email: staart@anandchowdhary.com
