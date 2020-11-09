@@ -62,7 +62,7 @@ jobs:
         run: echo node_modules/ > .gitignore
       - name: Commit files
         run: |
-          git config --local user.email "staart@anandchowdhary.com"
+          git config --local user.email "bot@anandchowdhary.com"
           git config --local user.name "FindingAnand"
           git add .
           git commit -m ":rocket: Deploy" -a
