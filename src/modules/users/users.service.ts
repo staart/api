@@ -22,7 +22,7 @@ import {
 import { safeEmail } from '../../helpers/safe-email';
 import { Expose } from '../../providers/prisma/prisma.interface';
 import { AuthService } from '../auth/auth.service';
-import { EmailService } from '../../providers/mail/mail.service';
+import { MailService } from '../../providers/mail/mail.service';
 import { PrismaService } from '../../providers/prisma/prisma.service';
 import { MERGE_ACCOUNTS_TOKEN } from '../../providers/tokens/tokens.constants';
 import { TokensService } from '../../providers/tokens/tokens.service';
@@ -33,7 +33,7 @@ export class UsersService {
   constructor(
     private prisma: PrismaService,
     private auth: AuthService,
-    private email: EmailService,
+    private email: MailService,
     private configService: ConfigService,
     private tokensService: TokensService,
   ) {}

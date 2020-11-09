@@ -23,7 +23,7 @@ import {
 import { safeEmail } from '../../helpers/safe-email';
 import { Expose } from '../../providers/prisma/prisma.interface';
 import { AuthService } from '../auth/auth.service';
-import { EmailService } from '../../providers/mail/mail.service';
+import { MailService } from '../../providers/mail/mail.service';
 import { PrismaService } from '../../providers/prisma/prisma.service';
 import { CreateMembershipInput } from './memberships.interface';
 
@@ -32,7 +32,7 @@ export class MembershipsService {
   constructor(
     private prisma: PrismaService,
     private auth: AuthService,
-    private email: EmailService,
+    private email: MailService,
     private configService: ConfigService,
   ) {}
 

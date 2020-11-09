@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from '../auth/auth.module';
-import { EmailModule } from '../../providers/mail/mail.module';
+import { MailModule } from '../../providers/mail/mail.module';
 import { PrismaModule } from '../../providers/prisma/prisma.module';
 import { TokensModule } from '../../providers/tokens/tokens.module';
 import { TwilioModule } from '../../providers/twilio/twilio.module';
@@ -13,7 +13,7 @@ import { MultiFactorAuthenticationService } from './multi-factor-authentication.
     PrismaModule,
     AuthModule,
     TwilioModule,
-    EmailModule,
+    MailModule,
     ConfigModule,
     TokensModule,
   ],

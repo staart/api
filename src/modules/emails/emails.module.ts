@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { ApprovedSubnetsService } from '../approved-subnets/approved-subnets.service';
 import { AuthService } from '../auth/auth.service';
-import { EmailModule } from '../../providers/mail/mail.module';
+import { MailModule } from '../../providers/mail/mail.module';
 import { GeolocationService } from '../../providers/geolocation/geolocation.service';
 import { PrismaModule } from '../../providers/prisma/prisma.module';
 import { PwnedModule } from '../../providers/pwned/pwned.module';
@@ -16,7 +16,7 @@ import { EmailsService } from './emails.service';
 @Module({
   imports: [
     PrismaModule,
-    EmailModule,
+    MailModule,
     ConfigModule,
     TwilioModule,
     PwnedModule,
