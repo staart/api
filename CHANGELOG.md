@@ -1,3 +1,14 @@
+## [v3.1.0](https://github.com/staart/api/compare/v3.0.1...v3.1.0) (2020-11-09)
+
+### ✨ New features
+
+- [`48ba1763`](https://github.com/staart/api/commit/48ba1763)  Add account deactivate (fixed #1350)
+(Issues: [`#1350`](https://github.com/staart/api/issues/1350))
+
+### ♻️ Updates
+
+- [`dc1a3704`](https://github.com/staart/api/commit/dc1a3704)  Auto-set account to active on login
+
 ## [v3.0.1](https://github.com/staart/api/compare/v3.0.0...v3.0.1) (2020-11-08)
 
 ### 🐛 Bug fixes
