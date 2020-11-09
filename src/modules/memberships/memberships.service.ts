@@ -23,7 +23,7 @@ import {
 import { safeEmail } from '../../helpers/safe-email';
 import { Expose } from '../../providers/prisma/prisma.interface';
 import { AuthService } from '../auth/auth.service';
-import { EmailService } from '../../providers/email/email.service';
+import { EmailService } from '../../providers/mail/mail.service';
 import { PrismaService } from '../../providers/prisma/prisma.service';
 import { CreateMembershipInput } from './memberships.interface';
 

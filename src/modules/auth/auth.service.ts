@@ -36,7 +36,7 @@ import {
 } from '../../errors/errors.constants';
 import { safeEmail } from '../../helpers/safe-email';
 import { ApprovedSubnetsService } from '../approved-subnets/approved-subnets.service';
-import { EmailService } from '../../providers/email/email.service';
+import { EmailService } from '../../providers/mail/mail.service';
 import { GeolocationService } from '../../providers/geolocation/geolocation.service';
 import { Expose } from '../../providers/prisma/prisma.interface';
 import { PrismaService } from '../../providers/prisma/prisma.service';

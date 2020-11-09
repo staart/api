@@ -1,4 +1,4 @@
-export interface EmailConfig {
+export interface MailConfig {
   name: string;
   from: string;
   host: string;
@@ -10,7 +10,7 @@ export interface EmailConfig {
   };
 }
 
-export interface EmailOptions {
+export interface MailOptions {
   template?: string;
   data?: Record<string, any>;
   noLayout?: boolean;

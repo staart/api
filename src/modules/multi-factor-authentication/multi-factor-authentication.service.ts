@@ -14,7 +14,7 @@ import {
   USER_NOT_FOUND,
 } from '../../errors/errors.constants';
 import { AuthService } from '../auth/auth.service';
-import { EmailService } from '../../providers/email/email.service';
+import { EmailService } from '../../providers/mail/mail.service';
 import { Expose } from '../../providers/prisma/prisma.interface';
 import { PrismaService } from '../../providers/prisma/prisma.service';
 import { TokensService } from '../../providers/tokens/tokens.service';

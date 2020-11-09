@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from '../auth/auth.module';
-import { EmailModule } from '../../providers/email/email.module';
+import { EmailModule } from '../../providers/mail/mail.module';
 import { PrismaModule } from '../../providers/prisma/prisma.module';
 import { TokensModule } from '../../providers/tokens/tokens.module';
 import { TwilioModule } from '../../providers/twilio/twilio.module';

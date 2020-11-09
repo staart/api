@@ -20,7 +20,7 @@ import { ScopesGuard } from './modules/auth/scope.guard';
 import { StaartAuthGuard } from './modules/auth/staart-auth.guard';
 import { DnsModule } from './providers/dns/dns.module';
 import { DomainsModule } from './modules/domains/domains.module';
-import { EmailModule } from './providers/email/email.module';
+import { EmailModule } from './providers/mail/mail.module';
 import { EmailsModule } from './modules/emails/emails.module';
 import { GeolocationModule } from './providers/geolocation/geolocation.module';
 import { GroupsModule } from './modules/groups/groups.module';

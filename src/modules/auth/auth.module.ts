@@ -5,7 +5,7 @@ import { PassportModule } from '@nestjs/passport';
 import { ApiKeysModule } from '../api-keys/api-keys.module';
 import { ApprovedSubnetsModule } from '../approved-subnets/approved-subnets.module';
 import { ApprovedSubnetsService } from '../approved-subnets/approved-subnets.service';
-import { EmailModule } from '../../providers/email/email.module';
+import { EmailModule } from '../../providers/mail/mail.module';
 import { GeolocationModule } from '../../providers/geolocation/geolocation.module';
 import { PrismaModule } from '../../providers/prisma/prisma.module';
 import { PwnedModule } from '../../providers/pwned/pwned.module';
