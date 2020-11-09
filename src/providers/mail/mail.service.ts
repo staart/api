@@ -23,10 +23,14 @@ export class MailService {
 
   constructor(private configService: ConfigService) {
     this.config = this.configService.get<Configuration['email']>('email');
-    console.log(this.config);
-    if (this.config.ses)
+    if (this.config.ses?.accessKeyId)
       this.transport = nodemailer.createTransport({
-        SES: new SES({ apiVersion: '2010-12-01' }),
+        SES: new SES({
+          apiVersion: '2010-12-01',
+          accessKeyId: this.config.ses.accessKeyId,
+          secretAccessKey: this.config.ses.secretAccessKey,
+          region: this.config.ses.region,
+        }),
       } as SESTransport.Options);
     else this.transport = nodemailer.createTransport(this.config.transport);
   }
@@ -48,6 +52,7 @@ export class MailService {
                 `Mail to ${options.to} failed, retrying (${error.retriesLeft} attempts left)`,
                 error.name,
               );
+              console.log(error);
             },
           },
         ),

@@ -29,7 +29,11 @@ export interface Configuration {
   email: {
     name: string;
     from: string;
-    ses?: boolean;
+    ses?: {
+      accessKeyId: string;
+      secretAccessKey: string;
+      region: string;
+    };
     transport?: {
       host: string;
       port: number;

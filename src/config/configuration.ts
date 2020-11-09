@@ -33,7 +33,11 @@ const configuration: Configuration = {
   email: {
     name: process.env.EMAIL_NAME ?? 'Staart',
     from: process.env.EMAIL_FROM ?? '',
-    ses: !!process.env.EMAIL_SES,
+    ses: {
+      accessKeyId: process.env.EMAIL_SES_ACCESS_KEY_ID ?? '',
+      secretAccessKey: process.env.EMAIL_SES_SECRET_ACCESS_KEY ?? '',
+      region: process.env.EMAIL_SES_REGION ?? '',
+    },
     transport: {
       host: process.env.EMAIL_HOST ?? '',
       port: int(process.env.EMAIL_PORT, 587),
