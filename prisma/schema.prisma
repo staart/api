@@ -63,6 +63,7 @@ model users {
   id                   Int                  @id @default(autoincrement())
   name                 String
   notificationEmails   NotificationEmails   @default(ACCOUNT)
+  active               Boolean              @default(true)
   password             String?
   prefersLanguage      String               @default("en-us")
   prefersColorScheme   PrefersColorScheme   @default(NO_PREFERENCE)
