@@ -58,3 +58,27 @@ jobs:
               issue_number: ${{ steps.licensed.outputs.pr_number }}
               body: "I've checked the license of your new dependency and it looks good!"
             })
+      - name: Change .gitignore
+        run: echo node_modules/ > .gitignore
+      - name: Commit files
+        run: |
+          git config --local user.email "staart@anandchowdhary.com"
+          git config --local user.name "FindingAnand"
+          git add .
+          git commit -m ":see_no_evil: Change .gitignore, only node_modules" -a
+      - name: Build server
+        run: npm run build
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+      - name: Commit files
+        run: |
+          git config --local user.email "staart@anandchowdhary.com"
+          git config --local user.name "FindingAnand"
+          git add .
+          git commit -m ":rocket: Deploy" -a
+      - name: Push to deploy branch
+        uses: ad-m/github-push-action@master
+        with:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          branch: deploy
+          force: true
