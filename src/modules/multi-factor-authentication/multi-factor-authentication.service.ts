@@ -12,7 +12,7 @@ import {
   MFA_NOT_ENABLED,
   NO_EMAILS,
   USER_NOT_FOUND,
-} from 'src/errors/errors.constants';
+} from '../../errors/errors.constants';
 import { AuthService } from '../auth/auth.service';
 import { EmailService } from '../../providers/email/email.service';
 import { Expose } from '../../providers/prisma/prisma.interface';

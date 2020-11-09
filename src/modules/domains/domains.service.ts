@@ -17,7 +17,7 @@ import {
   DOMAIN_NOT_FOUND,
   DOMAIN_NOT_VERIFIED,
   UNAUTHORIZED_RESOURCE,
-} from 'src/errors/errors.constants';
+} from '../../errors/errors.constants';
 import { URL } from 'url';
 import { DnsService } from '../../providers/dns/dns.service';
 import { Expose } from '../../providers/prisma/prisma.interface';

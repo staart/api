@@ -11,12 +11,12 @@ import { auditLogsCreateInput } from '@prisma/client';
 import { getClientIp } from 'request-ip';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { GROUP_NOT_FOUND } from 'src/errors/errors.constants';
-import { STAART_AUDIT_LOG_DATA } from 'src/modules/audit-logs/audit-log.constants';
-import { UserRequest } from 'src/modules/auth/auth.interface';
-import { GeolocationService } from 'src/providers/geolocation/geolocation.service';
-import { PrismaService } from 'src/providers/prisma/prisma.service';
-import { WebhooksService } from 'src/modules/webhooks/webhooks.service';
+import { GROUP_NOT_FOUND } from '../errors/errors.constants';
+import { STAART_AUDIT_LOG_DATA } from '../modules/audit-logs/audit-log.constants';
+import { UserRequest } from '../modules/auth/auth.interface';
+import { GeolocationService } from '../providers/geolocation/geolocation.service';
+import { PrismaService } from '../providers/prisma/prisma.service';
+import { WebhooksService } from '../modules/webhooks/webhooks.service';
 import { UAParser } from 'ua-parser-js';
 
 @Injectable()

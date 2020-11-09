@@ -15,7 +15,7 @@ import anonymize from 'ip-anonymize';
 import {
   APPROVED_SUBNET_NOT_FOUND,
   UNAUTHORIZED_RESOURCE,
-} from 'src/errors/errors.constants';
+} from '../../errors/errors.constants';
 import { Expose } from '../../providers/prisma/prisma.interface';
 import { GeolocationService } from '../../providers/geolocation/geolocation.service';
 import { PrismaService } from '../../providers/prisma/prisma.service';

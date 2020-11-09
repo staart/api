@@ -4,7 +4,7 @@ import {
   Injectable,
   PipeTransform,
 } from '@nestjs/common';
-import { OPTIONAL_INT_PIPE_NUMBER } from 'src/errors/errors.constants';
+import { OPTIONAL_INT_PIPE_NUMBER } from '../errors/errors.constants';
 
 /** Convert a string like "1" to a number, but without NaN */
 @Injectable()

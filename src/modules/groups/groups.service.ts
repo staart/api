@@ -8,7 +8,7 @@ import {
   groupsWhereUniqueInput,
 } from '@prisma/client';
 import randomColor from 'randomcolor';
-import { GROUP_NOT_FOUND } from 'src/errors/errors.constants';
+import { GROUP_NOT_FOUND } from '../../errors/errors.constants';
 import { Expose } from '../../providers/prisma/prisma.interface';
 import { PrismaService } from '../../providers/prisma/prisma.service';
 

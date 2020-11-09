@@ -19,7 +19,7 @@ import {
   CANNOT_DELETE_SOLE_OWNER,
   MEMBERSHIP_NOT_FOUND,
   UNAUTHORIZED_RESOURCE,
-} from 'src/errors/errors.constants';
+} from '../../errors/errors.constants';
 import { safeEmail } from '../../helpers/safe-email';
 import { Expose } from '../../providers/prisma/prisma.interface';
 import { AuthService } from '../auth/auth.service';

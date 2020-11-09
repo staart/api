@@ -14,7 +14,7 @@ import {
   INVOICE_NOT_FOUND,
   SOURCE_NOT_FOUND,
   SUBSCRIPTION_NOT_FOUND,
-} from 'src/errors/errors.constants';
+} from '../../errors/errors.constants';
 import Stripe from 'stripe';
 import { PrismaService } from '../../providers/prisma/prisma.service';
 

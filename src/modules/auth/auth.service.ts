@@ -33,7 +33,7 @@ import {
   UNVERIFIED_EMAIL,
   UNVERIFIED_LOCATION,
   USER_NOT_FOUND,
-} from 'src/errors/errors.constants';
+} from '../../errors/errors.constants';
 import { safeEmail } from '../../helpers/safe-email';
 import { ApprovedSubnetsService } from '../approved-subnets/approved-subnets.service';
 import { EmailService } from '../../providers/email/email.service';

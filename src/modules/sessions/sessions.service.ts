@@ -12,7 +12,7 @@ import {
 import {
   SESSION_NOT_FOUND,
   UNAUTHORIZED_RESOURCE,
-} from 'src/errors/errors.constants';
+} from '../../errors/errors.constants';
 import { Expose } from '../../providers/prisma/prisma.interface';
 import { PrismaService } from '../../providers/prisma/prisma.service';
 
