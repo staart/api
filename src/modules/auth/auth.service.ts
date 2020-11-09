@@ -98,6 +98,11 @@ export class AuthService {
       },
     });
     if (!user) throw new NotFoundException(USER_NOT_FOUND);
+    if (!user.active)
+      await this.prisma.users.update({
+        where: { id: user.id },
+        data: { active: true },
+      });
     if (!user.emails.find((i) => i.emailSafe === emailSafe)?.isVerified)
       throw new UnauthorizedException(UNVERIFIED_EMAIL);
     if (!password || !user.password) return this.mfaResponse(user, 'EMAIL');
