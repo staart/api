@@ -17,7 +17,7 @@ import { OrderByPipe } from '../../pipes/order-by.pipe';
 import { WherePipe } from '../../pipes/where.pipe';
 import { AuditLog } from '../audit-logs/audit-log.decorator';
 import { Scopes } from '../auth/scope.decorator';
-import { Expose } from '../prisma/prisma.interface';
+import { Expose } from '../../providers/prisma/prisma.interface';
 import {
   CreateWebhookDto,
   ReplaceWebhookDto,

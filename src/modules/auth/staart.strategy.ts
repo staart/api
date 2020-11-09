@@ -6,8 +6,8 @@ import minimatch from 'minimatch';
 import { Strategy } from 'passport-strategy';
 import { getClientIp } from 'request-ip';
 import { ApiKeysService } from '../api-keys/api-keys.service';
-import { LOGIN_ACCESS_TOKEN } from '../tokens/tokens.constants';
-import { TokensService } from '../tokens/tokens.service';
+import { LOGIN_ACCESS_TOKEN } from '../../providers/tokens/tokens.constants';
+import { TokensService } from '../../providers/tokens/tokens.service';
 import { AccessTokenClaims, AccessTokenParsed } from './auth.interface';
 
 class StaartStrategyName extends Strategy {

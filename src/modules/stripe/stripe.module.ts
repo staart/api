@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { PrismaModule } from '../prisma/prisma.module';
+import { PrismaModule } from '../../providers/prisma/prisma.module';
 import { StripeBillingController } from './stripe-billing.controller';
 import { StripeService } from './stripe.service';
 

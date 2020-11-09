@@ -14,11 +14,11 @@ import {
   USER_NOT_FOUND,
 } from 'src/errors/errors.constants';
 import { AuthService } from '../auth/auth.service';
-import { EmailService } from '../email/email.service';
-import { Expose } from '../prisma/prisma.interface';
-import { PrismaService } from '../prisma/prisma.service';
-import { TokensService } from '../tokens/tokens.service';
-import { TwilioService } from '../twilio/twilio.service';
+import { EmailService } from '../../providers/email/email.service';
+import { Expose } from '../../providers/prisma/prisma.interface';
+import { PrismaService } from '../../providers/prisma/prisma.service';
+import { TokensService } from '../../providers/tokens/tokens.service';
+import { TwilioService } from '../../providers/twilio/twilio.service';
 
 @Injectable()
 export class MultiFactorAuthenticationService {

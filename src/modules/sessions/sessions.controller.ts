@@ -7,7 +7,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { sessions } from '@prisma/client';
-import { Expose } from '../../modules/prisma/prisma.interface';
+import { Expose } from '../../providers/prisma/prisma.interface';
 import { CursorPipe } from '../../pipes/cursor.pipe';
 import { OptionalIntPipe } from '../../pipes/optional-int.pipe';
 import { OrderByPipe } from '../../pipes/order-by.pipe';

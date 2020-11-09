@@ -14,8 +14,8 @@ import { tap } from 'rxjs/operators';
 import { GROUP_NOT_FOUND } from 'src/errors/errors.constants';
 import { STAART_AUDIT_LOG_DATA } from 'src/modules/audit-logs/audit-log.constants';
 import { UserRequest } from 'src/modules/auth/auth.interface';
-import { GeolocationService } from 'src/modules/geolocation/geolocation.service';
-import { PrismaService } from 'src/modules/prisma/prisma.service';
+import { GeolocationService } from 'src/providers/geolocation/geolocation.service';
+import { PrismaService } from 'src/providers/prisma/prisma.service';
 import { WebhooksService } from 'src/modules/webhooks/webhooks.service';
 import { UAParser } from 'ua-parser-js';
 

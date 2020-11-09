@@ -19,10 +19,10 @@ import {
   UNAUTHORIZED_RESOURCE,
 } from 'src/errors/errors.constants';
 import { URL } from 'url';
-import { DnsService } from '../dns/dns.service';
-import { Expose } from '../prisma/prisma.interface';
-import { PrismaService } from '../prisma/prisma.service';
-import { TokensService } from '../tokens/tokens.service';
+import { DnsService } from '../../providers/dns/dns.service';
+import { Expose } from '../../providers/prisma/prisma.interface';
+import { PrismaService } from '../../providers/prisma/prisma.service';
+import { TokensService } from '../../providers/tokens/tokens.service';
 import { DOMAIN_VERIFICATION_TXT } from './domains.constants';
 import { DomainVerificationMethods } from './domains.interface';
 

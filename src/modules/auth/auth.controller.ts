@@ -1,7 +1,7 @@
 import { Body, Controller, Headers, Ip, Post } from '@nestjs/common';
 import { users } from '@prisma/client';
 import { RateLimit } from 'nestjs-rate-limiter';
-import { Expose } from '../../modules/prisma/prisma.interface';
+import { Expose } from '../../providers/prisma/prisma.interface';
 import {
   ForgotPasswordDto,
   LoginDto,

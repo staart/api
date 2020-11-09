@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { users } from '@prisma/client';
 import { RateLimit } from 'nestjs-rate-limiter';
-import { Expose } from '../../modules/prisma/prisma.interface';
+import { Expose } from '../../providers/prisma/prisma.interface';
 import { CursorPipe } from '../../pipes/cursor.pipe';
 import { OptionalIntPipe } from '../../pipes/optional-int.pipe';
 import { OrderByPipe } from '../../pipes/order-by.pipe';

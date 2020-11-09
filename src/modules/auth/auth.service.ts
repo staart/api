@@ -36,11 +36,11 @@ import {
 } from 'src/errors/errors.constants';
 import { safeEmail } from '../../helpers/safe-email';
 import { ApprovedSubnetsService } from '../approved-subnets/approved-subnets.service';
-import { EmailService } from '../email/email.service';
-import { GeolocationService } from '../geolocation/geolocation.service';
-import { Expose } from '../prisma/prisma.interface';
-import { PrismaService } from '../prisma/prisma.service';
-import { PwnedService } from '../pwned/pwned.service';
+import { EmailService } from '../../providers/email/email.service';
+import { GeolocationService } from '../../providers/geolocation/geolocation.service';
+import { Expose } from '../../providers/prisma/prisma.interface';
+import { PrismaService } from '../../providers/prisma/prisma.service';
+import { PwnedService } from '../../providers/pwned/pwned.service';
 import {
   APPROVE_SUBNET_TOKEN,
   EMAIL_MFA_TOKEN,
@@ -48,9 +48,9 @@ import {
   LOGIN_ACCESS_TOKEN,
   MULTI_FACTOR_TOKEN,
   PASSWORD_RESET_TOKEN,
-} from '../tokens/tokens.constants';
-import { TokensService } from '../tokens/tokens.service';
-import { TwilioService } from '../twilio/twilio.service';
+} from '../../providers/tokens/tokens.constants';
+import { TokensService } from '../../providers/tokens/tokens.service';
+import { TwilioService } from '../../providers/twilio/twilio.service';
 import { RegisterDto } from './auth.dto';
 import {
   AccessTokenClaims,

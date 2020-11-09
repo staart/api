@@ -19,10 +19,10 @@ import {
   API_KEY_NOT_FOUND,
   UNAUTHORIZED_RESOURCE,
 } from '../../errors/errors.constants';
-import { Expose } from '../../modules/prisma/prisma.interface';
-import { PrismaService } from '../prisma/prisma.service';
+import { Expose } from '../../providers/prisma/prisma.interface';
+import { PrismaService } from '../../providers/prisma/prisma.service';
 import { StripeService } from '../stripe/stripe.service';
-import { TokensService } from '../tokens/tokens.service';
+import { TokensService } from '../../providers/tokens/tokens.service';
 
 @Injectable()
 export class ApiKeysService {

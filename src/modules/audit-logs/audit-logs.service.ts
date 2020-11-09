@@ -10,8 +10,8 @@ import {
   auditLogsWhereUniqueInput,
 } from '@prisma/client';
 import { UNAUTHORIZED_RESOURCE } from 'src/errors/errors.constants';
-import { Expose } from '../prisma/prisma.interface';
-import { PrismaService } from '../prisma/prisma.service';
+import { Expose } from '../../providers/prisma/prisma.interface';
+import { PrismaService } from '../../providers/prisma/prisma.service';
 
 @Injectable()
 export class AuditLogsService {

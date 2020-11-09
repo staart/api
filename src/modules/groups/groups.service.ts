@@ -9,8 +9,8 @@ import {
 } from '@prisma/client';
 import randomColor from 'randomcolor';
 import { GROUP_NOT_FOUND } from 'src/errors/errors.constants';
-import { Expose } from '../../modules/prisma/prisma.interface';
-import { PrismaService } from '../prisma/prisma.service';
+import { Expose } from '../../providers/prisma/prisma.interface';
+import { PrismaService } from '../../providers/prisma/prisma.service';
 
 @Injectable()
 export class GroupsService {

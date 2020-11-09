@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { users } from '@prisma/client';
 import { MFA_PHONE_OR_TOKEN_REQUIRED } from '../../errors/errors.constants';
-import { Expose } from '../../modules/prisma/prisma.interface';
+import { Expose } from '../../providers/prisma/prisma.interface';
 import { Scopes } from '../auth/scope.decorator';
 import {
   EnableSmsMfaDto,

@@ -20,12 +20,12 @@ import {
   USER_NOT_FOUND,
 } from '../../errors/errors.constants';
 import { safeEmail } from '../../helpers/safe-email';
-import { Expose } from '../../modules/prisma/prisma.interface';
+import { Expose } from '../../providers/prisma/prisma.interface';
 import { AuthService } from '../auth/auth.service';
-import { EmailService } from '../email/email.service';
-import { PrismaService } from '../prisma/prisma.service';
-import { MERGE_ACCOUNTS_TOKEN } from '../tokens/tokens.constants';
-import { TokensService } from '../tokens/tokens.service';
+import { EmailService } from '../../providers/email/email.service';
+import { PrismaService } from '../../providers/prisma/prisma.service';
+import { MERGE_ACCOUNTS_TOKEN } from '../../providers/tokens/tokens.constants';
+import { TokensService } from '../../providers/tokens/tokens.service';
 import { PasswordUpdateInput } from './users.interface';
 
 @Injectable()

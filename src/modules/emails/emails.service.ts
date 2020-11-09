@@ -15,9 +15,9 @@ import {
   UNAUTHORIZED_RESOURCE,
 } from 'src/errors/errors.constants';
 import { safeEmail } from '../../helpers/safe-email';
-import { Expose } from '../../modules/prisma/prisma.interface';
+import { Expose } from '../../providers/prisma/prisma.interface';
 import { AuthService } from '../auth/auth.service';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../../providers/prisma/prisma.service';
 import { UsersService } from '../users/users.service';
 
 @Injectable()

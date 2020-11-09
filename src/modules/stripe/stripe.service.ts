@@ -16,7 +16,7 @@ import {
   SUBSCRIPTION_NOT_FOUND,
 } from 'src/errors/errors.constants';
 import Stripe from 'stripe';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../../providers/prisma/prisma.service';
 
 @Injectable()
 export class StripeService {
