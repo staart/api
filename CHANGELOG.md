@@ -1,3 +1,13 @@
+## [v3.1.2](https://github.com/staart/api/compare/v3.1.1...v3.1.2) (2020-11-10)
+
+### ♻️ Updates
+
+- [`8e896920`](https://github.com/staart/api/commit/8e896920)  Add configuration for retries
+
+### ⬆️ Dependency updates
+
+- [`c03fb8d8`](https://github.com/staart/api/commit/c03fb8d8)  Update aws-sdk, stripe
+
 ## [v3.1.1](https://github.com/staart/api/compare/v3.1.0...v3.1.1) (2020-11-09)
 
 ### ♻️ Updates
