@@ -29,6 +29,7 @@ export interface Configuration {
   email: {
     name: string;
     from: string;
+    retries: number;
     ses?: {
       accessKeyId: string;
       secretAccessKey: string;
@@ -45,7 +46,12 @@ export interface Configuration {
     };
   };
 
+  webhooks: {
+    retries: number;
+  };
+
   sms: {
+    retries: number;
     smsServiceName: string;
     twilioAccountSid: string;
     twilioAuthToken: string;

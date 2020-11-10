@@ -46,7 +46,7 @@ export class MailService {
                 options.from ?? `"${this.config.name}" <${this.config.from}>`,
             }),
           {
-            retries: 3,
+            retries: this.configService.get<number>('email.retries') ?? 3,
             onFailedAttempt: (error) => {
               this.logger.error(
                 `Mail to ${options.to} failed, retrying (${error.retriesLeft} attempts left)`,

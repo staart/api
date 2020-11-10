@@ -4,6 +4,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import {
   webhooks,
   webhooksCreateInput,
@@ -27,7 +28,10 @@ export class WebhooksService {
   private readonly logger = new Logger(WebhooksService.name);
   private queue = new PQueue({ concurrency: 1 });
 
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private configService: ConfigService,
+  ) {}
 
   async createWebhook(
     groupId: number,
@@ -156,7 +160,8 @@ export class WebhooksService {
           this.queue
             .add(() =>
               pRetry(() => this.callWebhook(webhook, event), {
-                retries: 3,
+                retries:
+                  this.configService.get<number>('webhooks.retries') ?? 3,
                 onFailedAttempt: (error) => {
                   this.logger.error(
                     `Triggering webhoook failed, retrying (${error.retriesLeft} attempts left)`,

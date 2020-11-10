@@ -28,7 +28,7 @@ export class TwilioService {
     this.queue
       .add(() =>
         pRetry(() => this.sendSms(options), {
-          retries: 3,
+          retries: this.configService.get<number>('sms.retries') ?? 3,
           onFailedAttempt: (error) => {
             this.logger.error(
               `SMS to ${options.to} failed, retrying (${error.retriesLeft} attempts left)`,

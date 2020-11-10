@@ -33,6 +33,7 @@ const configuration: Configuration = {
   email: {
     name: process.env.EMAIL_NAME ?? 'Staart',
     from: process.env.EMAIL_FROM ?? '',
+    retries: int(process.env.EMAIL_FAIL_RETRIES, 3),
     ses: {
       accessKeyId: process.env.EMAIL_SES_ACCESS_KEY_ID ?? '',
       secretAccessKey: process.env.EMAIL_SES_SECRET_ACCESS_KEY ?? '',
@@ -48,7 +49,11 @@ const configuration: Configuration = {
       },
     },
   },
+  webhooks: {
+    retries: int(process.env.WEBHOOK_FAIL_RETRIES, 3),
+  },
   sms: {
+    retries: int(process.env.SMS_FAIL_RETRIES, 3),
     smsServiceName: process.env.SMS_SERVICE_NAME ?? '',
     twilioAccountSid: process.env.TWILIO_ACCOUNT_SID ?? '',
     twilioAuthToken: process.env.TWILIO_AUTH_TOKEN ?? '',
