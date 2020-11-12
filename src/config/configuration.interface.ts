@@ -1,3 +1,4 @@
+import { ApiKeyAuth, BasicAuth } from '@elastic/elasticsearch/lib/pool';
 import Stripe from 'stripe';
 
 export interface Configuration {
@@ -49,6 +50,7 @@ export interface Configuration {
   elasticSearch: {
     node: string;
     retries: number;
+    auth?: BasicAuth | ApiKeyAuth;
     aws?: {
       accessKeyId: string;
       secretAccessKey: string;

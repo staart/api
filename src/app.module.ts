@@ -32,6 +32,7 @@ import { StripeModule } from './modules/stripe/stripe.module';
 import { TasksModule } from './providers/tasks/tasks.module';
 import { UsersModule } from './modules/users/users.module';
 import { WebhooksModule } from './modules/webhooks/webhooks.module';
+import { ElasticSearchModule } from './providers/elasticsearch/elasticsearch.module';
 
 @Module({
   imports: [
@@ -61,6 +62,7 @@ import { WebhooksModule } from './modules/webhooks/webhooks.module';
     StripeModule,
     AuditLogsModule,
     WebhooksModule,
+    ElasticSearchModule,
   ],
   providers: [
     {

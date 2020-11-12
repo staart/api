@@ -2,6 +2,8 @@ import { Client } from '@elastic/elasticsearch';
 import { Index } from '@elastic/elasticsearch/api/requestParams';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import createAwsElasticsearchConnector from 'aws-elasticsearch-connector';
+import AWS from 'aws-sdk';
 import PQueue from 'p-queue';
 import pRetry from 'p-retry';
 import { Configuration } from '../../config/configuration.interface';
@@ -16,12 +18,19 @@ export class ElasticSearchService {
     const config = this.configService.get<Configuration['elasticSearch']>(
       'elasticSearch',
     );
-    if (config.aws?.accessKeyId)
+    if (config.aws?.accessKeyId) {
+      AWS.config.update({
+        accessKeyId: config.aws.accessKeyId,
+        secretAccessKey: config.aws.secretAccessKey,
+        region: config.aws.region,
+      });
       this.client = new Client({
+        ...createAwsElasticsearchConnector(AWS.config),
         node: config.node,
       });
-    else
+    } else
       this.client = new Client({
+        auth: config.auth,
         node: config.node,
       });
   }

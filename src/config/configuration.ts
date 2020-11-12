@@ -33,6 +33,21 @@ const configuration: Configuration = {
   elasticSearch: {
     node: process.env.ELASTICSEARCH_NODE,
     retries: int(process.env.ELASTICSEARCH_FAIL_RETRIES, 3),
+    auth: process.env.ELASTICSEARCH_AUTH_USERNAME
+      ? {
+          username: process.env.ELASTICSEARCH_AUTH_USERNAME,
+          password: process.env.ELASTICSEARCH_AUTH_PASSWORD,
+        }
+      : process.env.ELASTICSEARCH_AUTH_API_KEY
+      ? process.env.ELASTICSEARCH_AUTH_API_KEY_ID
+        ? {
+            apiKey: {
+              api_key: process.env.ELASTICSEARCH_AUTH_API_KEY,
+              id: process.env.ELASTICSEARCH_AUTH_API_KEY_ID,
+            },
+          }
+        : { apiKey: process.env.ELASTICSEARCH_AUTH_API_KEY }
+      : undefined,
     aws: {
       accessKeyId: process.env.ELASTICSEARCH_AWS_ACCESS_KEY_ID ?? '',
       secretAccessKey: process.env.ELASTICSEARCH_AWS_SECRET_ACCESS_KEY ?? '',
