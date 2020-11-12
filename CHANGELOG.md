@@ -1,3 +1,9 @@
+## [v3.2.0](https://github.com/staart/api/compare/v3.1.2...v3.2.0) (2020-11-12)
+
+### ✨ New features
+
+- [`4631bbb8`](https://github.com/staart/api/commit/4631bbb8)  Add ElasticSearch service
+
 ## [v3.1.2](https://github.com/staart/api/compare/v3.1.1...v3.1.2) (2020-11-10)
 
 ### ♻️ Updates
