@@ -30,6 +30,15 @@ const configuration: Configuration = {
     unusedRefreshTokenExpiryDays: int(process.env.DELETE_EXPIRED_SESSIONS, 30),
     inactiveUserDeleteDays: int(process.env.INACTIVE_USER_DELETE_DAYS, 30),
   },
+  elasticSearch: {
+    node: process.env.ELASTICSEARCH_NODE,
+    retries: int(process.env.ELASTICSEARCH_FAIL_RETRIES, 3),
+    aws: {
+      accessKeyId: process.env.ELASTICSEARCH_AWS_ACCESS_KEY_ID ?? '',
+      secretAccessKey: process.env.ELASTICSEARCH_AWS_SECRET_ACCESS_KEY ?? '',
+      region: process.env.ELASTICSEARCH_AWS_REGION ?? '',
+    },
+  },
   email: {
     name: process.env.EMAIL_NAME ?? 'Staart',
     from: process.env.EMAIL_FROM ?? '',

@@ -46,6 +46,16 @@ export interface Configuration {
     };
   };
 
+  elasticSearch: {
+    node: string;
+    retries: number;
+    aws?: {
+      accessKeyId: string;
+      secretAccessKey: string;
+      region: string;
+    };
+  };
+
   webhooks: {
     retries: number;
   };
