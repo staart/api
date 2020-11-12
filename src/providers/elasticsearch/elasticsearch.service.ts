@@ -17,7 +17,9 @@ export class ElasticSearchService {
       'elasticSearch',
     );
     if (config.aws?.accessKeyId)
-      this.client = new Client({ node: config.node });
+      this.client = new Client({
+        node: config.node,
+      });
     else
       this.client = new Client({
         node: config.node,

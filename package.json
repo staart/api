@@ -32,6 +32,7 @@
     "@nestjs/schedule": "^0.4.1",
     "@nestjs/swagger": "^4.7.0",
     "@staart/mustache-markdown": "^3.0.3",
+    "aws-elasticsearch-connector": "^9.0.0",
     "aws-sdk": "^2.788.0",
     "bcrypt": "^5.0.0",
     "class-transformer": "^0.3.1",
