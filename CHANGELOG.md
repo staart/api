@@ -1,3 +1,14 @@
+## [v3.3.1](https://github.com/staart/api/compare/v3.3.0...v3.3.1) (2020-11-13)
+
+### ♻️ Updates
+
+- [`841ffef9`](https://github.com/staart/api/commit/841ffef9)  Add endpoints for API key logs
+- [`f50a401c`](https://github.com/staart/api/commit/f50a401c)  Support logging authenticated requests
+
+### 🐛 Bug fixes
+
+- [`b9b30146`](https://github.com/staart/api/commit/b9b30146)  Ensure API key is a UUID
+
 ## [v3.3.0](https://github.com/staart/api/compare/v3.2.0...v3.3.0) (2020-11-13)
 
 ### ✨ New features
