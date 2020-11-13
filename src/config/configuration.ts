@@ -99,6 +99,12 @@ const configuration: Configuration = {
         : true,
     deleteOldLogsDays: int(process.env.TRACKING_DELETE_OLD_LOGS_DAYS, 90),
   },
+  slack: {
+    token: process.env.SLACK_TOKEN ?? '',
+    slackApiUrl: process.env.SLACK_API_URL,
+    rejectRateLimitedCalls: !!process.env.SLACK_REJECT_RATE_LIMITED_CALLS,
+    retries: int(process.env.SLACK_FAIL_RETRIES, 3),
+  },
 };
 
 const configFunction: ConfigFactory<Configuration> = () => configuration;

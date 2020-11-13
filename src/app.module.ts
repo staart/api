@@ -33,6 +33,7 @@ import { ElasticSearchModule } from './providers/elasticsearch/elasticsearch.mod
 import { GeolocationModule } from './providers/geolocation/geolocation.module';
 import { MailModule } from './providers/mail/mail.module';
 import { PrismaModule } from './providers/prisma/prisma.module';
+import { SlackModule } from './providers/slack/slack.module';
 import { TasksModule } from './providers/tasks/tasks.module';
 
 @Module({
@@ -64,6 +65,7 @@ import { TasksModule } from './providers/tasks/tasks.module';
     AuditLogsModule,
     WebhooksModule,
     ElasticSearchModule,
+    SlackModule,
   ],
   providers: [
     {

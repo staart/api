@@ -84,4 +84,11 @@ export interface Configuration {
     deleteOldLogs: boolean;
     deleteOldLogsDays: number;
   };
+
+  slack: {
+    token: string;
+    slackApiUrl?: string;
+    rejectRateLimitedCalls?: boolean;
+    retries: number;
+  };
 }
