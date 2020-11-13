@@ -130,6 +130,10 @@ const configuration: Configuration = {
       : process.env.FIREBASE_SERVICE_ACCOUNT_KEY,
     databaseUrl: process.env.FIREBASE_DATABASE_URL,
   },
+  github: {
+    auth: process.env.GITHUB_AUTH,
+    userAgent: process.env.GITHUB_USER_AGENT,
+  },
 };
 
 const configFunction: ConfigFactory<Configuration> = () => configuration;

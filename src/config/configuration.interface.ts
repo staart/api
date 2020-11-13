@@ -113,7 +113,12 @@ export interface Configuration {
   firebase: {
     serviceAccountKey:
       | string
-    | { projectId?: string; clientEmail?: string; privateKey?: string };
+      | { projectId?: string; clientEmail?: string; privateKey?: string };
     databaseUrl: string;
+  };
+
+  github: {
+    auth: string;
+    userAgent?: string;
   };
 }
