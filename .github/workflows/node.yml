@@ -15,10 +15,6 @@ jobs:
         uses: actions/setup-node@v2.1.2
         with:
           node-version: 14
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v1
-        with:
-          languages: javascript
       - name: Cache node modules
         uses: actions/cache@v2
         env:
@@ -36,8 +32,6 @@ jobs:
         run: npm run build
       - name: Run tests
         run: npm run test
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v1
       - name: Release
         run: npx semantic-release
         env:
