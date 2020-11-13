@@ -29,10 +29,7 @@ export class StaartStrategy extends PassportStrategy(StaartStrategyName) {
 
   async authenticate(request: Request) {
     /** API key authorization */
-    let apiKey =
-      request.query['api_key'] ??
-      request.headers['x-api-key'] ??
-      request.headers.authorization;
+    let apiKey = request.query['api_key'] ?? request.headers.authorization;
     if (typeof apiKey === 'string') {
       if (apiKey.startsWith('Bearer ')) apiKey = apiKey.replace('Bearer ', '');
       try {
@@ -68,7 +65,7 @@ export class StaartStrategy extends PassportStrategy(StaartStrategyName) {
     }
 
     /** Bearer JWT authorization */
-    let bearerToken = request.headers.authorization;
+    let bearerToken = request.query['token'] ?? request.headers.authorization;
     if (typeof bearerToken !== 'string')
       return this.fail('No token found', 401);
     if (bearerToken.startsWith('Bearer '))

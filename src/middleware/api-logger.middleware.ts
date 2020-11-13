@@ -22,13 +22,13 @@ export class ApiLoggerMiddleware implements NestMiddleware {
         method: req.method,
         protocol: req.protocol,
         path: req.path,
-        authorization: req.headers.authorization ?? req.headers['x-api-key'],
+        authorization: req.headers.authorization,
         duration: new Date().getTime() - date.getTime(),
         status: res.statusCode,
       };
       if (config.mode === 'all')
         this.elasticSearchService.index(config.index, obj);
-      else if (config.mode === 'api-key' && req.headers['x-api-key'])
+      else if (config.mode === 'api-key' && req.headers.authorization)
         this.elasticSearchService.index(config.index, obj);
     });
     next();

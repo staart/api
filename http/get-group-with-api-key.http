@@ -3,4 +3,4 @@
 
 GET {{baseUrl}}/groups/{{groupId}}
 content-type: application/json
-X-Api-Key: {{$dotenv HTTP_TEST_API_KEY}}
+Authorization: Bearer {{$dotenv HTTP_TEST_API_KEY}}
