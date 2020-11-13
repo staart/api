@@ -122,11 +122,11 @@ export class ApiKeysService {
   }
 
   async getApiKeyFromKey(key: string): Promise<Expose<apiKeys>> {
+    if (this.lru.has(key)) return this.lru.get(key);
     const apiKey = await this.prisma.apiKeys.findFirst({
       where: { apiKey: key },
     });
     if (!apiKey) throw new NotFoundException(API_KEY_NOT_FOUND);
-    if (this.lru.has(key)) return this.lru.get(key);
     this.lru.set(key, apiKey);
     return this.prisma.expose<apiKeys>(apiKey);
   }
