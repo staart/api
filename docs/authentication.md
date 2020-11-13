@@ -14,6 +14,8 @@ All of these methods also support multi-factor authentication (MFA) using:
 
 On successful login, users receive an access token and a refresh token. The access token is a JSON Web Token (JWT) valid for one hour, and the refresh token is a UUID stored in the `sessions` table in the database with no expiry. Users can manually invalidate the refresh token by deleting the corresponding session, and sessions are auto-deleted after 30 days of inactivity. Each access token includes the scopes a user has access to. Users can also alternately create API keys with scopes for their account or any groups they are a member of.
 
+Bearer authentication is used to specify the access token or API key, using the `Authorization` header.
+
 ## Routes
 
 ### Public routes
