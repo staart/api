@@ -10,7 +10,7 @@ export const int = (val: string | undefined, num: number): number =>
 const configuration: Configuration = {
   frontendUrl: process.env.FRONTEND_URL ?? 'http://localhost:3000',
   meta: {
-    totpServiceName: process.env.TOPT_SERVICE_NAME ?? 'Staart',
+    appName: process.env.APP_NAME ?? 'Staart',
     domainVerificationFile:
       process.env.DOMAIN_VERIFICATION_FILE ?? 'staart-verify.txt',
   },
@@ -22,7 +22,7 @@ const configuration: Configuration = {
     saltRounds: int(process.env.SALT_ROUNDS, 10),
     jwtSecret: process.env.JWT_SECRET ?? 'staart',
     totpWindowPast: int(process.env.TOTP_WINDOW_PAST, 1),
-    totpWindowFuture: int(process.env.TOTP_WINDOW_PAST, 0),
+    totpWindowFuture: int(process.env.TOTP_WINDOW_FUTURE, 0),
     mfaTokenExpiry: process.env.MFA_TOKEN_EXPIRY ?? '10m',
     mergeUsersTokenExpiry: process.env.MERGE_USERS_TOKEN_EXPIRY ?? '30m',
     accessTokenExpiry: process.env.ACCESS_TOKEN_EXPIRY ?? '1h',
@@ -78,7 +78,6 @@ const configuration: Configuration = {
   },
   sms: {
     retries: int(process.env.SMS_FAIL_RETRIES, 3),
-    smsServiceName: process.env.SMS_SERVICE_NAME ?? '',
     twilioAccountSid: process.env.TWILIO_ACCOUNT_SID ?? '',
     twilioAuthToken: process.env.TWILIO_AUTH_TOKEN ?? '',
   },

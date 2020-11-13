@@ -5,7 +5,7 @@ export interface Configuration {
   frontendUrl: string;
 
   meta: {
-    totpServiceName: string;
+    appName: string;
     domainVerificationFile: string;
   };
 
@@ -64,7 +64,6 @@ export interface Configuration {
 
   sms: {
     retries: number;
-    smsServiceName: string;
     twilioAccountSid: string;
     twilioAuthToken: string;
   };

@@ -283,7 +283,7 @@ export class AuthService {
     });
     const otpauth = this.authenticator.keyuri(
       userId.toString(),
-      this.configService.get<string>('meta.totpServiceName') ?? '',
+      this.configService.get<string>('meta.appName') ?? '',
       secret,
     );
     return qrcode.toDataURL(otpauth);
@@ -527,7 +527,7 @@ export class AuthService {
       this.twilioService.send({
         to: user.twoFactorPhone,
         body: `${this.getOneTimePassword(user.twoFactorSecret)} is your ${
-          this.configService.get<string>('sms.smsServiceName') ?? ''
+          this.configService.get<string>('meta.appName') ?? ''
         } verification code.`,
       });
     }
