@@ -9,6 +9,7 @@ import { ApiKeysService } from '../api-keys/api-keys.service';
 import { LOGIN_ACCESS_TOKEN } from '../../providers/tokens/tokens.constants';
 import { TokensService } from '../../providers/tokens/tokens.service';
 import { AccessTokenClaims, AccessTokenParsed } from './auth.interface';
+import { validate } from 'uuid';
 
 class StaartStrategyName extends Strategy {
   name = 'staart';
@@ -32,36 +33,39 @@ export class StaartStrategy extends PassportStrategy(StaartStrategyName) {
     let apiKey = request.query['api_key'] ?? request.headers.authorization;
     if (typeof apiKey === 'string') {
       if (apiKey.startsWith('Bearer ')) apiKey = apiKey.replace('Bearer ', '');
-      try {
-        const apiKeyDetails = await this.apiKeyService.getApiKeyFromKey(apiKey);
-        const referer = request.headers.referer;
-        if (Array.isArray(apiKeyDetails.referrerRestrictions) && referer) {
-          let referrerRestrictionsMet = !apiKeyDetails.referrerRestrictions
-            .length;
-          apiKeyDetails.referrerRestrictions.forEach((restriction) => {
-            referrerRestrictionsMet =
-              referrerRestrictionsMet ||
-              minimatch(referer, restriction as string);
-          });
-          if (!referrerRestrictionsMet)
-            return this.fail('Referrer restrictions not met', 401);
-        }
-        if (
-          Array.isArray(apiKeyDetails.ipRestrictions) &&
-          apiKeyDetails.ipRestrictions.length
-        ) {
-          const ipAddress = getClientIp(request);
+      if (validate(apiKey))
+        try {
+          const apiKeyDetails = await this.apiKeyService.getApiKeyFromKey(
+            apiKey,
+          );
+          const referer = request.headers.referer;
+          if (Array.isArray(apiKeyDetails.referrerRestrictions) && referer) {
+            let referrerRestrictionsMet = !apiKeyDetails.referrerRestrictions
+              .length;
+            apiKeyDetails.referrerRestrictions.forEach((restriction) => {
+              referrerRestrictionsMet =
+                referrerRestrictionsMet ||
+                minimatch(referer, restriction as string);
+            });
+            if (!referrerRestrictionsMet)
+              return this.fail('Referrer restrictions not met', 401);
+          }
           if (
-            !ipRangeCheck(ipAddress, apiKeyDetails.ipRestrictions as string[])
-          )
-            return this.fail('IP address restrictions not met', 401);
-        }
-        return this.safeSuccess({
-          type: 'api-key',
-          id: apiKeyDetails.id,
-          scopes: apiKeyDetails.scopes as string[],
-        });
-      } catch (error) {}
+            Array.isArray(apiKeyDetails.ipRestrictions) &&
+            apiKeyDetails.ipRestrictions.length
+          ) {
+            const ipAddress = getClientIp(request);
+            if (
+              !ipRangeCheck(ipAddress, apiKeyDetails.ipRestrictions as string[])
+            )
+              return this.fail('IP address restrictions not met', 401);
+          }
+          return this.safeSuccess({
+            type: 'api-key',
+            id: apiKeyDetails.id,
+            scopes: apiKeyDetails.scopes as string[],
+          });
+        } catch (error) {}
     }
 
     /** Bearer JWT authorization */
