@@ -120,6 +120,16 @@ const configuration: Configuration = {
     apiKey: process.env.CLOUDINARY_API_KEY ?? '',
     apiSecret: process.env.CLOUDINARY_API_SECRET ?? '',
   },
+  firebase: {
+    serviceAccountKey: process.env.FIREBASE_PROJECT_ID
+      ? {
+          projectId: process.env.FIREBASE_PROJECT_ID,
+          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+          privateKey: process.env.FIREBASE_PRIVATE_KEY,
+        }
+      : process.env.FIREBASE_SERVICE_ACCOUNT_KEY,
+    databaseUrl: process.env.FIREBASE_DATABASE_URL,
+  },
 };
 
 const configFunction: ConfigFactory<Configuration> = () => configuration;

@@ -32,6 +32,7 @@ import { AirtableModule } from './providers/airtable/airtable.module';
 import { CloudinaryModule } from './providers/cloudinary/cloudinary.module';
 import { DnsModule } from './providers/dns/dns.module';
 import { ElasticSearchModule } from './providers/elasticsearch/elasticsearch.module';
+import { FirebaseModule } from './providers/firebase/firebase.module';
 import { GeolocationModule } from './providers/geolocation/geolocation.module';
 import { MailModule } from './providers/mail/mail.module';
 import { PrismaModule } from './providers/prisma/prisma.module';
@@ -72,6 +73,7 @@ import { TasksModule } from './providers/tasks/tasks.module';
     AirtableModule,
     S3Module,
     CloudinaryModule,
+    FirebaseModule,
   ],
   providers: [
     {

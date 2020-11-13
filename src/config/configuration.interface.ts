@@ -109,4 +109,11 @@ export interface Configuration {
     apiKey: string;
     apiSecret: string;
   };
+
+  firebase: {
+    serviceAccountKey:
+      | string
+    | { projectId?: string; clientEmail?: string; privateKey?: string };
+    databaseUrl: string;
+  };
 }
