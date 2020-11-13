@@ -23,6 +23,7 @@ import { Expose } from '../../providers/prisma/prisma.interface';
 import { PrismaService } from '../../providers/prisma/prisma.service';
 import { StripeService } from '../stripe/stripe.service';
 import { TokensService } from '../../providers/tokens/tokens.service';
+import { ElasticSearchService } from '../../providers/elasticsearch/elasticsearch.service';
 
 @Injectable()
 export class ApiKeysService {
@@ -35,6 +36,7 @@ export class ApiKeysService {
     private tokensService: TokensService,
     private stripeService: StripeService,
     private configService: ConfigService,
+    private elasticSearchService: ElasticSearchService,
   ) {}
 
   async createApiKeyForGroup(
@@ -240,6 +242,103 @@ export class ApiKeysService {
     });
     this.lru.delete(testApiKey.apiKey);
     return this.prisma.expose<apiKeys>(apiKey);
+  }
+
+  async getApiKeyLogsForGroup(
+    groupId: number,
+    id: number,
+    params: {
+      take?: number;
+      cursor?: { id?: number };
+      where?: { after?: string };
+    },
+  ) {
+    const testApiKey = await this.prisma.apiKeys.findOne({
+      where: { id },
+    });
+    if (!testApiKey) throw new NotFoundException(API_KEY_NOT_FOUND);
+    if (testApiKey.groupId !== groupId)
+      throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
+    return this.getApiLogsFromKey(testApiKey.apiKey, params);
+  }
+  async getApiKeyLogsForUser(
+    userId: number,
+    id: number,
+    params: {
+      take?: number;
+      cursor?: { id?: number };
+      where?: { after?: string };
+    },
+  ) {
+    const testApiKey = await this.prisma.apiKeys.findOne({
+      where: { id },
+    });
+    if (!testApiKey) throw new NotFoundException(API_KEY_NOT_FOUND);
+    if (testApiKey.userId !== userId)
+      throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
+    return this.getApiLogsFromKey(testApiKey.apiKey, params);
+  }
+
+  private async getApiLogsFromKey(
+    apiKey: string,
+    params: {
+      take?: number;
+      cursor?: { id?: number };
+      where?: { after?: string };
+    },
+  ): Promise<Record<string, any>[]> {
+    const now = new Date();
+    now.setDate(
+      now.getDate() -
+        this.configService.get<number>('tracking.deleteOldLogsDays'),
+    );
+    const result = await this.elasticSearchService.search({
+      index: this.configService.get<string>('tracking.index'),
+      from: params.cursor?.id,
+      body: {
+        query: {
+          bool: {
+            must: [
+              {
+                match: {
+                  authorization: apiKey,
+                },
+              },
+              {
+                range: {
+                  date: {
+                    gte: params.where?.after
+                      ? new Date(
+                          new Date().getTime() -
+                            new Date(params.where?.after).getTime(),
+                        )
+                      : now,
+                  },
+                },
+              },
+            ],
+          },
+        },
+        sort: [
+          {
+            date: { order: 'desc' },
+          },
+        ],
+        size: params.take ?? 100,
+      },
+    });
+    try {
+      return result.body.hits.hits.map(
+        (item: {
+          _index: string;
+          _type: '_doc';
+          _id: string;
+          _score: any;
+          _source: Record<string, any>;
+        }) => ({ ...item._source, id: item._id }),
+      );
+    } catch (error) {}
+    return [];
   }
 
   private cleanScopesForGroup(

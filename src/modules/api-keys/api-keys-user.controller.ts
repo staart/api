@@ -106,4 +106,20 @@ export class ApiKeyUserController {
   ): Promise<Expose<apiKeys>> {
     return this.apiKeysService.deleteApiKeyForUser(userId, Number(id));
   }
+
+  @Get(':id/logs')
+  @Scopes('user-{userId}:read-api-key-logs-*')
+  async getLogs(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Param('id', ParseIntPipe) id: number,
+    @Query('take', OptionalIntPipe) take?: number,
+    @Query('cursor', CursorPipe) cursor?: Record<string, number | string>,
+    @Query('where', WherePipe) where?: Record<string, number | string>,
+  ): Promise<Record<string, any>[]> {
+    return this.apiKeysService.getApiKeyLogsForUser(userId, id, {
+      take,
+      cursor,
+      where,
+    });
+  }
 }

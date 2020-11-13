@@ -1,5 +1,6 @@
 import { Client } from '@elastic/elasticsearch';
-import { Index } from '@elastic/elasticsearch/api/requestParams';
+import { Index, Search } from '@elastic/elasticsearch/api/requestParams';
+import { TransportRequestOptions } from '@elastic/elasticsearch/lib/Transport';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import createAwsElasticsearchConnector from 'aws-elasticsearch-connector';
@@ -53,6 +54,13 @@ export class ElasticSearchService {
         )
         .then(() => {})
         .catch(() => {});
+  }
+
+  search(
+    params?: Search<Record<string, any>>,
+    options?: TransportRequestOptions,
+  ) {
+    if (this.client) return this.client.search(params, options);
   }
 
   /**

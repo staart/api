@@ -106,4 +106,21 @@ export class ApiKeyGroupController {
   ): Promise<Expose<apiKeys>> {
     return this.apiKeysService.deleteApiKeyForGroup(groupId, Number(id));
   }
+
+  @Get(':id/logs')
+  @Scopes('group-{groupId}:read-api-key-logs-*')
+  async getLogs(
+    @Param('groupId', ParseIntPipe) groupId: number,
+    @Param('id', ParseIntPipe) id: number,
+    @Query('take', OptionalIntPipe) take?: number,
+    @Query('cursor', CursorPipe) cursor?: Record<string, number | string>,
+    @Query('where', WherePipe) where?: Record<string, number | string>,
+  ): Promise<Record<string, any>[]> {
+    console.log('where', where);
+    return this.apiKeysService.getApiKeyLogsForGroup(groupId, id, {
+      take,
+      cursor,
+      where,
+    });
+  }
 }
