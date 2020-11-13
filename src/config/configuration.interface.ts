@@ -79,7 +79,7 @@ export interface Configuration {
   };
 
   tracking: {
-    mode: 'all' | 'api-key';
+    mode: 'all' | 'api-key' | 'authenticated';
     index: string;
     deleteOldLogs: boolean;
     deleteOldLogsDays: number;

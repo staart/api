@@ -89,7 +89,9 @@ const configuration: Configuration = {
     paymentMethodTypes: ['card'],
   },
   tracking: {
-    mode: process.env.TRACKING_MODE === 'all' ? 'all' : 'api-key',
+    mode:
+      (process.env.TRACKING_MODE as Configuration['tracking']['mode']) ??
+      'api-key',
     index: process.env.TRACKING_INDEX ?? 'staart-logs',
     deleteOldLogs:
       process.env.TRACKING_DELETE_OLD_LOGS !== undefined

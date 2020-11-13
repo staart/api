@@ -1,6 +1,7 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NextFunction, Request, Response } from 'express';
+import { validate } from 'uuid';
 import { Configuration } from '../config/configuration.interface';
 import { ElasticSearchService } from '../providers/elasticsearch/elasticsearch.service';
 
@@ -28,7 +29,12 @@ export class ApiLoggerMiddleware implements NestMiddleware {
       };
       if (config.mode === 'all')
         this.elasticSearchService.index(config.index, obj);
-      else if (config.mode === 'api-key' && req.headers.authorization)
+      else if (config.mode === 'authenticated' && req.headers.authorization)
+        this.elasticSearchService.index(config.index, obj);
+      else if (
+        config.mode === 'api-key' &&
+        validate(req.headers.authorization?.replace('Bearer ', ''))
+      )
         this.elasticSearchService.index(config.index, obj);
     });
     next();
