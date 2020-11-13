@@ -2,35 +2,6 @@
 
 Staart API supports sending transactions emails. You can send emails using any SMTP provider or [nodemailer/nodemailer](https://github.com/nodemailer/nodemailer)-supported configuration, such as AWS SES or `sendmail`.
 
-## Configuration
-
-You can set the following environment variables to specify the name and from email address:
-
-| Environment variable | Description         |
-| -------------------- | ------------------- |
-| `EMAIL_NAME`         | Name of the service |
-| `EMAIL_FROM`         | From email address  |
-
-If you want to use SMTP, you should additionally set the configuration:
-
-| Environment variable | Description      |
-| -------------------- | ---------------- |
-| `EMAIL_HOST`         | Host             |
-| `EMAIL_PORT`         | Port             |
-| `EMAIL_SECURE`       | Secure (boolean) |
-| `EMAIL_USER`         | Username         |
-| `EMAIL_PASSWORD`     | Password         |
-
-Alternately, if you want to use AWS SES, you should set these instead (note that you can also use SMTP with SES):
-
-| Environment variable          | Description    |
-| ----------------------------- | -------------- |
-| `EMAIL_SES_ACCESS_KEY_ID`     | AWS access key |
-| `EMAIL_SES_SECRET_ACCESS_KEY` | AWS secret key |
-| `EMAIL_SES_REGION`            | AWS region     |
-
-To generate an access/secret key pair, you can create an IAM user with the permission `AmazonSESFullAccess`. For more details, read the article [Creating an IAM user in your AWS account](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html#id_users_create_console) on the AWS website.
-
 ## Usage
 
 ### Templates
