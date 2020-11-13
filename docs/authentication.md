@@ -1,8 +1,22 @@
 # Authentication
 
-To authenticate users, an email/password combination is used. Alternate options include passwordless login, two-factor authentication, and custom SAML-based login. On successful login, an access token and refresh token is provided. The access token is a JWT with a default expiration period of 1 hour, and the refresh token is a UUID stored in the database that never expires (but can be deleted by the user).
+Users can log in to Staart API using several methods:
 
-## Public routes
+- Login with an email/password combination
+- Passwordless login (only enter your email and receive a login link)
+- Custom SAML-based login (coming soon)
+
+All of these methods also support multi-factor authentication (MFA) using:
+
+- TOTP-based application
+- SMS message
+- Email
+
+On successful login, users receive an access token and a refresh token. The access token is a JSON Web Token (JWT) valid for one hour, and the refresh token is a UUID stored in the `sessions` table in the database with no expiry. Users can manually invalidate the refresh token by deleting the corresponding session, and sessions are auto-deleted after 30 days of inactivity. Each access token includes the scopes a user has access to. Users can also alternately create API keys with scopes for their account or any groups they are a member of.
+
+## Routes
+
+### Public routes
 
 By default, all endpoints required authentication. The `@Public()` decorator can be used on a controller or specific route to skip authentication. By default, all auth routes (for example, logging in and registration) don't require authentication:
 
@@ -29,6 +43,6 @@ export class ExampleController {
 }
 ```
 
-## Under the hood
+#### Under the hood
 
 The `Public()` decorator was proposed in [nestjs/nest/#5598](https://github.com/nestjs/nest/issues/5598) as a solution to the lack of reorderability of Guards in Nest.
