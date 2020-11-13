@@ -1,3 +1,14 @@
+## [v3.4.0](https://github.com/staart/api/compare/v3.3.1...v3.4.0) (2020-11-13)
+
+### ✨ New features
+
+- [`99f17c8e`](https://github.com/staart/api/commit/99f17c8e)  Add Slack module
+- [`bd930bec`](https://github.com/staart/api/commit/bd930bec)  Add Airtable module
+- [`7bc5e7c6`](https://github.com/staart/api/commit/7bc5e7c6)  Add AWS S3 service
+- [`37c1eb8b`](https://github.com/staart/api/commit/37c1eb8b)  Add Cloudinary module
+- [`835eb270`](https://github.com/staart/api/commit/835eb270)  Add Firebase module
+- [`a0eff5a8`](https://github.com/staart/api/commit/a0eff5a8)  Add GitHub module
+
 ## [v3.3.1](https://github.com/staart/api/compare/v3.3.0...v3.3.1) (2020-11-13)
 
 ### ♻️ Updates
