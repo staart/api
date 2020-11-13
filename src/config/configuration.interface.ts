@@ -81,5 +81,7 @@ export interface Configuration {
   tracking: {
     mode: 'all' | 'api-key';
     index: string;
+    deleteOldLogs: boolean;
+    deleteOldLogsDays: number;
   };
 }

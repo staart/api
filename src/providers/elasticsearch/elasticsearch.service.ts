@@ -55,6 +55,35 @@ export class ElasticSearchService {
         .catch(() => {});
   }
 
+  /**
+   * Delete old records from ElasticSearch
+   * @param index - Index
+   * @param days - Number of days ago (e.g., 30 will delete month-old data)
+   */
+  deleteOldRecords = async (index: string, days: number) => {
+    const now = new Date();
+    now.setDate(now.getDate() - days);
+    if (this.client)
+      return this.client.deleteByQuery({
+        index,
+        body: {
+          query: {
+            bool: {
+              must: [
+                {
+                  range: {
+                    date: {
+                      lte: now,
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        },
+      });
+  };
+
   private async indexRecord(
     index: string,
     record: Record<string, any>,

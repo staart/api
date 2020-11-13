@@ -1,6 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { Configuration } from '../../config/configuration.interface';
+import { ElasticSearchService } from '../elasticsearch/elasticsearch.service';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -8,6 +10,7 @@ export class TasksService {
   constructor(
     private prisma: PrismaService,
     private configService: ConfigService,
+    private elasticSearchService: ElasticSearchService,
   ) {}
   private readonly logger = new Logger(TasksService.name);
 
@@ -39,5 +42,17 @@ export class TasksService {
     });
     if (deleted.count)
       this.logger.debug(`Deleted ${deleted.count} inactive users`);
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_3PM)
+  async deleteOldLogs() {
+    const tracking = this.configService.get<Configuration['tracking']>(
+      'tracking',
+    );
+    if (tracking.deleteOldLogs)
+      return this.elasticSearchService.deleteOldRecords(
+        tracking.index,
+        tracking.deleteOldLogsDays,
+      );
   }
 }

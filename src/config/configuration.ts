@@ -91,6 +91,11 @@ const configuration: Configuration = {
   tracking: {
     mode: process.env.TRACKING_MODE === 'all' ? 'all' : 'api-key',
     index: process.env.TRACKING_INDEX ?? 'staart-logs',
+    deleteOldLogs:
+      process.env.TRACKING_DELETE_OLD_LOGS !== undefined
+        ? Boolean(process.env.TRACKING_DELETE_OLD_LOGS)
+        : true,
+    deleteOldLogsDays: int(process.env.TRACKING_DELETE_OLD_LOGS_DAYS, 90),
   },
 };
 
