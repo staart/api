@@ -31,6 +31,7 @@
     "@nestjs/platform-express": "^7.5.1",
     "@nestjs/schedule": "^0.4.1",
     "@nestjs/swagger": "^4.7.0",
+    "@slack/web-api": "^5.13.0",
     "@staart/mustache-markdown": "^3.0.3",
     "aws-elasticsearch-connector": "^9.0.0",
     "aws-sdk": "^2.788.0",
