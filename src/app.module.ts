@@ -34,6 +34,7 @@ import { ElasticSearchModule } from './providers/elasticsearch/elasticsearch.mod
 import { GeolocationModule } from './providers/geolocation/geolocation.module';
 import { MailModule } from './providers/mail/mail.module';
 import { PrismaModule } from './providers/prisma/prisma.module';
+import { S3Module } from './providers/s3/s3.module';
 import { SlackModule } from './providers/slack/slack.module';
 import { TasksModule } from './providers/tasks/tasks.module';
 
@@ -68,6 +69,7 @@ import { TasksModule } from './providers/tasks/tasks.module';
     ElasticSearchModule,
     SlackModule,
     AirtableModule,
+    S3Module,
   ],
   providers: [
     {

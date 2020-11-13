@@ -109,6 +109,12 @@ const configuration: Configuration = {
     apiKey: process.env.AIRTABLE_API_KEY ?? '',
     endpointUrl: process.env.AIRTABLE_ENDPOINT_URL,
   },
+  s3: {
+    accessKeyId: process.env.S3_ACCESS_KEY_ID ?? '',
+    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY ?? '',
+    region: process.env.S3_REGION ?? '',
+    bucket: process.env.S3_BUCKET,
+  },
 };
 
 const configFunction: ConfigFactory<Configuration> = () => configuration;

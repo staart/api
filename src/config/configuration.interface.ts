@@ -96,4 +96,11 @@ export interface Configuration {
     apiKey: string;
     endpointUrl?: string;
   };
+
+  s3: {
+    accessKeyId: string;
+    secretAccessKey: string;
+    region: string;
+    bucket?: string;
+  };
 }
