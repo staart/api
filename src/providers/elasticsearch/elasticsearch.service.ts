@@ -28,28 +28,31 @@ export class ElasticSearchService {
         ...createAwsElasticsearchConnector(AWS.config),
         node: config.node,
       });
-    } else
+    } else if (config.node)
       this.client = new Client({
         auth: config.auth,
         node: config.node,
       });
+    else this.logger.warn('ElasticSearch tracking is not enabled');
   }
 
   index(index: string, record: Record<string, any>, params?: Index) {
-    this.queue
-      .add(() =>
-        pRetry(() => this.indexRecord(index, record, params), {
-          retries: this.configService.get<number>('elasticSearch.retries') ?? 3,
-          onFailedAttempt: (error) => {
-            this.logger.error(
-              `Indexing record failed, retrying (${error.retriesLeft} attempts left)`,
-              error.name,
-            );
-          },
-        }),
-      )
-      .then(() => {})
-      .catch(() => {});
+    if (this.client)
+      this.queue
+        .add(() =>
+          pRetry(() => this.indexRecord(index, record, params), {
+            retries:
+              this.configService.get<number>('elasticSearch.retries') ?? 3,
+            onFailedAttempt: (error) => {
+              this.logger.error(
+                `Indexing record failed, retrying (${error.retriesLeft} attempts left)`,
+                error.name,
+              );
+            },
+          }),
+        )
+        .then(() => {})
+        .catch(() => {});
   }
 
   private async indexRecord(

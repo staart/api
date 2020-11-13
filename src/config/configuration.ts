@@ -88,6 +88,10 @@ const configuration: Configuration = {
     stripeEndpointSecret: process.env.STRIPE_ENDPOINT_SECRET ?? '',
     paymentMethodTypes: ['card'],
   },
+  tracking: {
+    mode: process.env.TRACKING_MODE === 'all' ? 'all' : 'api-key',
+    index: process.env.TRACKING_INDEX ?? 'staart-logs',
+  },
 };
 
 const configFunction: ConfigFactory<Configuration> = () => configuration;

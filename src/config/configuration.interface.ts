@@ -77,4 +77,9 @@ export interface Configuration {
       Stripe.Checkout.SessionCreateParams.PaymentMethodType
     >;
   };
+
+  tracking: {
+    mode: 'all' | 'api-key';
+    index: string;
+  };
 }
