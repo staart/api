@@ -1,3 +1,18 @@
+## [v3.3.0](https://github.com/staart/api/compare/v3.2.0...v3.3.0) (2020-11-13)
+
+### ✨ New features
+
+- [`bbb002f7`](https://github.com/staart/api/commit/bbb002f7)  Log API requests in ElasticSearch
+- [`89b7bd2c`](https://github.com/staart/api/commit/89b7bd2c)  Delete old API logs
+
+### ♻️ Updates
+
+- [`a761d017`](https://github.com/staart/api/commit/a761d017)  Use Authorization header instead of X-Api-Key
+
+### 🐛 Bug fixes
+
+- [`b73cd6aa`](https://github.com/staart/api/commit/b73cd6aa)  Return API key data from LRU if available
+
 ## [v3.2.0](https://github.com/staart/api/compare/v3.1.2...v3.2.0) (2020-11-12)
 
 ### ✨ New features
