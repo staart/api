@@ -13,7 +13,7 @@ import { Configuration } from '../../config/configuration.interface';
 export class ElasticSearchService {
   private logger = new Logger(ElasticSearchService.name);
   private queue = new PQueue({ concurrency: 1 });
-  private client: Client;
+  client?: Client;
 
   constructor(private configService: ConfigService) {
     const config = this.configService.get<Configuration['elasticSearch']>(
