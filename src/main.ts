@@ -13,6 +13,7 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
   app.use(helmet());
+  app.enableCors();
 
   const pkg = JSON.parse(
     await promises.readFile(join('.', 'package.json'), 'utf8'),
