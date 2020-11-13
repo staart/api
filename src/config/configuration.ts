@@ -115,6 +115,11 @@ const configuration: Configuration = {
     region: process.env.S3_REGION ?? '',
     bucket: process.env.S3_BUCKET,
   },
+  cloudinary: {
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME ?? '',
+    apiKey: process.env.CLOUDINARY_API_KEY ?? '',
+    apiSecret: process.env.CLOUDINARY_API_SECRET ?? '',
+  },
 };
 
 const configFunction: ConfigFactory<Configuration> = () => configuration;

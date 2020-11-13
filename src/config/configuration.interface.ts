@@ -103,4 +103,10 @@ export interface Configuration {
     region: string;
     bucket?: string;
   };
+
+  cloudinary: {
+    cloudName: string;
+    apiKey: string;
+    apiSecret: string;
+  };
 }

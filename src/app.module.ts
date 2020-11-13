@@ -29,6 +29,7 @@ import { StripeModule } from './modules/stripe/stripe.module';
 import { UsersModule } from './modules/users/users.module';
 import { WebhooksModule } from './modules/webhooks/webhooks.module';
 import { AirtableModule } from './providers/airtable/airtable.module';
+import { CloudinaryModule } from './providers/cloudinary/cloudinary.module';
 import { DnsModule } from './providers/dns/dns.module';
 import { ElasticSearchModule } from './providers/elasticsearch/elasticsearch.module';
 import { GeolocationModule } from './providers/geolocation/geolocation.module';
@@ -70,6 +71,7 @@ import { TasksModule } from './providers/tasks/tasks.module';
     SlackModule,
     AirtableModule,
     S3Module,
+    CloudinaryModule,
   ],
   providers: [
     {
