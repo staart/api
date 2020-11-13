@@ -105,6 +105,10 @@ const configuration: Configuration = {
     rejectRateLimitedCalls: !!process.env.SLACK_REJECT_RATE_LIMITED_CALLS,
     retries: int(process.env.SLACK_FAIL_RETRIES, 3),
   },
+  airtable: {
+    apiKey: process.env.AIRTABLE_API_KEY ?? '',
+    endpointUrl: process.env.AIRTABLE_ENDPOINT_URL,
+  },
 };
 
 const configFunction: ConfigFactory<Configuration> = () => configuration;

@@ -91,4 +91,9 @@ export interface Configuration {
     rejectRateLimitedCalls?: boolean;
     retries: number;
   };
+
+  airtable: {
+    apiKey: string;
+    endpointUrl?: string;
+  };
 }

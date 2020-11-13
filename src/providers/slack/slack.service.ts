@@ -7,7 +7,7 @@ import { Configuration } from '../../config/configuration.interface';
 
 @Injectable()
 export class SlackService {
-  slack: WebClient;
+  slack?: WebClient;
   private logger = new Logger(SlackService.name);
   private queue = new PQueue({ concurrency: 1 });
 
@@ -38,6 +38,6 @@ export class SlackService {
   }
 
   private async sendMessage(options: ChatPostMessageArguments) {
-    return this.slack.chat.postMessage(options);
+    return this.slack?.chat.postMessage(options);
   }
 }

@@ -28,6 +28,7 @@ import { SessionsModule } from './modules/sessions/sessions.module';
 import { StripeModule } from './modules/stripe/stripe.module';
 import { UsersModule } from './modules/users/users.module';
 import { WebhooksModule } from './modules/webhooks/webhooks.module';
+import { AirtableModule } from './providers/airtable/airtable.module';
 import { DnsModule } from './providers/dns/dns.module';
 import { ElasticSearchModule } from './providers/elasticsearch/elasticsearch.module';
 import { GeolocationModule } from './providers/geolocation/geolocation.module';
@@ -66,6 +67,7 @@ import { TasksModule } from './providers/tasks/tasks.module';
     WebhooksModule,
     ElasticSearchModule,
     SlackModule,
+    AirtableModule,
   ],
   providers: [
     {
