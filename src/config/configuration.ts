@@ -4,8 +4,10 @@ import dotenvExpand from 'dotenv-expand';
 import { Configuration } from './configuration.interface';
 dotenvExpand(config());
 
-export const int = (val: string | undefined, num: number): number =>
+const int = (val: string | undefined, num: number): number =>
   val ? (isNaN(parseInt(val)) ? num : parseInt(val)) : num;
+const bool = (val: string | undefined, bool: boolean): boolean =>
+  val == null ? bool : val == 'true';
 
 const configuration: Configuration = {
   frontendUrl: process.env.FRONTEND_URL ?? 'http://localhost:3000',
@@ -26,7 +28,7 @@ const configuration: Configuration = {
     mfaTokenExpiry: process.env.MFA_TOKEN_EXPIRY ?? '10m',
     mergeUsersTokenExpiry: process.env.MERGE_USERS_TOKEN_EXPIRY ?? '30m',
     accessTokenExpiry: process.env.ACCESS_TOKEN_EXPIRY ?? '1h',
-    passwordPwnedCheck: !!process.env.PASSWORD_PWNED_CHECK,
+    passwordPwnedCheck: bool(process.env.PASSWORD_PWNED_CHECK, true),
     unusedRefreshTokenExpiryDays: int(process.env.DELETE_EXPIRED_SESSIONS, 30),
     inactiveUserDeleteDays: int(process.env.INACTIVE_USER_DELETE_DAYS, 30),
   },
@@ -66,7 +68,7 @@ const configuration: Configuration = {
     transport: {
       host: process.env.EMAIL_HOST ?? '',
       port: int(process.env.EMAIL_PORT, 587),
-      secure: !!process.env.EMAIL_SECURE,
+      secure: bool(process.env.EMAIL_SECURE, false),
       auth: {
         user: process.env.EMAIL_USER ?? process.env.EMAIL_FROM ?? '',
         pass: process.env.EMAIL_PASSWORD ?? '',
@@ -92,16 +94,16 @@ const configuration: Configuration = {
       (process.env.TRACKING_MODE as Configuration['tracking']['mode']) ??
       'api-key',
     index: process.env.TRACKING_INDEX ?? 'staart-logs',
-    deleteOldLogs:
-      process.env.TRACKING_DELETE_OLD_LOGS !== undefined
-        ? Boolean(process.env.TRACKING_DELETE_OLD_LOGS)
-        : true,
+    deleteOldLogs: bool(process.env.TRACKING_DELETE_OLD_LOGS, true),
     deleteOldLogsDays: int(process.env.TRACKING_DELETE_OLD_LOGS_DAYS, 90),
   },
   slack: {
     token: process.env.SLACK_TOKEN ?? '',
     slackApiUrl: process.env.SLACK_API_URL,
-    rejectRateLimitedCalls: !!process.env.SLACK_REJECT_RATE_LIMITED_CALLS,
+    rejectRateLimitedCalls: bool(
+      process.env.SLACK_REJECT_RATE_LIMITED_CALLS,
+      false,
+    ),
     retries: int(process.env.SLACK_FAIL_RETRIES, 3),
   },
   airtable: {
