@@ -63,6 +63,7 @@
     "passport": "^0.4.1",
     "passport-headerapikey": "^1.2.2",
     "passport-local": "^1.0.0",
+    "playwright": "^1.6.1",
     "qrcode": "^1.4.4",
     "quick-lru": "^5.1.1",
     "randomcolor": "^0.6.2",
