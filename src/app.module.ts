@@ -37,6 +37,7 @@ import { GeolocationModule } from './providers/geolocation/geolocation.module';
 import { GitHubModule } from './providers/github/github.module';
 import { GoogleMapsModule } from './providers/google-maps/google-maps.module';
 import { MailModule } from './providers/mail/mail.module';
+import { PlaywrightModule } from './providers/playwright/playwright.module';
 import { PrismaModule } from './providers/prisma/prisma.module';
 import { S3Module } from './providers/s3/s3.module';
 import { SlackModule } from './providers/slack/slack.module';
@@ -78,6 +79,7 @@ import { TasksModule } from './providers/tasks/tasks.module';
     FirebaseModule,
     GitHubModule,
     GoogleMapsModule,
+    PlaywrightModule,
   ],
   providers: [
     {
