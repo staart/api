@@ -1,3 +1,16 @@
+## [v3.5.0](https://github.com/staart/api/compare/v3.4.0...v3.5.0) (2020-11-14)
+
+### ✨ New features
+
+- [`de4dd7a6`](https://github.com/staart/api/commit/de4dd7a6)  Add Google Maps module
+- [`7d1c2918`](https://github.com/staart/api/commit/7d1c2918)  Add Playwrite module
+
+### ♻️ Updates
+
+- [`a7197cb5`](https://github.com/staart/api/commit/a7197cb5)  Rename service clients to &#x60;client&#x60;
+- [`163f170e`](https://github.com/staart/api/commit/163f170e)  Use tokensService instead of jwtService
+- [`16afe470`](https://github.com/staart/api/commit/16afe470)  Add default boolean configuration values
+
 ## [v3.4.0](https://github.com/staart/api/compare/v3.3.1...v3.4.0) (2020-11-13)
 
 ### ✨ New features
