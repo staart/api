@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { ApiKeysModule } from '../api-keys/api-keys.module';
 import { ApprovedSubnetsModule } from '../approved-subnets/approved-subnets.module';
@@ -27,9 +26,6 @@ import { StaartStrategy } from './staart.strategy';
     TwilioModule,
     GeolocationModule,
     ApprovedSubnetsModule,
-    JwtModule.register({
-      secret: process.env.JWT_SECRET ?? 'staart',
-    }),
   ],
   controllers: [AuthController],
   exports: [AuthService],

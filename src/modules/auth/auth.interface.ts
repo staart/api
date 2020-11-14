@@ -3,7 +3,6 @@ import { MfaMethod } from '@prisma/client';
 import { Request as ExpressRequest } from 'express';
 
 export interface AccessTokenClaims {
-  sub: string;
   id: number;
   scopes: string[];
 }

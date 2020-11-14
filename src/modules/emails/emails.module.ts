@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { JwtModule } from '@nestjs/jwt';
 import { ApprovedSubnetsService } from '../approved-subnets/approved-subnets.service';
 import { AuthService } from '../auth/auth.service';
 import { MailModule } from '../../providers/mail/mail.module';
@@ -21,9 +20,6 @@ import { EmailsService } from './emails.service';
     TwilioModule,
     PwnedModule,
     TokensModule,
-    JwtModule.register({
-      secret: process.env.JWT_SECRET ?? 'staart',
-    }),
   ],
   controllers: [EmailController],
   providers: [

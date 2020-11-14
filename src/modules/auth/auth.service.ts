@@ -7,7 +7,6 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
 import { Authenticator } from '@otplib/core';
 import { emails, MfaMethod, users } from '@prisma/client';
 import { compare, hash } from 'bcrypt';
@@ -35,9 +34,8 @@ import {
   USER_NOT_FOUND,
 } from '../../errors/errors.constants';
 import { safeEmail } from '../../helpers/safe-email';
-import { ApprovedSubnetsService } from '../approved-subnets/approved-subnets.service';
-import { MailService } from '../../providers/mail/mail.service';
 import { GeolocationService } from '../../providers/geolocation/geolocation.service';
+import { MailService } from '../../providers/mail/mail.service';
 import { Expose } from '../../providers/prisma/prisma.interface';
 import { PrismaService } from '../../providers/prisma/prisma.service';
 import { PwnedService } from '../../providers/pwned/pwned.service';
@@ -51,6 +49,7 @@ import {
 } from '../../providers/tokens/tokens.constants';
 import { TokensService } from '../../providers/tokens/tokens.service';
 import { TwilioService } from '../../providers/twilio/twilio.service';
+import { ApprovedSubnetsService } from '../approved-subnets/approved-subnets.service';
 import { RegisterDto } from './auth.dto';
 import {
   AccessTokenClaims,
@@ -67,7 +66,6 @@ export class AuthService {
     private prisma: PrismaService,
     private email: MailService,
     private configService: ConfigService,
-    private jwtService: JwtService,
     private pwnedService: PwnedService,
     private tokensService: TokensService,
     private geolocationService: GeolocationService,
@@ -464,13 +462,14 @@ export class AuthService {
   private async getAccessToken(user: users): Promise<string> {
     const scopes = await this.getScopes(user);
     const payload: AccessTokenClaims = {
-      sub: LOGIN_ACCESS_TOKEN,
       id: user.id,
       scopes,
     };
-    return this.jwtService.sign(payload, {
-      expiresIn: this.configService.get<string>('security.accessTokenExpiry'),
-    });
+    return this.tokensService.signJwt(
+      LOGIN_ACCESS_TOKEN,
+      payload,
+      this.configService.get<string>('security.accessTokenExpiry'),
+    );
   }
 
   private async loginResponse(
