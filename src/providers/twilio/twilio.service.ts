@@ -8,7 +8,7 @@ import TwilioClient from 'twilio/lib/rest/Twilio';
 
 @Injectable()
 export class TwilioService {
-  twilio: TwilioClient;
+  client: TwilioClient;
   logger = new Logger(TwilioService.name);
   private queue = new PQueue({ concurrency: 1 });
 
@@ -21,7 +21,7 @@ export class TwilioService {
     );
     if (!twilioAccountSid || !twilioAuthToken)
       this.logger.warn('Twilio account SID/auth token not found');
-    this.twilio = twilio(twilioAccountSid ?? '', twilioAuthToken ?? '');
+    this.client = twilio(twilioAccountSid ?? '', twilioAuthToken ?? '');
   }
 
   send(options: MessageListInstanceCreateOptions) {
@@ -42,6 +42,6 @@ export class TwilioService {
   }
 
   private async sendSms(options: MessageListInstanceCreateOptions) {
-    return this.twilio.messages.create(options);
+    return this.client.messages.create(options);
   }
 }

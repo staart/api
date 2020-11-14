@@ -7,14 +7,14 @@ import { Configuration } from '../../config/configuration.interface';
 
 @Injectable()
 export class SlackService {
-  slack?: WebClient;
+  client?: WebClient;
   private logger = new Logger(SlackService.name);
   private queue = new PQueue({ concurrency: 1 });
 
   constructor(private configService: ConfigService) {
     const config = this.configService.get<Configuration['slack']>('slack');
     if (config.token)
-      this.slack = new WebClient(config.token, {
+      this.client = new WebClient(config.token, {
         slackApiUrl: config.slackApiUrl,
         rejectRateLimitedCalls: config.rejectRateLimitedCalls,
       });
@@ -38,6 +38,6 @@ export class SlackService {
   }
 
   private async sendMessage(options: ChatPostMessageArguments) {
-    return this.slack?.chat.postMessage(options);
+    return this.client?.chat.postMessage(options);
   }
 }

@@ -6,15 +6,15 @@ import { Configuration } from '../../config/configuration.interface';
 @Injectable()
 export class FirebaseService {
   private logger = new Logger(FirebaseService.name);
-  admin = admin;
+  client = admin;
 
   constructor(private configService: ConfigService) {
     const config = this.configService.get<Configuration['firebase']>(
       'firebase',
     );
     if (config.serviceAccountKey)
-      admin.initializeApp({
-        credential: admin.credential.cert(
+      this.client.initializeApp({
+        credential: this.client.credential.cert(
           typeof config.serviceAccountKey === 'string'
             ? JSON.parse(config.serviceAccountKey)
             : config.serviceAccountKey,
@@ -25,12 +25,15 @@ export class FirebaseService {
   }
 
   async addCollectionItem(collectionName: string, data: any) {
-    const reference = admin.firestore().collection(collectionName);
+    const reference = this.client.firestore().collection(collectionName);
     return reference.add(data);
   }
 
   async updateCollectionItem(collectionName: string, doc: string, data: any) {
-    const reference = admin.firestore().collection(collectionName).doc(doc);
+    const reference = this.client
+      .firestore()
+      .collection(collectionName)
+      .doc(doc);
     return reference.update(data);
   }
 }

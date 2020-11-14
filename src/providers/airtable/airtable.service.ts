@@ -5,7 +5,7 @@ import { Configuration } from '../../config/configuration.interface';
 
 @Injectable()
 export class AirtableService {
-  airtable?: Airtable;
+  client?: Airtable;
   private logger = new Logger(AirtableService.name);
 
   constructor(private configService: ConfigService) {
@@ -13,7 +13,7 @@ export class AirtableService {
       'airtable',
     );
     if (config.apiKey)
-      this.airtable = new Airtable({
+      this.client = new Airtable({
         apiKey: config.apiKey,
         endpointUrl: config.endpointUrl,
       });
