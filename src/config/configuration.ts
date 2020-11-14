@@ -133,6 +133,9 @@ const configuration: Configuration = {
     auth: process.env.GITHUB_AUTH,
     userAgent: process.env.GITHUB_USER_AGENT,
   },
+  googleMaps: {
+    apiKey: process.env.GOOGLE_MAPS_API_KEY,
+  },
 };
 
 const configFunction: ConfigFactory<Configuration> = () => configuration;

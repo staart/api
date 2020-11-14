@@ -120,4 +120,8 @@ export interface Configuration {
     auth: string;
     userAgent?: string;
   };
+
+  googleMaps: {
+    apiKey: string;
+  };
 }
