@@ -50,7 +50,7 @@ export class MembershipsService {
       cursor,
       where,
       orderBy,
-      include: { group: true },
+      include: { group: true, user: true },
     });
     return memberships.map((user) => this.prisma.expose<memberships>(user));
   }
@@ -75,7 +75,7 @@ export class MembershipsService {
   ): Promise<Expose<memberships>> {
     const membership = await this.prisma.memberships.findOne({
       where: { id },
-      include: { group: true },
+      include: { user: true },
     });
     if (!membership) throw new NotFoundException(MEMBERSHIP_NOT_FOUND);
     if (membership.groupId !== groupId)
