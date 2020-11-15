@@ -1,3 +1,9 @@
+## [v3.5.2](https://github.com/staart/api/compare/v3.5.1...v3.5.2) (2020-11-15)
+
+### 🐛 Bug fixes
+
+- [`a8c75f8b`](https://github.com/staart/api/commit/a8c75f8b)  Merge requests cannot go for the same user
+
 ## [v3.5.1](https://github.com/staart/api/compare/v3.5.0...v3.5.1) (2020-11-15)
 
 ### 🐛 Bug fixes
