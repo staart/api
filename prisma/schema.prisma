@@ -99,11 +99,14 @@ model groups {
   profilePictureUrl String        @default("https://unavatar.now.sh/fallback.png")
   attributes        Json?
   updatedAt         DateTime      @updatedAt
+  subgroups         groups[]      @relation("groupSubgroups")
   apiKeys           apiKeys[]     @relation("groupApiKeys")
   domains           domains[]     @relation("groupDomains")
   memberships       memberships[] @relation("groupMemberships")
   webhooks          webhooks[]    @relation("groupWebhooks")
   auditLogs         auditLogs[]   @relation("groupAuditLog")
+  parent            groups?       @relation("groupSubgroups", fields: [parentId], references: [id])
+  parentId          Int?
 }
 
 model emails {
