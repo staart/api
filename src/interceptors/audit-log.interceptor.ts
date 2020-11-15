@@ -41,7 +41,7 @@ export class AuditLogger implements NestInterceptor {
           if (auditLog) {
             if (typeof auditLog === 'string') auditLog = [auditLog];
             const request = context.switchToHttp().getRequest() as UserRequest;
-            const groupId = parseInt(request.params.id);
+            const groupId = parseInt(request.params.groupId);
             if (isNaN(groupId)) throw new BadGatewayException(GROUP_NOT_FOUND);
             const ip = getClientIp(request);
             const location = await this.geolocationService.getLocation(ip);
