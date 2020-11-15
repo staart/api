@@ -1,3 +1,9 @@
+## [v3.5.1](https://github.com/staart/api/compare/v3.5.0...v3.5.1) (2020-11-15)
+
+### 🐛 Bug fixes
+
+- [`95678056`](https://github.com/staart/api/commit/95678056)  Validate new email
+
 ## [v3.5.0](https://github.com/staart/api/compare/v3.4.0...v3.5.0) (2020-11-14)
 
 ### ✨ New features
