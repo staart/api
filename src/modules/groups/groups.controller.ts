@@ -43,7 +43,7 @@ export class GroupController {
   }
 
   @Get(':groupId')
-  @Scopes('group-{id}:read-info')
+  @Scopes('group-{groupId}:read-info')
   async get(
     @Param('groupId', ParseIntPipe) id: number,
   ): Promise<Expose<groups>> {
@@ -52,7 +52,7 @@ export class GroupController {
 
   @Patch(':groupId')
   @AuditLog('update-info')
-  @Scopes('group-{id}:write-info')
+  @Scopes('group-{groupId}:write-info')
   async update(
     @Body() data: UpdateGroupDto,
     @Param('groupId', ParseIntPipe) id: number,
@@ -62,7 +62,7 @@ export class GroupController {
 
   @Put(':groupId')
   @AuditLog('update-info')
-  @Scopes('group-{id}:write-info')
+  @Scopes('group-{groupId}:write-info')
   async replace(
     @Body() data: ReplaceGroupDto,
     @Param('groupId', ParseIntPipe) id: number,
@@ -72,7 +72,7 @@ export class GroupController {
 
   @Delete(':groupId')
   @AuditLog('delete')
-  @Scopes('group-{id}:delete')
+  @Scopes('group-{groupId}:delete')
   async remove(
     @Param('groupId', ParseIntPipe) id: number,
   ): Promise<Expose<groups>> {

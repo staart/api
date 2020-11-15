@@ -37,13 +37,13 @@ export class UserController {
   }
 
   @Get(':userId')
-  @Scopes('user-{id}:read-info')
+  @Scopes('user-{userId}:read-info')
   async get(@Param('userId', ParseIntPipe) id: number): Promise<Expose<users>> {
     return this.usersService.getUser(Number(id));
   }
 
   @Patch(':userId')
-  @Scopes('user-{id}:write-info')
+  @Scopes('user-{userId}:write-info')
   async update(
     @Param('userId', ParseIntPipe) id: number,
     @Body() data: UpdateUserDto,
@@ -52,7 +52,7 @@ export class UserController {
   }
 
   @Delete(':userId')
-  @Scopes('user-{id}:deactivate')
+  @Scopes('user-{userId}:deactivate')
   async remove(
     @Param('userId', ParseIntPipe) id: number,
   ): Promise<Expose<users>> {
@@ -60,7 +60,7 @@ export class UserController {
   }
 
   @Post(':userId/merge-request')
-  @Scopes('user-{id}:merge')
+  @Scopes('user-{userId}:merge')
   @RateLimit({
     points: 10,
     duration: 60,
@@ -74,7 +74,7 @@ export class UserController {
   }
 
   @Post('merge')
-  @Scopes('user-{id}:merge')
+  @Scopes('user-{userId}:merge')
   @RateLimit({
     points: 10,
     duration: 60,
