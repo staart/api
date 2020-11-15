@@ -1,3 +1,9 @@
+## [v3.5.3](https://github.com/staart/api/compare/v3.5.2...v3.5.3) (2020-11-15)
+
+### ♻️ Updates
+
+- [`ed3b942e`](https://github.com/staart/api/commit/ed3b942e)  Delete sessions on deactivate
+
 ## [v3.5.2](https://github.com/staart/api/compare/v3.5.1...v3.5.2) (2020-11-15)
 
 ### 🐛 Bug fixes
