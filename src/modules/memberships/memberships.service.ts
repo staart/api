@@ -114,6 +114,7 @@ export class MembershipsService {
     const membership = await this.prisma.memberships.update({
       where: { id },
       data,
+      include: { user: true },
     });
     return this.prisma.expose<memberships>(membership);
   }
@@ -131,6 +132,7 @@ export class MembershipsService {
     await this.verifyDeleteMembership(testMembership.groupId, id);
     const membership = await this.prisma.memberships.delete({
       where: { id },
+      include: { user: true },
     });
     return this.prisma.expose<memberships>(membership);
   }
