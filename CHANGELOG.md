@@ -1,3 +1,9 @@
+## [v3.5.5](https://github.com/staart/api/compare/v3.5.4...v3.5.5) (2020-11-15)
+
+### 🐛 Bug fixes
+
+- [`cfe9855a`](https://github.com/staart/api/commit/cfe9855a)  Return user info on update/delete
+
 ## [v3.5.4](https://github.com/staart/api/compare/v3.5.3...v3.5.4) (2020-11-15)
 
 ### 🐛 Bug fixes
