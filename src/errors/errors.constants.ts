@@ -30,6 +30,17 @@ export const MFA_PHONE_OR_TOKEN_REQUIRED =
 export const MFA_NOT_ENABLED =
   '400005: Multi-factor authentication is not enabled';
 export const NO_EMAILS = '400006: User has no email attached to it';
+export const CURRENT_PASSWORD_REQUIRED = '400007: Current password is required';
+export const COMPROMISED_PASSWORD =
+  '400008: This password has been compromised in a data breach.';
+export const CANNOT_DELETE_SOLE_MEMBER =
+  '400009: Cannot remove the only member';
+export const CANNOT_DELETE_SOLE_OWNER = '400010: Cannot remove the only owner';
+export const ORDER_BY_ASC_DESC = '400011: Invalid sorting order';
+export const ORDER_BY_FORMAT = '400012: Invalid ordering format';
+export const WHERE_PIPE_FORMAT = '400013: Invalid query format';
+export const OPTIONAL_INT_PIPE_NUMBER = '400014: $key should be a number';
+export const CURSOR_PIPE_FORMAT = '400015: Invalid cursor format';
 
 export const EMAIL_USER_CONFLICT =
   '409001: User with this email already exists';
@@ -38,14 +49,4 @@ export const BILLING_ACCOUNT_CREATED_CONFLICT =
   '409003: Billing account is already created';
 export const MFA_ENABLED_CONFLICT =
   '409004: Multi-factor authentication is already enabled';
-export const CURRENT_PASSWORD_REQUIRED = '409005: Current password is required';
-export const COMPROMISED_PASSWORD =
-  '409006: This password has been compromised in a data breach.';
-export const CANNOT_DELETE_SOLE_MEMBER =
-  '409007: Cannot remove the only member';
-export const CANNOT_DELETE_SOLE_OWNER = '409008: Cannot remove the only owner';
-export const ORDER_BY_ASC_DESC = '409009: Invalid sorting order';
-export const ORDER_BY_FORMAT = '409010: Invalid ordering format';
-export const WHERE_PIPE_FORMAT = '409011: Invalid query format';
-export const OPTIONAL_INT_PIPE_NUMBER = '409012: $key should be a number';
-export const CURSOR_PIPE_FORMAT = '409013: Invalid cursor format';
+export const MERGE_USER_CONFLICT = '409005: Cannot merge the same user';

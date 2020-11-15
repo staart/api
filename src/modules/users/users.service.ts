@@ -118,6 +118,7 @@ export class UsersService {
       include: { prefersEmail: true },
     });
     if (!user) throw new NotFoundException(USER_NOT_FOUND);
+    if (user.id === userId) throw new NotFoundException(USER_NOT_FOUND);
     const minutes = parseInt(
       this.configService.get<string>('security.mergeUsersTokenExpiry') ?? '',
     );
