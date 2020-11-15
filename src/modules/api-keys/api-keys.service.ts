@@ -375,6 +375,12 @@ export class ApiKeysService {
   async getApiKeyScopesForGroup(
     groupId: number,
   ): Promise<Record<string, string>> {
+    const group = await this.prisma.groups.findOne({
+      where: { id: groupId },
+      select: { attributes: true },
+    });
+    const attributes = group.attributes as { stripeCustomerId?: string };
+
     const scopes: Record<string, string> = {};
     scopes[`read-info`] = 'Read group details';
     scopes[`write-info`] = 'Update group details';
@@ -430,24 +436,30 @@ export class ApiKeysService {
     scopes[`delete-billing`] = 'Delete billing details';
 
     scopes[`read-invoice-*`] = 'Read invoices';
-    for await (const invoice of await this.stripeService.getInvoices(
-      groupId,
-      {},
-    )) {
-      scopes[`read-invoice-${invoice.id}`] = `Read invoice: ${invoice.number}`;
-    }
+    if (attributes?.stripeCustomerId)
+      for await (const invoice of await this.stripeService.getInvoices(
+        groupId,
+        {},
+      )) {
+        scopes[
+          `read-invoice-${invoice.id}`
+        ] = `Read invoice: ${invoice.number}`;
+      }
 
     scopes[`write-source-*`] = 'Write payment methods';
     scopes[`read-source-*`] = 'Read payment methods';
-    for await (const source of await this.stripeService.getSources(
-      groupId,
-      {},
-    )) {
-      scopes[`read-source-${source.id}`] = `Read payment method: ${source.id}`;
-      scopes[
-        `delete-source-${source.id}`
-      ] = `Delete payment method: ${source.id}`;
-    }
+    if (attributes?.stripeCustomerId)
+      for await (const source of await this.stripeService.getSources(
+        groupId,
+        {},
+      )) {
+        scopes[
+          `read-source-${source.id}`
+        ] = `Read payment method: ${source.id}`;
+        scopes[
+          `delete-source-${source.id}`
+        ] = `Delete payment method: ${source.id}`;
+      }
 
     scopes[`read-audit-log-*`] = 'Read audit logs';
     return scopes;
