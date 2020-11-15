@@ -1,6 +1,7 @@
-import { Request as NestRequest } from '@nestjs/common';
-import { MfaMethod } from '@prisma/client';
-import { Request as ExpressRequest } from 'express';
+import type { Request as NestRequest } from '@nestjs/common';
+import type { Request as ExpressRequest } from 'express';
+
+export type MfaMethod = 'NONE' | 'SMS' | 'TOTP' | 'EMAIL';
 
 export interface AccessTokenClaims {
   id: number;
