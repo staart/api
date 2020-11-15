@@ -42,6 +42,8 @@ export const WHERE_PIPE_FORMAT = '400013: Invalid query format';
 export const OPTIONAL_INT_PIPE_NUMBER = '400014: $key should be a number';
 export const CURSOR_PIPE_FORMAT = '400015: Invalid cursor format';
 export const EMAIL_DELETE_PRIMARY = '400016: Cannot delete primary email';
+export const CANNOT_UPDATE_ROLE_SOLE_OWNER =
+  '400017: Cannot change the role of the only owner';
 
 export const EMAIL_USER_CONFLICT =
   '409001: User with this email already exists';

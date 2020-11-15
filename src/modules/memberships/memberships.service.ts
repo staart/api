@@ -17,14 +17,15 @@ import {
 import {
   CANNOT_DELETE_SOLE_MEMBER,
   CANNOT_DELETE_SOLE_OWNER,
+  CANNOT_UPDATE_ROLE_SOLE_OWNER,
   MEMBERSHIP_NOT_FOUND,
   UNAUTHORIZED_RESOURCE,
 } from '../../errors/errors.constants';
 import { safeEmail } from '../../helpers/safe-email';
-import { Expose } from '../../providers/prisma/prisma.interface';
-import { AuthService } from '../auth/auth.service';
 import { MailService } from '../../providers/mail/mail.service';
+import { Expose } from '../../providers/prisma/prisma.interface';
 import { PrismaService } from '../../providers/prisma/prisma.service';
+import { AuthService } from '../auth/auth.service';
 import { CreateMembershipInput } from './memberships.interface';
 
 @Injectable()
@@ -111,6 +112,15 @@ export class MembershipsService {
     if (!testMembership) throw new NotFoundException(MEMBERSHIP_NOT_FOUND);
     if (testMembership.groupId !== groupId)
       throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
+    if (testMembership.role === 'OWNER' && data.role !== 'OWNER') {
+      const otherOwners = (
+        await this.prisma.memberships.findMany({
+          where: { group: { id: groupId }, role: 'OWNER' },
+        })
+      ).filter((i) => i.id !== id);
+      if (!otherOwners.length)
+        throw new BadRequestException(CANNOT_UPDATE_ROLE_SOLE_OWNER);
+    }
     const membership = await this.prisma.memberships.update({
       where: { id },
       data,
