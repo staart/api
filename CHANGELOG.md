@@ -1,3 +1,23 @@
+## [v3.5.6](https://github.com/staart/api/compare/v3.5.5...v3.5.6) (2020-11-15)
+
+### ♻️ Updates
+
+- [`d0a4aceb`](https://github.com/staart/api/commit/d0a4aceb)  Check for primary email on deleting emails
+- [`1777332d`](https://github.com/staart/api/commit/1777332d)  Auto-join groups based on email address
+- [`5abcc56d`](https://github.com/staart/api/commit/5abcc56d)  Use explicit ID type in params
+- [`c499a62c`](https://github.com/staart/api/commit/c499a62c)  Store parsed details in session, Change Mac OS -&gt; macOS
+- [`e54ddd9b`](https://github.com/staart/api/commit/e54ddd9b)  Allow cursors with implicit ID
+- [`cf873b1a`](https://github.com/staart/api/commit/cf873b1a)  Use colon instead of space in order-by pipe
+
+### 🐛 Bug fixes
+
+- [`150f42f0`](https://github.com/staart/api/commit/150f42f0)  Ensure there is at least 1 owner in group
+- [`3d73c616`](https://github.com/staart/api/commit/3d73c616)  Use groupId request param
+- [`1804bf39`](https://github.com/staart/api/commit/1804bf39)  Render mustache before setting subject
+- [`c3dcb4a5`](https://github.com/staart/api/commit/c3dcb4a5)  Fix scopes for user, groups routes
+- [`3c645992`](https://github.com/staart/api/commit/3c645992)  Validate domain name
+- [`3175c42d`](https://github.com/staart/api/commit/3175c42d)  Only add Stripe scopes if account exists
+
 ## [v3.5.5](https://github.com/staart/api/compare/v3.5.4...v3.5.5) (2020-11-15)
 
 ### 🐛 Bug fixes
