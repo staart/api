@@ -7,6 +7,7 @@ import { parseObjectLiteral } from '../helpers/parse-object-literal';
 export class CursorPipe implements PipeTransform {
   transform(value: string): Record<string, number | string> | undefined {
     if (value == null) return undefined;
+    if (!value.includes(':')) value = `id:${value}`;
     try {
       const rules = parseObjectLiteral(value);
       const items: Record<string, number | string> = {};
