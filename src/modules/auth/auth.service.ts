@@ -660,19 +660,40 @@ export class AuthService {
       where: { user: { id: user.id } },
       select: { id: true, role: true, group: { select: { id: true } } },
     });
-    memberships.forEach((membership) => {
+    for await (const membership of memberships) {
       scopes.push(`membership-${membership.id}:*`);
-      if (membership.role === 'OWNER')
-        scopes.push(`group-${membership.group.id}:*`);
+      const ids = [
+        membership.group.id,
+        ...(await this.recursivelyGetSubgroupIds(membership.group.id)),
+      ];
 
-      // Admins cannot delete a group, but they can read/write
-      if (membership.role === 'ADMIN')
-        scopes.push(`group-${membership.group.id}:write-*`);
-
-      // Non-owners (admins and regular members) can also read
-      if (membership.role !== 'OWNER')
-        scopes.push(`group-${membership.group.id}:read-*`);
-    });
+      ids.forEach((id) => {
+        if (membership.role === 'OWNER') scopes.push(`group-${id}:*`);
+        // Admins cannot delete a group, but they can read/write
+        if (membership.role === 'ADMIN') scopes.push(`group-${id}:write-*`);
+        // Non-owners (admins and regular members) can also read
+        if (membership.role !== 'OWNER') scopes.push(`group-${id}:read-*`);
+      });
+    }
     return scopes;
+  }
+
+  private async recursivelyGetSubgroupIds(groupId: number) {
+    const subgroups = await this.prisma.groups.findMany({
+      where: { parent: { id: groupId } },
+      select: {
+        id: true,
+        parent: { select: { id: true } },
+        subgroups: { select: { id: true } },
+      },
+    });
+    const ids = subgroups.map((i) => i.id);
+    for await (const group of subgroups) {
+      for await (const subgroup of group.subgroups) {
+        const recurisiveIds = await this.recursivelyGetSubgroupIds(subgroup.id);
+        ids.push(...recurisiveIds);
+      }
+    }
+    return ids;
   }
 }
