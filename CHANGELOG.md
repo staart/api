@@ -1,3 +1,9 @@
+## [v3.5.4](https://github.com/staart/api/compare/v3.5.3...v3.5.4) (2020-11-15)
+
+### 🐛 Bug fixes
+
+- [`bacd1e0b`](https://github.com/staart/api/commit/bacd1e0b)  Include user in membership response
+
 ## [v3.5.3](https://github.com/staart/api/compare/v3.5.2...v3.5.3) (2020-11-15)
 
 ### ♻️ Updates
