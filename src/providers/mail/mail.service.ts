@@ -65,14 +65,14 @@ export class MailService {
     if (options.template) {
       const layout = await this.readTemplate('layout.html');
       let template = await this.readTemplate(options.template);
-      if (template.startsWith('#')) {
-        const subject = template.split('\n', 1)[0].replace('#', '').trim();
+      let [markdown, html] = render(template, options.data);
+      if (markdown.startsWith('#')) {
+        const subject = markdown.split('\n', 1)[0].replace('#', '').trim();
         if (subject) {
           options.subject = options.subject ?? subject;
-          template = template.replace(`# ${template.split('\n', 1)[0]}`, '');
+          markdown = markdown.replace(`# ${markdown.split('\n', 1)[0]}`, '');
         }
       }
-      const [markdown, html] = render(template, options.data);
       options.html = options.noLayout
         ? html
         : render(layout, { content: html })[1];
