@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -11,13 +12,15 @@ import {
   emailsWhereUniqueInput,
 } from '@prisma/client';
 import {
+  EMAIL_DELETE_PRIMARY,
   EMAIL_NOT_FOUND,
   UNAUTHORIZED_RESOURCE,
+  USER_NOT_FOUND,
 } from '../../errors/errors.constants';
 import { safeEmail } from '../../helpers/safe-email';
 import { Expose } from '../../providers/prisma/prisma.interface';
-import { AuthService } from '../auth/auth.service';
 import { PrismaService } from '../../providers/prisma/prisma.service';
+import { AuthService } from '../auth/auth.service';
 import { UsersService } from '../users/users.service';
 
 @Injectable()
@@ -78,6 +81,22 @@ export class EmailsService {
     if (!testEmail) throw new NotFoundException(EMAIL_NOT_FOUND);
     if (testEmail.userId !== userId)
       throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
+    const user = await this.prisma.users.findOne({
+      where: { id: userId },
+      include: { prefersEmail: true },
+    });
+    if (!user) throw new NotFoundException(USER_NOT_FOUND);
+    if (user.prefersEmail.id === id) {
+      const otherEmails = (
+        await this.prisma.emails.findMany({ where: { user: { id: userId } } })
+      ).filter((i) => i.id !== id);
+      if (!otherEmails.length)
+        throw new BadRequestException(EMAIL_DELETE_PRIMARY);
+      await this.prisma.users.update({
+        where: { id: userId },
+        data: { prefersEmail: { connect: { id: otherEmails[0].id } } },
+      });
+    }
     const email = await this.prisma.emails.delete({
       where: { id },
     });
