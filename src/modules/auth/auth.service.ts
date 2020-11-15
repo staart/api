@@ -16,6 +16,7 @@ import anonymize from 'ip-anonymize';
 import { authenticator } from 'otplib';
 import qrcode from 'qrcode';
 import randomColor from 'randomcolor';
+import { UAParser } from 'ua-parser-js';
 import {
   COMPROMISED_PASSWORD,
   EMAIL_USER_CONFLICT,
@@ -508,8 +509,27 @@ export class AuthService {
     user: users,
   ): Promise<TokenResponse> {
     const token = this.tokensService.generateUuid();
+    const ua = new UAParser(userAgent);
+    const location = await this.geolocationService.getLocation(ipAddress);
     await this.prisma.sessions.create({
-      data: { token, ipAddress, userAgent, user: { connect: { id: user.id } } },
+      data: {
+        token,
+        ipAddress,
+        city: location?.city?.names?.en,
+        region: location?.subdivisions?.pop()?.names?.en,
+        timezone: location?.location?.time_zone,
+        countryCode: location?.country?.iso_code,
+        userAgent,
+        browser:
+          `${ua.getBrowser().name ?? ''} ${
+            ua.getBrowser().version ?? ''
+          }`.trim() || undefined,
+        operatingSystem:
+          `${ua.getOS().name ?? ''} ${ua.getOS().version ?? ''}`
+            .replace('Mac OS', 'macOS')
+            .trim() || undefined,
+        user: { connect: { id: user.id } },
+      },
     });
     return {
       accessToken: await this.getAccessToken(user),

@@ -60,9 +60,9 @@ export class AuditLogger implements NestInterceptor {
                     ua.getBrowser().version ?? ''
                   }`.trim() || undefined,
                 operatingSystem:
-                  `${ua.getOS().name ?? ''} ${
-                    ua.getOS().version ?? ''
-                  }`.trim() || undefined,
+                  `${ua.getOS().name ?? ''} ${ua.getOS().version ?? ''}`
+                    .replace('Mac OS', 'macOS')
+                    .trim() || undefined,
               };
               if (request.user.id && request.user.type === 'user')
                 data.user = { connect: { id: request.user.id } };
