@@ -108,6 +108,7 @@ export class UsersService {
       where: { id },
       data: { active: false },
     });
+    await this.prisma.sessions.deleteMany({ where: { user: { id } } });
     return this.prisma.expose<users>(user);
   }
 
