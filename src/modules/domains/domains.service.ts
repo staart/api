@@ -13,12 +13,13 @@ import {
   domainsWhereUniqueInput,
 } from '@prisma/client';
 import got from 'got';
+import { URL } from 'url';
 import {
   DOMAIN_NOT_FOUND,
   DOMAIN_NOT_VERIFIED,
+  INVALID_DOMAIN,
   UNAUTHORIZED_RESOURCE,
 } from '../../errors/errors.constants';
-import { URL } from 'url';
 import { DnsService } from '../../providers/dns/dns.service';
 import { Expose } from '../../providers/prisma/prisma.interface';
 import { PrismaService } from '../../providers/prisma/prisma.service';
@@ -39,8 +40,16 @@ export class DomainsService {
     groupId: number,
     data: Omit<Omit<domainsCreateInput, 'group'>, 'verificationCode'>,
   ): Promise<domains> {
-    const fullUrl = new URL(data.domain);
-    data.domain = fullUrl.hostname;
+    try {
+      const fullUrl = new URL(data.domain);
+      data.domain = fullUrl.hostname;
+    } catch (error) {}
+    if (
+      !/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$/.test(
+        data.domain,
+      )
+    )
+      throw new BadRequestException(INVALID_DOMAIN);
     const verificationCode = this.tokensService.generateUuid();
     const currentProfilePicture = await this.prisma.groups.findOne({
       where: { id: groupId },
