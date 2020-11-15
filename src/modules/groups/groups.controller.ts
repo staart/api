@@ -42,36 +42,40 @@ export class GroupController {
     });
   }
 
-  @Get(':id')
+  @Get(':groupId')
   @Scopes('group-{id}:read-info')
-  async get(@Param('id', ParseIntPipe) id: number): Promise<Expose<groups>> {
+  async get(
+    @Param('groupId', ParseIntPipe) id: number,
+  ): Promise<Expose<groups>> {
     return this.groupsService.getGroup(Number(id));
   }
 
-  @Patch(':id')
+  @Patch(':groupId')
   @AuditLog('update-info')
   @Scopes('group-{id}:write-info')
   async update(
     @Body() data: UpdateGroupDto,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('groupId', ParseIntPipe) id: number,
   ): Promise<Expose<groups>> {
     return this.groupsService.updateGroup(Number(id), data);
   }
 
-  @Put(':id')
+  @Put(':groupId')
   @AuditLog('update-info')
   @Scopes('group-{id}:write-info')
   async replace(
     @Body() data: ReplaceGroupDto,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('groupId', ParseIntPipe) id: number,
   ): Promise<Expose<groups>> {
     return this.groupsService.updateGroup(Number(id), data);
   }
 
-  @Delete(':id')
+  @Delete(':groupId')
   @AuditLog('delete')
   @Scopes('group-{id}:delete')
-  async remove(@Param('id', ParseIntPipe) id: number): Promise<Expose<groups>> {
+  async remove(
+    @Param('groupId', ParseIntPipe) id: number,
+  ): Promise<Expose<groups>> {
     return this.groupsService.deleteGroup(Number(id));
   }
 }

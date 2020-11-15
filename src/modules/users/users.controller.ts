@@ -36,28 +36,30 @@ export class UserController {
     return this.usersService.getUsers({ skip, take, orderBy, cursor, where });
   }
 
-  @Get(':id')
+  @Get(':userId')
   @Scopes('user-{id}:read-info')
-  async get(@Param('id', ParseIntPipe) id: number): Promise<Expose<users>> {
+  async get(@Param('userId', ParseIntPipe) id: number): Promise<Expose<users>> {
     return this.usersService.getUser(Number(id));
   }
 
-  @Patch(':id')
+  @Patch(':userId')
   @Scopes('user-{id}:write-info')
   async update(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('userId', ParseIntPipe) id: number,
     @Body() data: UpdateUserDto,
   ): Promise<Expose<users>> {
     return this.usersService.updateUser(Number(id), data);
   }
 
-  @Delete(':id')
+  @Delete(':userId')
   @Scopes('user-{id}:deactivate')
-  async remove(@Param('id', ParseIntPipe) id: number): Promise<Expose<users>> {
+  async remove(
+    @Param('userId', ParseIntPipe) id: number,
+  ): Promise<Expose<users>> {
     return this.usersService.deactivateUser(Number(id));
   }
 
-  @Post(':id/merge-request')
+  @Post(':userId/merge-request')
   @Scopes('user-{id}:merge')
   @RateLimit({
     points: 10,
@@ -65,7 +67,7 @@ export class UserController {
     errorMessage: 'Wait for 60 seconds before trying to merge again',
   })
   async mergeRequest(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('userId', ParseIntPipe) id: number,
     @Body('email') email: string,
   ): Promise<void> {
     return this.usersService.requestMerge(Number(id), email);
