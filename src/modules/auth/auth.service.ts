@@ -394,7 +394,37 @@ export class AuthService {
     const result = await this.prisma.emails.update({
       where: { id },
       data: { isVerified: true },
+      include: { user: true },
     });
+    const groupsToJoin = await this.prisma.groups.findMany({
+      where: {
+        autoJoinDomain: true,
+        domains: {
+          some: { isVerified: true, domain: result.emailSafe.split('@')[1] },
+        },
+      },
+      select: { id: true, name: true },
+    });
+    for await (const group of groupsToJoin) {
+      await this.prisma.memberships.create({
+        data: {
+          user: { connect: { id: result.user.id } },
+          group: { connect: { id: group.id } },
+          role: 'MEMBER',
+        },
+      });
+      this.email.send({
+        to: `"${result.user.name}" <${result.email}>`,
+        template: 'groups/invitation',
+        data: {
+          name: result.user.name,
+          group: group.name,
+          link: `${this.configService.get<string>('frontendUrl')}/groups/${
+            group.id
+          }`,
+        },
+      });
+    }
     return this.prisma.expose<emails>(result);
   }
 
@@ -442,7 +472,7 @@ export class AuthService {
               .join(', ') || 'Unknown location';
           if (user.prefersEmail)
             this.email.send({
-              to: `"${user.name}" <${user.prefersEmail.emailSafe}>`,
+              to: `"${user.name}" <${user.prefersEmail.email}>`,
               template: 'auth/used-backup-code',
               data: {
                 name: user.name,
@@ -566,7 +596,7 @@ export class AuthService {
           .join(', ') || 'Unknown location';
       if (user.prefersEmail)
         this.email.send({
-          to: `"${user.name}" <${user.prefersEmail.emailSafe}>`,
+          to: `"${user.name}" <${user.prefersEmail.email}>`,
           template: 'auth/approve-subnets',
           data: {
             name: user.name,

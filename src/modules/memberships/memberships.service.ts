@@ -170,7 +170,7 @@ export class MembershipsService {
       include: { group: { select: { name: true } } },
     });
     this.email.send({
-      to: `"${user.name}" <${emailSafe}>`,
+      to: `"${user.name}" <${data.email}>`,
       template: 'groups/invitation',
       data: {
         name: user.name,
