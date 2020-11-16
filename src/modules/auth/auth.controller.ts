@@ -163,4 +163,14 @@ export class AuthController {
   ): Promise<TokenResponse> {
     return this.authService.loginWithEmailToken(ip, userAgent, token);
   }
+
+  @Post('merge-accounts')
+  @RateLimit({
+    points: 10,
+    duration: 60,
+    errorMessage: 'Wait for 60 seconds before trying to merge accounts again',
+  })
+  async merge(@Body('token') token: string): Promise<void> {
+    return this.authService.mergeUsers(token);
+  }
 }

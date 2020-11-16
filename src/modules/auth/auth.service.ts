@@ -4,11 +4,11 @@ import {
   Injectable,
   NotFoundException,
   UnauthorizedException,
-  UnprocessableEntityException,
+  UnprocessableEntityException
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Authenticator } from '@otplib/core';
-import { emails, MfaMethod, users } from '@prisma/client';
+import { emails, emailsDelegate, MfaMethod, users } from '@prisma/client';
 import { compare, hash } from 'bcrypt';
 import { createHash } from 'crypto';
 import got from 'got/dist/source';
@@ -32,7 +32,7 @@ import {
   SESSION_NOT_FOUND,
   UNVERIFIED_EMAIL,
   UNVERIFIED_LOCATION,
-  USER_NOT_FOUND,
+  USER_NOT_FOUND
 } from '../../errors/errors.constants';
 import { safeEmail } from '../../helpers/safe-email';
 import { GeolocationService } from '../../providers/geolocation/geolocation.service';
@@ -45,8 +45,9 @@ import {
   EMAIL_MFA_TOKEN,
   EMAIL_VERIFY_TOKEN,
   LOGIN_ACCESS_TOKEN,
+  MERGE_ACCOUNTS_TOKEN,
   MULTI_FACTOR_TOKEN,
-  PASSWORD_RESET_TOKEN,
+  PASSWORD_RESET_TOKEN
 } from '../../providers/tokens/tokens.constants';
 import { TokensService } from '../../providers/tokens/tokens.service';
 import { TwilioService } from '../../providers/twilio/twilio.service';
@@ -56,7 +57,7 @@ import {
   AccessTokenClaims,
   MfaTokenPayload,
   TokenResponse,
-  TotpTokenResponse,
+  TotpTokenResponse
 } from './auth.interface';
 
 @Injectable()
@@ -695,5 +696,59 @@ export class AuthService {
       }
     }
     return ids;
+  }
+
+  async mergeUsers(token: string): Promise<void> {
+    let baseUserId: number | undefined = undefined;
+    let mergeUserId: number | undefined = undefined;
+    try {
+      const result = this.tokensService.verify<{
+        baseUserId: number;
+        mergeUserId: number;
+      }>(MERGE_ACCOUNTS_TOKEN, token);
+      baseUserId = result.baseUserId;
+      mergeUserId = result.mergeUserId;
+    } catch (error) {}
+    if (!baseUserId || !mergeUserId)
+      throw new BadRequestException(USER_NOT_FOUND);
+    return this.merge(baseUserId, mergeUserId);
+  }
+
+  private async merge(baseUserId: number, mergeUserId: number): Promise<void> {
+    const baseUser = await this.prisma.users.findOne({
+      where: { id: baseUserId },
+    });
+    const mergeUser = await this.prisma.users.findOne({
+      where: { id: mergeUserId },
+    });
+    if (!baseUser || !mergeUser) throw new NotFoundException(USER_NOT_FOUND);
+
+    const combinedUser = { ...baseUser };
+    Object.keys(mergeUser).forEach((key) => {
+      if (mergeUser[key]) combinedUser[key] = mergeUser[key];
+    });
+    await this.prisma.users.update({
+      where: { id: baseUserId },
+      data: combinedUser,
+    });
+
+    for await (const dataType of [
+      this.prisma.memberships,
+      this.prisma.emails,
+      this.prisma.sessions,
+      this.prisma.approvedSubnets,
+      this.prisma.backupCodes,
+      this.prisma.identities,
+      this.prisma.auditLogs,
+    ]) {
+      for await (const item of await (dataType as emailsDelegate).findMany({
+        where: { user: { id: mergeUserId } },
+        select: { id: true },
+      }))
+        await (dataType as emailsDelegate).update({
+          where: { id: item.id },
+          data: { user: { connect: { id: baseUserId } } },
+        });
+    }
   }
 }

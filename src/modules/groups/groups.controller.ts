@@ -19,7 +19,7 @@ import { AuditLog } from '../audit-logs/audit-log.decorator';
 import { Scopes } from '../auth/scope.decorator';
 import { ReplaceGroupDto, UpdateGroupDto } from './groups.dto';
 import { GroupsService } from './groups.service';
-import { SelectIncludePipe } from 'src/pipes/select-include.pipe';
+import { SelectIncludePipe } from '../../pipes/select-include.pipe';
 
 @Controller('groups')
 export class GroupController {

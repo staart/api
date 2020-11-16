@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
-  emailsDelegate,
   users,
   usersCreateInput,
   usersOrderByInput,
@@ -20,12 +19,12 @@ import {
   USER_NOT_FOUND,
 } from '../../errors/errors.constants';
 import { safeEmail } from '../../helpers/safe-email';
-import { Expose } from '../../providers/prisma/prisma.interface';
-import { AuthService } from '../auth/auth.service';
 import { MailService } from '../../providers/mail/mail.service';
+import { Expose } from '../../providers/prisma/prisma.interface';
 import { PrismaService } from '../../providers/prisma/prisma.service';
 import { MERGE_ACCOUNTS_TOKEN } from '../../providers/tokens/tokens.constants';
 import { TokensService } from '../../providers/tokens/tokens.service';
+import { AuthService } from '../auth/auth.service';
 import { PasswordUpdateInput } from './users.interface';
 
 @Injectable()
@@ -138,59 +137,5 @@ export class UsersService {
         )}`,
       },
     });
-  }
-
-  async mergeUsers(token: string): Promise<void> {
-    let baseUserId: number | undefined = undefined;
-    let mergeUserId: number | undefined = undefined;
-    try {
-      const result = this.tokensService.verify<{
-        baseUserId: number;
-        mergeUserId: number;
-      }>(MERGE_ACCOUNTS_TOKEN, token);
-      baseUserId = result.baseUserId;
-      mergeUserId = result.mergeUserId;
-    } catch (error) {}
-    if (!baseUserId || !mergeUserId)
-      throw new BadRequestException(USER_NOT_FOUND);
-    return this.merge(baseUserId, mergeUserId);
-  }
-
-  private async merge(baseUserId: number, mergeUserId: number): Promise<void> {
-    const baseUser = await this.prisma.users.findOne({
-      where: { id: baseUserId },
-    });
-    const mergeUser = await this.prisma.users.findOne({
-      where: { id: mergeUserId },
-    });
-    if (!baseUser || !mergeUser) throw new NotFoundException(USER_NOT_FOUND);
-
-    const combinedUser = { ...baseUser };
-    Object.keys(mergeUser).forEach((key) => {
-      if (mergeUser[key]) combinedUser[key] = mergeUser[key];
-    });
-    await this.prisma.users.update({
-      where: { id: baseUserId },
-      data: combinedUser,
-    });
-
-    for await (const dataType of [
-      this.prisma.memberships,
-      this.prisma.emails,
-      this.prisma.sessions,
-      this.prisma.approvedSubnets,
-      this.prisma.backupCodes,
-      this.prisma.identities,
-      this.prisma.auditLogs,
-    ]) {
-      for await (const item of await (dataType as emailsDelegate).findMany({
-        where: { user: { id: mergeUserId } },
-        select: { id: true },
-      }))
-        await (dataType as emailsDelegate).update({
-          where: { id: item.id },
-          data: { user: { connect: { id: baseUserId } } },
-        });
-    }
   }
 }

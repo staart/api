@@ -72,15 +72,4 @@ export class UserController {
   ): Promise<void> {
     return this.usersService.requestMerge(Number(id), email);
   }
-
-  @Post('merge')
-  @Scopes('user-{userId}:merge')
-  @RateLimit({
-    points: 10,
-    duration: 60,
-    errorMessage: 'Wait for 60 seconds before trying to merge again',
-  })
-  async merge(@Body('token') token: string): Promise<void> {
-    return this.usersService.mergeUsers(token);
-  }
 }
