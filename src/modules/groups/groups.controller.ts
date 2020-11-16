@@ -19,6 +19,7 @@ import { AuditLog } from '../audit-logs/audit-log.decorator';
 import { Scopes } from '../auth/scope.decorator';
 import { ReplaceGroupDto, UpdateGroupDto } from './groups.dto';
 import { GroupsService } from './groups.service';
+import { SelectIncludePipe } from 'src/pipes/select-include.pipe';
 
 @Controller('groups')
 export class GroupController {
@@ -46,8 +47,10 @@ export class GroupController {
   @Scopes('group-{groupId}:read-info')
   async get(
     @Param('groupId', ParseIntPipe) id: number,
+    @Query('select', SelectIncludePipe) select?: Record<string, boolean>,
+    @Query('include', SelectIncludePipe) include?: Record<string, boolean>,
   ): Promise<Expose<groups>> {
-    return this.groupsService.getGroup(Number(id));
+    return this.groupsService.getGroup(Number(id), { select, include });
   }
 
   @Patch(':groupId')

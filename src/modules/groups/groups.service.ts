@@ -60,10 +60,21 @@ export class GroupsService {
     return groups.map((user) => this.prisma.expose<groups>(user));
   }
 
-  async getGroup(id: number): Promise<Expose<groups>> {
+  async getGroup(
+    id: number,
+    {
+      select,
+      include,
+    }: {
+      select?: Record<string, boolean>;
+      include?: Record<string, boolean>;
+    },
+  ): Promise<Expose<groups>> {
     const group = await this.prisma.groups.findOne({
       where: { id },
-    });
+      select,
+      include,
+    } as any);
     if (!group) throw new NotFoundException(GROUP_NOT_FOUND);
     return this.prisma.expose<groups>(group);
   }
