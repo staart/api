@@ -108,4 +108,25 @@ export class GroupsService {
     });
     return this.prisma.expose<groups>(group);
   }
+
+  async getSubgroups(
+    id: number,
+    params: {
+      skip?: number;
+      take?: number;
+      cursor?: groupsWhereUniqueInput;
+      where?: groupsWhereInput;
+      orderBy?: groupsOrderByInput;
+    },
+  ): Promise<Expose<groups>[]> {
+    const { skip, take, cursor, where, orderBy } = params;
+    const groups = await this.prisma.groups.findMany({
+      skip,
+      take,
+      cursor,
+      where: { ...where, parent: { id } },
+      orderBy,
+    });
+    return groups.map((user) => this.prisma.expose<groups>(user));
+  }
 }

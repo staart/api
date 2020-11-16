@@ -78,4 +78,23 @@ export class GroupController {
   ): Promise<Expose<groups>> {
     return this.groupsService.deleteGroup(Number(id));
   }
+
+  @Get(':groupId/subgroups')
+  @Scopes('group-*:read-info')
+  async getSubgroups(
+    @Param('groupId', ParseIntPipe) id: number,
+    @Query('skip', OptionalIntPipe) skip?: number,
+    @Query('take', OptionalIntPipe) take?: number,
+    @Query('cursor', CursorPipe) cursor?: Record<string, number | string>,
+    @Query('where', WherePipe) where?: Record<string, number | string>,
+    @Query('orderBy', OrderByPipe) orderBy?: Record<string, 'asc' | 'desc'>,
+  ): Promise<Expose<groups>[]> {
+    return this.groupsService.getSubgroups(id, {
+      skip,
+      take,
+      orderBy,
+      cursor,
+      where,
+    });
+  }
 }
