@@ -150,7 +150,8 @@ export class MembershipsService {
   }
 
   async createUserMembership(userId: number, data: groupsCreateInput) {
-    return this.groupsService.createGroup(userId, data);
+    const created = await this.groupsService.createGroup(userId, data);
+    return created.memberships[0];
   }
 
   async createGroupMembership(

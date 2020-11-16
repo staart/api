@@ -19,7 +19,7 @@ export class GroupsService {
   async createGroup(
     userId: number,
     data: Omit<Omit<groupsCreateInput, 'group'>, 'user'>,
-  ): Promise<groups> {
+  ) {
     let initials = data.name.trim().substr(0, 2).toUpperCase();
     if (data.name.includes(' '))
       initials = data.name
@@ -33,6 +33,7 @@ export class GroupsService {
         luminosity: 'light',
       })}&color=000000`;
     return this.prisma.groups.create({
+      include: { memberships: { include: { group: true } } },
       data: {
         ...data,
         memberships: {
