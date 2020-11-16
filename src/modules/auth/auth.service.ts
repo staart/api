@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
   UnauthorizedException,
-  UnprocessableEntityException
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Authenticator } from '@otplib/core';
@@ -32,7 +32,7 @@ import {
   SESSION_NOT_FOUND,
   UNVERIFIED_EMAIL,
   UNVERIFIED_LOCATION,
-  USER_NOT_FOUND
+  USER_NOT_FOUND,
 } from '../../errors/errors.constants';
 import { safeEmail } from '../../helpers/safe-email';
 import { GeolocationService } from '../../providers/geolocation/geolocation.service';
@@ -47,7 +47,7 @@ import {
   LOGIN_ACCESS_TOKEN,
   MERGE_ACCOUNTS_TOKEN,
   MULTI_FACTOR_TOKEN,
-  PASSWORD_RESET_TOKEN
+  PASSWORD_RESET_TOKEN,
 } from '../../providers/tokens/tokens.constants';
 import { TokensService } from '../../providers/tokens/tokens.service';
 import { TwilioService } from '../../providers/twilio/twilio.service';
@@ -57,7 +57,7 @@ import {
   AccessTokenClaims,
   MfaTokenPayload,
   TokenResponse,
-  TotpTokenResponse
+  TotpTokenResponse,
 } from './auth.interface';
 
 @Injectable()
@@ -214,7 +214,7 @@ export class AuthService {
           'frontendUrl',
         )}/auth/link/verify-email?token=${this.tokensService.signJwt(
           EMAIL_VERIFY_TOKEN,
-          { id: emailDetails.user.id },
+          { id: emailDetails.id },
           '7d',
         )}`,
       },
