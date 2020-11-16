@@ -69,7 +69,7 @@ export class UserController {
   async mergeRequest(
     @Param('userId', ParseIntPipe) id: number,
     @Body('email') email: string,
-  ): Promise<void> {
+  ): Promise<{ queued: true }> {
     return this.usersService.requestMerge(Number(id), email);
   }
 }

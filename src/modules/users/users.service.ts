@@ -111,7 +111,7 @@ export class UsersService {
     return this.prisma.expose<users>(user);
   }
 
-  async requestMerge(userId: number, email: string): Promise<void> {
+  async requestMerge(userId: number, email: string): Promise<{ queued: true }> {
     const emailSafe = safeEmail(email);
     const user = await this.prisma.users.findFirst({
       where: { emails: { some: { emailSafe } } },
@@ -122,7 +122,7 @@ export class UsersService {
     const minutes = parseInt(
       this.configService.get<string>('security.mergeUsersTokenExpiry') ?? '',
     );
-    return this.email.send({
+    this.email.send({
       to: `"${user.name}" <${user.prefersEmail.email}>`,
       template: 'auth/mfa-code',
       data: {
@@ -137,5 +137,6 @@ export class UsersService {
         )}`,
       },
     });
+    return { queued: true };
   }
 }

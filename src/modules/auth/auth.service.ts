@@ -702,7 +702,7 @@ export class AuthService {
     return ids;
   }
 
-  async mergeUsers(token: string): Promise<void> {
+  async mergeUsers(token: string): Promise<{ success: true }> {
     let baseUserId: number | undefined = undefined;
     let mergeUserId: number | undefined = undefined;
     try {
@@ -718,7 +718,10 @@ export class AuthService {
     return this.merge(baseUserId, mergeUserId);
   }
 
-  private async merge(baseUserId: number, mergeUserId: number): Promise<void> {
+  private async merge(
+    baseUserId: number,
+    mergeUserId: number,
+  ): Promise<{ success: true }> {
     const baseUser = await this.prisma.users.findOne({
       where: { id: baseUserId },
     });
@@ -727,9 +730,26 @@ export class AuthService {
     });
     if (!baseUser || !mergeUser) throw new NotFoundException(USER_NOT_FOUND);
 
-    const combinedUser = { ...baseUser };
-    Object.keys(mergeUser).forEach((key) => {
-      if (mergeUser[key]) combinedUser[key] = mergeUser[key];
+    const combinedUser: Record<string, any> = {};
+    [
+      'checkLocationOnLogin',
+      'countryCode',
+      'gender',
+      'name',
+      'notificationEmails',
+      'active',
+      'prefersLanguage',
+      'prefersColorScheme',
+      'prefersReducedMotion',
+      'profilePictureUrl',
+      'role',
+      'timezone',
+      'twoFactorMethod',
+      'twoFactorPhone',
+      'twoFactorSecret',
+      'attributes',
+    ].forEach((key) => {
+      if (mergeUser[key] != null) combinedUser[key] = mergeUser[key];
     });
     await this.prisma.users.update({
       where: { id: baseUserId },
@@ -744,6 +764,7 @@ export class AuthService {
       this.prisma.backupCodes,
       this.prisma.identities,
       this.prisma.auditLogs,
+      this.prisma.apiKeys,
     ]) {
       for await (const item of await (dataType as emailsDelegate).findMany({
         where: { user: { id: mergeUserId } },
@@ -754,5 +775,8 @@ export class AuthService {
           data: { user: { connect: { id: baseUserId } } },
         });
     }
+
+    await this.prisma.users.delete({ where: { id: mergeUser.id } });
+    return { success: true };
   }
 }

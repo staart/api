@@ -174,7 +174,7 @@ export class AuthController {
     duration: 60,
     errorMessage: 'Wait for 60 seconds before trying to merge accounts again',
   })
-  async merge(@Body('token') token: string): Promise<void> {
+  async merge(@Body('token') token: string): Promise<{ success: true }> {
     return this.authService.mergeUsers(token);
   }
 }
