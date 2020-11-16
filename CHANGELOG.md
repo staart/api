@@ -1,3 +1,25 @@
+## [v3.6.0](https://github.com/staart/api/compare/v3.5.6...v3.6.0) (2020-11-16)
+
+### ✨ New features
+
+- [`666e37eb`](https://github.com/staart/api/commit/666e37eb)  Add endpoint for subgroups
+
+### ♻️ Updates
+
+- [`ef2dc724`](https://github.com/staart/api/commit/ef2dc724)  Get subgroup scopes on login
+- [`c5c54c45`](https://github.com/staart/api/commit/c5c54c45)  Add select/include pipe
+- [`2adfc21b`](https://github.com/staart/api/commit/2adfc21b)  Use create group helper in membership service
+- [`4dd62efc`](https://github.com/staart/api/commit/4dd62efc)  Remove attributes from DTO
+- [`9a9cca5d`](https://github.com/staart/api/commit/9a9cca5d)  Use /auth/link for token links
+- [`0c2b15b3`](https://github.com/staart/api/commit/0c2b15b3)  Move merging accounts to auth.service
+- [`70c5328b`](https://github.com/staart/api/commit/70c5328b)  Send token response on email verification
+
+### 🐛 Bug fixes
+
+- [`69a88ce7`](https://github.com/staart/api/commit/69a88ce7)  Return created membership with group
+- [`3f9bbaef`](https://github.com/staart/api/commit/3f9bbaef)  Use email ID to verify, not user ID
+- [`ed3a2103`](https://github.com/staart/api/commit/ed3a2103)  Combine specific keys of users, fix response
+
 ## [v3.5.6](https://github.com/staart/api/compare/v3.5.5...v3.5.6) (2020-11-15)
 
 ### ♻️ Updates
