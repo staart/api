@@ -388,7 +388,11 @@ export class AuthService {
     return this.loginResponse(ipAddress, userAgent, user);
   }
 
-  async verifyEmail(token: string): Promise<Expose<emails>> {
+  async verifyEmail(
+    ipAddress: string,
+    userAgent: string,
+    token: string,
+  ): Promise<TokenResponse> {
     const { id } = this.tokensService.verify<{ id: number }>(
       EMAIL_VERIFY_TOKEN,
       token,
@@ -427,7 +431,7 @@ export class AuthService {
         },
       });
     }
-    return this.prisma.expose<emails>(result);
+    return this.loginResponse(ipAddress, userAgent, result.user);
   }
 
   getOneTimePassword(secret: string): string {

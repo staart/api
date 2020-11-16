@@ -102,8 +102,12 @@ export class AuthController {
   }
 
   @Post('verify-email')
-  async verifyEmail(@Body() data: VerifyEmailDto) {
-    return this.authService.verifyEmail(data.token);
+  async verifyEmail(
+    @Ip() ip: string,
+    @Headers('User-Agent') userAgent: string,
+    @Body() data: VerifyEmailDto,
+  ): Promise<TokenResponse> {
+    return this.authService.verifyEmail(ip, userAgent, data.token);
   }
 
   @Post('forgot-password')
@@ -126,7 +130,7 @@ export class AuthController {
     @Ip() ip: string,
     @Headers('User-Agent') userAgent: string,
     @Body() data: ResetPasswordDto,
-  ) {
+  ): Promise<TokenResponse> {
     return this.authService.resetPassword(
       ip,
       userAgent,
