@@ -6,9 +6,10 @@ import { PrismaModule } from '../../providers/prisma/prisma.module';
 import { GroupMembershipController } from './memberships-group.controller';
 import { UserMembershipController } from './memberships-user.controller';
 import { MembershipsService } from './memberships.service';
+import { GroupsModule } from '../groups/groups.module';
 
 @Module({
-  imports: [PrismaModule, MailModule, ConfigModule, AuthModule],
+  imports: [PrismaModule, MailModule, ConfigModule, AuthModule, GroupsModule],
   controllers: [UserMembershipController, GroupMembershipController],
   providers: [MembershipsService],
 })

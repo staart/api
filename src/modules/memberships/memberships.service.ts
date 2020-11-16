@@ -26,6 +26,7 @@ import { MailService } from '../../providers/mail/mail.service';
 import { Expose } from '../../providers/prisma/prisma.interface';
 import { PrismaService } from '../../providers/prisma/prisma.service';
 import { AuthService } from '../auth/auth.service';
+import { GroupsService } from '../groups/groups.service';
 import { CreateMembershipInput } from './memberships.interface';
 
 @Injectable()
@@ -35,6 +36,7 @@ export class MembershipsService {
     private auth: AuthService,
     private email: MailService,
     private configService: ConfigService,
+    private groupsService: GroupsService,
   ) {}
 
   async getMemberships(params: {
@@ -148,13 +150,7 @@ export class MembershipsService {
   }
 
   async createUserMembership(userId: number, data: groupsCreateInput) {
-    return this.prisma.memberships.create({
-      data: {
-        role: 'OWNER',
-        user: { connect: { id: userId } },
-        group: { create: data },
-      },
-    });
+    return this.groupsService.createGroup(userId, data);
   }
 
   async createGroupMembership(
