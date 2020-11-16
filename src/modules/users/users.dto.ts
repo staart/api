@@ -73,8 +73,4 @@ export class UpdateUserDto {
   @IsEnum(['NONE', 'TOTP', 'EMAIL'])
   @IsOptional()
   twoFactorMethod?: MfaMethod;
-
-  @IsObject()
-  @IsOptional()
-  attributes?: Record<string, any>;
 }

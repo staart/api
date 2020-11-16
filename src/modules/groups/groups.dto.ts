@@ -31,10 +31,6 @@ export class CreateGroupDto {
   @IsString()
   @IsOptional()
   profilePictureUrl?: string;
-
-  @IsObject()
-  @IsOptional()
-  attributes?: Record<string, any>;
 }
 
 export class UpdateGroupDto {
@@ -61,10 +57,6 @@ export class UpdateGroupDto {
   @IsString()
   @IsOptional()
   profilePictureUrl?: string;
-
-  @IsObject()
-  @IsOptional()
-  attributes?: Record<string, any>;
 }
 
 export class ReplaceGroupDto {

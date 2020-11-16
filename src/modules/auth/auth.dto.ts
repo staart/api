@@ -66,10 +66,6 @@ export class RegisterDto {
   @IsOptional()
   timezone?: string;
 
-  @IsObject()
-  @IsOptional()
-  attributes?: Record<string, any>;
-
   @IsBoolean()
   @IsOptional()
   ignorePwnedPassword?: boolean;
