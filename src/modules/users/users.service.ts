@@ -131,7 +131,7 @@ export class UsersService {
         minutes,
         link: `${this.configService.get<string>(
           'frontendUrl',
-        )}/auth/merge-accounts?token=${this.tokensService.signJwt(
+        )}/auth/link/merge-accounts?token=${this.tokensService.signJwt(
           MERGE_ACCOUNTS_TOKEN,
           { baseUserId: userId, mergeUserId: user.id },
           `${minutes}m`,

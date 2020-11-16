@@ -211,7 +211,7 @@ export class AuthService {
         days: 7,
         link: `${this.configService.get<string>(
           'frontendUrl',
-        )}/auth/verify-email?token=${this.tokensService.signJwt(
+        )}/auth/link/verify-email?token=${this.tokensService.signJwt(
           EMAIL_VERIFY_TOKEN,
           { id: emailDetails.user.id },
           '7d',
@@ -355,7 +355,7 @@ export class AuthService {
         minutes: 30,
         link: `${this.configService.get<string>(
           'frontendUrl',
-        )}/auth/reset-password?token=${this.tokensService.signJwt(
+        )}/auth/link/reset-password?token=${this.tokensService.signJwt(
           PASSWORD_RESET_TOKEN,
           { id: emailDetails.user.id },
           '30m',
@@ -563,7 +563,7 @@ export class AuthService {
           ),
           link: `${this.configService.get<string>(
             'frontendUrl',
-          )}/auth/token-login?token=${this.tokensService.signJwt(
+          )}/auth/link/login%2Ftoken?token=${this.tokensService.signJwt(
             EMAIL_MFA_TOKEN,
             { id: user.id },
             '30m',
@@ -624,7 +624,7 @@ export class AuthService {
             minutes: 30,
             link: `${this.configService.get<string>(
               'frontendUrl',
-            )}/auth/reset-password?token=${this.tokensService.signJwt(
+            )}/auth/link/reset-password?token=${this.tokensService.signJwt(
               APPROVE_SUBNET_TOKEN,
               { id },
               '30m',
