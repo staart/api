@@ -1,3 +1,9 @@
+## [v3.6.1](https://github.com/staart/api/compare/v3.6.0...v3.6.1) (2020-11-17)
+
+### 🐛 Bug fixes
+
+- [`d1e7c654`](https://github.com/staart/api/commit/d1e7c654)  Remove unauthorized scopes from API keys
+
 ## [v3.6.0](https://github.com/staart/api/compare/v3.5.6...v3.6.0) (2020-11-16)
 
 ### ✨ New features
