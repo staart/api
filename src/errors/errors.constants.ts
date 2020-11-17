@@ -55,3 +55,5 @@ export const BILLING_ACCOUNT_CREATED_CONFLICT =
 export const MFA_ENABLED_CONFLICT =
   '409004: Multi-factor authentication is already enabled';
 export const MERGE_USER_CONFLICT = '409005: Cannot merge the same user';
+
+export const RATE_LIMIT_EXCEEDED = '429000: Rate limit exceeded';

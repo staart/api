@@ -46,6 +46,25 @@ Alternately, if you want to use AWS SES, you should set these instead (note that
 
 To generate an access/secret key pair, you can create an IAM user with the permission `AmazonSESFullAccess`. For more details, read the article [Creating an IAM user in your AWS account](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html#id_users_create_console) on the AWS website.
 
+### Rate limiting
+
+Staart API has three types of rate limits. When an endpoint is accessed, 1 point is consumed. There are also some endpoints that consume additional points (like logging in or creating an account consumes 10 points). The types of rate limits are:
+
+1. "Public" for unauthenticated requests (250 points/hour)
+2. "Authenticated" for requests with a user access token (5k points/hour)
+3. "API key" for (automated) requests using an API key (10k points/hour)
+
+You can set the rate limits for each of these categories. By default, the rate limit resets after one hour:
+
+| Environment variable                | Description                      | Default |
+| ----------------------------------- | -------------------------------- | ------- |
+| `RATE_LIMIT_PUBLIC_POINTS`          | Maximum points for public        | 250     |
+| `RATE_LIMIT_PUBLIC_DURATION`        | Reset duration for public        | 3600    |
+| `RATE_LIMIT_AUTHENTICATED_POINTS`   | Maximum points for authenticated | 5000    |
+| `RATE_LIMIT_AUTHENTICATED_DURATION` | Reset duration for authenticated | 3600    |
+| `RATE_LIMIT_API_KEY_POINTS`         | Maximum points for API key       | 10000   |
+| `RATE_LIMIT_API_KEY_DURATION`       | Reset duration for API key       | 3600    |
+
 ## Optional services
 
 ### ElasticSearch

@@ -10,12 +10,12 @@ import {
   Query,
 } from '@nestjs/common';
 import { users } from '@prisma/client';
-import { RateLimit } from 'nestjs-rate-limiter';
-import { Expose } from '../../providers/prisma/prisma.interface';
 import { CursorPipe } from '../../pipes/cursor.pipe';
 import { OptionalIntPipe } from '../../pipes/optional-int.pipe';
 import { OrderByPipe } from '../../pipes/order-by.pipe';
 import { WherePipe } from '../../pipes/where.pipe';
+import { Expose } from '../../providers/prisma/prisma.interface';
+import { RateLimit } from '../auth/rate-limit.decorator';
 import { Scopes } from '../auth/scope.decorator';
 import { UpdateUserDto } from './users.dto';
 import { UsersService } from './users.service';
@@ -61,11 +61,7 @@ export class UserController {
 
   @Post(':userId/merge-request')
   @Scopes('user-{userId}:merge')
-  @RateLimit({
-    points: 10,
-    duration: 60,
-    errorMessage: 'Wait for 60 seconds before trying to merge again',
-  })
+  @RateLimit(10)
   async mergeRequest(
     @Param('userId', ParseIntPipe) id: number,
     @Body('email') email: string,

@@ -1,6 +1,5 @@
 import { Body, Controller, Headers, Ip, Post } from '@nestjs/common';
 import { users } from '@prisma/client';
-import { RateLimit } from 'nestjs-rate-limiter';
 import { Expose } from '../../providers/prisma/prisma.interface';
 import {
   ForgotPasswordDto,
@@ -14,6 +13,7 @@ import {
 import { TokenResponse, TotpTokenResponse } from './auth.interface';
 import { AuthService } from './auth.service';
 import { Public } from './public.decorator';
+import { RateLimit } from './rate-limit.decorator';
 
 @Controller('auth')
 @Public()
@@ -21,11 +21,7 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('login')
-  @RateLimit({
-    points: 10,
-    duration: 60,
-    errorMessage: 'Wait for 60 seconds before trying to login again',
-  })
+  @RateLimit(10)
   async login(
     @Body() data: LoginDto,
     @Ip() ip: string,
@@ -41,11 +37,7 @@ export class AuthController {
   }
 
   @Post('register')
-  @RateLimit({
-    points: 10,
-    duration: 60,
-    errorMessage: 'Wait for 60 seconds before trying to create an account',
-  })
+  @RateLimit(10)
   async register(
     @Ip() ip: string,
     @Body() data: RegisterDto,
@@ -54,11 +46,7 @@ export class AuthController {
   }
 
   @Post('refresh')
-  @RateLimit({
-    points: 5,
-    duration: 60,
-    errorMessage: 'Wait for 60 seconds before trying to login again',
-  })
+  @RateLimit(5)
   async refresh(
     @Ip() ip: string,
     @Headers('User-Agent') userAgent: string,
@@ -68,21 +56,13 @@ export class AuthController {
   }
 
   @Post('logout')
-  @RateLimit({
-    points: 5,
-    duration: 60,
-    errorMessage: 'Wait for 60 seconds before trying to logout again',
-  })
+  @RateLimit(5)
   async logout(@Body('token') refreshToken: string): Promise<void> {
     return this.authService.logout(refreshToken);
   }
 
   @Post('approve-subnet')
-  @RateLimit({
-    points: 5,
-    duration: 60,
-    errorMessage: 'Wait for 60 seconds before trying to logout again',
-  })
+  @RateLimit(5)
   async approveSubnet(
     @Ip() ip: string,
     @Headers('User-Agent') userAgent: string,
@@ -92,11 +72,7 @@ export class AuthController {
   }
 
   @Post('resend-email-verification')
-  @RateLimit({
-    points: 1,
-    duration: 60,
-    errorMessage: 'Wait for 60 seconds before requesting another email',
-  })
+  @RateLimit(10)
   async resendVerify(@Body() data: ResendEmailVerificationDto) {
     return this.authService.sendEmailVerification(data.email, true);
   }
@@ -111,21 +87,13 @@ export class AuthController {
   }
 
   @Post('forgot-password')
-  @RateLimit({
-    points: 10,
-    duration: 60,
-    errorMessage: 'Wait for 60 seconds before resetting another password',
-  })
+  @RateLimit(10)
   async forgotPassword(@Body() data: ForgotPasswordDto) {
     return this.authService.requestPasswordReset(data.email);
   }
 
   @Post('reset-password')
-  @RateLimit({
-    points: 10,
-    duration: 60,
-    errorMessage: 'Wait for 60 seconds before resetting another password',
-  })
+  @RateLimit(10)
   async resetPassword(
     @Ip() ip: string,
     @Headers('User-Agent') userAgent: string,
@@ -141,11 +109,7 @@ export class AuthController {
   }
 
   @Post('login/totp')
-  @RateLimit({
-    points: 10,
-    duration: 60,
-    errorMessage: 'Wait for 60 seconds before trying to login again',
-  })
+  @RateLimit(10)
   async totpLogin(
     @Body() data: TotpLoginDto,
     @Ip() ip: string,
@@ -155,11 +119,7 @@ export class AuthController {
   }
 
   @Post('login/token')
-  @RateLimit({
-    points: 10,
-    duration: 60,
-    errorMessage: 'Wait for 60 seconds before trying to login again',
-  })
+  @RateLimit(10)
   async emailTokenLoginPost(
     @Body('token') token: string,
     @Ip() ip: string,
@@ -169,11 +129,7 @@ export class AuthController {
   }
 
   @Post('merge-accounts')
-  @RateLimit({
-    points: 10,
-    duration: 60,
-    errorMessage: 'Wait for 60 seconds before trying to merge accounts again',
-  })
+  @RateLimit(10)
   async merge(@Body('token') token: string): Promise<{ success: true }> {
     return this.authService.mergeUsers(token);
   }

@@ -7,9 +7,9 @@ import {
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
-import { RateLimiterInterceptor, RateLimiterModule } from 'nestjs-rate-limiter';
 import configuration from './config/configuration';
 import { AuditLogger } from './interceptors/audit-log.interceptor';
+import { RateLimitInterceptor } from './interceptors/rate-limit.interceptor';
 import { ApiLoggerMiddleware } from './middleware/api-logger.middleware';
 import { JsonBodyMiddleware } from './middleware/json-body.middleware';
 import { RawBodyMiddleware } from './middleware/raw-body.middleware';
@@ -53,10 +53,6 @@ import { TasksModule } from './providers/tasks/tasks.module';
     TasksModule,
     UsersModule,
     AuthModule,
-    RateLimiterModule.register({
-      points: 100,
-      duration: 60,
-    }),
     MailModule,
     SessionsModule,
     EmailsModule,
@@ -84,7 +80,7 @@ import { TasksModule } from './providers/tasks/tasks.module';
   providers: [
     {
       provide: APP_INTERCEPTOR,
-      useClass: RateLimiterInterceptor,
+      useClass: RateLimitInterceptor,
     },
     {
       provide: APP_GUARD,

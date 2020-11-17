@@ -16,6 +16,20 @@ const configuration: Configuration = {
     domainVerificationFile:
       process.env.DOMAIN_VERIFICATION_FILE ?? 'staart-verify.txt',
   },
+  rateLimit: {
+    public: {
+      points: int(process.env.RATE_LIMIT_PUBLIC_POINTS, 250),
+      duration: int(process.env.RATE_LIMIT_PUBLIC_DURATION, 3600),
+    },
+    authenticated: {
+      points: int(process.env.RATE_LIMIT_AUTHENTICATED_POINTS, 5000),
+      duration: int(process.env.RATE_LIMIT_AUTHENTICATED_DURATION, 3600),
+    },
+    apiKey: {
+      points: int(process.env.RATE_LIMIT_API_KEY_POINTS, 10000),
+      duration: int(process.env.RATE_LIMIT_API_KEY_DURATION, 3600),
+    },
+  },
   caching: {
     geolocationLruSize: int(process.env.GEOLOCATION_LRU_SIZE, 100),
     apiKeyLruSize: int(process.env.API_KEY_LRU_SIZE, 100),

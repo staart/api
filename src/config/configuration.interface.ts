@@ -14,6 +14,12 @@ export interface Configuration {
     apiKeyLruSize: number;
   };
 
+  rateLimit: {
+    public: { points: number; duration: number };
+    authenticated: { points: number; duration: number };
+    apiKey: { points: number; duration: number };
+  };
+
   security: {
     saltRounds: number;
     jwtSecret: string;
