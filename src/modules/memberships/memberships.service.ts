@@ -25,6 +25,7 @@ import { safeEmail } from '../../helpers/safe-email';
 import { MailService } from '../../providers/mail/mail.service';
 import { Expose } from '../../providers/prisma/prisma.interface';
 import { PrismaService } from '../../providers/prisma/prisma.service';
+import { ApiKeysService } from '../api-keys/api-keys.service';
 import { AuthService } from '../auth/auth.service';
 import { GroupsService } from '../groups/groups.service';
 import { CreateMembershipInput } from './memberships.interface';
@@ -37,6 +38,7 @@ export class MembershipsService {
     private email: MailService,
     private configService: ConfigService,
     private groupsService: GroupsService,
+    private apiKeyService: ApiKeysService,
   ) {}
 
   async getMemberships(params: {
@@ -100,6 +102,7 @@ export class MembershipsService {
     const membership = await this.prisma.memberships.delete({
       where: { id },
     });
+    await this.apiKeyService.removeUnauthorizedScopesForUser(userId);
     return this.prisma.expose<memberships>(membership);
   }
 
@@ -128,6 +131,9 @@ export class MembershipsService {
       data,
       include: { user: true },
     });
+    await this.apiKeyService.removeUnauthorizedScopesForUser(
+      testMembership.userId,
+    );
     return this.prisma.expose<memberships>(membership);
   }
 
@@ -146,9 +152,11 @@ export class MembershipsService {
       where: { id },
       include: { user: true },
     });
+    await this.apiKeyService.removeUnauthorizedScopesForUser(
+      testMembership.userId,
+    );
     return this.prisma.expose<memberships>(membership);
   }
-
   async createUserMembership(userId: number, data: groupsCreateInput) {
     const created = await this.groupsService.createGroup(userId, data);
     return created.memberships[0];

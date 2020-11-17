@@ -279,6 +279,31 @@ export class ApiKeysService {
     return this.getApiLogsFromKey(testApiKey.apiKey, params);
   }
 
+  /**
+   * Remove any unauthorized scopes in an API key for a user
+   * This should run when a user's permissions have changed, for example
+   * if they are removed from a group; this will remove any API scopes
+   * they don't have access to anymore from that API key
+   */
+  async removeUnauthorizedScopesForUser(userId: number): Promise<void> {
+    const userApiKeys = await this.prisma.apiKeys.findMany({
+      where: { user: { id: userId } },
+    });
+    if (!userApiKeys.length) return;
+    const scopesAllowed = await this.getApiKeyScopesForUser(userId);
+    for await (const apiKey of userApiKeys) {
+      const currentScopes = (apiKey.scopes ?? []) as string[];
+      const newScopes = currentScopes.filter((i) =>
+        Object.keys(scopesAllowed).includes(i),
+      );
+      if (currentScopes.length !== newScopes.length)
+        this.prisma.apiKeys.update({
+          where: { id: apiKey.id },
+          data: { scopes: newScopes },
+        });
+    }
+  }
+
   private async getApiLogsFromKey(
     apiKey: string,
     params: {
