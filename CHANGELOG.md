@@ -1,3 +1,10 @@
+## [v3.6.2](https://github.com/staart/api/compare/v3.6.1...v3.6.2) (2020-11-17)
+
+### ♻️ Updates
+
+- [`58971f05`](https://github.com/staart/api/commit/58971f05)  Use internal interceptor, decorator
+- [`c6ba4afd`](https://github.com/staart/api/commit/c6ba4afd)  Use custom rate limiter
+
 ## [v3.6.1](https://github.com/staart/api/compare/v3.6.0...v3.6.1) (2020-11-17)
 
 ### 🐛 Bug fixes
