@@ -61,11 +61,7 @@ export class UserController {
 
   @Post(':userId/merge-request')
   @Scopes('user-{userId}:merge')
-  @RateLimit({
-    points: 10,
-    duration: 60,
-    errorMessage: 'Wait for 60 seconds before trying to merge again',
-  })
+  @RateLimit(10)
   async mergeRequest(
     @Param('userId', ParseIntPipe) id: number,
     @Body('email') email: string,
