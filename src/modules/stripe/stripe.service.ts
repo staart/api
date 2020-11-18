@@ -77,6 +77,13 @@ export class StripeService {
     return result;
   }
 
+  async getBillingPortalLink(
+    groupId: number,
+  ): Promise<Stripe.Response<Stripe.BillingPortal.Session>> {
+    const stripeId = await this.stripeId(groupId);
+    return this.stripe.billingPortal.sessions.create({ customer: stripeId });
+  }
+
   async getInvoices(
     groupId: number,
     params: {
@@ -165,7 +172,7 @@ export class StripeService {
   async createSession(
     groupId: number,
     mode: Stripe.Checkout.SessionCreateParams.Mode,
-    price?: string,
+    planId?: string,
   ): Promise<Stripe.Checkout.Session> {
     const stripeId = await this.stripeId(groupId);
     const data: Stripe.Checkout.SessionCreateParams = {
@@ -176,12 +183,17 @@ export class StripeService {
       >('payments.paymentMethodTypes') ?? ['card'],
       success_url: `${this.configService.get<string>(
         'frontendUrl',
-      )}/groups/${groupId}/subscription`,
+      )}/groups/${groupId}/billing/${
+        mode === 'setup' ? 'sources' : 'subscription'
+      }`,
       cancel_url: `${this.configService.get<string>(
         'frontendUrl',
-      )}/groups/${groupId}/subscription`,
+      )}/groups/${groupId}/billing/${
+        mode === 'setup' ? 'sources' : 'subscription'
+      }`,
     };
-    if (mode === 'subscription') data.line_items = [{ quantity: 1, price }];
+    if (mode === 'subscription')
+      data.line_items = [{ quantity: 1, price: planId }];
     const result = await this.stripe.checkout.sessions.create(data);
     return result;
   }

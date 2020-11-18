@@ -69,4 +69,13 @@ export class StripeBillingController {
   ): Promise<Stripe.DeletedCustomer> {
     return this.stripeService.deleteCustomer(groupId);
   }
+
+  @Post()
+  @AuditLog('billing-portal')
+  @Scopes('group-{groupId}:write-billing')
+  async getSession(
+    @Param('groupId', ParseIntPipe) groupId: number,
+  ): Promise<Stripe.Response<Stripe.BillingPortal.Session>> {
+    return this.stripeService.getBillingPortalLink(groupId);
+  }
 }
