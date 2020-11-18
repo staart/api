@@ -47,8 +47,8 @@ export class RateLimitInterceptor implements NestInterceptor {
     const request = context.switchToHttp().getRequest() as UserRequest;
     const response = context.switchToHttp().getResponse();
     let limiter = this.rateLimiterPublic;
-    if (request.user.type === 'api-key') limiter = this.rateLimiterApiKey;
-    else if (request.user.type === 'user')
+    if (request.user?.type === 'api-key') limiter = this.rateLimiterApiKey;
+    else if (request.user?.type === 'user')
       limiter = this.rateLimiterAuthenticated;
     try {
       const ip = getClientIp(request);
