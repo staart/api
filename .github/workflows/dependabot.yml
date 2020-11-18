@@ -1,0 +1,15 @@
+name: Dependabot PR CI
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+jobs:
+  label-approve:
+    name: Label and approve minor/patch updates
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: koj-co/dependabot-pr-action@master
+        with:
+          token: ${{ secrets.GH_PAT }}
+          merge-minor: true
+          merge-patch: true
