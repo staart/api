@@ -70,7 +70,7 @@ export class StripeBillingController {
     return this.stripeService.deleteCustomer(groupId);
   }
 
-  @Post('link')
+  @Get('link')
   @AuditLog('billing-portal')
   @Scopes('group-{groupId}:write-billing')
   async getSession(
