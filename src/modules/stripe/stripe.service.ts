@@ -81,7 +81,12 @@ export class StripeService {
     groupId: number,
   ): Promise<Stripe.Response<Stripe.BillingPortal.Session>> {
     const stripeId = await this.stripeId(groupId);
-    return this.stripe.billingPortal.sessions.create({ customer: stripeId });
+    return this.stripe.billingPortal.sessions.create({
+      customer: stripeId,
+      return_url: `${this.configService.get<string>(
+        'frontendUrl',
+      )}/groups/${groupId}`,
+    });
   }
 
   async getInvoices(
@@ -183,14 +188,10 @@ export class StripeService {
       >('payments.paymentMethodTypes') ?? ['card'],
       success_url: `${this.configService.get<string>(
         'frontendUrl',
-      )}/groups/${groupId}/billing/${
-        mode === 'setup' ? 'sources' : 'subscription'
-      }`,
+      )}/groups/${groupId}`,
       cancel_url: `${this.configService.get<string>(
         'frontendUrl',
-      )}/groups/${groupId}/billing/${
-        mode === 'setup' ? 'sources' : 'subscription'
-      }`,
+      )}/groups/${groupId}`,
     };
     if (mode === 'subscription')
       data.line_items = [{ quantity: 1, price: planId }];
