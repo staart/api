@@ -1,3 +1,21 @@
+## [v3.6.3](https://github.com/staart/api/compare/v3.6.2...v3.6.3) (2020-11-18)
+
+### ♻️ Updates
+
+- [`76181f1a`](https://github.com/staart/api/commit/76181f1a)  Add Stripe controllers to module
+- [`018837c4`](https://github.com/staart/api/commit/018837c4)  Add billing portal session link
+- [`dba69e18`](https://github.com/staart/api/commit/dba69e18)  Redirect to session home
+- [`aa64deef`](https://github.com/staart/api/commit/aa64deef)  Use GET method for billing portal
+
+### 🐛 Bug fixes
+
+- [`a8011fc1`](https://github.com/staart/api/commit/a8011fc1)  Make req.user optional
+- [`79ddd033`](https://github.com/staart/api/commit/79ddd033)  Use /billing/link URL for billing portal
+
+### ⬆️ Dependency updates
+
+- [`c2637fad`](https://github.com/staart/api/commit/c2637fad)  Update koj-co/template
+
 ## [v3.6.2](https://github.com/staart/api/compare/v3.6.1...v3.6.2) (2020-11-17)
 
 ### ♻️ Updates
