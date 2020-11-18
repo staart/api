@@ -15,7 +15,7 @@ import { Scopes } from '../auth/scope.decorator';
 import { StripeService } from './stripe.service';
 
 @Controller('groups/:groupId/subscriptions')
-export class StripeBillingController {
+export class StripeSubscriptionController {
   constructor(private stripeService: StripeService) {}
 
   @Post(':plan')
