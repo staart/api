@@ -1,6 +1,6 @@
 {
   "name": "@staart/api",
-  "version": "3.6.3",
+  "version": "3.6.4",
   "description": "SaaS backend framework with users, payments, APIs, and more",
   "repository": "git@github.com:staart/api.git",
   "author": "Anand Chowdhary <mail@anandchowdhary.com>",
