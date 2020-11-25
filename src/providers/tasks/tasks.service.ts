@@ -21,7 +21,7 @@ export class TasksService {
       this.configService.get<number>('security.unusedRefreshTokenExpiryDays') ??
       30;
     now.setDate(now.getDate() - unusedRefreshTokenExpiryDays);
-    const deleted = await this.prisma.sessions.deleteMany({
+    const deleted = await this.prisma.session.deleteMany({
       where: { updatedAt: { lte: now } },
     });
     if (deleted.count)
@@ -34,7 +34,7 @@ export class TasksService {
     const inactiveUserDeleteDays =
       this.configService.get<number>('security.inactiveUserDeleteDays') ?? 30;
     now.setDate(now.getDate() - inactiveUserDeleteDays);
-    const deleted = await this.prisma.users.deleteMany({
+    const deleted = await this.prisma.user.deleteMany({
       where: {
         active: false,
         sessions: { every: { updatedAt: { lte: now } } },

@@ -1,5 +1,5 @@
 import { Body, Controller, Headers, Ip, Post } from '@nestjs/common';
-import { users } from '@prisma/client';
+import { User } from '@prisma/client';
 import { Expose } from '../../providers/prisma/prisma.interface';
 import {
   ForgotPasswordDto,
@@ -41,7 +41,7 @@ export class AuthController {
   async register(
     @Ip() ip: string,
     @Body() data: RegisterDto,
-  ): Promise<Expose<users>> {
+  ): Promise<Expose<User>> {
     return this.authService.register(ip, data);
   }
 

@@ -1,10 +1,10 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import {
-  approvedSubnets,
-  emails,
+  ApprovedSubnet,
+  Email,
   PrismaClient,
-  sessions,
-  users,
+  Session,
+  User,
 } from '@prisma/client';
 import { Expose } from './prisma.interface';
 
@@ -23,11 +23,11 @@ export class PrismaService
   /** Delete sensitive keys from an object */
   expose<T>(item: T): Expose<T> {
     if (!item) return {} as T;
-    delete ((item as any) as Partial<users>).password;
-    delete ((item as any) as Partial<users>).twoFactorSecret;
-    delete ((item as any) as Partial<sessions>).token;
-    delete ((item as any) as Partial<emails>).emailSafe;
-    delete ((item as any) as Partial<approvedSubnets>).subnet;
+    delete ((item as any) as Partial<User>).password;
+    delete ((item as any) as Partial<User>).twoFactorSecret;
+    delete ((item as any) as Partial<Session>).token;
+    delete ((item as any) as Partial<Email>).emailSafe;
+    delete ((item as any) as Partial<ApprovedSubnet>).subnet;
     return item;
   }
 }

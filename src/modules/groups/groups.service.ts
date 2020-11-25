@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { groups } from '@prisma/client';
 import type { Prisma } from '@prisma/client';
+import { Group } from '@prisma/client';
 import randomColor from 'randomcolor';
 import { GROUP_NOT_FOUND } from '../../errors/errors.constants';
 import { Expose } from '../../providers/prisma/prisma.interface';
@@ -12,7 +12,7 @@ export class GroupsService {
 
   async createGroup(
     userId: number,
-    data: Omit<Omit<Prisma.groupsCreateInput, 'group'>, 'user'>,
+    data: Omit<Omit<Prisma.GroupCreateInput, 'group'>, 'user'>,
   ) {
     let initials = data.name.trim().substr(0, 2).toUpperCase();
     if (data.name.includes(' '))
@@ -26,7 +26,7 @@ export class GroupsService {
       `https://ui-avatars.com/api/?name=${initials}&background=${randomColor({
         luminosity: 'light',
       })}&color=000000`;
-    return this.prisma.groups.create({
+    return this.prisma.group.create({
       include: { memberships: { include: { group: true } } },
       data: {
         ...data,
@@ -40,19 +40,19 @@ export class GroupsService {
   async getGroups(params: {
     skip?: number;
     take?: number;
-    cursor?: Prisma.groupsWhereUniqueInput;
-    where?: Prisma.groupsWhereInput;
-    orderBy?: Prisma.groupsOrderByInput;
-  }): Promise<Expose<groups>[]> {
+    cursor?: Prisma.GroupWhereUniqueInput;
+    where?: Prisma.GroupWhereInput;
+    orderBy?: Prisma.GroupOrderByInput;
+  }): Promise<Expose<Group>[]> {
     const { skip, take, cursor, where, orderBy } = params;
-    const groups = await this.prisma.groups.findMany({
+    const groups = await this.prisma.group.findMany({
       skip,
       take,
       cursor,
       where,
       orderBy,
     });
-    return groups.map((user) => this.prisma.expose<groups>(user));
+    return groups.map((user) => this.prisma.expose<Group>(user));
   }
 
   async getGroup(
@@ -64,55 +64,55 @@ export class GroupsService {
       select?: Record<string, boolean>;
       include?: Record<string, boolean>;
     },
-  ): Promise<Expose<groups>> {
-    const group = await this.prisma.groups.findUnique({
+  ): Promise<Expose<Group>> {
+    const group = await this.prisma.group.findUnique({
       where: { id },
       select,
       include,
     } as any);
     if (!group) throw new NotFoundException(GROUP_NOT_FOUND);
-    return this.prisma.expose<groups>(group);
+    return this.prisma.expose<Group>(group);
   }
 
   async updateGroup(
     id: number,
-    data: Prisma.groupsUpdateInput,
-  ): Promise<Expose<groups>> {
-    const testGroup = await this.prisma.groups.findUnique({
+    data: Prisma.GroupUpdateInput,
+  ): Promise<Expose<Group>> {
+    const testGroup = await this.prisma.group.findUnique({
       where: { id },
     });
     if (!testGroup) throw new NotFoundException(GROUP_NOT_FOUND);
-    const group = await this.prisma.groups.update({
+    const group = await this.prisma.group.update({
       where: { id },
       data,
     });
-    return this.prisma.expose<groups>(group);
+    return this.prisma.expose<Group>(group);
   }
 
   async replaceGroup(
     id: number,
-    data: Prisma.groupsCreateInput,
-  ): Promise<Expose<groups>> {
-    const testGroup = await this.prisma.groups.findUnique({
+    data: Prisma.GroupCreateInput,
+  ): Promise<Expose<Group>> {
+    const testGroup = await this.prisma.group.findUnique({
       where: { id },
     });
     if (!testGroup) throw new NotFoundException(GROUP_NOT_FOUND);
-    const group = await this.prisma.groups.update({
+    const group = await this.prisma.group.update({
       where: { id },
       data,
     });
-    return this.prisma.expose<groups>(group);
+    return this.prisma.expose<Group>(group);
   }
 
-  async deleteGroup(id: number): Promise<Expose<groups>> {
-    const testGroup = await this.prisma.groups.findUnique({
+  async deleteGroup(id: number): Promise<Expose<Group>> {
+    const testGroup = await this.prisma.group.findUnique({
       where: { id },
     });
     if (!testGroup) throw new NotFoundException(GROUP_NOT_FOUND);
-    const group = await this.prisma.groups.delete({
+    const group = await this.prisma.group.delete({
       where: { id },
     });
-    return this.prisma.expose<groups>(group);
+    return this.prisma.expose<Group>(group);
   }
 
   async getSubgroups(
@@ -120,19 +120,19 @@ export class GroupsService {
     params: {
       skip?: number;
       take?: number;
-      cursor?: Prisma.groupsWhereUniqueInput;
-      where?: Prisma.groupsWhereInput;
-      orderBy?: Prisma.groupsOrderByInput;
+      cursor?: Prisma.GroupWhereUniqueInput;
+      where?: Prisma.GroupWhereInput;
+      orderBy?: Prisma.GroupOrderByInput;
     },
-  ): Promise<Expose<groups>[]> {
+  ): Promise<Expose<Group>[]> {
     const { skip, take, cursor, where, orderBy } = params;
-    const groups = await this.prisma.groups.findMany({
+    const groups = await this.prisma.group.findMany({
       skip,
       take,
       cursor,
       where: { ...where, parent: { id } },
       orderBy,
     });
-    return groups.map((user) => this.prisma.expose<groups>(user));
+    return groups.map((user) => this.prisma.expose<Group>(user));
   }
 }

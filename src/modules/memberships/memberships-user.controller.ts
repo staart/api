@@ -8,12 +8,12 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { memberships } from '@prisma/client';
-import { Expose } from '../../providers/prisma/prisma.interface';
+import { Membership } from '@prisma/client';
 import { CursorPipe } from '../../pipes/cursor.pipe';
 import { OptionalIntPipe } from '../../pipes/optional-int.pipe';
 import { OrderByPipe } from '../../pipes/order-by.pipe';
 import { WherePipe } from '../../pipes/where.pipe';
+import { Expose } from '../../providers/prisma/prisma.interface';
 import { Scopes } from '../auth/scope.decorator';
 import { CreateGroupDto } from '../groups/groups.dto';
 import { MembershipsService } from './memberships.service';
@@ -27,7 +27,7 @@ export class UserMembershipController {
   async create(
     @Param('userId', ParseIntPipe) userId: number,
     @Body() data: CreateGroupDto,
-  ): Promise<Expose<memberships>> {
+  ): Promise<Expose<Membership>> {
     return this.membershipsService.createUserMembership(userId, data);
   }
 
@@ -40,7 +40,7 @@ export class UserMembershipController {
     @Query('cursor', CursorPipe) cursor?: Record<string, number | string>,
     @Query('where', WherePipe) where?: Record<string, number | string>,
     @Query('orderBy', OrderByPipe) orderBy?: Record<string, 'asc' | 'desc'>,
-  ): Promise<Expose<memberships>[]> {
+  ): Promise<Expose<Membership>[]> {
     return this.membershipsService.getMemberships({
       skip,
       take,
@@ -55,7 +55,7 @@ export class UserMembershipController {
   async get(
     @Param('userId', ParseIntPipe) userId: number,
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<Expose<memberships>> {
+  ): Promise<Expose<Membership>> {
     return this.membershipsService.getUserMembership(userId, Number(id));
   }
 
@@ -64,7 +64,7 @@ export class UserMembershipController {
   async remove(
     @Param('userId', ParseIntPipe) userId: number,
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<Expose<memberships>> {
+  ): Promise<Expose<Membership>> {
     return this.membershipsService.deleteUserMembership(userId, Number(id));
   }
 }

@@ -5,8 +5,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { users } from '@prisma/client';
 import type { MfaMethod } from '@prisma/client';
+import { User } from '@prisma/client';
 import { hash } from 'bcrypt';
 import {
   MFA_ENABLED_CONFLICT,
@@ -14,12 +14,12 @@ import {
   NO_EMAILS,
   USER_NOT_FOUND,
 } from '../../errors/errors.constants';
-import { AuthService } from '../auth/auth.service';
 import { MailService } from '../../providers/mail/mail.service';
 import { Expose } from '../../providers/prisma/prisma.interface';
 import { PrismaService } from '../../providers/prisma/prisma.service';
 import { TokensService } from '../../providers/tokens/tokens.service';
 import { TwilioService } from '../../providers/twilio/twilio.service';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class MultiFactorAuthenticationService {
@@ -33,7 +33,7 @@ export class MultiFactorAuthenticationService {
   ) {}
 
   async requestTotpMfa(userId: number): Promise<string> {
-    const enabled = await this.prisma.users.findUnique({
+    const enabled = await this.prisma.user.findUnique({
       where: { id: userId },
       select: { twoFactorMethod: true },
     });
@@ -44,7 +44,7 @@ export class MultiFactorAuthenticationService {
   }
 
   async requestSmsMfa(userId: number, phone: string): Promise<void> {
-    const enabled = await this.prisma.users.findUnique({
+    const enabled = await this.prisma.user.findUnique({
       where: { id: userId },
       select: { twoFactorMethod: true },
     });
@@ -52,7 +52,7 @@ export class MultiFactorAuthenticationService {
     if (enabled.twoFactorMethod !== 'NONE')
       throw new ConflictException(MFA_ENABLED_CONFLICT);
     const secret = this.tokensService.generateUuid();
-    await this.prisma.users.update({
+    await this.prisma.user.update({
       where: { id: userId },
       data: { twoFactorSecret: secret, twoFactorPhone: phone },
     });
@@ -65,7 +65,7 @@ export class MultiFactorAuthenticationService {
   }
 
   async requestEmailMfa(userId: number): Promise<void> {
-    const user = await this.prisma.users.findUnique({
+    const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: {
         twoFactorMethod: true,
@@ -78,7 +78,7 @@ export class MultiFactorAuthenticationService {
     if (user.twoFactorMethod !== 'NONE')
       throw new ConflictException(MFA_ENABLED_CONFLICT);
     const secret = this.tokensService.generateUuid();
-    await this.prisma.users.update({
+    await this.prisma.user.update({
       where: { id: userId },
       data: { twoFactorSecret: secret },
     });
@@ -102,23 +102,23 @@ export class MultiFactorAuthenticationService {
     return this.regenerateBackupCodes(userId);
   }
 
-  async disableMfa(userId: number): Promise<Expose<users>> {
-    const enabled = await this.prisma.users.findUnique({
+  async disableMfa(userId: number): Promise<Expose<User>> {
+    const enabled = await this.prisma.user.findUnique({
       where: { id: userId },
       select: { twoFactorMethod: true },
     });
     if (!enabled) throw new NotFoundException(USER_NOT_FOUND);
     if (enabled.twoFactorMethod === 'NONE')
       throw new BadRequestException(MFA_NOT_ENABLED);
-    const user = await this.prisma.users.update({
+    const user = await this.prisma.user.update({
       where: { id: userId },
       data: { twoFactorMethod: 'NONE', twoFactorSecret: null },
     });
-    return this.prisma.expose<users>(user);
+    return this.prisma.expose<User>(user);
   }
 
   async regenerateBackupCodes(id: number) {
-    await this.prisma.backupCodes.deleteMany({ where: { user: { id } } });
+    await this.prisma.backupCode.deleteMany({ where: { user: { id } } });
     const codes: string[] = [];
     for await (const _ of [...Array(10)]) {
       const unsafeCode = this.tokensService.generateUuid();
@@ -127,7 +127,7 @@ export class MultiFactorAuthenticationService {
         unsafeCode,
         this.configService.get<number>('security.saltRounds') ?? 10,
       );
-      await this.prisma.backupCodes.create({
+      await this.prisma.backupCode.create({
         data: { user: { connect: { id } }, code },
       });
     }

@@ -6,12 +6,12 @@ import {
   ParseIntPipe,
   Query,
 } from '@nestjs/common';
-import { sessions } from '@prisma/client';
-import { Expose } from '../../providers/prisma/prisma.interface';
+import { Session } from '@prisma/client';
 import { CursorPipe } from '../../pipes/cursor.pipe';
 import { OptionalIntPipe } from '../../pipes/optional-int.pipe';
 import { OrderByPipe } from '../../pipes/order-by.pipe';
 import { WherePipe } from '../../pipes/where.pipe';
+import { Expose } from '../../providers/prisma/prisma.interface';
 import { Scopes } from '../auth/scope.decorator';
 import { SessionsService } from './sessions.service';
 
@@ -28,7 +28,7 @@ export class SessionController {
     @Query('cursor', CursorPipe) cursor?: Record<string, number | string>,
     @Query('where', WherePipe) where?: Record<string, number | string>,
     @Query('orderBy', OrderByPipe) orderBy?: Record<string, 'asc' | 'desc'>,
-  ): Promise<Expose<sessions>[]> {
+  ): Promise<Expose<Session>[]> {
     return this.sessionsService.getSessions(userId, {
       skip,
       take,
@@ -43,7 +43,7 @@ export class SessionController {
   async get(
     @Param('userId', ParseIntPipe) userId: number,
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<Expose<sessions>> {
+  ): Promise<Expose<Session>> {
     return this.sessionsService.getSession(userId, Number(id));
   }
 
@@ -52,7 +52,7 @@ export class SessionController {
   async remove(
     @Param('userId', ParseIntPipe) userId: number,
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<Expose<sessions>> {
+  ): Promise<Expose<Session>> {
     return this.sessionsService.deleteSession(userId, Number(id));
   }
 }

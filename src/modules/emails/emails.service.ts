@@ -4,8 +4,8 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { emails } from '@prisma/client';
 import type { Prisma } from '@prisma/client';
+import { Email } from '@prisma/client';
 import {
   EMAIL_DELETE_PRIMARY,
   EMAIL_NOT_FOUND,
@@ -28,10 +28,10 @@ export class EmailsService {
 
   async createEmail(
     userId: number,
-    data: Omit<Omit<Prisma.emailsCreateInput, 'emailSafe'>, 'user'>,
-  ): Promise<emails> {
+    data: Omit<Omit<Prisma.EmailCreateInput, 'emailSafe'>, 'user'>,
+  ): Promise<Email> {
     const emailSafe = safeEmail(data.email);
-    const result = await this.prisma.emails.create({
+    const result = await this.prisma.email.create({
       data: { ...data, emailSafe, user: { connect: { id: userId } } },
     });
     await this.auth.sendEmailVerification(data.email);
@@ -43,58 +43,58 @@ export class EmailsService {
     params: {
       skip?: number;
       take?: number;
-      cursor?: Prisma.emailsWhereUniqueInput;
-      where?: Prisma.emailsWhereInput;
-      orderBy?: Prisma.emailsOrderByInput;
+      cursor?: Prisma.EmailWhereUniqueInput;
+      where?: Prisma.EmailWhereInput;
+      orderBy?: Prisma.EmailOrderByInput;
     },
-  ): Promise<Expose<emails>[]> {
+  ): Promise<Expose<Email>[]> {
     const { skip, take, cursor, where, orderBy } = params;
-    const emails = await this.prisma.emails.findMany({
+    const emails = await this.prisma.email.findMany({
       skip,
       take,
       cursor,
       where: { ...where, user: { id: userId } },
       orderBy,
     });
-    return emails.map((user) => this.prisma.expose<emails>(user));
+    return emails.map((user) => this.prisma.expose<Email>(user));
   }
 
-  async getEmail(userId: number, id: number): Promise<Expose<emails>> {
-    const email = await this.prisma.emails.findUnique({
+  async getEmail(userId: number, id: number): Promise<Expose<Email>> {
+    const email = await this.prisma.email.findUnique({
       where: { id },
     });
     if (!email) throw new NotFoundException(EMAIL_NOT_FOUND);
     if (email.userId !== userId)
       throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
-    return this.prisma.expose<emails>(email);
+    return this.prisma.expose<Email>(email);
   }
 
-  async deleteEmail(userId: number, id: number): Promise<Expose<emails>> {
-    const testEmail = await this.prisma.emails.findUnique({
+  async deleteEmail(userId: number, id: number): Promise<Expose<Email>> {
+    const testEmail = await this.prisma.email.findUnique({
       where: { id },
     });
     if (!testEmail) throw new NotFoundException(EMAIL_NOT_FOUND);
     if (testEmail.userId !== userId)
       throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
-    const user = await this.prisma.users.findUnique({
+    const user = await this.prisma.user.findUnique({
       where: { id: userId },
       include: { prefersEmail: true },
     });
     if (!user) throw new NotFoundException(USER_NOT_FOUND);
     if (user.prefersEmail.id === id) {
       const otherEmails = (
-        await this.prisma.emails.findMany({ where: { user: { id: userId } } })
+        await this.prisma.email.findMany({ where: { user: { id: userId } } })
       ).filter((i) => i.id !== id);
       if (!otherEmails.length)
         throw new BadRequestException(EMAIL_DELETE_PRIMARY);
-      await this.prisma.users.update({
+      await this.prisma.user.update({
         where: { id: userId },
         data: { prefersEmail: { connect: { id: otherEmails[0].id } } },
       });
     }
-    const email = await this.prisma.emails.delete({
+    const email = await this.prisma.email.delete({
       where: { id },
     });
-    return this.prisma.expose<emails>(email);
+    return this.prisma.expose<Email>(email);
   }
 }

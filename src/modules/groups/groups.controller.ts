@@ -9,7 +9,7 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { groups } from '@prisma/client';
+import { Group } from '@prisma/client';
 import { Expose } from '../../providers/prisma/prisma.interface';
 import { CursorPipe } from '../../pipes/cursor.pipe';
 import { OptionalIntPipe } from '../../pipes/optional-int.pipe';
@@ -33,7 +33,7 @@ export class GroupController {
     @Query('cursor', CursorPipe) cursor?: Record<string, number | string>,
     @Query('where', WherePipe) where?: Record<string, number | string>,
     @Query('orderBy', OrderByPipe) orderBy?: Record<string, 'asc' | 'desc'>,
-  ): Promise<Expose<groups>[]> {
+  ): Promise<Expose<Group>[]> {
     return this.groupsService.getGroups({
       skip,
       take,
@@ -49,7 +49,7 @@ export class GroupController {
     @Param('groupId', ParseIntPipe) id: number,
     @Query('select', SelectIncludePipe) select?: Record<string, boolean>,
     @Query('include', SelectIncludePipe) include?: Record<string, boolean>,
-  ): Promise<Expose<groups>> {
+  ): Promise<Expose<Group>> {
     return this.groupsService.getGroup(Number(id), { select, include });
   }
 
@@ -59,7 +59,7 @@ export class GroupController {
   async update(
     @Body() data: UpdateGroupDto,
     @Param('groupId', ParseIntPipe) id: number,
-  ): Promise<Expose<groups>> {
+  ): Promise<Expose<Group>> {
     return this.groupsService.updateGroup(Number(id), data);
   }
 
@@ -69,7 +69,7 @@ export class GroupController {
   async replace(
     @Body() data: ReplaceGroupDto,
     @Param('groupId', ParseIntPipe) id: number,
-  ): Promise<Expose<groups>> {
+  ): Promise<Expose<Group>> {
     return this.groupsService.updateGroup(Number(id), data);
   }
 
@@ -78,7 +78,7 @@ export class GroupController {
   @Scopes('group-{groupId}:delete')
   async remove(
     @Param('groupId', ParseIntPipe) id: number,
-  ): Promise<Expose<groups>> {
+  ): Promise<Expose<Group>> {
     return this.groupsService.deleteGroup(Number(id));
   }
 
@@ -91,7 +91,7 @@ export class GroupController {
     @Query('cursor', CursorPipe) cursor?: Record<string, number | string>,
     @Query('where', WherePipe) where?: Record<string, number | string>,
     @Query('orderBy', OrderByPipe) orderBy?: Record<string, 'asc' | 'desc'>,
-  ): Promise<Expose<groups>[]> {
+  ): Promise<Expose<Group>[]> {
     return this.groupsService.getSubgroups(id, {
       skip,
       take,

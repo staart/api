@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { memberships, users } from '@prisma/client';
+import { Membership, User } from '@prisma/client';
 import type { Prisma } from '@prisma/client';
 import {
   CANNOT_DELETE_SOLE_MEMBER,
@@ -37,12 +37,12 @@ export class MembershipsService {
   async getMemberships(params: {
     skip?: number;
     take?: number;
-    cursor?: Prisma.membershipsWhereUniqueInput;
-    where?: Prisma.membershipsWhereInput;
-    orderBy?: Prisma.membershipsOrderByInput;
-  }): Promise<Expose<memberships>[]> {
+    cursor?: Prisma.MembershipWhereUniqueInput;
+    where?: Prisma.MembershipWhereInput;
+    orderBy?: Prisma.MembershipOrderByInput;
+  }): Promise<Expose<Membership>[]> {
     const { skip, take, cursor, where, orderBy } = params;
-    const memberships = await this.prisma.memberships.findMany({
+    const memberships = await this.prisma.membership.findMany({
       skip,
       take,
       cursor,
@@ -50,61 +50,61 @@ export class MembershipsService {
       orderBy,
       include: { group: true, user: true },
     });
-    return memberships.map((user) => this.prisma.expose<memberships>(user));
+    return memberships.map((user) => this.prisma.expose<Membership>(user));
   }
 
   async getUserMembership(
     userId: number,
     id: number,
-  ): Promise<Expose<memberships>> {
-    const membership = await this.prisma.memberships.findUnique({
+  ): Promise<Expose<Membership>> {
+    const membership = await this.prisma.membership.findUnique({
       where: { id },
       include: { group: true },
     });
     if (!membership) throw new NotFoundException(MEMBERSHIP_NOT_FOUND);
     if (membership.userId !== userId)
       throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
-    return this.prisma.expose<memberships>(membership);
+    return this.prisma.expose<Membership>(membership);
   }
 
   async getGroupMembership(
     groupId: number,
     id: number,
-  ): Promise<Expose<memberships>> {
-    const membership = await this.prisma.memberships.findUnique({
+  ): Promise<Expose<Membership>> {
+    const membership = await this.prisma.membership.findUnique({
       where: { id },
       include: { user: true },
     });
     if (!membership) throw new NotFoundException(MEMBERSHIP_NOT_FOUND);
     if (membership.groupId !== groupId)
       throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
-    return this.prisma.expose<memberships>(membership);
+    return this.prisma.expose<Membership>(membership);
   }
 
   async deleteUserMembership(
     userId: number,
     id: number,
-  ): Promise<Expose<memberships>> {
-    const testMembership = await this.prisma.memberships.findUnique({
+  ): Promise<Expose<Membership>> {
+    const testMembership = await this.prisma.membership.findUnique({
       where: { id },
     });
     if (!testMembership) throw new NotFoundException(MEMBERSHIP_NOT_FOUND);
     if (testMembership.userId !== userId)
       throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
     await this.verifyDeleteMembership(testMembership.groupId, id);
-    const membership = await this.prisma.memberships.delete({
+    const membership = await this.prisma.membership.delete({
       where: { id },
     });
     await this.apiKeyService.removeUnauthorizedScopesForUser(userId);
-    return this.prisma.expose<memberships>(membership);
+    return this.prisma.expose<Membership>(membership);
   }
 
   async updateGroupMembership(
     groupId: number,
     id: number,
-    data: Prisma.membershipsUpdateInput,
-  ): Promise<Expose<memberships>> {
-    const testMembership = await this.prisma.memberships.findUnique({
+    data: Prisma.MembershipUpdateInput,
+  ): Promise<Expose<Membership>> {
+    const testMembership = await this.prisma.membership.findUnique({
       where: { id },
     });
     if (!testMembership) throw new NotFoundException(MEMBERSHIP_NOT_FOUND);
@@ -112,14 +112,14 @@ export class MembershipsService {
       throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
     if (testMembership.role === 'OWNER' && data.role !== 'OWNER') {
       const otherOwners = (
-        await this.prisma.memberships.findMany({
+        await this.prisma.membership.findMany({
           where: { group: { id: groupId }, role: 'OWNER' },
         })
       ).filter((i) => i.id !== id);
       if (!otherOwners.length)
         throw new BadRequestException(CANNOT_UPDATE_ROLE_SOLE_OWNER);
     }
-    const membership = await this.prisma.memberships.update({
+    const membership = await this.prisma.membership.update({
       where: { id },
       data,
       include: { user: true },
@@ -127,30 +127,30 @@ export class MembershipsService {
     await this.apiKeyService.removeUnauthorizedScopesForUser(
       testMembership.userId,
     );
-    return this.prisma.expose<memberships>(membership);
+    return this.prisma.expose<Membership>(membership);
   }
 
   async deleteGroupMembership(
     groupId: number,
     id: number,
-  ): Promise<Expose<memberships>> {
-    const testMembership = await this.prisma.memberships.findUnique({
+  ): Promise<Expose<Membership>> {
+    const testMembership = await this.prisma.membership.findUnique({
       where: { id },
     });
     if (!testMembership) throw new NotFoundException(MEMBERSHIP_NOT_FOUND);
     if (testMembership.groupId !== groupId)
       throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
     await this.verifyDeleteMembership(testMembership.groupId, id);
-    const membership = await this.prisma.memberships.delete({
+    const membership = await this.prisma.membership.delete({
       where: { id },
       include: { user: true },
     });
     await this.apiKeyService.removeUnauthorizedScopesForUser(
       testMembership.userId,
     );
-    return this.prisma.expose<memberships>(membership);
+    return this.prisma.expose<Membership>(membership);
   }
-  async createUserMembership(userId: number, data: Prisma.groupsCreateInput) {
+  async createUserMembership(userId: number, data: Prisma.GroupCreateInput) {
     const created = await this.groupsService.createGroup(userId, data);
     return created.memberships[0];
   }
@@ -161,15 +161,15 @@ export class MembershipsService {
     data: CreateMembershipInput,
   ) {
     const emailSafe = safeEmail(data.email);
-    const userResult = await this.prisma.users.findFirst({
+    const userResult = await this.prisma.user.findFirst({
       where: { emails: { some: { emailSafe } } },
     });
-    let user: Expose<users> | null = userResult
-      ? this.prisma.expose<users>(userResult)
+    let user: Expose<User> | null = userResult
+      ? this.prisma.expose<User>(userResult)
       : null;
     if (!user)
       user = await this.auth.register(ipAddress, { name: data.email, ...data });
-    const result = await this.prisma.memberships.create({
+    const result = await this.prisma.membership.create({
       data: {
         role: data.role,
         group: { connect: { id: groupId } },
@@ -188,7 +188,7 @@ export class MembershipsService {
         )}/groups/${groupId}`,
       },
     });
-    return this.prisma.expose<memberships>(result);
+    return this.prisma.expose<Membership>(result);
   }
 
   /** Verify whether a group membership can be deleted */
@@ -196,12 +196,12 @@ export class MembershipsService {
     groupId: number,
     membershipId: number,
   ): Promise<void> {
-    const memberships = await this.prisma.memberships.findMany({
+    const memberships = await this.prisma.membership.findMany({
       where: { group: { id: groupId } },
     });
     if (memberships.length === 1)
       throw new BadRequestException(CANNOT_DELETE_SOLE_MEMBER);
-    const membership = await this.prisma.memberships.findUnique({
+    const membership = await this.prisma.membership.findUnique({
       where: { id: membershipId },
     });
     if (!membership) throw new NotFoundException(MEMBERSHIP_NOT_FOUND);

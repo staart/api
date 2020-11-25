@@ -10,14 +10,14 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { apiKeys } from '@prisma/client';
+import { ApiKey } from '@prisma/client';
 import { CursorPipe } from '../../pipes/cursor.pipe';
 import { OptionalIntPipe } from '../../pipes/optional-int.pipe';
 import { OrderByPipe } from '../../pipes/order-by.pipe';
 import { WherePipe } from '../../pipes/where.pipe';
+import { Expose } from '../../providers/prisma/prisma.interface';
 import { AuditLog } from '../audit-logs/audit-log.decorator';
 import { Scopes } from '../auth/scope.decorator';
-import { Expose } from '../../providers/prisma/prisma.interface';
 import {
   CreateApiKeyDto,
   ReplaceApiKeyDto,
@@ -35,7 +35,7 @@ export class ApiKeyUserController {
   async create(
     @Param('userId', ParseIntPipe) userId: number,
     @Body() data: CreateApiKeyDto,
-  ): Promise<Expose<apiKeys>> {
+  ): Promise<Expose<ApiKey>> {
     return this.apiKeysService.createApiKeyForUser(userId, data);
   }
 
@@ -48,7 +48,7 @@ export class ApiKeyUserController {
     @Query('cursor', CursorPipe) cursor?: Record<string, number | string>,
     @Query('where', WherePipe) where?: Record<string, number | string>,
     @Query('orderBy', OrderByPipe) orderBy?: Record<string, 'asc' | 'desc'>,
-  ): Promise<Expose<apiKeys>[]> {
+  ): Promise<Expose<ApiKey>[]> {
     return this.apiKeysService.getApiKeysForUser(userId, {
       skip,
       take,
@@ -71,7 +71,7 @@ export class ApiKeyUserController {
   async get(
     @Param('userId', ParseIntPipe) userId: number,
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<Expose<apiKeys>> {
+  ): Promise<Expose<ApiKey>> {
     return this.apiKeysService.getApiKeyForUser(userId, Number(id));
   }
 
@@ -82,7 +82,7 @@ export class ApiKeyUserController {
     @Body() data: UpdateApiKeyDto,
     @Param('userId', ParseIntPipe) userId: number,
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<Expose<apiKeys>> {
+  ): Promise<Expose<ApiKey>> {
     return this.apiKeysService.updateApiKeyForUser(userId, Number(id), data);
   }
 
@@ -93,7 +93,7 @@ export class ApiKeyUserController {
     @Body() data: ReplaceApiKeyDto,
     @Param('userId', ParseIntPipe) userId: number,
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<Expose<apiKeys>> {
+  ): Promise<Expose<ApiKey>> {
     return this.apiKeysService.updateApiKeyForUser(userId, Number(id), data);
   }
 
@@ -103,7 +103,7 @@ export class ApiKeyUserController {
   async remove(
     @Param('userId', ParseIntPipe) userId: number,
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<Expose<apiKeys>> {
+  ): Promise<Expose<ApiKey>> {
     return this.apiKeysService.deleteApiKeyForUser(userId, Number(id));
   }
 

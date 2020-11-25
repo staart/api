@@ -8,14 +8,14 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { domains } from '@prisma/client';
+import { Domain } from '@prisma/client';
 import { CursorPipe } from '../../pipes/cursor.pipe';
 import { OptionalIntPipe } from '../../pipes/optional-int.pipe';
 import { OrderByPipe } from '../../pipes/order-by.pipe';
 import { WherePipe } from '../../pipes/where.pipe';
+import { Expose } from '../../providers/prisma/prisma.interface';
 import { AuditLog } from '../audit-logs/audit-log.decorator';
 import { Scopes } from '../auth/scope.decorator';
-import { Expose } from '../../providers/prisma/prisma.interface';
 import {
   DOMAIN_VERIFICATION_HTML,
   DOMAIN_VERIFICATION_TXT,
@@ -33,7 +33,7 @@ export class DomainController {
   async create(
     @Param('groupId', ParseIntPipe) groupId: number,
     @Body() data: CreateDomainDto,
-  ): Promise<Expose<domains>> {
+  ): Promise<Expose<Domain>> {
     return this.domainsService.createDomain(groupId, data);
   }
 
@@ -46,7 +46,7 @@ export class DomainController {
     @Query('cursor', CursorPipe) cursor?: Record<string, number | string>,
     @Query('where', WherePipe) where?: Record<string, number | string>,
     @Query('orderBy', OrderByPipe) orderBy?: Record<string, 'asc' | 'desc'>,
-  ): Promise<Expose<domains>[]> {
+  ): Promise<Expose<Domain>[]> {
     return this.domainsService.getDomains(groupId, {
       skip,
       take,
@@ -61,7 +61,7 @@ export class DomainController {
   async get(
     @Param('groupId', ParseIntPipe) groupId: number,
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<Expose<domains>> {
+  ): Promise<Expose<Domain>> {
     return this.domainsService.getDomain(groupId, Number(id));
   }
 
@@ -71,7 +71,7 @@ export class DomainController {
   async remove(
     @Param('groupId', ParseIntPipe) groupId: number,
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<Expose<domains>> {
+  ): Promise<Expose<Domain>> {
     return this.domainsService.deleteDomain(groupId, Number(id));
   }
 
@@ -81,7 +81,7 @@ export class DomainController {
   async verifyTxt(
     @Param('groupId', ParseIntPipe) groupId: number,
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<Expose<domains>> {
+  ): Promise<Expose<Domain>> {
     return this.domainsService.verifyDomain(
       groupId,
       Number(id),
@@ -95,7 +95,7 @@ export class DomainController {
   async verifyHtml(
     @Param('groupId', ParseIntPipe) groupId: number,
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<Expose<domains>> {
+  ): Promise<Expose<Domain>> {
     return this.domainsService.verifyDomain(
       groupId,
       Number(id),

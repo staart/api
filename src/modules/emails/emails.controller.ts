@@ -8,12 +8,12 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { emails } from '@prisma/client';
-import { Expose } from '../../providers/prisma/prisma.interface';
+import { Email } from '@prisma/client';
 import { CursorPipe } from '../../pipes/cursor.pipe';
 import { OptionalIntPipe } from '../../pipes/optional-int.pipe';
 import { OrderByPipe } from '../../pipes/order-by.pipe';
 import { WherePipe } from '../../pipes/where.pipe';
+import { Expose } from '../../providers/prisma/prisma.interface';
 import { Scopes } from '../auth/scope.decorator';
 import { CreateEmailDto } from './emails.dto';
 import { EmailsService } from './emails.service';
@@ -27,7 +27,7 @@ export class EmailController {
   async create(
     @Param('userId', ParseIntPipe) userId: number,
     @Body() data: CreateEmailDto,
-  ): Promise<Expose<emails>> {
+  ): Promise<Expose<Email>> {
     return this.emailsService.createEmail(userId, data);
   }
 
@@ -40,7 +40,7 @@ export class EmailController {
     @Query('cursor', CursorPipe) cursor?: Record<string, number | string>,
     @Query('where', WherePipe) where?: Record<string, number | string>,
     @Query('orderBy', OrderByPipe) orderBy?: Record<string, 'asc' | 'desc'>,
-  ): Promise<Expose<emails>[]> {
+  ): Promise<Expose<Email>[]> {
     return this.emailsService.getEmails(userId, {
       skip,
       take,
@@ -55,7 +55,7 @@ export class EmailController {
   async get(
     @Param('userId', ParseIntPipe) userId: number,
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<Expose<emails>> {
+  ): Promise<Expose<Email>> {
     return this.emailsService.getEmail(userId, Number(id));
   }
 
@@ -64,7 +64,7 @@ export class EmailController {
   async remove(
     @Param('userId', ParseIntPipe) userId: number,
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<Expose<emails>> {
+  ): Promise<Expose<Email>> {
     return this.emailsService.deleteEmail(userId, Number(id));
   }
 }

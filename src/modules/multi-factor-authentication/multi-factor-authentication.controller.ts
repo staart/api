@@ -7,7 +7,7 @@ import {
   ParseIntPipe,
   Post,
 } from '@nestjs/common';
-import { users } from '@prisma/client';
+import { User } from '@prisma/client';
 import { MFA_PHONE_OR_TOKEN_REQUIRED } from '../../errors/errors.constants';
 import { Expose } from '../../providers/prisma/prisma.interface';
 import { Scopes } from '../auth/scope.decorator';
@@ -35,7 +35,7 @@ export class MultiFactorAuthenticationController {
   @Scopes('user-{userId}:delete-mfa-*')
   async disable2FA(
     @Param('userId', ParseIntPipe) userId: number,
-  ): Promise<Expose<users>> {
+  ): Promise<Expose<User>> {
     return this.multiFactorAuthenticationService.disableMfa(userId);
   }
 

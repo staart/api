@@ -6,6 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import Stripe from 'stripe';
 import {
   BILLING_ACCOUNT_CREATED_CONFLICT,
   BILLING_NOT_FOUND,
@@ -15,7 +16,6 @@ import {
   SOURCE_NOT_FOUND,
   SUBSCRIPTION_NOT_FOUND,
 } from '../../errors/errors.constants';
-import Stripe from 'stripe';
 import { PrismaService } from '../../providers/prisma/prisma.service';
 
 @Injectable()
@@ -36,7 +36,7 @@ export class StripeService {
   }
 
   async createCustomer(groupId: number, data: Stripe.CustomerCreateParams) {
-    const group = await this.prisma.groups.findUnique({
+    const group = await this.prisma.group.findUnique({
       where: { id: groupId },
       select: { attributes: true },
     });
@@ -45,7 +45,7 @@ export class StripeService {
     if (attributes?.stripeCustomerId)
       throw new ConflictException(BILLING_ACCOUNT_CREATED_CONFLICT);
     const result = await this.stripe.customers.create(data);
-    await this.prisma.groups.update({
+    await this.prisma.group.update({
       where: { id: groupId },
       data: { attributes: { stripeCustomerId: result.id } },
     });
@@ -70,7 +70,7 @@ export class StripeService {
     const result = (await this.stripe.customers.del(
       stripeId,
     )) as Stripe.DeletedCustomer;
-    await this.prisma.groups.update({
+    await this.prisma.group.update({
       where: { id: groupId },
       data: { attributes: { stripeCustomerId: null } },
     });
@@ -254,7 +254,7 @@ export class StripeService {
 
   /** Get the Stripe customer ID from a group or throw an error */
   private async stripeId(groupId: number): Promise<string> {
-    const group = await this.prisma.groups.findUnique({
+    const group = await this.prisma.group.findUnique({
       where: { id: groupId },
       select: { attributes: true },
     });

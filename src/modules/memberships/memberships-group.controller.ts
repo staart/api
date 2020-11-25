@@ -10,12 +10,12 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { memberships } from '@prisma/client';
-import { Expose } from '../../providers/prisma/prisma.interface';
+import { Membership } from '@prisma/client';
 import { CursorPipe } from '../../pipes/cursor.pipe';
 import { OptionalIntPipe } from '../../pipes/optional-int.pipe';
 import { OrderByPipe } from '../../pipes/order-by.pipe';
 import { WherePipe } from '../../pipes/where.pipe';
+import { Expose } from '../../providers/prisma/prisma.interface';
 import { AuditLog } from '../audit-logs/audit-log.decorator';
 import { Scopes } from '../auth/scope.decorator';
 import {
@@ -35,7 +35,7 @@ export class GroupMembershipController {
     @Ip() ip: string,
     @Param('groupId', ParseIntPipe) groupId: number,
     @Body() data: CreateGroupMembershipDto,
-  ): Promise<Expose<memberships>> {
+  ): Promise<Expose<Membership>> {
     return this.membershipsService.createGroupMembership(ip, groupId, data);
   }
 
@@ -48,7 +48,7 @@ export class GroupMembershipController {
     @Query('cursor', CursorPipe) cursor?: Record<string, number | string>,
     @Query('where', WherePipe) where?: Record<string, number | string>,
     @Query('orderBy', OrderByPipe) orderBy?: Record<string, 'asc' | 'desc'>,
-  ): Promise<Expose<memberships>[]> {
+  ): Promise<Expose<Membership>[]> {
     return this.membershipsService.getMemberships({
       skip,
       take,
@@ -63,7 +63,7 @@ export class GroupMembershipController {
   async get(
     @Param('groupId', ParseIntPipe) groupId: number,
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<Expose<memberships>> {
+  ): Promise<Expose<Membership>> {
     return this.membershipsService.getGroupMembership(groupId, Number(id));
   }
 
@@ -74,7 +74,7 @@ export class GroupMembershipController {
     @Body() data: UpdateMembershipDto,
     @Param('groupId', ParseIntPipe) groupId: number,
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<Expose<memberships>> {
+  ): Promise<Expose<Membership>> {
     return this.membershipsService.updateGroupMembership(
       groupId,
       Number(id),
@@ -88,7 +88,7 @@ export class GroupMembershipController {
   async remove(
     @Param('groupId', ParseIntPipe) groupId: number,
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<Expose<memberships>> {
+  ): Promise<Expose<Membership>> {
     return this.membershipsService.deleteGroupMembership(groupId, Number(id));
   }
 }

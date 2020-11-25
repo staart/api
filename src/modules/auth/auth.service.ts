@@ -8,8 +8,8 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Authenticator } from '@otplib/core';
-import { emails, MfaMethod, users } from '@prisma/client';
 import type { Prisma } from '@prisma/client';
+import { Email, MfaMethod, User } from '@prisma/client';
 import { compare, hash } from 'bcrypt';
 import { createHash } from 'crypto';
 import got from 'got/dist/source';
@@ -91,7 +91,7 @@ export class AuthService {
     code?: string,
   ): Promise<TokenResponse | TotpTokenResponse> {
     const emailSafe = safeEmail(email);
-    const user = await this.prisma.users.findFirst({
+    const user = await this.prisma.user.findFirst({
       where: { emails: { some: { emailSafe } } },
       include: {
         emails: true,
@@ -100,7 +100,7 @@ export class AuthService {
     });
     if (!user) throw new NotFoundException(USER_NOT_FOUND);
     if (!user.active)
-      await this.prisma.users.update({
+      await this.prisma.user.update({
         where: { id: user.id },
         data: { active: true },
       });
@@ -122,13 +122,10 @@ export class AuthService {
     return this.loginResponse(ipAddress, userAgent, user);
   }
 
-  async register(
-    ipAddress: string,
-    _data: RegisterDto,
-  ): Promise<Expose<users>> {
+  async register(ipAddress: string, _data: RegisterDto): Promise<Expose<User>> {
     const { email, ...data } = _data;
     const emailSafe = safeEmail(email);
-    const testUser = await this.prisma.users.findFirst({
+    const testUser = await this.prisma.user.findFirst({
       where: { emails: { some: { emailSafe } } },
     });
     if (testUser) throw new ConflictException(EMAIL_USER_CONFLICT);
@@ -175,7 +172,7 @@ export class AuthService {
       } catch (error) {}
     }
 
-    const user = await this.prisma.users.create({
+    const user = await this.prisma.user.create({
       data: {
         ...data,
         emails: {
@@ -185,7 +182,7 @@ export class AuthService {
       include: { emails: { select: { id: true } } },
     });
     if (user.emails[0]?.id)
-      await this.prisma.users.update({
+      await this.prisma.user.update({
         where: { id: user.id },
         data: { prefersEmail: { connect: { id: user.emails[0].id } } },
       });
@@ -196,7 +193,7 @@ export class AuthService {
 
   async sendEmailVerification(email: string, resend = false) {
     const emailSafe = safeEmail(email);
-    const emailDetails = await this.prisma.emails.findFirst({
+    const emailDetails = await this.prisma.email.findFirst({
       where: { emailSafe },
       include: { user: true },
     });
@@ -229,12 +226,12 @@ export class AuthService {
     token: string,
   ): Promise<TokenResponse> {
     if (!token) throw new UnprocessableEntityException(NO_TOKEN_PROVIDED);
-    const session = await this.prisma.sessions.findFirst({
+    const session = await this.prisma.session.findFirst({
       where: { token },
       include: { user: true },
     });
     if (!session) throw new NotFoundException(SESSION_NOT_FOUND);
-    await this.prisma.sessions.updateMany({
+    await this.prisma.session.updateMany({
       where: { token },
       data: { ipAddress, userAgent },
     });
@@ -246,12 +243,12 @@ export class AuthService {
 
   async logout(token: string): Promise<void> {
     if (!token) throw new UnprocessableEntityException(NO_TOKEN_PROVIDED);
-    const session = await this.prisma.sessions.findFirst({
+    const session = await this.prisma.session.findFirst({
       where: { token },
       select: { id: true, user: { select: { id: true } } },
     });
     if (!session) throw new NotFoundException(SESSION_NOT_FOUND);
-    await this.prisma.sessions.delete({
+    await this.prisma.session.delete({
       where: { id: session.id },
     });
   }
@@ -266,7 +263,7 @@ export class AuthService {
       APPROVE_SUBNET_TOKEN,
       token,
     );
-    const user = await this.prisma.users.findUnique({ where: { id } });
+    const user = await this.prisma.user.findUnique({ where: { id } });
     if (!user) throw new NotFoundException(USER_NOT_FOUND);
     await this.approvedSubnetsService.approveNewSubnet(id, ipAddress);
     return this.loginResponse(ipAddress, userAgent, user);
@@ -278,7 +275,7 @@ export class AuthService {
    */
   async getTotpQrCode(userId: number): Promise<string> {
     const secret = this.tokensService.generateUuid();
-    await this.prisma.users.update({
+    await this.prisma.user.update({
       where: { id: userId },
       data: { twoFactorSecret: secret },
     });
@@ -295,8 +292,8 @@ export class AuthService {
     method: MfaMethod,
     userId: number,
     code: string,
-  ): Promise<Expose<users>> {
-    const user = await this.prisma.users.findUnique({
+  ): Promise<Expose<User>> {
+    const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: { twoFactorSecret: true, twoFactorMethod: true },
     });
@@ -307,11 +304,11 @@ export class AuthService {
       user.twoFactorSecret = this.tokensService.generateUuid();
     if (!this.authenticator.check(code, user.twoFactorSecret))
       throw new UnauthorizedException(INVALID_MFA_CODE);
-    const result = await this.prisma.users.update({
+    const result = await this.prisma.user.update({
       where: { id: userId },
       data: { twoFactorMethod: method, twoFactorSecret: user.twoFactorSecret },
     });
-    return this.prisma.expose<users>(result);
+    return this.prisma.expose<User>(result);
   }
 
   async loginWithTotp(
@@ -336,7 +333,7 @@ export class AuthService {
       EMAIL_MFA_TOKEN,
       token,
     );
-    const user = await this.prisma.users.findUnique({ where: { id } });
+    const user = await this.prisma.user.findUnique({ where: { id } });
     if (!user) throw new NotFoundException(USER_NOT_FOUND);
     await this.approvedSubnetsService.upsertNewSubnet(id, ipAddress);
     return this.loginResponse(ipAddress, userAgent, user);
@@ -344,7 +341,7 @@ export class AuthService {
 
   async requestPasswordReset(email: string) {
     const emailSafe = safeEmail(email);
-    const emailDetails = await this.prisma.emails.findFirst({
+    const emailDetails = await this.prisma.email.findFirst({
       where: { emailSafe },
       include: { user: true },
     });
@@ -378,13 +375,13 @@ export class AuthService {
       PASSWORD_RESET_TOKEN,
       token,
     );
-    const user = await this.prisma.users.findUnique({ where: { id } });
+    const user = await this.prisma.user.findUnique({ where: { id } });
     if (!user) throw new NotFoundException(USER_NOT_FOUND);
     password = await this.hashAndValidatePassword(
       password,
       !!ignorePwnedPassword,
     );
-    await this.prisma.users.update({ where: { id }, data: { password } });
+    await this.prisma.user.update({ where: { id }, data: { password } });
     await this.approvedSubnetsService.upsertNewSubnet(id, ipAddress);
     return this.loginResponse(ipAddress, userAgent, user);
   }
@@ -398,12 +395,12 @@ export class AuthService {
       EMAIL_VERIFY_TOKEN,
       token,
     );
-    const result = await this.prisma.emails.update({
+    const result = await this.prisma.email.update({
       where: { id },
       data: { isVerified: true },
       include: { user: true },
     });
-    const groupsToJoin = await this.prisma.groups.findMany({
+    const groupsToJoin = await this.prisma.group.findMany({
       where: {
         autoJoinDomain: true,
         domains: {
@@ -413,7 +410,7 @@ export class AuthService {
       select: { id: true, name: true },
     });
     for await (const group of groupsToJoin) {
-      await this.prisma.memberships.create({
+      await this.prisma.membership.create({
         data: {
           user: { connect: { id: result.user.id } },
           group: { connect: { id: group.id } },
@@ -445,7 +442,7 @@ export class AuthService {
     id: number,
     code: string,
   ): Promise<TokenResponse> {
-    const user = await this.prisma.users.findUnique({
+    const user = await this.prisma.user.findUnique({
       where: { id },
       include: { prefersEmail: true },
     });
@@ -454,7 +451,7 @@ export class AuthService {
       throw new BadRequestException(MFA_NOT_ENABLED);
     if (this.authenticator.check(code, user.twoFactorSecret))
       return this.loginResponse(ipAddress, userAgent, user);
-    const backupCodes = await this.prisma.backupCodes.findMany({
+    const backupCodes = await this.prisma.backupCode.findMany({
       where: { user: { id } },
     });
     let usedBackupCode = false;
@@ -464,7 +461,7 @@ export class AuthService {
           if (backupCode.isUsed)
             throw new UnauthorizedException(MFA_BACKUP_CODE_USED);
           usedBackupCode = true;
-          await this.prisma.backupCodes.update({
+          await this.prisma.backupCode.update({
             where: { id: backupCode.id },
             data: { isUsed: true },
           });
@@ -496,7 +493,7 @@ export class AuthService {
     return this.loginResponse(ipAddress, userAgent, user);
   }
 
-  private async getAccessToken(user: users): Promise<string> {
+  private async getAccessToken(user: User): Promise<string> {
     const scopes = await this.getScopes(user);
     const payload: AccessTokenClaims = {
       id: user.id,
@@ -512,12 +509,12 @@ export class AuthService {
   private async loginResponse(
     ipAddress: string,
     userAgent: string,
-    user: users,
+    user: User,
   ): Promise<TokenResponse> {
     const token = this.tokensService.generateUuid();
     const ua = new UAParser(userAgent);
     const location = await this.geolocationService.getLocation(ipAddress);
-    await this.prisma.sessions.create({
+    await this.prisma.session.create({
       data: {
         token,
         ipAddress,
@@ -544,8 +541,8 @@ export class AuthService {
   }
 
   private async mfaResponse(
-    user: users & {
-      prefersEmail: emails;
+    user: User & {
+      prefersEmail: Email;
     },
     forceMethod?: MfaMethod,
   ): Promise<TotpTokenResponse> {
@@ -597,7 +594,7 @@ export class AuthService {
   ): Promise<void> {
     if (!checkLocationOnLogin) return;
     const subnet = anonymize(ipAddress);
-    const previousSubnets = await this.prisma.approvedSubnets.findMany({
+    const previousSubnets = await this.prisma.approvedSubnet.findMany({
       where: { user: { id } },
     });
     let isApproved = false;
@@ -606,7 +603,7 @@ export class AuthService {
         if (await compare(subnet, item.subnet)) isApproved = true;
     }
     if (!isApproved) {
-      const user = await this.prisma.users.findUnique({
+      const user = await this.prisma.user.findUnique({
         where: { id },
         select: { name: true, prefersEmail: true },
       });
@@ -660,9 +657,9 @@ export class AuthService {
     );
   }
 
-  async getScopes(user: users): Promise<string[]> {
+  async getScopes(user: User): Promise<string[]> {
     const scopes: string[] = [`user-${user.id}:*`];
-    const memberships = await this.prisma.memberships.findMany({
+    const memberships = await this.prisma.membership.findMany({
       where: { user: { id: user.id } },
       select: { id: true, role: true, group: { select: { id: true } } },
     });
@@ -685,7 +682,7 @@ export class AuthService {
   }
 
   private async recursivelyGetSubgroupIds(groupId: number) {
-    const subgroups = await this.prisma.groups.findMany({
+    const subgroups = await this.prisma.group.findMany({
       where: { parent: { id: groupId } },
       select: {
         id: true,
@@ -723,10 +720,10 @@ export class AuthService {
     baseUserId: number,
     mergeUserId: number,
   ): Promise<{ success: true }> {
-    const baseUser = await this.prisma.users.findUnique({
+    const baseUser = await this.prisma.user.findUnique({
       where: { id: baseUserId },
     });
-    const mergeUser = await this.prisma.users.findUnique({
+    const mergeUser = await this.prisma.user.findUnique({
       where: { id: mergeUserId },
     });
     if (!baseUser || !mergeUser) throw new NotFoundException(USER_NOT_FOUND);
@@ -752,34 +749,34 @@ export class AuthService {
     ].forEach((key) => {
       if (mergeUser[key] != null) combinedUser[key] = mergeUser[key];
     });
-    await this.prisma.users.update({
+    await this.prisma.user.update({
       where: { id: baseUserId },
       data: combinedUser,
     });
 
     for await (const dataType of [
-      this.prisma.memberships,
-      this.prisma.emails,
-      this.prisma.sessions,
-      this.prisma.approvedSubnets,
-      this.prisma.backupCodes,
-      this.prisma.identities,
-      this.prisma.auditLogs,
-      this.prisma.apiKeys,
+      this.prisma.membership,
+      this.prisma.email,
+      this.prisma.session,
+      this.prisma.approvedSubnet,
+      this.prisma.backupCode,
+      this.prisma.identity,
+      this.prisma.auditLog,
+      this.prisma.apiKey,
     ]) {
-      for await (const item of await (dataType as Prisma.emailsDelegate).findMany(
+      for await (const item of await (dataType as Prisma.EmailDelegate).findMany(
         {
           where: { user: { id: mergeUserId } },
           select: { id: true },
         },
       ))
-        await (dataType as Prisma.emailsDelegate).update({
+        await (dataType as Prisma.EmailDelegate).update({
           where: { id: item.id },
           data: { user: { connect: { id: baseUserId } } },
         });
     }
 
-    await this.prisma.users.delete({ where: { id: mergeUser.id } });
+    await this.prisma.user.delete({ where: { id: mergeUser.id } });
     return { success: true };
   }
 }

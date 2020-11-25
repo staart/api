@@ -9,7 +9,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { users } from '@prisma/client';
+import { User } from '@prisma/client';
 import { CursorPipe } from '../../pipes/cursor.pipe';
 import { OptionalIntPipe } from '../../pipes/optional-int.pipe';
 import { OrderByPipe } from '../../pipes/order-by.pipe';
@@ -32,13 +32,13 @@ export class UserController {
     @Query('cursor', CursorPipe) cursor?: Record<string, number | string>,
     @Query('where', WherePipe) where?: Record<string, number | string>,
     @Query('orderBy', OrderByPipe) orderBy?: Record<string, 'asc' | 'desc'>,
-  ): Promise<Expose<users>[]> {
+  ): Promise<Expose<User>[]> {
     return this.usersService.getUsers({ skip, take, orderBy, cursor, where });
   }
 
   @Get(':userId')
   @Scopes('user-{userId}:read-info')
-  async get(@Param('userId', ParseIntPipe) id: number): Promise<Expose<users>> {
+  async get(@Param('userId', ParseIntPipe) id: number): Promise<Expose<User>> {
     return this.usersService.getUser(Number(id));
   }
 
@@ -47,7 +47,7 @@ export class UserController {
   async update(
     @Param('userId', ParseIntPipe) id: number,
     @Body() data: UpdateUserDto,
-  ): Promise<Expose<users>> {
+  ): Promise<Expose<User>> {
     return this.usersService.updateUser(Number(id), data);
   }
 
@@ -55,7 +55,7 @@ export class UserController {
   @Scopes('user-{userId}:deactivate')
   async remove(
     @Param('userId', ParseIntPipe) id: number,
-  ): Promise<Expose<users>> {
+  ): Promise<Expose<User>> {
     return this.usersService.deactivateUser(Number(id));
   }
 

@@ -4,22 +4,22 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { apiKeys } from '@prisma/client';
-import type { Prisma, InputJsonValue, JsonValue } from '@prisma/client';
+import type { InputJsonValue, JsonValue, Prisma } from '@prisma/client';
+import { ApiKey } from '@prisma/client';
 import QuickLRU from 'quick-lru';
 import {
   API_KEY_NOT_FOUND,
   UNAUTHORIZED_RESOURCE,
 } from '../../errors/errors.constants';
+import { ElasticSearchService } from '../../providers/elasticsearch/elasticsearch.service';
 import { Expose } from '../../providers/prisma/prisma.interface';
 import { PrismaService } from '../../providers/prisma/prisma.service';
-import { StripeService } from '../stripe/stripe.service';
 import { TokensService } from '../../providers/tokens/tokens.service';
-import { ElasticSearchService } from '../../providers/elasticsearch/elasticsearch.service';
+import { StripeService } from '../stripe/stripe.service';
 
 @Injectable()
 export class ApiKeysService {
-  private lru = new QuickLRU<string, apiKeys>({
+  private lru = new QuickLRU<string, ApiKey>({
     maxSize: this.configService.get<number>('caching.apiKeyLruSize') ?? 100,
   });
 
@@ -33,21 +33,21 @@ export class ApiKeysService {
 
   async createApiKeyForGroup(
     groupId: number,
-    data: Omit<Omit<Prisma.apiKeysCreateInput, 'apiKey'>, 'group'>,
-  ): Promise<apiKeys> {
+    data: Omit<Omit<Prisma.ApiKeyCreateInput, 'apiKey'>, 'group'>,
+  ): Promise<ApiKey> {
     const apiKey = this.tokensService.generateUuid();
     data.scopes = this.cleanScopesForGroup(groupId, data.scopes);
-    return this.prisma.apiKeys.create({
+    return this.prisma.apiKey.create({
       data: { ...data, apiKey, group: { connect: { id: groupId } } },
     });
   }
   async createApiKeyForUser(
     userId: number,
-    data: Omit<Omit<Prisma.apiKeysCreateInput, 'apiKey'>, 'user'>,
-  ): Promise<apiKeys> {
+    data: Omit<Omit<Prisma.ApiKeyCreateInput, 'apiKey'>, 'user'>,
+  ): Promise<ApiKey> {
     const apiKey = this.tokensService.generateUuid();
     data.scopes = this.cleanScopesForUser(userId, data.scopes);
-    return this.prisma.apiKeys.create({
+    return this.prisma.apiKey.create({
       data: { ...data, apiKey, user: { connect: { id: userId } } },
     });
   }
@@ -57,183 +57,183 @@ export class ApiKeysService {
     params: {
       skip?: number;
       take?: number;
-      cursor?: Prisma.apiKeysWhereUniqueInput;
-      where?: Prisma.apiKeysWhereInput;
-      orderBy?: Prisma.apiKeysOrderByInput;
+      cursor?: Prisma.ApiKeyWhereUniqueInput;
+      where?: Prisma.ApiKeyWhereInput;
+      orderBy?: Prisma.ApiKeyOrderByInput;
     },
-  ): Promise<Expose<apiKeys>[]> {
+  ): Promise<Expose<ApiKey>[]> {
     const { skip, take, cursor, where, orderBy } = params;
-    const apiKeys = await this.prisma.apiKeys.findMany({
+    const ApiKey = await this.prisma.apiKey.findMany({
       skip,
       take,
       cursor,
       where: { ...where, group: { id: groupId } },
       orderBy,
     });
-    return apiKeys.map((group) => this.prisma.expose<apiKeys>(group));
+    return ApiKey.map((group) => this.prisma.expose<ApiKey>(group));
   }
   async getApiKeysForUser(
     userId: number,
     params: {
       skip?: number;
       take?: number;
-      cursor?: Prisma.apiKeysWhereUniqueInput;
-      where?: Prisma.apiKeysWhereInput;
-      orderBy?: Prisma.apiKeysOrderByInput;
+      cursor?: Prisma.ApiKeyWhereUniqueInput;
+      where?: Prisma.ApiKeyWhereInput;
+      orderBy?: Prisma.ApiKeyOrderByInput;
     },
-  ): Promise<Expose<apiKeys>[]> {
+  ): Promise<Expose<ApiKey>[]> {
     const { skip, take, cursor, where, orderBy } = params;
-    const apiKeys = await this.prisma.apiKeys.findMany({
+    const ApiKey = await this.prisma.apiKey.findMany({
       skip,
       take,
       cursor,
       where: { ...where, user: { id: userId } },
       orderBy,
     });
-    return apiKeys.map((user) => this.prisma.expose<apiKeys>(user));
+    return ApiKey.map((user) => this.prisma.expose<ApiKey>(user));
   }
 
   async getApiKeyForGroup(
     groupId: number,
     id: number,
-  ): Promise<Expose<apiKeys>> {
-    const apiKey = await this.prisma.apiKeys.findUnique({
+  ): Promise<Expose<ApiKey>> {
+    const apiKey = await this.prisma.apiKey.findUnique({
       where: { id },
     });
     if (!apiKey) throw new NotFoundException(API_KEY_NOT_FOUND);
     if (apiKey.groupId !== groupId)
       throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
-    return this.prisma.expose<apiKeys>(apiKey);
+    return this.prisma.expose<ApiKey>(apiKey);
   }
-  async getApiKeyForUser(userId: number, id: number): Promise<Expose<apiKeys>> {
-    const apiKey = await this.prisma.apiKeys.findUnique({
+  async getApiKeyForUser(userId: number, id: number): Promise<Expose<ApiKey>> {
+    const apiKey = await this.prisma.apiKey.findUnique({
       where: { id },
     });
     if (!apiKey) throw new NotFoundException(API_KEY_NOT_FOUND);
     if (apiKey.userId !== userId)
       throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
-    return this.prisma.expose<apiKeys>(apiKey);
+    return this.prisma.expose<ApiKey>(apiKey);
   }
 
-  async getApiKeyFromKey(key: string): Promise<Expose<apiKeys>> {
+  async getApiKeyFromKey(key: string): Promise<Expose<ApiKey>> {
     if (this.lru.has(key)) return this.lru.get(key);
-    const apiKey = await this.prisma.apiKeys.findFirst({
+    const apiKey = await this.prisma.apiKey.findFirst({
       where: { apiKey: key },
     });
     if (!apiKey) throw new NotFoundException(API_KEY_NOT_FOUND);
     this.lru.set(key, apiKey);
-    return this.prisma.expose<apiKeys>(apiKey);
+    return this.prisma.expose<ApiKey>(apiKey);
   }
 
   async updateApiKeyForGroup(
     groupId: number,
     id: number,
-    data: Prisma.apiKeysUpdateInput,
-  ): Promise<Expose<apiKeys>> {
-    const testApiKey = await this.prisma.apiKeys.findUnique({
+    data: Prisma.ApiKeyUpdateInput,
+  ): Promise<Expose<ApiKey>> {
+    const testApiKey = await this.prisma.apiKey.findUnique({
       where: { id },
     });
     if (!testApiKey) throw new NotFoundException(API_KEY_NOT_FOUND);
     if (testApiKey.groupId !== groupId)
       throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
     data.scopes = this.cleanScopesForGroup(groupId, data.scopes);
-    const apiKey = await this.prisma.apiKeys.update({
+    const apiKey = await this.prisma.apiKey.update({
       where: { id },
       data,
     });
     this.lru.delete(testApiKey.apiKey);
-    return this.prisma.expose<apiKeys>(apiKey);
+    return this.prisma.expose<ApiKey>(apiKey);
   }
   async updateApiKeyForUser(
     userId: number,
     id: number,
-    data: Prisma.apiKeysUpdateInput,
-  ): Promise<Expose<apiKeys>> {
-    const testApiKey = await this.prisma.apiKeys.findUnique({
+    data: Prisma.ApiKeyUpdateInput,
+  ): Promise<Expose<ApiKey>> {
+    const testApiKey = await this.prisma.apiKey.findUnique({
       where: { id },
     });
     if (!testApiKey) throw new NotFoundException(API_KEY_NOT_FOUND);
     if (testApiKey.userId !== userId)
       throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
     data.scopes = this.cleanScopesForUser(userId, data.scopes);
-    const apiKey = await this.prisma.apiKeys.update({
+    const apiKey = await this.prisma.apiKey.update({
       where: { id },
       data,
     });
     this.lru.delete(testApiKey.apiKey);
-    return this.prisma.expose<apiKeys>(apiKey);
+    return this.prisma.expose<ApiKey>(apiKey);
   }
 
   async replaceApiKeyForGroup(
     groupId: number,
     id: number,
-    data: Prisma.apiKeysCreateInput,
-  ): Promise<Expose<apiKeys>> {
-    const testApiKey = await this.prisma.apiKeys.findUnique({
+    data: Prisma.ApiKeyCreateInput,
+  ): Promise<Expose<ApiKey>> {
+    const testApiKey = await this.prisma.apiKey.findUnique({
       where: { id },
     });
     if (!testApiKey) throw new NotFoundException(API_KEY_NOT_FOUND);
     if (testApiKey.groupId !== groupId)
       throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
     data.scopes = this.cleanScopesForGroup(groupId, data.scopes);
-    const apiKey = await this.prisma.apiKeys.update({
+    const apiKey = await this.prisma.apiKey.update({
       where: { id },
       data,
     });
     this.lru.delete(testApiKey.apiKey);
-    return this.prisma.expose<apiKeys>(apiKey);
+    return this.prisma.expose<ApiKey>(apiKey);
   }
   async replaceApiKeyForUser(
     userId: number,
     id: number,
-    data: Prisma.apiKeysCreateInput,
-  ): Promise<Expose<apiKeys>> {
-    const testApiKey = await this.prisma.apiKeys.findUnique({
+    data: Prisma.ApiKeyCreateInput,
+  ): Promise<Expose<ApiKey>> {
+    const testApiKey = await this.prisma.apiKey.findUnique({
       where: { id },
     });
     if (!testApiKey) throw new NotFoundException(API_KEY_NOT_FOUND);
     if (testApiKey.userId !== userId)
       throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
     data.scopes = this.cleanScopesForUser(userId, data.scopes);
-    const apiKey = await this.prisma.apiKeys.update({
+    const apiKey = await this.prisma.apiKey.update({
       where: { id },
       data,
     });
     this.lru.delete(testApiKey.apiKey);
-    return this.prisma.expose<apiKeys>(apiKey);
+    return this.prisma.expose<ApiKey>(apiKey);
   }
 
   async deleteApiKeyForGroup(
     groupId: number,
     id: number,
-  ): Promise<Expose<apiKeys>> {
-    const testApiKey = await this.prisma.apiKeys.findUnique({
+  ): Promise<Expose<ApiKey>> {
+    const testApiKey = await this.prisma.apiKey.findUnique({
       where: { id },
     });
     if (!testApiKey) throw new NotFoundException(API_KEY_NOT_FOUND);
     if (testApiKey.groupId !== groupId)
       throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
-    const apiKey = await this.prisma.apiKeys.delete({
+    const apiKey = await this.prisma.apiKey.delete({
       where: { id },
     });
     this.lru.delete(testApiKey.apiKey);
-    return this.prisma.expose<apiKeys>(apiKey);
+    return this.prisma.expose<ApiKey>(apiKey);
   }
   async deleteApiKeyForUser(
     userId: number,
     id: number,
-  ): Promise<Expose<apiKeys>> {
-    const testApiKey = await this.prisma.apiKeys.findUnique({
+  ): Promise<Expose<ApiKey>> {
+    const testApiKey = await this.prisma.apiKey.findUnique({
       where: { id },
     });
     if (!testApiKey) throw new NotFoundException(API_KEY_NOT_FOUND);
     if (testApiKey.userId !== userId)
       throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
-    const apiKey = await this.prisma.apiKeys.delete({
+    const apiKey = await this.prisma.apiKey.delete({
       where: { id },
     });
     this.lru.delete(testApiKey.apiKey);
-    return this.prisma.expose<apiKeys>(apiKey);
+    return this.prisma.expose<ApiKey>(apiKey);
   }
 
   async getApiKeyLogsForGroup(
@@ -245,7 +245,7 @@ export class ApiKeysService {
       where?: { after?: string };
     },
   ) {
-    const testApiKey = await this.prisma.apiKeys.findUnique({
+    const testApiKey = await this.prisma.apiKey.findUnique({
       where: { id },
     });
     if (!testApiKey) throw new NotFoundException(API_KEY_NOT_FOUND);
@@ -262,7 +262,7 @@ export class ApiKeysService {
       where?: { after?: string };
     },
   ) {
-    const testApiKey = await this.prisma.apiKeys.findUnique({
+    const testApiKey = await this.prisma.apiKey.findUnique({
       where: { id },
     });
     if (!testApiKey) throw new NotFoundException(API_KEY_NOT_FOUND);
@@ -278,7 +278,7 @@ export class ApiKeysService {
    * they don't have access to anymore from that API key
    */
   async removeUnauthorizedScopesForUser(userId: number): Promise<void> {
-    const userApiKeys = await this.prisma.apiKeys.findMany({
+    const userApiKeys = await this.prisma.apiKey.findMany({
       where: { user: { id: userId } },
     });
     if (!userApiKeys.length) return;
@@ -289,7 +289,7 @@ export class ApiKeysService {
         Object.keys(scopesAllowed).includes(i),
       );
       if (currentScopes.length !== newScopes.length)
-        this.prisma.apiKeys.update({
+        this.prisma.apiKey.update({
           where: { id: apiKey.id },
           data: { scopes: newScopes },
         });
@@ -392,7 +392,7 @@ export class ApiKeysService {
   async getApiKeyScopesForGroup(
     groupId: number,
   ): Promise<Record<string, string>> {
-    const group = await this.prisma.groups.findUnique({
+    const group = await this.prisma.group.findUnique({
       where: { id: groupId },
       select: { attributes: true },
     });
@@ -405,7 +405,7 @@ export class ApiKeysService {
 
     scopes[`write-membership-*`] = 'Invite and update members';
     scopes[`read-membership-*`] = 'Read members';
-    for await (const membership of await this.prisma.memberships.findMany({
+    for await (const membership of await this.prisma.membership.findMany({
       where: { group: { id: groupId } },
       select: { id: true, user: true },
     })) {
@@ -422,7 +422,7 @@ export class ApiKeysService {
 
     scopes[`write-api-key-*`] = 'Create and update API keys';
     scopes[`read-api-key-*`] = 'Read API keys';
-    for await (const apiKey of await this.prisma.apiKeys.findMany({
+    for await (const apiKey of await this.prisma.apiKey.findMany({
       where: { group: { id: groupId } },
       select: { id: true, name: true, apiKey: true },
     })) {
@@ -439,7 +439,7 @@ export class ApiKeysService {
 
     scopes[`write-webhook-*`] = 'Create and update webhooks';
     scopes[`read-webhook-*`] = 'Read webhooks';
-    for await (const webhook of await this.prisma.webhooks.findMany({
+    for await (const webhook of await this.prisma.webhook.findMany({
       where: { group: { id: groupId } },
       select: { id: true, url: true },
     })) {
@@ -492,7 +492,7 @@ export class ApiKeysService {
 
     scopes[`write-membership-*`] = 'Create new groups';
     scopes[`read-membership-*`] = 'Read group memberships';
-    for await (const membership of await this.prisma.memberships.findMany({
+    for await (const membership of await this.prisma.membership.findMany({
       where: { user: { id: userId } },
       select: { id: true, group: true },
     })) {
@@ -509,7 +509,7 @@ export class ApiKeysService {
 
     scopes[`write-email-*`] = 'Create and update emails';
     scopes[`read-email-*`] = 'Read emails';
-    for await (const email of await this.prisma.emails.findMany({
+    for await (const email of await this.prisma.email.findMany({
       where: { user: { id: userId } },
       select: { id: true, email: true },
     })) {
@@ -518,7 +518,7 @@ export class ApiKeysService {
     }
 
     scopes[`read-session-*`] = 'Read sessions';
-    for await (const session of await this.prisma.sessions.findMany({
+    for await (const session of await this.prisma.session.findMany({
       where: { user: { id: userId } },
       select: { id: true, browser: true },
     })) {
@@ -531,7 +531,7 @@ export class ApiKeysService {
     }
 
     scopes[`read-approved-subnet-*`] = 'Read approvedSubnets';
-    for await (const subnet of await this.prisma.approvedSubnets.findMany({
+    for await (const subnet of await this.prisma.approvedSubnet.findMany({
       where: { user: { id: userId } },
       select: { id: true, subnet: true },
     })) {
@@ -545,7 +545,7 @@ export class ApiKeysService {
 
     scopes[`write-api-key-*`] = 'Create and update API keys';
     scopes[`read-api-key-*`] = 'Read API keys';
-    for await (const apiKey of await this.prisma.apiKeys.findMany({
+    for await (const apiKey of await this.prisma.apiKey.findMany({
       where: { user: { id: userId } },
       select: { id: true, name: true, apiKey: true },
     })) {

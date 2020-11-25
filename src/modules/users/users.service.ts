@@ -4,8 +4,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { users } from '@prisma/client';
 import type { Prisma } from '@prisma/client';
+import { User } from '@prisma/client';
 import { compare } from 'bcrypt';
 import {
   CURRENT_PASSWORD_REQUIRED,
@@ -31,48 +31,48 @@ export class UsersService {
     private tokensService: TokensService,
   ) {}
 
-  async getUser(id: number): Promise<Expose<users>> {
-    const user = await this.prisma.users.findUnique({
+  async getUser(id: number): Promise<Expose<User>> {
+    const user = await this.prisma.user.findUnique({
       where: { id },
     });
     if (!user) throw new NotFoundException(USER_NOT_FOUND);
-    return this.prisma.expose<users>(user);
+    return this.prisma.expose<User>(user);
   }
 
   async getUsers(params: {
     skip?: number;
     take?: number;
-    cursor?: Prisma.usersWhereUniqueInput;
-    where?: Prisma.usersWhereInput;
-    orderBy?: Prisma.usersOrderByInput;
-  }): Promise<Expose<users>[]> {
+    cursor?: Prisma.UserWhereUniqueInput;
+    where?: Prisma.UserWhereInput;
+    orderBy?: Prisma.UserOrderByInput;
+  }): Promise<Expose<User>[]> {
     const { skip, take, cursor, where, orderBy } = params;
-    const users = await this.prisma.users.findMany({
+    const users = await this.prisma.user.findMany({
       skip,
       take,
       cursor,
       where,
       orderBy,
     });
-    return users.map((user) => this.prisma.expose<users>(user));
+    return users.map((user) => this.prisma.expose<User>(user));
   }
 
-  async createUser(data: Prisma.usersCreateInput): Promise<users> {
-    return this.prisma.users.create({
+  async createUser(data: Prisma.UserCreateInput): Promise<User> {
+    return this.prisma.user.create({
       data,
     });
   }
 
   async updateUser(
     id: number,
-    data: Omit<Prisma.usersUpdateInput, 'password'> & PasswordUpdateInput,
-  ): Promise<Expose<users>> {
-    const transformed: Prisma.usersUpdateInput & PasswordUpdateInput = data;
+    data: Omit<Prisma.UserUpdateInput, 'password'> & PasswordUpdateInput,
+  ): Promise<Expose<User>> {
+    const transformed: Prisma.UserUpdateInput & PasswordUpdateInput = data;
     if (data.newPassword) {
       if (!data.currentPassword)
         throw new BadRequestException(CURRENT_PASSWORD_REQUIRED);
       const previousPassword = (
-        await this.prisma.users.findUnique({
+        await this.prisma.user.findUnique({
           where: { id },
           select: { password: true },
         })
@@ -88,26 +88,26 @@ export class UsersService {
     delete transformed.currentPassword;
     delete transformed.newPassword;
     delete transformed.ignorePwnedPassword;
-    const updateData: Prisma.usersUpdateInput = transformed;
-    const user = await this.prisma.users.update({
+    const updateData: Prisma.UserUpdateInput = transformed;
+    const user = await this.prisma.user.update({
       data: updateData,
       where: { id },
     });
-    return this.prisma.expose<users>(user);
+    return this.prisma.expose<User>(user);
   }
 
-  async deactivateUser(id: number): Promise<Expose<users>> {
-    const user = await this.prisma.users.update({
+  async deactivateUser(id: number): Promise<Expose<User>> {
+    const user = await this.prisma.user.update({
       where: { id },
       data: { active: false },
     });
-    await this.prisma.sessions.deleteMany({ where: { user: { id } } });
-    return this.prisma.expose<users>(user);
+    await this.prisma.session.deleteMany({ where: { user: { id } } });
+    return this.prisma.expose<User>(user);
   }
 
   async requestMerge(userId: number, email: string): Promise<{ queued: true }> {
     const emailSafe = safeEmail(email);
-    const user = await this.prisma.users.findFirst({
+    const user = await this.prisma.user.findFirst({
       where: { emails: { some: { emailSafe } } },
       include: { prefersEmail: true },
     });

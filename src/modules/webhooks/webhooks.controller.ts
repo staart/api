@@ -10,14 +10,14 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { webhooks } from '@prisma/client';
+import { Webhook } from '@prisma/client';
 import { CursorPipe } from '../../pipes/cursor.pipe';
 import { OptionalIntPipe } from '../../pipes/optional-int.pipe';
 import { OrderByPipe } from '../../pipes/order-by.pipe';
 import { WherePipe } from '../../pipes/where.pipe';
+import { Expose } from '../../providers/prisma/prisma.interface';
 import { AuditLog } from '../audit-logs/audit-log.decorator';
 import { Scopes } from '../auth/scope.decorator';
-import { Expose } from '../../providers/prisma/prisma.interface';
 import {
   CreateWebhookDto,
   ReplaceWebhookDto,
@@ -35,7 +35,7 @@ export class WebhookController {
   async create(
     @Param('groupId', ParseIntPipe) groupId: number,
     @Body() data: CreateWebhookDto,
-  ): Promise<Expose<webhooks>> {
+  ): Promise<Expose<Webhook>> {
     return this.webhooksService.createWebhook(groupId, data);
   }
 
@@ -48,7 +48,7 @@ export class WebhookController {
     @Query('cursor', CursorPipe) cursor?: Record<string, number | string>,
     @Query('where', WherePipe) where?: Record<string, number | string>,
     @Query('orderBy', OrderByPipe) orderBy?: Record<string, 'asc' | 'desc'>,
-  ): Promise<Expose<webhooks>[]> {
+  ): Promise<Expose<Webhook>[]> {
     return this.webhooksService.getWebhooks(groupId, {
       skip,
       take,
@@ -69,7 +69,7 @@ export class WebhookController {
   async get(
     @Param('groupId', ParseIntPipe) groupId: number,
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<Expose<webhooks>> {
+  ): Promise<Expose<Webhook>> {
     return this.webhooksService.getWebhook(groupId, Number(id));
   }
 
@@ -80,7 +80,7 @@ export class WebhookController {
     @Body() data: UpdateWebhookDto,
     @Param('groupId', ParseIntPipe) groupId: number,
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<Expose<webhooks>> {
+  ): Promise<Expose<Webhook>> {
     return this.webhooksService.updateWebhook(groupId, Number(id), data);
   }
 
@@ -91,7 +91,7 @@ export class WebhookController {
     @Body() data: ReplaceWebhookDto,
     @Param('groupId', ParseIntPipe) groupId: number,
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<Expose<webhooks>> {
+  ): Promise<Expose<Webhook>> {
     return this.webhooksService.updateWebhook(groupId, Number(id), data);
   }
 
@@ -101,7 +101,7 @@ export class WebhookController {
   async remove(
     @Param('groupId', ParseIntPipe) groupId: number,
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<Expose<webhooks>> {
+  ): Promise<Expose<Webhook>> {
     return this.webhooksService.deleteWebhook(groupId, Number(id));
   }
 }
