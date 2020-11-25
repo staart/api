@@ -1,3 +1,17 @@
+## [v3.6.5](https://github.com/staart/api/compare/v3.6.4...v3.6.5) (2020-11-25)
+
+### ♻️ Updates
+
+- [`9ab66dfb`](https://github.com/staart/api/commit/9ab66dfb)  Use prisma code references
+
+### 🐛 Bug fixes
+
+- [`d63790e1`](https://github.com/staart/api/commit/d63790e1)  Fix Prisma update changes
+
+### ⬆️ Dependency updates
+
+- [`fd366850`](https://github.com/staart/api/commit/fd366850)  Update @prisma/client, @prisma/server to v2.12.0
+
 ## [v3.6.4](https://github.com/staart/api/compare/v3.6.3...v3.6.4) (2020-11-23)
 
 ## [v3.6.3](https://github.com/staart/api/compare/v3.6.2...v3.6.3) (2020-11-18)
