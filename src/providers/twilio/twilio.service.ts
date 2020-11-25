@@ -21,7 +21,10 @@ export class TwilioService {
     );
     if (!twilioAccountSid || !twilioAuthToken)
       this.logger.warn('Twilio account SID/auth token not found');
-    this.client = twilio(twilioAccountSid ?? '', twilioAuthToken ?? '');
+    this.client = twilio(
+      twilioAccountSid || 'ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+      twilioAuthToken || 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+    );
   }
 
   send(options: MessageListInstanceCreateOptions) {
