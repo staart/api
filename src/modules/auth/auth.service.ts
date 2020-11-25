@@ -8,7 +8,8 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Authenticator } from '@otplib/core';
-import { emails, emailsDelegate, MfaMethod, users } from '@prisma/client';
+import { emails, MfaMethod, users } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import { compare, hash } from 'bcrypt';
 import { createHash } from 'crypto';
 import got from 'got/dist/source';
@@ -265,7 +266,7 @@ export class AuthService {
       APPROVE_SUBNET_TOKEN,
       token,
     );
-    const user = await this.prisma.users.findOne({ where: { id } });
+    const user = await this.prisma.users.findUnique({ where: { id } });
     if (!user) throw new NotFoundException(USER_NOT_FOUND);
     await this.approvedSubnetsService.approveNewSubnet(id, ipAddress);
     return this.loginResponse(ipAddress, userAgent, user);
@@ -295,7 +296,7 @@ export class AuthService {
     userId: number,
     code: string,
   ): Promise<Expose<users>> {
-    const user = await this.prisma.users.findOne({
+    const user = await this.prisma.users.findUnique({
       where: { id: userId },
       select: { twoFactorSecret: true, twoFactorMethod: true },
     });
@@ -335,7 +336,7 @@ export class AuthService {
       EMAIL_MFA_TOKEN,
       token,
     );
-    const user = await this.prisma.users.findOne({ where: { id } });
+    const user = await this.prisma.users.findUnique({ where: { id } });
     if (!user) throw new NotFoundException(USER_NOT_FOUND);
     await this.approvedSubnetsService.upsertNewSubnet(id, ipAddress);
     return this.loginResponse(ipAddress, userAgent, user);
@@ -377,7 +378,7 @@ export class AuthService {
       PASSWORD_RESET_TOKEN,
       token,
     );
-    const user = await this.prisma.users.findOne({ where: { id } });
+    const user = await this.prisma.users.findUnique({ where: { id } });
     if (!user) throw new NotFoundException(USER_NOT_FOUND);
     password = await this.hashAndValidatePassword(
       password,
@@ -444,7 +445,7 @@ export class AuthService {
     id: number,
     code: string,
   ): Promise<TokenResponse> {
-    const user = await this.prisma.users.findOne({
+    const user = await this.prisma.users.findUnique({
       where: { id },
       include: { prefersEmail: true },
     });
@@ -605,7 +606,7 @@ export class AuthService {
         if (await compare(subnet, item.subnet)) isApproved = true;
     }
     if (!isApproved) {
-      const user = await this.prisma.users.findOne({
+      const user = await this.prisma.users.findUnique({
         where: { id },
         select: { name: true, prefersEmail: true },
       });
@@ -722,10 +723,10 @@ export class AuthService {
     baseUserId: number,
     mergeUserId: number,
   ): Promise<{ success: true }> {
-    const baseUser = await this.prisma.users.findOne({
+    const baseUser = await this.prisma.users.findUnique({
       where: { id: baseUserId },
     });
-    const mergeUser = await this.prisma.users.findOne({
+    const mergeUser = await this.prisma.users.findUnique({
       where: { id: mergeUserId },
     });
     if (!baseUser || !mergeUser) throw new NotFoundException(USER_NOT_FOUND);
@@ -766,11 +767,13 @@ export class AuthService {
       this.prisma.auditLogs,
       this.prisma.apiKeys,
     ]) {
-      for await (const item of await (dataType as emailsDelegate).findMany({
-        where: { user: { id: mergeUserId } },
-        select: { id: true },
-      }))
-        await (dataType as emailsDelegate).update({
+      for await (const item of await (dataType as Prisma.emailsDelegate).findMany(
+        {
+          where: { user: { id: mergeUserId } },
+          select: { id: true },
+        },
+      ))
+        await (dataType as Prisma.emailsDelegate).update({
           where: { id: item.id },
           data: { user: { connect: { id: baseUserId } } },
         });

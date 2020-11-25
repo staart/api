@@ -4,12 +4,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import {
-  approvedSubnets,
-  approvedSubnetsOrderByInput,
-  approvedSubnetsWhereInput,
-  approvedSubnetsWhereUniqueInput,
-} from '@prisma/client';
+import { approvedSubnets } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import { compare, hash } from 'bcrypt';
 import anonymize from 'ip-anonymize';
 import {
@@ -33,9 +29,9 @@ export class ApprovedSubnetsService {
     params: {
       skip?: number;
       take?: number;
-      cursor?: approvedSubnetsWhereUniqueInput;
-      where?: approvedSubnetsWhereInput;
-      orderBy?: approvedSubnetsOrderByInput;
+      cursor?: Prisma.approvedSubnetsWhereUniqueInput;
+      where?: Prisma.approvedSubnetsWhereInput;
+      orderBy?: Prisma.approvedSubnetsOrderByInput;
     },
   ): Promise<Expose<approvedSubnets>[]> {
     const { skip, take, cursor, where, orderBy } = params;
@@ -55,7 +51,7 @@ export class ApprovedSubnetsService {
     userId: number,
     id: number,
   ): Promise<Expose<approvedSubnets>> {
-    const approvedSubnet = await this.prisma.approvedSubnets.findOne({
+    const approvedSubnet = await this.prisma.approvedSubnets.findUnique({
       where: { id },
     });
     if (!approvedSubnet) throw new NotFoundException(APPROVED_SUBNET_NOT_FOUND);
@@ -69,7 +65,7 @@ export class ApprovedSubnetsService {
     userId: number,
     id: number,
   ): Promise<Expose<approvedSubnets>> {
-    const testApprovedSubnet = await this.prisma.approvedSubnets.findOne({
+    const testApprovedSubnet = await this.prisma.approvedSubnets.findUnique({
       where: { id },
     });
     if (!testApprovedSubnet)

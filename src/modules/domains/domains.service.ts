@@ -5,13 +5,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import {
-  domains,
-  domainsCreateInput,
-  domainsOrderByInput,
-  domainsWhereInput,
-  domainsWhereUniqueInput,
-} from '@prisma/client';
+import { domains } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import got from 'got';
 import { URL } from 'url';
 import {
@@ -38,7 +33,7 @@ export class DomainsService {
 
   async createDomain(
     groupId: number,
-    data: Omit<Omit<domainsCreateInput, 'group'>, 'verificationCode'>,
+    data: Omit<Omit<Prisma.domainsCreateInput, 'group'>, 'verificationCode'>,
   ): Promise<domains> {
     try {
       const fullUrl = new URL(data.domain);
@@ -51,7 +46,7 @@ export class DomainsService {
     )
       throw new BadRequestException(INVALID_DOMAIN);
     const verificationCode = this.tokensService.generateUuid();
-    const currentProfilePicture = await this.prisma.groups.findOne({
+    const currentProfilePicture = await this.prisma.groups.findUnique({
       where: { id: groupId },
       select: { profilePictureUrl: true },
     });
@@ -86,9 +81,9 @@ export class DomainsService {
     params: {
       skip?: number;
       take?: number;
-      cursor?: domainsWhereUniqueInput;
-      where?: domainsWhereInput;
-      orderBy?: domainsOrderByInput;
+      cursor?: Prisma.domainsWhereUniqueInput;
+      where?: Prisma.domainsWhereInput;
+      orderBy?: Prisma.domainsOrderByInput;
     },
   ): Promise<Expose<domains>[]> {
     const { skip, take, cursor, where, orderBy } = params;
@@ -103,7 +98,7 @@ export class DomainsService {
   }
 
   async getDomain(groupId: number, id: number): Promise<Expose<domains>> {
-    const domain = await this.prisma.domains.findOne({
+    const domain = await this.prisma.domains.findUnique({
       where: { id },
     });
     if (!domain) throw new NotFoundException(DOMAIN_NOT_FOUND);
@@ -117,7 +112,7 @@ export class DomainsService {
     id: number,
     method: DomainVerificationMethods,
   ): Promise<Expose<domains>> {
-    const domain = await this.prisma.domains.findOne({
+    const domain = await this.prisma.domains.findUnique({
       where: { id },
     });
     if (!domain) throw new NotFoundException(DOMAIN_NOT_FOUND);
@@ -152,7 +147,7 @@ export class DomainsService {
   }
 
   async deleteDomain(groupId: number, id: number): Promise<Expose<domains>> {
-    const testDomain = await this.prisma.domains.findOne({
+    const testDomain = await this.prisma.domains.findUnique({
       where: { id },
     });
     if (!testDomain) throw new NotFoundException(DOMAIN_NOT_FOUND);

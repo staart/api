@@ -3,12 +3,8 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import {
-  sessions,
-  sessionsOrderByInput,
-  sessionsWhereInput,
-  sessionsWhereUniqueInput,
-} from '@prisma/client';
+import { sessions } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import {
   SESSION_NOT_FOUND,
   UNAUTHORIZED_RESOURCE,
@@ -24,9 +20,9 @@ export class SessionsService {
     params: {
       skip?: number;
       take?: number;
-      cursor?: sessionsWhereUniqueInput;
-      where?: sessionsWhereInput;
-      orderBy?: sessionsOrderByInput;
+      cursor?: Prisma.sessionsWhereUniqueInput;
+      where?: Prisma.sessionsWhereInput;
+      orderBy?: Prisma.sessionsOrderByInput;
     },
   ): Promise<Expose<sessions>[]> {
     const { skip, take, cursor, where, orderBy } = params;
@@ -41,7 +37,7 @@ export class SessionsService {
   }
 
   async getSession(userId: number, id: number): Promise<Expose<sessions>> {
-    const session = await this.prisma.sessions.findOne({
+    const session = await this.prisma.sessions.findUnique({
       where: { id },
     });
     if (!session) throw new NotFoundException(SESSION_NOT_FOUND);
@@ -52,7 +48,7 @@ export class SessionsService {
   }
 
   async deleteSession(userId: number, id: number): Promise<Expose<sessions>> {
-    const testSession = await this.prisma.sessions.findOne({
+    const testSession = await this.prisma.sessions.findUnique({
       where: { id },
     });
     if (!testSession) throw new NotFoundException(SESSION_NOT_FOUND);

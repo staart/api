@@ -7,7 +7,7 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { auditLogsCreateInput } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import { getClientIp } from 'request-ip';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -48,7 +48,7 @@ export class AuditLogger implements NestInterceptor {
             const userAgent = request.get('user-agent');
             const ua = new UAParser(userAgent);
             for await (const event of auditLog) {
-              const data: auditLogsCreateInput = {
+              const data: Prisma.auditLogsCreateInput = {
                 event,
                 city: location?.city?.names?.en,
                 region: location?.subdivisions?.pop()?.names?.en,

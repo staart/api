@@ -36,7 +36,7 @@ export class StripeService {
   }
 
   async createCustomer(groupId: number, data: Stripe.CustomerCreateParams) {
-    const group = await this.prisma.groups.findOne({
+    const group = await this.prisma.groups.findUnique({
       where: { id: groupId },
       select: { attributes: true },
     });
@@ -254,7 +254,7 @@ export class StripeService {
 
   /** Get the Stripe customer ID from a group or throw an error */
   private async stripeId(groupId: number): Promise<string> {
-    const group = await this.prisma.groups.findOne({
+    const group = await this.prisma.groups.findUnique({
       where: { id: groupId },
       select: { attributes: true },
     });

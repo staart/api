@@ -4,13 +4,8 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import {
-  emails,
-  emailsCreateInput,
-  emailsOrderByInput,
-  emailsWhereInput,
-  emailsWhereUniqueInput,
-} from '@prisma/client';
+import { emails } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import {
   EMAIL_DELETE_PRIMARY,
   EMAIL_NOT_FOUND,
@@ -33,7 +28,7 @@ export class EmailsService {
 
   async createEmail(
     userId: number,
-    data: Omit<Omit<emailsCreateInput, 'emailSafe'>, 'user'>,
+    data: Omit<Omit<Prisma.emailsCreateInput, 'emailSafe'>, 'user'>,
   ): Promise<emails> {
     const emailSafe = safeEmail(data.email);
     const result = await this.prisma.emails.create({
@@ -48,9 +43,9 @@ export class EmailsService {
     params: {
       skip?: number;
       take?: number;
-      cursor?: emailsWhereUniqueInput;
-      where?: emailsWhereInput;
-      orderBy?: emailsOrderByInput;
+      cursor?: Prisma.emailsWhereUniqueInput;
+      where?: Prisma.emailsWhereInput;
+      orderBy?: Prisma.emailsOrderByInput;
     },
   ): Promise<Expose<emails>[]> {
     const { skip, take, cursor, where, orderBy } = params;
@@ -65,7 +60,7 @@ export class EmailsService {
   }
 
   async getEmail(userId: number, id: number): Promise<Expose<emails>> {
-    const email = await this.prisma.emails.findOne({
+    const email = await this.prisma.emails.findUnique({
       where: { id },
     });
     if (!email) throw new NotFoundException(EMAIL_NOT_FOUND);
@@ -75,13 +70,13 @@ export class EmailsService {
   }
 
   async deleteEmail(userId: number, id: number): Promise<Expose<emails>> {
-    const testEmail = await this.prisma.emails.findOne({
+    const testEmail = await this.prisma.emails.findUnique({
       where: { id },
     });
     if (!testEmail) throw new NotFoundException(EMAIL_NOT_FOUND);
     if (testEmail.userId !== userId)
       throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
-    const user = await this.prisma.users.findOne({
+    const user = await this.prisma.users.findUnique({
       where: { id: userId },
       include: { prefersEmail: true },
     });

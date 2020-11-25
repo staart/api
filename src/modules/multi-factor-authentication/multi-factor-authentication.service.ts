@@ -5,7 +5,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { MfaMethod, users } from '@prisma/client';
+import { users } from '@prisma/client';
+import type { MfaMethod } from '@prisma/client';
 import { hash } from 'bcrypt';
 import {
   MFA_ENABLED_CONFLICT,
@@ -32,7 +33,7 @@ export class MultiFactorAuthenticationService {
   ) {}
 
   async requestTotpMfa(userId: number): Promise<string> {
-    const enabled = await this.prisma.users.findOne({
+    const enabled = await this.prisma.users.findUnique({
       where: { id: userId },
       select: { twoFactorMethod: true },
     });
@@ -43,7 +44,7 @@ export class MultiFactorAuthenticationService {
   }
 
   async requestSmsMfa(userId: number, phone: string): Promise<void> {
-    const enabled = await this.prisma.users.findOne({
+    const enabled = await this.prisma.users.findUnique({
       where: { id: userId },
       select: { twoFactorMethod: true },
     });
@@ -64,7 +65,7 @@ export class MultiFactorAuthenticationService {
   }
 
   async requestEmailMfa(userId: number): Promise<void> {
-    const user = await this.prisma.users.findOne({
+    const user = await this.prisma.users.findUnique({
       where: { id: userId },
       select: {
         twoFactorMethod: true,
@@ -102,7 +103,7 @@ export class MultiFactorAuthenticationService {
   }
 
   async disableMfa(userId: number): Promise<Expose<users>> {
-    const enabled = await this.prisma.users.findOne({
+    const enabled = await this.prisma.users.findUnique({
       where: { id: userId },
       select: { twoFactorMethod: true },
     });

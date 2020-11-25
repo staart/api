@@ -5,15 +5,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import {
-  groupsCreateInput,
-  memberships,
-  membershipsOrderByInput,
-  membershipsUpdateInput,
-  membershipsWhereInput,
-  membershipsWhereUniqueInput,
-  users,
-} from '@prisma/client';
+import { memberships, users } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import {
   CANNOT_DELETE_SOLE_MEMBER,
   CANNOT_DELETE_SOLE_OWNER,
@@ -44,9 +37,9 @@ export class MembershipsService {
   async getMemberships(params: {
     skip?: number;
     take?: number;
-    cursor?: membershipsWhereUniqueInput;
-    where?: membershipsWhereInput;
-    orderBy?: membershipsOrderByInput;
+    cursor?: Prisma.membershipsWhereUniqueInput;
+    where?: Prisma.membershipsWhereInput;
+    orderBy?: Prisma.membershipsOrderByInput;
   }): Promise<Expose<memberships>[]> {
     const { skip, take, cursor, where, orderBy } = params;
     const memberships = await this.prisma.memberships.findMany({
@@ -64,7 +57,7 @@ export class MembershipsService {
     userId: number,
     id: number,
   ): Promise<Expose<memberships>> {
-    const membership = await this.prisma.memberships.findOne({
+    const membership = await this.prisma.memberships.findUnique({
       where: { id },
       include: { group: true },
     });
@@ -78,7 +71,7 @@ export class MembershipsService {
     groupId: number,
     id: number,
   ): Promise<Expose<memberships>> {
-    const membership = await this.prisma.memberships.findOne({
+    const membership = await this.prisma.memberships.findUnique({
       where: { id },
       include: { user: true },
     });
@@ -92,7 +85,7 @@ export class MembershipsService {
     userId: number,
     id: number,
   ): Promise<Expose<memberships>> {
-    const testMembership = await this.prisma.memberships.findOne({
+    const testMembership = await this.prisma.memberships.findUnique({
       where: { id },
     });
     if (!testMembership) throw new NotFoundException(MEMBERSHIP_NOT_FOUND);
@@ -109,9 +102,9 @@ export class MembershipsService {
   async updateGroupMembership(
     groupId: number,
     id: number,
-    data: membershipsUpdateInput,
+    data: Prisma.membershipsUpdateInput,
   ): Promise<Expose<memberships>> {
-    const testMembership = await this.prisma.memberships.findOne({
+    const testMembership = await this.prisma.memberships.findUnique({
       where: { id },
     });
     if (!testMembership) throw new NotFoundException(MEMBERSHIP_NOT_FOUND);
@@ -141,7 +134,7 @@ export class MembershipsService {
     groupId: number,
     id: number,
   ): Promise<Expose<memberships>> {
-    const testMembership = await this.prisma.memberships.findOne({
+    const testMembership = await this.prisma.memberships.findUnique({
       where: { id },
     });
     if (!testMembership) throw new NotFoundException(MEMBERSHIP_NOT_FOUND);
@@ -157,7 +150,7 @@ export class MembershipsService {
     );
     return this.prisma.expose<memberships>(membership);
   }
-  async createUserMembership(userId: number, data: groupsCreateInput) {
+  async createUserMembership(userId: number, data: Prisma.groupsCreateInput) {
     const created = await this.groupsService.createGroup(userId, data);
     return created.memberships[0];
   }
@@ -208,7 +201,7 @@ export class MembershipsService {
     });
     if (memberships.length === 1)
       throw new BadRequestException(CANNOT_DELETE_SOLE_MEMBER);
-    const membership = await this.prisma.memberships.findOne({
+    const membership = await this.prisma.memberships.findUnique({
       where: { id: membershipId },
     });
     if (!membership) throw new NotFoundException(MEMBERSHIP_NOT_FOUND);

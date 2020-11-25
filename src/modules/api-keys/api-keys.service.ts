@@ -4,16 +4,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import {
-  apiKeys,
-  apiKeysCreateInput,
-  apiKeysOrderByInput,
-  apiKeysUpdateInput,
-  apiKeysWhereInput,
-  apiKeysWhereUniqueInput,
-  InputJsonValue,
-  JsonValue,
-} from '@prisma/client';
+import { apiKeys } from '@prisma/client';
+import type { Prisma, InputJsonValue, JsonValue } from '@prisma/client';
 import QuickLRU from 'quick-lru';
 import {
   API_KEY_NOT_FOUND,
@@ -41,7 +33,7 @@ export class ApiKeysService {
 
   async createApiKeyForGroup(
     groupId: number,
-    data: Omit<Omit<apiKeysCreateInput, 'apiKey'>, 'group'>,
+    data: Omit<Omit<Prisma.apiKeysCreateInput, 'apiKey'>, 'group'>,
   ): Promise<apiKeys> {
     const apiKey = this.tokensService.generateUuid();
     data.scopes = this.cleanScopesForGroup(groupId, data.scopes);
@@ -51,7 +43,7 @@ export class ApiKeysService {
   }
   async createApiKeyForUser(
     userId: number,
-    data: Omit<Omit<apiKeysCreateInput, 'apiKey'>, 'user'>,
+    data: Omit<Omit<Prisma.apiKeysCreateInput, 'apiKey'>, 'user'>,
   ): Promise<apiKeys> {
     const apiKey = this.tokensService.generateUuid();
     data.scopes = this.cleanScopesForUser(userId, data.scopes);
@@ -65,9 +57,9 @@ export class ApiKeysService {
     params: {
       skip?: number;
       take?: number;
-      cursor?: apiKeysWhereUniqueInput;
-      where?: apiKeysWhereInput;
-      orderBy?: apiKeysOrderByInput;
+      cursor?: Prisma.apiKeysWhereUniqueInput;
+      where?: Prisma.apiKeysWhereInput;
+      orderBy?: Prisma.apiKeysOrderByInput;
     },
   ): Promise<Expose<apiKeys>[]> {
     const { skip, take, cursor, where, orderBy } = params;
@@ -85,9 +77,9 @@ export class ApiKeysService {
     params: {
       skip?: number;
       take?: number;
-      cursor?: apiKeysWhereUniqueInput;
-      where?: apiKeysWhereInput;
-      orderBy?: apiKeysOrderByInput;
+      cursor?: Prisma.apiKeysWhereUniqueInput;
+      where?: Prisma.apiKeysWhereInput;
+      orderBy?: Prisma.apiKeysOrderByInput;
     },
   ): Promise<Expose<apiKeys>[]> {
     const { skip, take, cursor, where, orderBy } = params;
@@ -105,7 +97,7 @@ export class ApiKeysService {
     groupId: number,
     id: number,
   ): Promise<Expose<apiKeys>> {
-    const apiKey = await this.prisma.apiKeys.findOne({
+    const apiKey = await this.prisma.apiKeys.findUnique({
       where: { id },
     });
     if (!apiKey) throw new NotFoundException(API_KEY_NOT_FOUND);
@@ -114,7 +106,7 @@ export class ApiKeysService {
     return this.prisma.expose<apiKeys>(apiKey);
   }
   async getApiKeyForUser(userId: number, id: number): Promise<Expose<apiKeys>> {
-    const apiKey = await this.prisma.apiKeys.findOne({
+    const apiKey = await this.prisma.apiKeys.findUnique({
       where: { id },
     });
     if (!apiKey) throw new NotFoundException(API_KEY_NOT_FOUND);
@@ -136,9 +128,9 @@ export class ApiKeysService {
   async updateApiKeyForGroup(
     groupId: number,
     id: number,
-    data: apiKeysUpdateInput,
+    data: Prisma.apiKeysUpdateInput,
   ): Promise<Expose<apiKeys>> {
-    const testApiKey = await this.prisma.apiKeys.findOne({
+    const testApiKey = await this.prisma.apiKeys.findUnique({
       where: { id },
     });
     if (!testApiKey) throw new NotFoundException(API_KEY_NOT_FOUND);
@@ -155,9 +147,9 @@ export class ApiKeysService {
   async updateApiKeyForUser(
     userId: number,
     id: number,
-    data: apiKeysUpdateInput,
+    data: Prisma.apiKeysUpdateInput,
   ): Promise<Expose<apiKeys>> {
-    const testApiKey = await this.prisma.apiKeys.findOne({
+    const testApiKey = await this.prisma.apiKeys.findUnique({
       where: { id },
     });
     if (!testApiKey) throw new NotFoundException(API_KEY_NOT_FOUND);
@@ -175,9 +167,9 @@ export class ApiKeysService {
   async replaceApiKeyForGroup(
     groupId: number,
     id: number,
-    data: apiKeysCreateInput,
+    data: Prisma.apiKeysCreateInput,
   ): Promise<Expose<apiKeys>> {
-    const testApiKey = await this.prisma.apiKeys.findOne({
+    const testApiKey = await this.prisma.apiKeys.findUnique({
       where: { id },
     });
     if (!testApiKey) throw new NotFoundException(API_KEY_NOT_FOUND);
@@ -194,9 +186,9 @@ export class ApiKeysService {
   async replaceApiKeyForUser(
     userId: number,
     id: number,
-    data: apiKeysCreateInput,
+    data: Prisma.apiKeysCreateInput,
   ): Promise<Expose<apiKeys>> {
-    const testApiKey = await this.prisma.apiKeys.findOne({
+    const testApiKey = await this.prisma.apiKeys.findUnique({
       where: { id },
     });
     if (!testApiKey) throw new NotFoundException(API_KEY_NOT_FOUND);
@@ -215,7 +207,7 @@ export class ApiKeysService {
     groupId: number,
     id: number,
   ): Promise<Expose<apiKeys>> {
-    const testApiKey = await this.prisma.apiKeys.findOne({
+    const testApiKey = await this.prisma.apiKeys.findUnique({
       where: { id },
     });
     if (!testApiKey) throw new NotFoundException(API_KEY_NOT_FOUND);
@@ -231,7 +223,7 @@ export class ApiKeysService {
     userId: number,
     id: number,
   ): Promise<Expose<apiKeys>> {
-    const testApiKey = await this.prisma.apiKeys.findOne({
+    const testApiKey = await this.prisma.apiKeys.findUnique({
       where: { id },
     });
     if (!testApiKey) throw new NotFoundException(API_KEY_NOT_FOUND);
@@ -253,7 +245,7 @@ export class ApiKeysService {
       where?: { after?: string };
     },
   ) {
-    const testApiKey = await this.prisma.apiKeys.findOne({
+    const testApiKey = await this.prisma.apiKeys.findUnique({
       where: { id },
     });
     if (!testApiKey) throw new NotFoundException(API_KEY_NOT_FOUND);
@@ -270,7 +262,7 @@ export class ApiKeysService {
       where?: { after?: string };
     },
   ) {
-    const testApiKey = await this.prisma.apiKeys.findOne({
+    const testApiKey = await this.prisma.apiKeys.findUnique({
       where: { id },
     });
     if (!testApiKey) throw new NotFoundException(API_KEY_NOT_FOUND);
@@ -400,7 +392,7 @@ export class ApiKeysService {
   async getApiKeyScopesForGroup(
     groupId: number,
   ): Promise<Record<string, string>> {
-    const group = await this.prisma.groups.findOne({
+    const group = await this.prisma.groups.findUnique({
       where: { id: groupId },
       select: { attributes: true },
     });

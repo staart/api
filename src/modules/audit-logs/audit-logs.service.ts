@@ -3,12 +3,8 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import {
-  auditLogs,
-  auditLogsOrderByInput,
-  auditLogsWhereInput,
-  auditLogsWhereUniqueInput,
-} from '@prisma/client';
+import { auditLogs } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import { UNAUTHORIZED_RESOURCE } from '../../errors/errors.constants';
 import { Expose } from '../../providers/prisma/prisma.interface';
 import { PrismaService } from '../../providers/prisma/prisma.service';
@@ -22,9 +18,9 @@ export class AuditLogsService {
     params: {
       skip?: number;
       take?: number;
-      cursor?: auditLogsWhereUniqueInput;
-      where?: auditLogsWhereInput;
-      orderBy?: auditLogsOrderByInput;
+      cursor?: Prisma.auditLogsWhereUniqueInput;
+      where?: Prisma.auditLogsWhereInput;
+      orderBy?: Prisma.auditLogsOrderByInput;
     },
   ): Promise<Expose<auditLogs>[]> {
     const { skip, take, cursor, where, orderBy } = params;
@@ -39,7 +35,7 @@ export class AuditLogsService {
   }
 
   async getAuditLog(groupId: number, id: number): Promise<Expose<auditLogs>> {
-    const auditLog = await this.prisma.auditLogs.findOne({
+    const auditLog = await this.prisma.auditLogs.findUnique({
       where: { id },
     });
     if (!auditLog) throw new NotFoundException(UNAUTHORIZED_RESOURCE);

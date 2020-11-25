@@ -5,14 +5,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import {
-  webhooks,
-  webhooksCreateInput,
-  webhooksOrderByInput,
-  webhooksUpdateInput,
-  webhooksWhereInput,
-  webhooksWhereUniqueInput,
-} from '@prisma/client';
+import { webhooks } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import got from 'got';
 import PQueue from 'p-queue';
 import pRetry from 'p-retry';
@@ -35,7 +29,7 @@ export class WebhooksService {
 
   async createWebhook(
     groupId: number,
-    data: Omit<Omit<webhooksCreateInput, 'webhook'>, 'group'>,
+    data: Omit<Omit<Prisma.webhooksCreateInput, 'webhook'>, 'group'>,
   ): Promise<webhooks> {
     return this.prisma.webhooks.create({
       data: { ...data, group: { connect: { id: groupId } } },
@@ -47,9 +41,9 @@ export class WebhooksService {
     params: {
       skip?: number;
       take?: number;
-      cursor?: webhooksWhereUniqueInput;
-      where?: webhooksWhereInput;
-      orderBy?: webhooksOrderByInput;
+      cursor?: Prisma.webhooksWhereUniqueInput;
+      where?: Prisma.webhooksWhereInput;
+      orderBy?: Prisma.webhooksOrderByInput;
     },
   ): Promise<Expose<webhooks>[]> {
     const { skip, take, cursor, where, orderBy } = params;
@@ -64,7 +58,7 @@ export class WebhooksService {
   }
 
   async getWebhook(groupId: number, id: number): Promise<Expose<webhooks>> {
-    const webhook = await this.prisma.webhooks.findOne({
+    const webhook = await this.prisma.webhooks.findUnique({
       where: { id },
     });
     if (!webhook) throw new NotFoundException(WEBHOOK_NOT_FOUND);
@@ -76,9 +70,9 @@ export class WebhooksService {
   async updateWebhook(
     groupId: number,
     id: number,
-    data: webhooksUpdateInput,
+    data: Prisma.webhooksUpdateInput,
   ): Promise<Expose<webhooks>> {
-    const testWebhook = await this.prisma.webhooks.findOne({
+    const testWebhook = await this.prisma.webhooks.findUnique({
       where: { id },
     });
     if (!testWebhook) throw new NotFoundException(WEBHOOK_NOT_FOUND);
@@ -94,9 +88,9 @@ export class WebhooksService {
   async replaceWebhook(
     groupId: number,
     id: number,
-    data: webhooksCreateInput,
+    data: Prisma.webhooksCreateInput,
   ): Promise<Expose<webhooks>> {
-    const testWebhook = await this.prisma.webhooks.findOne({
+    const testWebhook = await this.prisma.webhooks.findUnique({
       where: { id },
     });
     if (!testWebhook) throw new NotFoundException(WEBHOOK_NOT_FOUND);
@@ -110,7 +104,7 @@ export class WebhooksService {
   }
 
   async deleteWebhook(groupId: number, id: number): Promise<Expose<webhooks>> {
-    const testWebhook = await this.prisma.webhooks.findOne({
+    const testWebhook = await this.prisma.webhooks.findUnique({
       where: { id },
     });
     if (!testWebhook) throw new NotFoundException(WEBHOOK_NOT_FOUND);
