@@ -1,6 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ChatPostMessageArguments, WebClient } from '@slack/web-api';
+import {
+  ChatPostMessageArguments,
+  WebAPICallResult,
+  WebClient,
+} from '@slack/web-api';
 import PQueue from 'p-queue';
 import pRetry from 'p-retry';
 import { Configuration } from '../../config/configuration.interface';
@@ -37,6 +41,33 @@ export class SlackService {
       .catch(() => {});
   }
 
+  sendToChannel(channelName: string, text: string) {
+    this.queue
+      .add(() =>
+        pRetry(() => this.sendMessageToChannel(channelName, text), {
+          retries: this.configService.get<number>('slack.retries') ?? 3,
+          onFailedAttempt: (error) => {
+            this.logger.error(
+              `Message to ${channelName} failed, retrying (${error.retriesLeft} attempts left)`,
+              error.name,
+            );
+          },
+        }),
+      )
+      .then(() => {})
+      .catch(() => {});
+  }
+
+  private async sendMessageToChannel(channelName: string, text: string) {
+    const conversations = (await this.client?.conversations.list()) as WebAPICallResult & {
+      channels: { name: string; id: string }[];
+    };
+    const channel = conversations.channels.find(
+      (channel) => channel.name === channelName,
+    );
+    const options: ChatPostMessageArguments = { text, channel: channel.id };
+    return this.client?.chat.postMessage(options);
+  }
   private async sendMessage(options: ChatPostMessageArguments) {
     return this.client?.chat.postMessage(options);
   }
