@@ -1,3 +1,9 @@
+## [v3.6.7](https://github.com/staart/api/compare/v3.6.6...v3.6.7) (2020-11-25)
+
+### ♻️ Updates
+
+- [`5afc6d23`](https://github.com/staart/api/commit/5afc6d23)  Add Slack method to message channel
+
 ## [v3.6.6](https://github.com/staart/api/compare/v3.6.5...v3.6.6) (2020-11-25)
 
 ### 🐛 Bug fixes
