@@ -1,3 +1,15 @@
+## [v3.6.6](https://github.com/staart/api/compare/v3.6.5...v3.6.6) (2020-11-25)
+
+### 🐛 Bug fixes
+
+- [`553d08cd`](https://github.com/staart/api/commit/553d08cd)  Fix defaults for Twilio service
+
+### ⬆️ Dependency updates
+
+- [`5eb74986`](https://github.com/staart/api/commit/5eb74986)  Bump stripe from 8.125.0 to 8.126.0
+- [`44136726`](https://github.com/staart/api/commit/44136726)  Bump @types/node from 14.14.9 to 14.14.10
+- [`919bf7da`](https://github.com/staart/api/commit/919bf7da)  Bump @nestjs/passport from 7.1.3 to 7.1.5
+
 ## [v3.6.5](https://github.com/staart/api/compare/v3.6.4...v3.6.5) (2020-11-25)
 
 ### ♻️ Updates
