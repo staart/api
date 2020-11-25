@@ -5,10 +5,10 @@ updates:
     schedule:
       interval: "daily"
     commit-message:
-      prefix: ":heavy_plus_sign: "
+      prefix: ":arrow_up: "
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"
     commit-message:
-      prefix: ":heavy_plus_sign: "
+      prefix: ":arrow_up: "
