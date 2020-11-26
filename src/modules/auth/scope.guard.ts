@@ -13,6 +13,7 @@ export class ScopesGuard implements CanActivate {
     if (!scopes) return true;
     const user: AccessTokenParsed = request.user;
     let authorized = false;
+    if (!user) return false;
     for (const userScope of user.scopes) {
       for (let scope of scopes) {
         for (const key in request.params)
