@@ -1,3 +1,9 @@
+## [v3.6.8](https://github.com/staart/api/compare/v3.6.7...v3.6.8) (2020-11-26)
+
+### 🐛 Bug fixes
+
+- [`4c5c427e`](https://github.com/staart/api/commit/4c5c427e)  Ignore auth if user is not found
+
 ## [v3.6.7](https://github.com/staart/api/compare/v3.6.6...v3.6.7) (2020-11-25)
 
 ### ♻️ Updates
