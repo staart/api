@@ -1,3 +1,11 @@
+## [v3.6.9](https://github.com/staart/api/compare/v3.6.8...v3.6.9) (2020-11-30)
+
+### ⬆️ Dependency updates
+
+- [`e06499e3`](https://github.com/staart/api/commit/e06499e3)  Bump @slack/web-api from 5.13.0 to 5.14.0
+- [`01949b33`](https://github.com/staart/api/commit/01949b33)  Bump @prisma/client from 2.12.0 to 2.12.1
+- [`364a477a`](https://github.com/staart/api/commit/364a477a)  Bump @prisma/cli from 2.12.0 to 2.12.1
+
 ## [v3.6.8](https://github.com/staart/api/compare/v3.6.7...v3.6.8) (2020-11-26)
 
 ### 🐛 Bug fixes
