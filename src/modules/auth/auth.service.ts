@@ -496,7 +496,7 @@ export class AuthService {
   private async getAccessToken(user: User): Promise<string> {
     const scopes = await this.getScopes(user);
     const payload: AccessTokenClaims = {
-      id: user.id,
+      sub: `acct:${user.id}@${this.configService.get('security.issuerDomain')}`,
       scopes,
     };
     return this.tokensService.signJwt(

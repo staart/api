@@ -4,7 +4,7 @@ import type { Request as ExpressRequest } from 'express';
 export type MfaMethod = 'NONE' | 'SMS' | 'TOTP' | 'EMAIL';
 
 export interface AccessTokenClaims {
-  id: number;
+  sub: string;
   scopes: string[];
 }
 

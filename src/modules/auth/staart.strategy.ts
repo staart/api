@@ -1,15 +1,16 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 import ipRangeCheck from 'ip-range-check';
 import minimatch from 'minimatch';
 import { Strategy } from 'passport-strategy';
 import { getClientIp } from 'request-ip';
-import { ApiKeysService } from '../api-keys/api-keys.service';
+import { validate } from 'uuid';
 import { LOGIN_ACCESS_TOKEN } from '../../providers/tokens/tokens.constants';
 import { TokensService } from '../../providers/tokens/tokens.service';
+import { ApiKeysService } from '../api-keys/api-keys.service';
 import { AccessTokenClaims, AccessTokenParsed } from './auth.interface';
-import { validate } from 'uuid';
 
 class StaartStrategyName extends Strategy {
   name = 'staart';
@@ -20,6 +21,7 @@ export class StaartStrategy extends PassportStrategy(StaartStrategyName) {
   constructor(
     private apiKeyService: ApiKeysService,
     private tokensService: TokensService,
+    private configService: ConfigService,
   ) {
     super();
   }
@@ -79,7 +81,12 @@ export class StaartStrategy extends PassportStrategy(StaartStrategyName) {
         LOGIN_ACCESS_TOKEN,
         bearerToken,
       ) as AccessTokenClaims;
-      const { id, scopes } = payload;
+      const { sub, scopes } = payload;
+      const [userPart, hostPart] = sub.split('@');
+      if (hostPart !== this.configService.get('security.issuerDomain'))
+        throw new Error('Invalid issuer domain');
+      const id = parseInt(userPart.replace('acct:', ''));
+      if (isNaN(id)) throw new Error('Invalid user ID');
       return this.safeSuccess({ type: 'user', id, scopes });
     } catch (error) {}
 

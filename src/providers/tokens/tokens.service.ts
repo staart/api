@@ -16,30 +16,32 @@ export class TokensService {
   constructor(private configService: ConfigService) {}
 
   signJwt(
-    subject: string,
-    payload: number | string | object | Buffer,
+    jwtType: string,
+    payload: object,
     expiresIn?: string,
     options?: SignOptions,
   ) {
-    if (typeof payload === 'number') payload = payload.toString();
     return sign(
-      payload,
+      { ...payload, typ: jwtType },
       this.configService.get<string>('security.jwtSecret') ?? '',
       {
         ...options,
-        subject,
         expiresIn,
       },
     );
   }
 
-  verify<T>(subject: string, token: string, options?: VerifyOptions) {
+  verify<T>(jwtType: string, token: string, options?: VerifyOptions) {
     try {
-      return (verify(
+      const result = (verify(
         token,
         this.configService.get<string>('security.jwtSecret') ?? '',
-        { ...options, subject },
+        options,
       ) as any) as T;
+      if ('typ' in result) {
+        if ((result as { typ?: string }).typ !== jwtType) throw new Error();
+      } else throw new Error();
+      return result;
     } catch (error) {
       throw new UnauthorizedException(INVALID_TOKEN);
     }
