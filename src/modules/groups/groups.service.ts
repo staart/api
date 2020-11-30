@@ -25,7 +25,7 @@ export class GroupsService {
       data.profilePictureUrl ??
       `https://ui-avatars.com/api/?name=${initials}&background=${randomColor({
         luminosity: 'light',
-      })}&color=000000`;
+      }).replace('#', '')}&color=000000`;
     return this.prisma.group.create({
       include: { memberships: { include: { group: true } } },
       data: {

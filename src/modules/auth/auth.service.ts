@@ -158,7 +158,7 @@ export class AuthService {
       data.profilePictureUrl ??
       `https://ui-avatars.com/api/?name=${initials}&background=${randomColor({
         luminosity: 'light',
-      })}&color=000000`;
+      }).replace('#', '')}&color=000000`;
 
     for await (const emailString of [email, emailSafe]) {
       const md5Email = createHash('md5').update(emailString).digest('hex');
