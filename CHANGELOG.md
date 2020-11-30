@@ -1,3 +1,18 @@
+## [v3.6.10](https://github.com/staart/api/compare/v3.6.9...v3.6.10) (2020-11-30)
+
+### ♻️ Updates
+
+- [`373f40d1`](https://github.com/staart/api/commit/373f40d1)  Use acct:URL for access token
+- [`eb98a1fb`](https://github.com/staart/api/commit/eb98a1fb)  Listen on env PORT
+
+### 🐛 Bug fixes
+
+- [`956bfb80`](https://github.com/staart/api/commit/956bfb80)  Remove extra # from UI colors
+
+### ⬆️ Dependency updates
+
+- [`5a37720b`](https://github.com/staart/api/commit/5a37720b)  Bump prettier from 2.2.0 to 2.2.1
+
 ## [v3.6.9](https://github.com/staart/api/compare/v3.6.8...v3.6.9) (2020-11-30)
 
 ### ⬆️ Dependency updates
