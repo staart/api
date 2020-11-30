@@ -23,6 +23,7 @@ export interface Configuration {
   security: {
     saltRounds: number;
     jwtSecret: string;
+    issuerDomain: string;
     totpWindowPast: number;
     totpWindowFuture: number;
     mfaTokenExpiry: string;
@@ -78,9 +79,7 @@ export interface Configuration {
     stripeApiKey: string;
     stripeProductId: string;
     stripeEndpointSecret: string;
-    paymentMethodTypes: Array<
-      Stripe.Checkout.SessionCreateParams.PaymentMethodType
-    >;
+    paymentMethodTypes: Array<Stripe.Checkout.SessionCreateParams.PaymentMethodType>;
   };
 
   tracking: {

@@ -37,6 +37,7 @@ const configuration: Configuration = {
   security: {
     saltRounds: int(process.env.SALT_ROUNDS, 10),
     jwtSecret: process.env.JWT_SECRET ?? 'staart',
+    issuerDomain: process.env.ISSUER_DOMAIN ?? 'staart.js.org',
     totpWindowPast: int(process.env.TOTP_WINDOW_PAST, 1),
     totpWindowFuture: int(process.env.TOTP_WINDOW_FUTURE, 0),
     mfaTokenExpiry: process.env.MFA_TOKEN_EXPIRY ?? '10m',
