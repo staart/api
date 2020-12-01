@@ -1,20 +1,34 @@
 import { ConfigFactory } from '@nestjs/config/dist/interfaces';
+import slugify from '@sindresorhus/slugify';
 import { config } from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
 import { Configuration } from './configuration.interface';
 dotenvExpand(config());
 
+/**
+ * Get an integer from an environment variable
+ * @param val - Value from process.env
+ * @param num - Fallback number value
+ */
 const int = (val: string | undefined, num: number): number =>
   val ? (isNaN(parseInt(val)) ? num : parseInt(val)) : num;
+
+/**
+ * Get boolean value from an environment variable
+ * @param val - Value from process.env
+ * @param bool - Fallback boolean value
+ */
 const bool = (val: string | undefined, bool: boolean): boolean =>
   val == null ? bool : val == 'true';
 
+/** Central configuration object */
 const configuration: Configuration = {
   frontendUrl: process.env.FRONTEND_URL ?? 'http://localhost:3000',
   meta: {
     appName: process.env.APP_NAME ?? 'Staart',
     domainVerificationFile:
-      process.env.DOMAIN_VERIFICATION_FILE ?? 'staart-verify.txt',
+      process.env.DOMAIN_VERIFICATION_FILE ??
+      `${slugify(process.env.APP_NAME ?? 'Staart')}-verify.txt`,
   },
   rateLimit: {
     public: {
@@ -72,7 +86,7 @@ const configuration: Configuration = {
     },
   },
   email: {
-    name: process.env.EMAIL_NAME ?? 'Staart',
+    name: process.env.EMAIL_NAME ?? process.env.APP_NAME ?? 'Staart',
     from: process.env.EMAIL_FROM ?? '',
     retries: int(process.env.EMAIL_FAIL_RETRIES, 3),
     ses: {

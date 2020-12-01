@@ -27,6 +27,7 @@ export class TokensService {
       {
         ...options,
         expiresIn,
+        issuer: this.configService.get<string>('security.issuerDomain') ?? '',
       },
     );
   }
