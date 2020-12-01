@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
   UnauthorizedException,
-  UnprocessableEntityException
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Authenticator } from '@otplib/core';
@@ -34,7 +34,7 @@ import {
   SESSION_NOT_FOUND,
   UNVERIFIED_EMAIL,
   UNVERIFIED_LOCATION,
-  USER_NOT_FOUND
+  USER_NOT_FOUND,
 } from '../../errors/errors.constants';
 import { safeEmail } from '../../helpers/safe-email';
 import { GeolocationService } from '../../providers/geolocation/geolocation.service';
@@ -49,7 +49,7 @@ import {
   LOGIN_ACCESS_TOKEN,
   MERGE_ACCOUNTS_TOKEN,
   MULTI_FACTOR_TOKEN,
-  PASSWORD_RESET_TOKEN
+  PASSWORD_RESET_TOKEN,
 } from '../../providers/tokens/tokens.constants';
 import { TokensService } from '../../providers/tokens/tokens.service';
 import { TwilioService } from '../../providers/twilio/twilio.service';
@@ -59,7 +59,7 @@ import {
   AccessTokenClaims,
   MfaTokenPayload,
   TokenResponse,
-  TotpTokenResponse
+  TotpTokenResponse,
 } from './auth.interface';
 
 @Injectable()
@@ -286,7 +286,7 @@ export class AuthService {
     });
     const otpauth = this.authenticator.keyuri(
       userId.toString(),
-      this.configService.get<string>('meta.appName') ?? '',
+      this.metaConfig.appName ?? '',
       secret,
     );
     return qrcode.toDataURL(otpauth);
@@ -554,7 +554,7 @@ export class AuthService {
     const totpToken = this.tokensService.signJwt(
       MULTI_FACTOR_TOKEN,
       mfaTokenPayload,
-      this.configService.get<string>('security.mfaTokenExpiry'),
+      this.securityConfig.mfaTokenExpiry,
     );
     if (user.twoFactorMethod === 'EMAIL' || forceMethod === 'EMAIL') {
       this.email.send({
@@ -562,15 +562,13 @@ export class AuthService {
         template: 'auth/mfa-code',
         data: {
           name: user.name,
-          minutes: parseInt(
-            this.configService.get<string>('security.mfaTokenExpiry') ?? '',
-          ),
+          minutes: parseInt(this.securityConfig.mfaTokenExpiry),
           link: `${
             this.metaConfig.frontendUrl
           }/auth/link/login%2Ftoken?token=${this.tokensService.signJwt(
             EMAIL_MFA_TOKEN,
             { id: user.id },
-            '30m',
+            this.securityConfig.mfaTokenExpiry,
           )}`,
         },
       });
@@ -580,7 +578,7 @@ export class AuthService {
       this.twilioService.send({
         to: user.twoFactorPhone,
         body: `${this.getOneTimePassword(user.twoFactorSecret)} is your ${
-          this.configService.get<string>('meta.appName') ?? ''
+          this.metaConfig.appName ?? ''
         } verification code.`,
       });
     }

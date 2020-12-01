@@ -7,6 +7,13 @@ import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class TasksService {
+  private trackingConfig = this.configService.get<Configuration['tracking']>(
+    'tracking',
+  );
+  private securityConfig = this.configService.get<Configuration['security']>(
+    'security',
+  );
+
   constructor(
     private prisma: PrismaService,
     private configService: ConfigService,
@@ -17,10 +24,9 @@ export class TasksService {
   @Cron(CronExpression.EVERY_DAY_AT_1PM)
   async deleteOldSessions() {
     const now = new Date();
-    const unusedRefreshTokenExpiryDays =
-      this.configService.get<number>('security.unusedRefreshTokenExpiryDays') ??
-      30;
-    now.setDate(now.getDate() - unusedRefreshTokenExpiryDays);
+    now.setDate(
+      now.getDate() - this.securityConfig.unusedRefreshTokenExpiryDays,
+    );
     const deleted = await this.prisma.session.deleteMany({
       where: { updatedAt: { lte: now } },
     });
@@ -31,9 +37,7 @@ export class TasksService {
   @Cron(CronExpression.EVERY_DAY_AT_2PM)
   async deleteInactiveUsers() {
     const now = new Date();
-    const inactiveUserDeleteDays =
-      this.configService.get<number>('security.inactiveUserDeleteDays') ?? 30;
-    now.setDate(now.getDate() - inactiveUserDeleteDays);
+    now.setDate(now.getDate() - this.securityConfig.inactiveUserDeleteDays);
     const deleted = await this.prisma.user.deleteMany({
       where: {
         active: false,
@@ -46,13 +50,10 @@ export class TasksService {
 
   @Cron(CronExpression.EVERY_DAY_AT_3PM)
   async deleteOldLogs() {
-    const tracking = this.configService.get<Configuration['tracking']>(
-      'tracking',
-    );
-    if (tracking.deleteOldLogs)
+    if (this.trackingConfig.deleteOldLogs)
       return this.elasticSearchService.deleteOldRecords(
-        tracking.index,
-        tracking.deleteOldLogsDays,
+        this.trackingConfig.index,
+        this.trackingConfig.deleteOldLogsDays,
       );
   }
 }

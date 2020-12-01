@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import geolite2 from 'geolite2-redist';
 import maxmind, { CityResponse, Reader } from 'maxmind';
 import QuickLRU from 'quick-lru';
+import { Configuration } from '../../config/configuration.interface';
 
 @Injectable()
 export class GeolocationService implements OnModuleDestroy {
@@ -11,7 +12,9 @@ export class GeolocationService implements OnModuleDestroy {
   private lookup: Reader<CityResponse> | null = null;
   private lru = new QuickLRU<string, Partial<CityResponse>>({
     maxSize:
-      this.configService.get<number>('caching.geolocationLruSize') ?? 100,
+      this.configService.get<Configuration['caching']['geolocationLruSize']>(
+        'caching.geolocationLruSize',
+      ) ?? 100,
   });
 
   onModuleDestroy() {

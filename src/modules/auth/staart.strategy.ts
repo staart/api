@@ -7,6 +7,7 @@ import minimatch from 'minimatch';
 import { Strategy } from 'passport-strategy';
 import { getClientIp } from 'request-ip';
 import { validate } from 'uuid';
+import { Configuration } from '../../config/configuration.interface';
 import { LOGIN_ACCESS_TOKEN } from '../../providers/tokens/tokens.constants';
 import { TokensService } from '../../providers/tokens/tokens.service';
 import { ApiKeysService } from '../api-keys/api-keys.service';
@@ -83,7 +84,12 @@ export class StaartStrategy extends PassportStrategy(StaartStrategyName) {
       ) as AccessTokenClaims;
       const { sub, scopes } = payload;
       const [userPart, hostPart] = sub.split('@');
-      if (hostPart !== this.configService.get('security.issuerDomain'))
+      if (
+        hostPart !==
+        this.configService.get<Configuration['security']['issuerDomain']>(
+          'security.issuerDomain',
+        )
+      )
         throw new Error('Invalid issuer domain');
       const id = parseInt(userPart.replace('acct:', ''));
       if (isNaN(id)) throw new Error('Invalid user ID');

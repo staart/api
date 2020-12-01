@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import type { Prisma } from '@prisma/client';
 import { Domain } from '@prisma/client';
 import got from 'got';
+import { Configuration } from '../../config/configuration.interface';
 import { URL } from 'url';
 import {
   DOMAIN_NOT_FOUND,
@@ -130,9 +131,9 @@ export class DomainsService {
       let verified = false;
       try {
         const { body } = await got(
-          `http://${domain.domain}/.well-known/${this.configService.get<string>(
-            'meta.domainVerificationFile' ?? 'staart-verify.txt',
-          )}`,
+          `http://${domain.domain}/.well-known/${this.configService.get<
+            Configuration['meta']['domainVerificationFile']
+          >('meta.domainVerificationFile' ?? 'staart-verify.txt')}`,
         );
         verified = body.includes(domain.verificationCode);
       } catch (error) {}

@@ -8,6 +8,7 @@ import type { Prisma } from '@prisma/client';
 import { ApprovedSubnet } from '@prisma/client';
 import { compare, hash } from 'bcrypt';
 import anonymize from 'ip-anonymize';
+import { Configuration } from '../../config/configuration.interface';
 import {
   APPROVED_SUBNET_NOT_FOUND,
   UNAUTHORIZED_RESOURCE,
@@ -81,7 +82,9 @@ export class ApprovedSubnetsService {
   async approveNewSubnet(userId: number, ipAddress: string) {
     const subnet = await hash(
       anonymize(ipAddress),
-      this.configService.get<number>('security.saltRounds') ?? 10,
+      this.configService.get<Configuration['security']['saltRounds']>(
+        'security.saltRounds',
+      ) ?? 10,
     );
     const location = await this.geolocationService.getLocation(ipAddress);
     const approved = await this.prisma.approvedSubnet.create({

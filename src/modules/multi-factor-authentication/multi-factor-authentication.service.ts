@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import type { MfaMethod } from '@prisma/client';
 import { User } from '@prisma/client';
 import { hash } from 'bcrypt';
+import { Configuration } from '../../config/configuration.interface';
 import {
   MFA_ENABLED_CONFLICT,
   MFA_NOT_ENABLED,
@@ -58,9 +59,11 @@ export class MultiFactorAuthenticationService {
     });
     return this.twilioService.send({
       to: phone,
-      body: `${this.auth.getOneTimePassword(secret)} is your ${
-        this.configService.get<string>('meta.appName') ?? ''
-      } verification code.`,
+      body: `${this.auth.getOneTimePassword(
+        secret,
+      )} is your ${this.configService.get<Configuration['meta']['appName']>(
+        'meta.appName',
+      )} verification code.`,
     });
   }
 
@@ -125,7 +128,9 @@ export class MultiFactorAuthenticationService {
       codes.push(unsafeCode);
       const code = await hash(
         unsafeCode,
-        this.configService.get<number>('security.saltRounds') ?? 10,
+        this.configService.get<Configuration['security']['saltRounds']>(
+          'security.saltRounds',
+        ) ?? 10,
       );
       await this.prisma.backupCode.create({
         data: { user: { connect: { id } }, code },

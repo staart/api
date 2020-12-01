@@ -12,15 +12,15 @@ import { Configuration } from '../../config/configuration.interface';
 @Injectable()
 export class SlackService {
   client?: WebClient;
+  private slackConfig = this.configService.get<Configuration['slack']>('slack');
   private logger = new Logger(SlackService.name);
   private queue = new PQueue({ concurrency: 1 });
 
   constructor(private configService: ConfigService) {
-    const config = this.configService.get<Configuration['slack']>('slack');
-    if (config.token)
-      this.client = new WebClient(config.token, {
-        slackApiUrl: config.slackApiUrl,
-        rejectRateLimitedCalls: config.rejectRateLimitedCalls,
+    if (this.slackConfig.token)
+      this.client = new WebClient(this.slackConfig.token, {
+        slackApiUrl: this.slackConfig.slackApiUrl,
+        rejectRateLimitedCalls: this.slackConfig.rejectRateLimitedCalls,
       });
   }
 
@@ -28,7 +28,7 @@ export class SlackService {
     this.queue
       .add(() =>
         pRetry(() => this.sendMessage(options), {
-          retries: this.configService.get<number>('slack.retries') ?? 3,
+          retries: this.slackConfig.retries,
           onFailedAttempt: (error) => {
             this.logger.error(
               `Message to ${options.channel} failed, retrying (${error.retriesLeft} attempts left)`,
@@ -45,7 +45,7 @@ export class SlackService {
     this.queue
       .add(() =>
         pRetry(() => this.sendMessageToChannel(channelName, text), {
-          retries: this.configService.get<number>('slack.retries') ?? 3,
+          retries: this.slackConfig.retries,
           onFailedAttempt: (error) => {
             this.logger.error(
               `Message to ${channelName} failed, retrying (${error.retriesLeft} attempts left)`,

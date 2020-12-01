@@ -24,16 +24,17 @@ export class StripeService {
   stripe: Stripe;
   logger = new Logger(StripeService.name);
   private metaConfig = this.configService.get<Configuration['meta']>('meta');
+  private paymentsConfig = this.configService.get<Configuration['payments']>(
+    'payments',
+  );
 
   constructor(
     private configService: ConfigService,
     private prisma: PrismaService,
   ) {
-    const stripeApiKey = this.configService.get<string>(
-      'payments.stripeApiKey',
-    );
-    this.stripe = new Stripe(stripeApiKey, {
+    this.stripe = new Stripe(this.paymentsConfig.stripeApiKey, {
       apiVersion: '2020-08-27',
+      typescript: true,
     });
   }
 
@@ -183,9 +184,7 @@ export class StripeService {
     const data: Stripe.Checkout.SessionCreateParams = {
       customer: stripeId,
       mode,
-      payment_method_types: this.configService.get<
-        Array<Stripe.Checkout.SessionCreateParams.PaymentMethodType>
-      >('payments.paymentMethodTypes') ?? ['card'],
+      payment_method_types: this.paymentsConfig.paymentMethodTypes ?? ['card'],
       success_url: `${this.metaConfig.frontendUrl}/groups/${groupId}`,
       cancel_url: `${this.metaConfig.frontendUrl}/groups/${groupId}`,
     };
@@ -235,7 +234,7 @@ export class StripeService {
     const event = this.stripe.webhooks.constructEvent(
       payload,
       signature,
-      this.configService.get<string>('payments.stripeEndpointSecret') ?? '',
+      this.paymentsConfig.stripeEndpointSecret,
     );
     switch (event.type) {
       default:

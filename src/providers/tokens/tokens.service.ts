@@ -8,11 +8,16 @@ import {
   verify,
   VerifyOptions,
 } from 'jsonwebtoken';
+import { Configuration } from 'src/config/configuration.interface';
 import { v4 } from 'uuid';
 import { INVALID_TOKEN } from '../../errors/errors.constants';
 
 @Injectable()
 export class TokensService {
+  private securityConfig = this.configService.get<Configuration['security']>(
+    'security',
+  );
+
   constructor(private configService: ConfigService) {}
 
   signJwt(
@@ -21,22 +26,18 @@ export class TokensService {
     expiresIn?: string,
     options?: SignOptions,
   ) {
-    return sign(
-      { ...payload, typ: jwtType },
-      this.configService.get<string>('security.jwtSecret') ?? '',
-      {
-        ...options,
-        expiresIn,
-        issuer: this.configService.get<string>('security.issuerDomain') ?? '',
-      },
-    );
+    return sign({ ...payload, typ: jwtType }, this.securityConfig.jwtSecret, {
+      ...options,
+      expiresIn,
+      issuer: this.securityConfig.issuerDomain,
+    });
   }
 
   verify<T>(jwtType: string, token: string, options?: VerifyOptions) {
     try {
       const result = (verify(
         token,
-        this.configService.get<string>('security.jwtSecret') ?? '',
+        this.securityConfig.jwtSecret,
         options,
       ) as any) as T;
       if ('typ' in result) {

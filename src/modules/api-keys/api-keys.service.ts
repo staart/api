@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import type { InputJsonValue, JsonValue, Prisma } from '@prisma/client';
 import { ApiKey } from '@prisma/client';
 import QuickLRU from 'quick-lru';
+import { Configuration } from '../../config/configuration.interface';
 import {
   API_KEY_NOT_FOUND,
   UNAUTHORIZED_RESOURCE,
@@ -20,7 +21,10 @@ import { StripeService } from '../stripe/stripe.service';
 @Injectable()
 export class ApiKeysService {
   private lru = new QuickLRU<string, ApiKey>({
-    maxSize: this.configService.get<number>('caching.apiKeyLruSize') ?? 100,
+    maxSize:
+      this.configService.get<Configuration['caching']['apiKeyLruSize']>(
+        'caching.apiKeyLruSize',
+      ) ?? 100,
   });
 
   constructor(
@@ -307,10 +311,14 @@ export class ApiKeysService {
     const now = new Date();
     now.setDate(
       now.getDate() -
-        this.configService.get<number>('tracking.deleteOldLogsDays'),
+        this.configService.get<Configuration['tracking']['deleteOldLogsDays']>(
+          'tracking.deleteOldLogsDays',
+        ),
     );
     const result = await this.elasticSearchService.search({
-      index: this.configService.get<string>('tracking.index'),
+      index: this.configService.get<Configuration['tracking']['index']>(
+        'tracking.index',
+      ),
       from: params.cursor?.id,
       body: {
         query: {
