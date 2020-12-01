@@ -33,6 +33,7 @@
     "@nestjs/schedule": "^0.4.1",
     "@nestjs/swagger": "^4.7.0",
     "@octokit/rest": "^18.0.9",
+    "@sindresorhus/slugify": "^1.1.0",
     "@slack/web-api": "^5.13.0",
     "@staart/mustache-markdown": "^3.0.3",
     "airtable": "^0.10.1",
