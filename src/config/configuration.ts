@@ -23,8 +23,8 @@ const bool = (val: string | undefined, bool: boolean): boolean =>
 
 /** Central configuration object */
 const configuration: Configuration = {
-  frontendUrl: process.env.FRONTEND_URL ?? 'http://localhost:3000',
   meta: {
+    frontendUrl: process.env.FRONTEND_URL ?? 'http://localhost:3000',
     appName: process.env.APP_NAME ?? 'Staart',
     domainVerificationFile:
       process.env.DOMAIN_VERIFICATION_FILE ??

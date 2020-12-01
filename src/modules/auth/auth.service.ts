@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
   UnauthorizedException,
-  UnprocessableEntityException,
+  UnprocessableEntityException
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Authenticator } from '@otplib/core';
@@ -18,6 +18,7 @@ import { authenticator } from 'otplib';
 import qrcode from 'qrcode';
 import randomColor from 'randomcolor';
 import { UAParser } from 'ua-parser-js';
+import { Configuration } from '../../config/configuration.interface';
 import {
   COMPROMISED_PASSWORD,
   EMAIL_USER_CONFLICT,
@@ -33,7 +34,7 @@ import {
   SESSION_NOT_FOUND,
   UNVERIFIED_EMAIL,
   UNVERIFIED_LOCATION,
-  USER_NOT_FOUND,
+  USER_NOT_FOUND
 } from '../../errors/errors.constants';
 import { safeEmail } from '../../helpers/safe-email';
 import { GeolocationService } from '../../providers/geolocation/geolocation.service';
@@ -48,7 +49,7 @@ import {
   LOGIN_ACCESS_TOKEN,
   MERGE_ACCOUNTS_TOKEN,
   MULTI_FACTOR_TOKEN,
-  PASSWORD_RESET_TOKEN,
+  PASSWORD_RESET_TOKEN
 } from '../../providers/tokens/tokens.constants';
 import { TokensService } from '../../providers/tokens/tokens.service';
 import { TwilioService } from '../../providers/twilio/twilio.service';
@@ -58,12 +59,16 @@ import {
   AccessTokenClaims,
   MfaTokenPayload,
   TokenResponse,
-  TotpTokenResponse,
+  TotpTokenResponse
 } from './auth.interface';
 
 @Injectable()
 export class AuthService {
-  authenticator: Authenticator;
+  private authenticator: Authenticator;
+  private securityConfig = this.configService.get<Configuration['security']>(
+    'security',
+  );
+  private metaConfig = this.configService.get<Configuration['meta']>('meta');
 
   constructor(
     private prisma: PrismaService,
@@ -77,8 +82,8 @@ export class AuthService {
   ) {
     this.authenticator = authenticator.create({
       window: [
-        this.configService.get<number>('security.totpWindowPast') ?? 0,
-        this.configService.get<number>('security.totpWindowFuture') ?? 0,
+        this.securityConfig.totpWindowPast,
+        this.securityConfig.totpWindowFuture,
       ],
     });
   }
@@ -208,9 +213,9 @@ export class AuthService {
       data: {
         name: emailDetails.user.name,
         days: 7,
-        link: `${this.configService.get<string>(
-          'frontendUrl',
-        )}/auth/link/verify-email?token=${this.tokensService.signJwt(
+        link: `${
+          this.metaConfig.frontendUrl
+        }/auth/link/verify-email?token=${this.tokensService.signJwt(
           EMAIL_VERIFY_TOKEN,
           { id: emailDetails.id },
           '7d',
@@ -352,9 +357,9 @@ export class AuthService {
       data: {
         name: emailDetails.user.name,
         minutes: 30,
-        link: `${this.configService.get<string>(
-          'frontendUrl',
-        )}/auth/link/reset-password?token=${this.tokensService.signJwt(
+        link: `${
+          this.metaConfig.frontendUrl
+        }/auth/link/reset-password?token=${this.tokensService.signJwt(
           PASSWORD_RESET_TOKEN,
           { id: emailDetails.user.id },
           '30m',
@@ -423,9 +428,7 @@ export class AuthService {
         data: {
           name: result.user.name,
           group: group.name,
-          link: `${this.configService.get<string>('frontendUrl')}/groups/${
-            group.id
-          }`,
+          link: `${this.metaConfig.frontendUrl}/groups/${group.id}`,
         },
       });
     }
@@ -481,9 +484,7 @@ export class AuthService {
               data: {
                 name: user.name,
                 locationName,
-                link: `${this.configService.get<string>(
-                  'frontendUrl',
-                )}/users/${id}/sessions`,
+                link: `${this.metaConfig.frontendUrl}/users/${id}/sessions`,
               },
             });
         }
@@ -496,13 +497,13 @@ export class AuthService {
   private async getAccessToken(user: User): Promise<string> {
     const scopes = await this.getScopes(user);
     const payload: AccessTokenClaims = {
-      sub: `acct:${user.id}@${this.configService.get('security.issuerDomain')}`,
+      sub: `acct:${user.id}@${this.securityConfig.issuerDomain}`,
       scopes,
     };
     return this.tokensService.signJwt(
       LOGIN_ACCESS_TOKEN,
       payload,
-      this.configService.get<string>('security.accessTokenExpiry'),
+      this.securityConfig.accessTokenExpiry,
     );
   }
 
@@ -564,9 +565,9 @@ export class AuthService {
           minutes: parseInt(
             this.configService.get<string>('security.mfaTokenExpiry') ?? '',
           ),
-          link: `${this.configService.get<string>(
-            'frontendUrl',
-          )}/auth/link/login%2Ftoken?token=${this.tokensService.signJwt(
+          link: `${
+            this.metaConfig.frontendUrl
+          }/auth/link/login%2Ftoken?token=${this.tokensService.signJwt(
             EMAIL_MFA_TOKEN,
             { id: user.id },
             '30m',
@@ -625,9 +626,9 @@ export class AuthService {
             name: user.name,
             locationName,
             minutes: 30,
-            link: `${this.configService.get<string>(
-              'frontendUrl',
-            )}/auth/link/reset-password?token=${this.tokensService.signJwt(
+            link: `${
+              this.metaConfig.frontendUrl
+            }/auth/link/reset-password?token=${this.tokensService.signJwt(
               APPROVE_SUBNET_TOKEN,
               { id },
               '30m',
@@ -643,18 +644,12 @@ export class AuthService {
     ignorePwnedPassword: boolean,
   ): Promise<string> {
     if (!ignorePwnedPassword) {
-      if (!this.configService.get<boolean>('security.passwordPwnedCheck'))
-        return await hash(
-          password,
-          this.configService.get<number>('security.saltRounds') ?? 10,
-        );
+      if (!this.securityConfig.passwordPwnedCheck)
+        return await hash(password, this.securityConfig.saltRounds ?? 10);
       if (!(await this.pwnedService.isPasswordSafe(password)))
         throw new BadRequestException(COMPROMISED_PASSWORD);
     }
-    return await hash(
-      password,
-      this.configService.get<number>('security.saltRounds') ?? 10,
-    );
+    return await hash(password, this.securityConfig.saltRounds ?? 10);
   }
 
   async getScopes(user: User): Promise<string[]> {

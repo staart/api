@@ -22,9 +22,12 @@ import { ApiKeysService } from '../api-keys/api-keys.service';
 import { AuthService } from '../auth/auth.service';
 import { GroupsService } from '../groups/groups.service';
 import { CreateMembershipInput } from './memberships.interface';
+import { Configuration } from '../../config/configuration.interface';
 
 @Injectable()
 export class MembershipsService {
+  private metaConfig = this.configService.get<Configuration['meta']>('meta');
+
   constructor(
     private prisma: PrismaService,
     private auth: AuthService,
@@ -183,9 +186,7 @@ export class MembershipsService {
       data: {
         name: user.name,
         group: result.group.name,
-        link: `${this.configService.get<string>(
-          'frontendUrl',
-        )}/groups/${groupId}`,
+        link: `${this.metaConfig.frontendUrl}/groups/${groupId}`,
       },
     });
     return this.prisma.expose<Membership>(result);

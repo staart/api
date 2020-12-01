@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import type { Prisma } from '@prisma/client';
 import { User } from '@prisma/client';
 import { compare } from 'bcrypt';
+import { Configuration } from '../../config/configuration.interface';
 import {
   CURRENT_PASSWORD_REQUIRED,
   INVALID_CREDENTIALS,
@@ -23,6 +24,11 @@ import { PasswordUpdateInput } from './users.interface';
 
 @Injectable()
 export class UsersService {
+  private metaConfig = this.configService.get<Configuration['meta']>('meta');
+  private securityConfig = this.configService.get<Configuration['security']>(
+    'security',
+  );
+
   constructor(
     private prisma: PrismaService,
     private auth: AuthService,
@@ -113,18 +119,16 @@ export class UsersService {
     });
     if (!user) throw new NotFoundException(USER_NOT_FOUND);
     if (user.id === userId) throw new NotFoundException(USER_NOT_FOUND);
-    const minutes = parseInt(
-      this.configService.get<string>('security.mergeUsersTokenExpiry') ?? '',
-    );
+    const minutes = this.securityConfig.mergeUsersTokenExpiry;
     this.email.send({
       to: `"${user.name}" <${user.prefersEmail.email}>`,
       template: 'auth/mfa-code',
       data: {
         name: user.name,
         minutes,
-        link: `${this.configService.get<string>(
-          'frontendUrl',
-        )}/auth/link/merge-accounts?token=${this.tokensService.signJwt(
+        link: `${
+          this.metaConfig.frontendUrl
+        }/auth/link/merge-accounts?token=${this.tokensService.signJwt(
           MERGE_ACCOUNTS_TOKEN,
           { baseUserId: userId, mergeUserId: user.id },
           `${minutes}m`,

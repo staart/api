@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
+import { Configuration } from '../../config/configuration.interface';
 import {
   BILLING_ACCOUNT_CREATED_CONFLICT,
   BILLING_NOT_FOUND,
@@ -22,6 +23,7 @@ import { PrismaService } from '../../providers/prisma/prisma.service';
 export class StripeService {
   stripe: Stripe;
   logger = new Logger(StripeService.name);
+  private metaConfig = this.configService.get<Configuration['meta']>('meta');
 
   constructor(
     private configService: ConfigService,
@@ -83,9 +85,7 @@ export class StripeService {
     const stripeId = await this.stripeId(groupId);
     return this.stripe.billingPortal.sessions.create({
       customer: stripeId,
-      return_url: `${this.configService.get<string>(
-        'frontendUrl',
-      )}/groups/${groupId}`,
+      return_url: `${this.metaConfig.frontendUrl}/groups/${groupId}`,
     });
   }
 
@@ -186,12 +186,8 @@ export class StripeService {
       payment_method_types: this.configService.get<
         Array<Stripe.Checkout.SessionCreateParams.PaymentMethodType>
       >('payments.paymentMethodTypes') ?? ['card'],
-      success_url: `${this.configService.get<string>(
-        'frontendUrl',
-      )}/groups/${groupId}`,
-      cancel_url: `${this.configService.get<string>(
-        'frontendUrl',
-      )}/groups/${groupId}`,
+      success_url: `${this.metaConfig.frontendUrl}/groups/${groupId}`,
+      cancel_url: `${this.metaConfig.frontendUrl}/groups/${groupId}`,
     };
     if (mode === 'subscription')
       data.line_items = [{ quantity: 1, price: planId }];

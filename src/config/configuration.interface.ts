@@ -2,14 +2,13 @@ import { ApiKeyAuth, BasicAuth } from '@elastic/elasticsearch/lib/pool';
 import Stripe from 'stripe';
 
 export interface Configuration {
-  /**
-   * Frontend URL (Staart UI or compatible app)
-   * Used for redirects and links in emails
-   */
-  frontendUrl: string;
-
   /** Project name and other metadata */
   meta: {
+    /**
+     * Frontend URL (Staart UI or compatible app)
+     * Used for redirects and links in emails
+     */
+    frontendUrl: string;
     /**
      * Title cased application name
      * Used as the "Issuer" in MFA TOTP and in SMS OTPs
