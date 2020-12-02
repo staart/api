@@ -1,3 +1,16 @@
+## [v3.6.11](https://github.com/staart/api/compare/v3.6.10...v3.6.11) (2020-12-02)
+
+### ♻️ Updates
+
+- [`f8eb9cab`](https://github.com/staart/api/commit/f8eb9cab)  Use frontendUrl from meta config
+- [`d2ea77b0`](https://github.com/staart/api/commit/d2ea77b0)  Use Configuration interface in service
+
+### ⬆️ Dependency updates
+
+- [`bb2181f1`](https://github.com/staart/api/commit/bb2181f1)  Bump aws-sdk from 2.799.0 to 2.800.0
+- [`6b07b4c4`](https://github.com/staart/api/commit/6b07b4c4)  Bump @typescript-eslint/eslint-plugin from 4.8.2 to 4.9.0
+- [`7db658c6`](https://github.com/staart/api/commit/7db658c6)  Bump @typescript-eslint/parser from 4.8.2 to 4.9.0
+
 ## [v3.6.10](https://github.com/staart/api/compare/v3.6.9...v3.6.10) (2020-11-30)
 
 ### ♻️ Updates
