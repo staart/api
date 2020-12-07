@@ -1,3 +1,18 @@
+## v3.6.12 (2020-12-07)
+
+[📝 Release notes](https://github.com/staart/api/releases/tag/v3.6.12) · [💻 Compare](https://github.com/staart/api/compare/v3.6.11...v3.6.12) · [🔖 Tag](https://github.com/staart/api/tree/v3.6.12) · 🗄️ Archive ([zip](https://github.com/staart/api/archive/v3.6.12.zip) · [tar.gz](https://github.com/staart/api/archive/v3.6.12.tar.gz))
+
+### ⬆️ Dependency updates
+
+- [`c33e0ad6`](https://github.com/staart/api/commit/c33e0ad6)  Bump aws-sdk from 2.800.0 to 2.802.0
+- [`b01e785d`](https://github.com/staart/api/commit/b01e785d)  Bump @octokit/rest from 18.0.9 to 18.0.10
+- [`7f543317`](https://github.com/staart/api/commit/7f543317)  Bump @types/jest from 26.0.15 to 26.0.16
+- [`4f8ea6ea`](https://github.com/staart/api/commit/4f8ea6ea)  Bump @koj/config from 1.2.9 to 1.2.11
+- [`d4c35105`](https://github.com/staart/api/commit/d4c35105)  Bump @octokit/rest from 18.0.10 to 18.0.11
+- [`dd082b6c`](https://github.com/staart/api/commit/dd082b6c)  Bump stripe from 8.126.0 to 8.127.0
+- [`dd452b40`](https://github.com/staart/api/commit/dd452b40)  Bump aws-sdk from 2.802.0 to 2.803.0
+- [`4a571b67`](https://github.com/staart/api/commit/4a571b67)  Bump ts-node from 9.0.0 to 9.1.0
+
 ## [v3.6.11](https://github.com/staart/api/compare/v3.6.10...v3.6.11) (2020-12-02)
 
 ### ♻️ Updates
