@@ -1,3 +1,28 @@
+## v3.6.13 (2020-12-10)
+
+[📝 Release notes](https://github.com/staart/api/releases/tag/v3.6.13) · [💻 Compare](https://github.com/staart/api/compare/v3.6.12...v3.6.13) · [🔖 Tag](https://github.com/staart/api/tree/v3.6.13) · 🗄️ Archive ([zip](https://github.com/staart/api/archive/v3.6.13.zip) · [tar.gz](https://github.com/staart/api/archive/v3.6.13.tar.gz))
+
+### 🐛 Bug fixes
+
+- [`da8bd32c`](https://github.com/staart/api/commit/da8bd32c)  Add [*] scope to admins
+
+### ⬆️ Dependency updates
+
+- [`60478842`](https://github.com/staart/api/commit/60478842)  Bump eslint from 7.14.0 to 7.15.0
+- [`c4c5d483`](https://github.com/staart/api/commit/c4c5d483)  Bump aws-sdk from 2.803.0 to 2.804.0
+- [`5c04197c`](https://github.com/staart/api/commit/5c04197c)  Bump hibp from 9.0.0 to 9.0.3
+- [`39b7601e`](https://github.com/staart/api/commit/39b7601e)  Bump ts-node from 9.1.0 to 9.1.1
+- [`cc025c5b`](https://github.com/staart/api/commit/cc025c5b)  Bump @typescript-eslint/eslint-plugin from 4.9.0 to 4.9.1
+- [`00d9497f`](https://github.com/staart/api/commit/00d9497f)  Bump aws-sdk from 2.804.0 to 2.805.0
+- [`8b7398e6`](https://github.com/staart/api/commit/8b7398e6)  Bump @typescript-eslint/parser from 4.9.0 to 4.9.1
+- [`68a7332e`](https://github.com/staart/api/commit/68a7332e)  Bump @types/jest from 26.0.16 to 26.0.18
+- [`d7486ed7`](https://github.com/staart/api/commit/d7486ed7)  Bump @octokit/rest from 18.0.11 to 18.0.12
+- [`87aebdbc`](https://github.com/staart/api/commit/87aebdbc)  Bump uuid from 8.3.1 to 8.3.2
+- [`7e59c2aa`](https://github.com/staart/api/commit/7e59c2aa)  Bump @prisma/cli from 2.12.1 to 2.13.0
+- [`d9e99280`](https://github.com/staart/api/commit/d9e99280)  Bump aws-sdk from 2.805.0 to 2.807.0
+- [`c53701b9`](https://github.com/staart/api/commit/c53701b9)  Bump @types/ua-parser-js from 0.7.33 to 0.7.35
+- [`7bfdc870`](https://github.com/staart/api/commit/7bfdc870)  Bump akhileshns/heroku-deploy from v3.6.8 to v3.7.8
+
 ## v3.6.12 (2020-12-07)
 
 [📝 Release notes](https://github.com/staart/api/releases/tag/v3.6.12) · [💻 Compare](https://github.com/staart/api/compare/v3.6.11...v3.6.12) · [🔖 Tag](https://github.com/staart/api/tree/v3.6.12) · 🗄️ Archive ([zip](https://github.com/staart/api/archive/v3.6.12.zip) · [tar.gz](https://github.com/staart/api/archive/v3.6.12.tar.gz))
