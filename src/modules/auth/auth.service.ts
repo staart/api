@@ -651,6 +651,7 @@ export class AuthService {
   }
 
   async getScopes(user: User): Promise<string[]> {
+    if (user.role === "SUDO") return ["*"];
     const scopes: string[] = [`user-${user.id}:*`];
     const memberships = await this.prisma.membership.findMany({
       where: { user: { id: user.id } },
