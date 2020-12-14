@@ -1,3 +1,13 @@
+## v3.6.14 (2020-12-14)
+
+[📝 Release notes](https://github.com/staart/api/releases/tag/v3.6.14) · [💻 Compare](https://github.com/staart/api/compare/v3.6.13...v3.6.14) · [🔖 Tag](https://github.com/staart/api/tree/v3.6.14) · 🗄️ Archive ([zip](https://github.com/staart/api/archive/v3.6.14.zip) · [tar.gz](https://github.com/staart/api/archive/v3.6.14.tar.gz))
+
+### ⬆️ Dependency updates
+
+- [`8743ea89`](https://github.com/staart/api/commit/8743ea89)  Bump @nestjs/schematics from 7.2.2 to 7.2.5
+- [`104de030`](https://github.com/staart/api/commit/104de030)  Bump @types/jest from 26.0.18 to 26.0.19
+- [`8c28425c`](https://github.com/staart/api/commit/8c28425c)  Bump actions/setup-node from v2.1.2 to v2.1.3
+
 ## v3.6.13 (2020-12-10)
 
 [📝 Release notes](https://github.com/staart/api/releases/tag/v3.6.13) · [💻 Compare](https://github.com/staart/api/compare/v3.6.12...v3.6.13) · [🔖 Tag](https://github.com/staart/api/tree/v3.6.13) · 🗄️ Archive ([zip](https://github.com/staart/api/archive/v3.6.13.zip) · [tar.gz](https://github.com/staart/api/archive/v3.6.13.tar.gz))
