@@ -1,3 +1,27 @@
+## v3.6.15 (2020-12-21)
+
+[📝 Release notes](https://github.com/staart/api/releases/tag/v3.6.15) · [💻 Compare](https://github.com/staart/api/compare/v3.6.14...v3.6.15) · [🔖 Tag](https://github.com/staart/api/tree/v3.6.15) · 🗄️ Archive ([zip](https://github.com/staart/api/archive/v3.6.15.zip) · [tar.gz](https://github.com/staart/api/archive/v3.6.15.tar.gz))
+
+### ⬆️ Dependency updates
+
+- [`1d54b8a1`](https://github.com/staart/api/commit/1d54b8a1)  Bump nodemailer from 6.4.16 to 6.4.17
+- [`3df56fa8`](https://github.com/staart/api/commit/3df56fa8)  Bump firebase-admin from 9.4.1 to 9.4.2
+- [`ff674348`](https://github.com/staart/api/commit/ff674348)  Bump @nestjs/swagger from 4.7.5 to 4.7.6
+- [`b12c6e33`](https://github.com/staart/api/commit/b12c6e33)  Bump got from 11.8.0 to 11.8.1
+- [`26c6347f`](https://github.com/staart/api/commit/26c6347f)  Bump @typescript-eslint/parser from 4.9.1 to 4.10.0
+- [`596bf7ce`](https://github.com/staart/api/commit/596bf7ce)  Bump @nestjs/common from 7.5.5 to 7.6.1
+- [`24bf0a77`](https://github.com/staart/api/commit/24bf0a77)  Bump @nestjs/core from 7.5.5 to 7.6.1
+- [`ea1e0290`](https://github.com/staart/api/commit/ea1e0290)  Bump @prisma/client from 2.12.1 to 2.13.0
+- [`bbf894d5`](https://github.com/staart/api/commit/bbf894d5)  Bump playwright from 1.6.2 to 1.7.0
+- [`e0502541`](https://github.com/staart/api/commit/e0502541)  Bump @typescript-eslint/eslint-plugin from 4.9.1 to 4.10.0
+- [`ec890edf`](https://github.com/staart/api/commit/ec890edf)  Bump @nestjs/cli from 7.5.3 to 7.5.4
+- [`32a57284`](https://github.com/staart/api/commit/32a57284)  Bump ts-loader from 8.0.11 to 8.0.12
+- [`17c4c5f2`](https://github.com/staart/api/commit/17c4c5f2)  Bump actions/setup-node from v2.1.3 to v2.1.4
+- [`2296a22a`](https://github.com/staart/api/commit/2296a22a)  Bump @nestjs/testing from 7.5.5 to 7.6.3
+- [`498512a5`](https://github.com/staart/api/commit/498512a5)  Bump rate-limiter-flexible from 2.1.13 to 2.1.14
+- [`4f9f56d6`](https://github.com/staart/api/commit/4f9f56d6)  Bump @nestjs/core from 7.6.1 to 7.6.3
+- [`7444e976`](https://github.com/staart/api/commit/7444e976)  Bump stripe from 8.127.0 to 8.129.0
+
 ## v3.6.14 (2020-12-14)
 
 [📝 Release notes](https://github.com/staart/api/releases/tag/v3.6.14) · [💻 Compare](https://github.com/staart/api/compare/v3.6.13...v3.6.14) · [🔖 Tag](https://github.com/staart/api/tree/v3.6.14) · 🗄️ Archive ([zip](https://github.com/staart/api/archive/v3.6.14.zip) · [tar.gz](https://github.com/staart/api/archive/v3.6.14.tar.gz))
