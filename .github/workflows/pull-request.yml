@@ -65,7 +65,7 @@ jobs:
               context.payload.ref.startsWith("refs/heads/hotfix") ||
               context.payload.ref.startsWith("refs/heads/bug");
       - name: pull-request-action
-        uses: vsoch/pull-request-action@1.0.12
+        uses: vsoch/pull-request-action@1.0.13
         if: always() && steps.should-pr.outputs.result
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
