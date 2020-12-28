@@ -1,3 +1,23 @@
+## v3.6.16 (2020-12-28)
+
+[📝 Release notes](https://github.com/staart/api/releases/tag/v3.6.16) · [💻 Compare](https://github.com/staart/api/compare/v3.6.15...v3.6.16) · [🔖 Tag](https://github.com/staart/api/tree/v3.6.16) · 🗄️ Archive ([zip](https://github.com/staart/api/archive/v3.6.16.zip) · [tar.gz](https://github.com/staart/api/archive/v3.6.16.tar.gz))
+
+### ⬆️ Dependency updates
+
+- [`2e06d1f6`](https://github.com/staart/api/commit/2e06d1f6)  Bump @nestjs/platform-express from 7.5.5 to 7.6.3
+- [`94f92f7a`](https://github.com/staart/api/commit/94f92f7a)  Bump aws-sdk from 2.807.0 to 2.814.0
+- [`d43ceecd`](https://github.com/staart/api/commit/d43ceecd)  Bump vsoch/pull-request-action from 1.0.12 to 1.0.13
+- [`7f2beed6`](https://github.com/staart/api/commit/7f2beed6)  Bump aws-sdk from 2.814.0 to 2.815.0
+- [`43329a70`](https://github.com/staart/api/commit/43329a70)  Bump typescript from 4.1.2 to 4.1.3
+- [`5a1c3a74`](https://github.com/staart/api/commit/5a1c3a74)  Bump pascalgn/automerge-action from v0.12.0 to v0.13.0
+- [`ea54504a`](https://github.com/staart/api/commit/ea54504a)  Bump node-notifier from 8.0.0 to 8.0.1
+- [`a1c1e818`](https://github.com/staart/api/commit/a1c1e818)  Bump swagger-ui-express from 4.1.5 to 4.1.6
+- [`030388b1`](https://github.com/staart/api/commit/030388b1)  Bump eslint from 7.15.0 to 7.16.0
+- [`fe2fe64e`](https://github.com/staart/api/commit/fe2fe64e)  Bump @nestjs/common from 7.6.1 to 7.6.4
+- [`22a80d4e`](https://github.com/staart/api/commit/22a80d4e)  Bump playwright from 1.7.0 to 1.7.1
+- [`32f67c87`](https://github.com/staart/api/commit/32f67c87)  Bump @types/node from 14.14.10 to 14.14.16
+- [`93b8203c`](https://github.com/staart/api/commit/93b8203c)  Bump @typescript-eslint/eslint-plugin from 4.10.0 to 4.11.0
+
 ## v3.6.15 (2020-12-21)
 
 [📝 Release notes](https://github.com/staart/api/releases/tag/v3.6.15) · [💻 Compare](https://github.com/staart/api/compare/v3.6.14...v3.6.15) · [🔖 Tag](https://github.com/staart/api/tree/v3.6.15) · 🗄️ Archive ([zip](https://github.com/staart/api/archive/v3.6.15.zip) · [tar.gz](https://github.com/staart/api/archive/v3.6.15.tar.gz))
