@@ -45,7 +45,7 @@
     "cloudinary": "^1.23.0",
     "dot-object": "^2.1.4",
     "firebase-admin": "^9.4.0",
-    "geolite2-redist": "^1.0.7",
+    "geolite2-redist": "^2.0.2",
     "got": "^11.8.0",
     "handlebars": "^4.7.6",
     "helmet": "^4.2.0",
