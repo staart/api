@@ -1,3 +1,13 @@
+## v3.6.17 (2021-01-04)
+
+[📝 Release notes](https://github.com/staart/api/releases/tag/v3.6.17) · [💻 Compare](https://github.com/staart/api/compare/v3.6.16...v3.6.17) · [🔖 Tag](https://github.com/staart/api/tree/v3.6.17) · 🗄️ Archive ([zip](https://github.com/staart/api/archive/v3.6.17.zip) · [tar.gz](https://github.com/staart/api/archive/v3.6.17.tar.gz))
+
+### ⬆️ Dependency updates
+
+- [`99ff80a0`](https://github.com/staart/api/commit/99ff80a0)  Bump akhileshns/heroku-deploy from v3.7.8 to v3.8.8
+- [`78c5160c`](https://github.com/staart/api/commit/78c5160c)  Bump @nestjs/core from 7.6.3 to 7.6.5
+- [`ac0e5f65`](https://github.com/staart/api/commit/ac0e5f65)  Bump @typescript-eslint/eslint-plugin from 4.11.0 to 4.11.1
+
 ## v3.6.16 (2020-12-28)
 
 [📝 Release notes](https://github.com/staart/api/releases/tag/v3.6.16) · [💻 Compare](https://github.com/staart/api/compare/v3.6.15...v3.6.16) · [🔖 Tag](https://github.com/staart/api/tree/v3.6.16) · 🗄️ Archive ([zip](https://github.com/staart/api/archive/v3.6.16.zip) · [tar.gz](https://github.com/staart/api/archive/v3.6.16.tar.gz))
