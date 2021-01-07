@@ -49,7 +49,7 @@
     "got": "^11.8.0",
     "handlebars": "^4.7.6",
     "helmet": "^4.2.0",
-    "hibp": "^9.0.0",
+    "hibp": "^10.0.1",
     "ip-anonymize": "^0.1.0",
     "ip-range-check": "^0.2.0",
     "jsonwebtoken": "^8.5.1",
