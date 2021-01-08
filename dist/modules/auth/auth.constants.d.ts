@@ -1,0 +1,1 @@
+export declare const STAART_PUBLIC_ENDPOINT = "STAART_PUBLIC_ENDPOINT";

@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.MERGE_ACCOUNTS_TOKEN = exports.LOGIN_ACCESS_TOKEN = exports.EMAIL_MFA_TOKEN = exports.APPROVE_SUBNET_TOKEN = exports.EMAIL_VERIFY_TOKEN = exports.PASSWORD_RESET_TOKEN = exports.MULTI_FACTOR_TOKEN = void 0;
+exports.MULTI_FACTOR_TOKEN = 'MULTI_FACTOR_TOKEN';
+exports.PASSWORD_RESET_TOKEN = 'PASSWORD_RESET_TOKEN';
+exports.EMAIL_VERIFY_TOKEN = 'EMAIL_VERIFY_TOKEN';
+exports.APPROVE_SUBNET_TOKEN = 'APPROVE_SUBNET_TOKEN';
+exports.EMAIL_MFA_TOKEN = 'EMAIL_MFA_TOKEN';
+exports.LOGIN_ACCESS_TOKEN = 'LOGIN_ACCESS_TOKEN';
+exports.MERGE_ACCOUNTS_TOKEN = 'MERGE_ACCOUNTS_TOKEN';
+//# sourceMappingURL=tokens.constants.js.map
