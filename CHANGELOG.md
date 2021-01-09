@@ -1,3 +1,49 @@
+## v4.0.0 (2021-01-09)
+
+[📝 Release notes](https://github.com/staart/api/releases/tag/v4.0.0) · [💻 Compare](https://github.com/staart/api/compare/v3.6.17...v4.0.0) · [🔖 Tag](https://github.com/staart/api/tree/v4.0.0) · 🗄️ Archive ([zip](https://github.com/staart/api/archive/v4.0.0.zip) · [tar.gz](https://github.com/staart/api/archive/v4.0.0.tar.gz))
+
+### ✨ New features
+
+- [`ec40a981`](https://github.com/staart/api/commit/ec40a981)  Add audit logs to users/groups
+- [`ede77f40`](https://github.com/staart/api/commit/ede77f40)  Add metrics module (#1142)
+(Issues: [`#1142`](https://github.com/staart/api/issues/1142))- [`533f690a`](https://github.com/staart/api/commit/533f690a)  Update metrics, verify domains, delete audit logs in tasks
+- [`a96f8245`](https://github.com/staart/api/commit/a96f8245)  Add profile picture, deleting to user
+- [`93d9d78b`](https://github.com/staart/api/commit/93d9d78b)  Add meta module
+
+### ♻️ Updates
+
+- [`10f6cc8f`](https://github.com/staart/api/commit/10f6cc8f)  Update configuration
+- [`0ebf7425`](https://github.com/staart/api/commit/0ebf7425)  Update API keys module, logger
+- [`10e7ab82`](https://github.com/staart/api/commit/10e7ab82)  Add origin, session ID, role to auth
+- [`385c93c9`](https://github.com/staart/api/commit/385c93c9)  Update domain module with methods
+- [`670e7b31`](https://github.com/staart/api/commit/670e7b31)  Update email module with imports
+- [`7398bc86`](https://github.com/staart/api/commit/7398bc86)  Update group module
+- [`fd347eeb`](https://github.com/staart/api/commit/fd347eeb)  Update memberships module
+- [`0cbe65c8`](https://github.com/staart/api/commit/0cbe65c8)  Update MFA module with returns
+- [`62ac6266`](https://github.com/staart/api/commit/62ac6266)  Use config in Stripe module, add comments
+- [`66e63e5e`](https://github.com/staart/api/commit/66e63e5e)  Remove playwrite, use puppeteer
+- [`0d02e650`](https://github.com/staart/api/commit/0d02e650)  Update approved subnet, session, webhook modules
+- [`54deaf57`](https://github.com/staart/api/commit/54deaf57)  Update services
+- [`4d48402b`](https://github.com/staart/api/commit/4d48402b)  Add config for S3 profile picture
+- [`0e63ccd7`](https://github.com/staart/api/commit/0e63ccd7)  Update app module with metrics, puppeteer, exception
+- [`b3418d0f`](https://github.com/staart/api/commit/b3418d0f)  Make gravatar optional (fixed #1114)
+(Issues: [`#1114`](https://github.com/staart/api/issues/1114))
+
+### ⬆️ Dependency updates
+
+- [`9c609b19`](https://github.com/staart/api/commit/9c609b19)  Bump @prisma/cli from 2.13.0 to 2.14.0
+- [`6d2db524`](https://github.com/staart/api/commit/6d2db524)  Bump aws-sdk from 2.815.0 to 2.822.0
+- [`78c68454`](https://github.com/staart/api/commit/78c68454)  Bump helmet from 4.2.0 to 4.3.1
+- [`7f2c0c20`](https://github.com/staart/api/commit/7f2c0c20)  Bump @typescript-eslint/eslint-plugin from 4.11.1 to 4.12.0
+- [`7c20f043`](https://github.com/staart/api/commit/7c20f043)  Bump @nestjs/swagger from 4.7.6 to 4.7.9
+- [`12bcb6f3`](https://github.com/staart/api/commit/12bcb6f3)  Bump @nestjs/common from 7.6.4 to 7.6.5
+- [`f05888c3`](https://github.com/staart/api/commit/f05888c3)  Bump eslint from 7.16.0 to 7.17.0
+- [`212099c2`](https://github.com/staart/api/commit/212099c2)  Bump @typescript-eslint/parser from 4.10.0 to 4.12.0
+
+### 💥 Breaking changes
+
+- [`4f70e60c`](https://github.com/staart/api/commit/4f70e60c)  Update where pipe with filters
+
 ## v3.6.17 (2021-01-04)
 
 [📝 Release notes](https://github.com/staart/api/releases/tag/v3.6.17) · [💻 Compare](https://github.com/staart/api/compare/v3.6.16...v3.6.17) · [🔖 Tag](https://github.com/staart/api/tree/v3.6.17) · 🗄️ Archive ([zip](https://github.com/staart/api/archive/v3.6.17.zip) · [tar.gz](https://github.com/staart/api/archive/v3.6.17.tar.gz))
