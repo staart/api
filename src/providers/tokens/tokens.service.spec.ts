@@ -3,9 +3,7 @@ import { sign } from 'jsonwebtoken';
 import { TokensService } from './tokens.service';
 
 const tokensService = new TokensService(
-  new ConfigService({
-    security: { jwtSecret: 'example', issuerDomain: 'example.com' },
-  }),
+  new ConfigService({ security: { jwtSecret: 'example' } }),
 );
 
 describe('TokensService', () => {
@@ -25,7 +23,7 @@ describe('TokensService', () => {
   describe('signJwt', () => {
     it('signs a JWT of length', async () => {
       const jwt = tokensService.signJwt('SUBJECT', { ok: true }, '1d', {});
-      expect(jwt.length).toBe(189);
+      expect(jwt.length).toBe(163);
     });
     it('signs a valid JWT', async () => {
       const jwt = tokensService.signJwt('SUBJECT', { ok: true }, '1d', {});
