@@ -1,11 +1,14 @@
 import type { Request as NestRequest } from '@nestjs/common';
+import { UserRole } from '@prisma/client';
 import type { Request as ExpressRequest } from 'express';
 
 export type MfaMethod = 'NONE' | 'SMS' | 'TOTP' | 'EMAIL';
 
 export interface AccessTokenClaims {
-  sub: string;
+  id: number;
   scopes: string[];
+  sessionId: number;
+  role?: UserRole;
 }
 
 export interface TokenResponse {
@@ -23,6 +26,8 @@ export interface AccessTokenParsed {
   id: number;
   scopes: string[];
   type: 'user' | 'api-key';
+  sessionId?: number;
+  role?: UserRole;
 }
 
 export interface MfaTokenPayload {

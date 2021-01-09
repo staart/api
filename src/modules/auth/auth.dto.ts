@@ -4,7 +4,6 @@ import {
   IsIn,
   IsLocale,
   IsNotEmpty,
-  IsObject,
   IsOptional,
   IsString,
   IsUrl,
@@ -17,6 +16,10 @@ export class RegisterDto {
   @IsNotEmpty()
   @MinLength(3)
   name!: string;
+
+  @IsString()
+  @IsOptional()
+  origin?: string;
 
   @IsEmail()
   @IsNotEmpty()
@@ -75,12 +78,20 @@ export class ResendEmailVerificationDto {
   @IsEmail()
   @IsNotEmpty()
   email!: string;
+
+  @IsString()
+  @IsOptional()
+  origin?: string;
 }
 
 export class ForgotPasswordDto {
   @IsEmail()
   @IsNotEmpty()
   email!: string;
+
+  @IsString()
+  @IsOptional()
+  origin?: string;
 }
 
 export class ResetPasswordDto {
@@ -109,6 +120,10 @@ export class LoginDto {
   password?: string;
 
   @IsString()
+  @IsOptional()
+  origin?: string;
+
+  @IsString()
   @Length(6)
   @IsOptional()
   code?: string;
@@ -120,6 +135,10 @@ export class TotpLoginDto {
   token!: string;
 
   @IsString()
+  @IsOptional()
+  origin?: string;
+
+  @IsString()
   @Length(6)
   @IsNotEmpty()
   code!: string;
@@ -129,4 +148,8 @@ export class VerifyEmailDto {
   @IsString()
   @IsNotEmpty()
   token!: string;
+
+  @IsString()
+  @IsOptional()
+  origin?: string;
 }
