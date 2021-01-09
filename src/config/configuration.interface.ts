@@ -99,6 +99,8 @@ export interface Configuration {
     accessKeyId: string;
     secretAccessKey: string;
     region: string;
+    profilePictureBucket?: string;
+    profilePictureCdnHostname?: string;
   };
 
   cloudinary: {

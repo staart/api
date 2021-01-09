@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -189,20 +190,24 @@ export class UsersService {
     file: Files[0],
   ): Promise<Expose<User>> {
     if (file.size > 25000000) throw new Error(FILE_TOO_LARGE);
+    if (!this.configService.get<string>('s3.profilePictureBucket'))
+      throw new InternalServerErrorException('Profile picture bucket not set');
     const { Location } = await this.s3Service.upload(
       `picture-${id}-${this.tokensService.generateUuid()}${extname(
         file.originalname,
       )}`,
       file.buffer,
-      'koj-user-uploads',
+      this.configService.get<string>('s3.profilePictureBucket'),
       true,
     );
     return this.prisma.user.update({
       where: { id },
       data: {
         profilePictureUrl: Location.replace(
-          'koj-user-uploads.s3.eu-central-1.amazonaws.com',
-          'd1ykbyudrr6gx9.cloudfront.net',
+          `${this.configService.get<string>(
+            's3.profilePictureBucket',
+          )}.s3.${this.configService.get<string>('s3.region')}.amazonaws.com`,
+          this.configService.get<string>('s3.profilePictureCdnHostname'),
         ),
       },
     });

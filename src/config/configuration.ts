@@ -124,6 +124,9 @@ const configuration: Configuration = {
     accessKeyId: process.env.AWS_S3_ACCESS_KEY ?? '',
     secretAccessKey: process.env.AWS_S3_SECRET_KEY ?? '',
     region: process.env.AWS_S3_REGION ?? '',
+    profilePictureBucket: process.env.AWS_S3_PROFILE_PICTURE_BUCKET ?? '',
+    profilePictureCdnHostname:
+      process.env.AWS_S3_PROFILE_PICTURE_CDN_HOST_NAME ?? '',
   },
   cloudinary: {
     cloudName: process.env.CLOUDINARY_CLOUD_NAME ?? '',
