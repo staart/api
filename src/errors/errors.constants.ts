@@ -45,7 +45,8 @@ export const EMAIL_DELETE_PRIMARY = '400016: Cannot delete primary email';
 export const CANNOT_UPDATE_ROLE_SOLE_OWNER =
   '400017: Cannot change the role of the only owner';
 export const INVALID_DOMAIN = '400018: Invalid domain';
-export const SELECT_INCLUDE_PIPE_FORMAT = '400014: Invalid query format';
+export const SELECT_INCLUDE_PIPE_FORMAT = '400019: Invalid query format';
+export const FILE_TOO_LARGE = '400022: Uploaded file is too large';
 
 export const EMAIL_USER_CONFLICT =
   '409001: User with this email already exists';
