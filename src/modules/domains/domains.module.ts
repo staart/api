@@ -10,5 +10,6 @@ import { DomainsService } from './domains.service';
   imports: [PrismaModule, TokensModule, DnsModule, ConfigModule],
   controllers: [DomainController],
   providers: [DomainsService],
+  exports: [DomainsService],
 })
 export class DomainsModule {}

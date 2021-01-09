@@ -8,7 +8,6 @@ import { ConfigService } from '@nestjs/config';
 import type { Prisma } from '@prisma/client';
 import { Domain } from '@prisma/client';
 import got from 'got';
-import { Configuration } from '../../config/configuration.interface';
 import { URL } from 'url';
 import {
   DOMAIN_NOT_FOUND,
@@ -20,7 +19,10 @@ import { DnsService } from '../../providers/dns/dns.service';
 import { Expose } from '../../providers/prisma/prisma.interface';
 import { PrismaService } from '../../providers/prisma/prisma.service';
 import { TokensService } from '../../providers/tokens/tokens.service';
-import { DOMAIN_VERIFICATION_TXT } from './domains.constants';
+import {
+  DOMAIN_VERIFICATION_HTML,
+  DOMAIN_VERIFICATION_TXT,
+} from './domains.constants';
 import { DomainVerificationMethods } from './domains.interface';
 
 @Injectable()
@@ -46,7 +48,7 @@ export class DomainsService {
       )
     )
       throw new BadRequestException(INVALID_DOMAIN);
-    const verificationCode = this.tokensService.generateUuid();
+    const verificationCode = await this.tokensService.generateRandomString();
     const currentProfilePicture = await this.prisma.group.findUnique({
       where: { id: groupId },
       select: { profilePictureUrl: true },
@@ -88,14 +90,18 @@ export class DomainsService {
     },
   ): Promise<Expose<Domain>[]> {
     const { skip, take, cursor, where, orderBy } = params;
-    const domains = await this.prisma.domain.findMany({
-      skip,
-      take,
-      cursor,
-      where: { ...where, group: { id: groupId } },
-      orderBy,
-    });
-    return domains.map((group) => this.prisma.expose<Domain>(group));
+    try {
+      const domains = await this.prisma.domain.findMany({
+        skip,
+        take,
+        cursor,
+        where: { ...where, group: { id: groupId } },
+        orderBy,
+      });
+      return domains.map((group) => this.prisma.expose<Domain>(group));
+    } catch (error) {
+      return [];
+    }
   }
 
   async getDomain(groupId: number, id: number): Promise<Expose<Domain>> {
@@ -111,7 +117,7 @@ export class DomainsService {
   async verifyDomain(
     groupId: number,
     id: number,
-    method: DomainVerificationMethods,
+    method?: DomainVerificationMethods,
   ): Promise<Expose<Domain>> {
     const domain = await this.prisma.domain.findUnique({
       where: { id },
@@ -119,21 +125,24 @@ export class DomainsService {
     if (!domain) throw new NotFoundException(DOMAIN_NOT_FOUND);
     if (domain.groupId !== groupId)
       throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
-    if (method === DOMAIN_VERIFICATION_TXT) {
+
+    if (method === DOMAIN_VERIFICATION_TXT || !method) {
       const txtRecords = await this.dnsService.lookup(domain.domain, 'TXT');
       if (JSON.stringify(txtRecords).includes(domain.verificationCode)) {
         await this.prisma.domain.update({
           where: { id },
           data: { isVerified: true },
         });
-      } else throw new BadRequestException(DOMAIN_NOT_VERIFIED);
-    } else {
+      } else if (method) throw new BadRequestException(DOMAIN_NOT_VERIFIED);
+    }
+
+    if (method === DOMAIN_VERIFICATION_HTML || !method) {
       let verified = false;
       try {
         const { body } = await got(
-          `http://${domain.domain}/.well-known/${this.configService.get<
-            Configuration['meta']['domainVerificationFile']
-          >('meta.domainVerificationFile' ?? 'staart-verify.txt')}`,
+          `http://${domain.domain}/.well-known/${this.configService.get<string>(
+            'meta.domainVerificationFile' ?? 'staart-verify.txt',
+          )}`,
         );
         verified = body.includes(domain.verificationCode);
       } catch (error) {}
@@ -142,7 +151,7 @@ export class DomainsService {
           where: { id },
           data: { isVerified: true },
         });
-      } else throw new BadRequestException(DOMAIN_NOT_VERIFIED);
+      } else if (method) throw new BadRequestException(DOMAIN_NOT_VERIFIED);
     }
     return domain;
   }

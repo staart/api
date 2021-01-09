@@ -27,6 +27,7 @@ import { DomainsService } from './domains.service';
 export class DomainController {
   constructor(private domainsService: DomainsService) {}
 
+  /** Create a new domain for a group */
   @Post()
   @AuditLog('create-domain')
   @Scopes('group-{groupId}:write-domain-*')
@@ -37,6 +38,7 @@ export class DomainController {
     return this.domainsService.createDomain(groupId, data);
   }
 
+  /** Get domains for a group */
   @Get()
   @Scopes('group-{groupId}:read-domain-*')
   async getAll(
@@ -56,15 +58,17 @@ export class DomainController {
     });
   }
 
+  /** Read a domain for a group */
   @Get(':id')
   @Scopes('group-{groupId}:read-domain-{id}')
   async get(
     @Param('groupId', ParseIntPipe) groupId: number,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Expose<Domain>> {
-    return this.domainsService.getDomain(groupId, Number(id));
+    return this.domainsService.getDomain(groupId, id);
   }
 
+  /** Delete a domain for a group */
   @Delete(':id')
   @AuditLog('delete-domain')
   @Scopes('group-{groupId}:delete-domain-{id}')
@@ -72,9 +76,10 @@ export class DomainController {
     @Param('groupId', ParseIntPipe) groupId: number,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Expose<Domain>> {
-    return this.domainsService.deleteDomain(groupId, Number(id));
+    return this.domainsService.deleteDomain(groupId, id);
   }
 
+  /** Verify a domain using TXT record */
   @Post(':id/verify/txt')
   @AuditLog('verify-domain-txt')
   @Scopes('group-{groupId}:write-domain-{id}')
@@ -84,11 +89,12 @@ export class DomainController {
   ): Promise<Expose<Domain>> {
     return this.domainsService.verifyDomain(
       groupId,
-      Number(id),
+      id,
       DOMAIN_VERIFICATION_TXT,
     );
   }
 
+  /** Verify a domain using HTML file upload */
   @Post(':id/verify/html')
   @AuditLog('verify-domain-html')
   @Scopes('group-{groupId}:write-domain-{id}')
@@ -98,7 +104,7 @@ export class DomainController {
   ): Promise<Expose<Domain>> {
     return this.domainsService.verifyDomain(
       groupId,
-      Number(id),
+      id,
       DOMAIN_VERIFICATION_HTML,
     );
   }
