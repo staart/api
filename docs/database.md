@@ -25,11 +25,17 @@ Alternately, you can also set the `DATABASE_URL` variable directly. For more inf
 
 ## Setting up
 
-When you're setting your database for the first time, you should use the `prisma migrate` command:
+When you're setting your database for the first time, you should use the `prisma db push` command:
+
+```
+npx prisma db push --preview-feature
+```
+
+When you make changes to your database schema, you should use the `prisma migrate` command:
 
 ```
 npx prisma migrate save --experimental
 npx prisma migrate up --experimental
 ```
 
-You can learn more about the `migrate` command on the documentatino page: [Prisma Migrate](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-migrate).
+You can learn more about the `migrate` command on the documentation page: [Prisma Migrate](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-migrate).

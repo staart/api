@@ -1,8 +1,6 @@
 # Eenvironment variables
 
-All environment variables are stored in a `.env` file locally. All environment variables are optional.
-
-You can also set these variables in `.staartrc.json` using camel cased names. This is recommended when your environment variables are not secrets; for example, you can set your API keys as `.env` values, but publicly-available information like the port and frontend URLs can be in `staartrc.json`. For example, the `FRONTEND_URL` environment variable can be set as `frontendUrl` in `.staartrc.json`.
+All environment variables are stored in a `.env` file locally. All environment variables are optional, with the exception of the database URL.
 
 ## Port
 
