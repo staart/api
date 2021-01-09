@@ -42,6 +42,7 @@ import { SlackModule } from './providers/slack/slack.module';
 import { TasksModule } from './providers/tasks/tasks.module';
 import { HttpExceptionFilter } from './filters/http-exception.filter';
 import { MetricsModule } from './modules/metrics/metrics.module';
+import { MetaModule } from './modules/meta/meta.module';
 
 @Module({
   imports: [
@@ -75,6 +76,7 @@ import { MetricsModule } from './modules/metrics/metrics.module';
     GoogleMapsModule,
     PuppeteerModule,
     MetricsModule,
+    MetaModule,
   ],
   providers: [
     {
