@@ -8,7 +8,6 @@ import { ConfigService } from '@nestjs/config';
 import type { MfaMethod } from '@prisma/client';
 import { User } from '@prisma/client';
 import { hash } from 'bcrypt';
-import { Configuration } from '../../config/configuration.interface';
 import {
   MFA_ENABLED_CONFLICT,
   MFA_NOT_ENABLED,
@@ -52,18 +51,16 @@ export class MultiFactorAuthenticationService {
     if (!enabled) throw new NotFoundException(USER_NOT_FOUND);
     if (enabled.twoFactorMethod !== 'NONE')
       throw new ConflictException(MFA_ENABLED_CONFLICT);
-    const secret = this.tokensService.generateUuid();
+    const secret = this.auth.authenticator.generateSecret();
     await this.prisma.user.update({
       where: { id: userId },
       data: { twoFactorSecret: secret, twoFactorPhone: phone },
     });
     return this.twilioService.send({
       to: phone,
-      body: `${this.auth.getOneTimePassword(
-        secret,
-      )} is your ${this.configService.get<Configuration['meta']['appName']>(
-        'meta.appName',
-      )} verification code.`,
+      body: `${this.auth.getOneTimePassword(secret)} is your ${
+        this.configService.get<string>('meta.appName') ?? ''
+      } verification code.`,
     });
   }
 
@@ -80,7 +77,7 @@ export class MultiFactorAuthenticationService {
     if (!user) throw new NotFoundException(USER_NOT_FOUND);
     if (user.twoFactorMethod !== 'NONE')
       throw new ConflictException(MFA_ENABLED_CONFLICT);
-    const secret = this.tokensService.generateUuid();
+    const secret = this.auth.authenticator.generateSecret();
     await this.prisma.user.update({
       where: { id: userId },
       data: { twoFactorSecret: secret },
@@ -124,13 +121,11 @@ export class MultiFactorAuthenticationService {
     await this.prisma.backupCode.deleteMany({ where: { user: { id } } });
     const codes: string[] = [];
     for await (const _ of [...Array(10)]) {
-      const unsafeCode = this.tokensService.generateUuid();
+      const unsafeCode = await this.tokensService.generateRandomString(10);
       codes.push(unsafeCode);
       const code = await hash(
         unsafeCode,
-        this.configService.get<Configuration['security']['saltRounds']>(
-          'security.saltRounds',
-        ) ?? 10,
+        this.configService.get<number>('security.saltRounds') ?? 10,
       );
       await this.prisma.backupCode.create({
         data: { user: { connect: { id } }, code },

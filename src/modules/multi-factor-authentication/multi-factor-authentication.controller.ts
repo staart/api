@@ -23,14 +23,7 @@ export class MultiFactorAuthenticationController {
     private multiFactorAuthenticationService: MultiFactorAuthenticationService,
   ) {}
 
-  @Post('regenerate')
-  @Scopes('user-{userId}:write-mfa-regenerate')
-  async regenerateBackupCodes(
-    @Param('userId', ParseIntPipe) userId: number,
-  ): Promise<string[]> {
-    return this.multiFactorAuthenticationService.regenerateBackupCodes(userId);
-  }
-
+  /** Disable MFA for a user */
   @Delete()
   @Scopes('user-{userId}:delete-mfa-*')
   async disable2FA(
@@ -39,53 +32,70 @@ export class MultiFactorAuthenticationController {
     return this.multiFactorAuthenticationService.disableMfa(userId);
   }
 
+  /** Regenerate backup codes for a user */
+  @Post('regenerate')
+  @Scopes('user-{userId}:write-mfa-regenerate')
+  async regenerateBackupCodes(
+    @Param('userId', ParseIntPipe) userId: number,
+  ): Promise<string[]> {
+    return this.multiFactorAuthenticationService.regenerateBackupCodes(userId);
+  }
+
+  /** Enable TOTP-based MFA for a user */
   @Post('totp')
   @Scopes('user-{userId}:write-mfa-totp')
   async enableTotp(
     @Param('userId', ParseIntPipe) userId: number,
     @Body() body: EnableTotpMfaDto,
-  ): Promise<string[] | string> {
+  ): Promise<string[] | { img: string }> {
     if (body.token)
       return this.multiFactorAuthenticationService.enableMfa(
         'TOTP',
         userId,
         body.token,
       );
-    return this.multiFactorAuthenticationService.requestTotpMfa(userId);
+    return {
+      img: await this.multiFactorAuthenticationService.requestTotpMfa(userId),
+    };
   }
 
+  /** Enable SMS-based MFA for a user */
   @Post('sms')
   @Scopes('user-{userId}:write-mfa-sms')
   async enableSms(
     @Param('userId', ParseIntPipe) userId: number,
     @Body() body: EnableSmsMfaDto,
-  ): Promise<string[] | void> {
+  ): Promise<string[] | { success: true }> {
     if (body.token)
       return this.multiFactorAuthenticationService.enableMfa(
         'SMS',
         userId,
         body.token,
       );
-    if (body.phone)
-      return this.multiFactorAuthenticationService.requestSmsMfa(
+    if (body.phone) {
+      await this.multiFactorAuthenticationService.requestSmsMfa(
         userId,
         body.phone,
       );
+      return { success: true };
+    }
     throw new BadRequestException(MFA_PHONE_OR_TOKEN_REQUIRED);
   }
 
+  /** Enable email-based MFA for a user */
   @Post('email')
   @Scopes('user-{userId}:write-mfa-email')
   async enableEmail(
     @Param('userId', ParseIntPipe) userId: number,
     @Body() body: EnableTotpMfaDto,
-  ): Promise<string[] | void> {
+  ): Promise<string[] | { success: true }> {
     if (body.token)
       return this.multiFactorAuthenticationService.enableMfa(
         'EMAIL',
         userId,
         body.token,
       );
-    return this.multiFactorAuthenticationService.requestEmailMfa(userId);
+    await this.multiFactorAuthenticationService.requestEmailMfa(userId);
+    return { success: true };
   }
 }
