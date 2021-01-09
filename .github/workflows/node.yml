@@ -4,34 +4,53 @@ on:
     branches:
       - master
 jobs:
-  release:
+  test:
     name: Build, test, and release
-    runs-on: ubuntu-18.04
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    strategy:
+      matrix:
+        os: [ubuntu-18.04, ubuntu-20.04]
+        node: [14]
+    runs-on: ${{ matrix.os }}
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_DATABASE: api-test
+        ports:
+          - 3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
       - name: Checkout
         uses: actions/checkout@v2.3.4
       - name: Setup Node.js
         uses: actions/setup-node@v2.1.4
         with:
-          node-version: 14
+          node-version: ${{ matrix.node }}
       - name: Cache node modules
         uses: actions/cache@v2
         env:
           cache-name: cache-node-modules
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ matrix.os }}-${{ matrix.node }}-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+            ${{ matrix.os }}-${{ matrix.node }}-${{ env.cache-name }}-
+            ${{ matrix.os }}-${{ matrix.node }}-
+            ${{ matrix.os }}-
       - name: Install dependencies
         run: npm ci
       - name: Build TypeScript
         run: npm run build
       - name: Run tests
         run: npm run test
+        env:
+          DB_PORT: ${{ job.services.mysql.ports['3306'] }}
+  release:
+    name: Release
+    needs: [test]
+    steps:
       - name: Release
         run: npx semantic-release
         env:
@@ -41,28 +60,3 @@ jobs:
           GIT_AUTHOR_EMAIL: 'bot@anandchowdhary.com'
           GIT_COMMITTER_NAME: 'FindingAnand'
           GIT_COMMITTER_EMAIL: 'bot@anandchowdhary.com'
-      - name: Add PR comment
-        uses: actions/github-script@v3
-        if: always() && steps.licensed.outputs.pr_number
-        with:
-          github-token: ${{ secrets.GH_PAT }}
-          script: |
-            github.issues.createComment({
-              ...context.repo,
-              issue_number: ${{ steps.licensed.outputs.pr_number }}
-              body: "I've checked the license of your new dependency and it looks good!"
-            })
-      - name: Change .gitignore
-        run: echo node_modules/ > .gitignore
-      - name: Commit files
-        run: |
-          git config --local user.email "bot@anandchowdhary.com"
-          git config --local user.name "FindingAnand"
-          git add .
-          git commit -m ":rocket: Deploy" -a
-      - name: Push to deploy branch
-        uses: ad-m/github-push-action@master
-        with:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
-          branch: deploy
-          force: true
