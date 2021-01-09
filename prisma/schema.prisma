@@ -12,7 +12,7 @@ model User {
   countryCode          String               @default("us")
   createdAt            DateTime             @default(now())
   gender               Gender               @default(UNKNOWN)
-  id                   Int                  @id @default(autoincrement())
+  id                   Int                  @id
   name                 String
   notificationEmail    NotificationEmail    @default(ACCOUNT)
   password             String?
@@ -46,7 +46,7 @@ model Group {
   autoJoinDomain    Boolean      @default(false)
   createdAt         DateTime     @default(now())
   forceTwoFactor    Boolean      @default(false)
-  id                Int          @id @default(autoincrement())
+  id                Int          @id
   ipRestrictions    String?
   name              String
   onlyAllowDomain   Boolean      @default(false)
@@ -80,19 +80,20 @@ model Email {
 }
 
 model ApiKey {
-  createdAt            DateTime @default(now())
+  createdAt            DateTime   @default(now())
   description          String?
-  id                   Int      @id @default(autoincrement())
+  id                   Int        @id @default(autoincrement())
   ipRestrictions       Json?
-  apiKey               String   @unique
+  apiKey               String     @unique
   name                 String?
   groupId              Int?
   referrerRestrictions Json?
   scopes               Json?
-  updatedAt            DateTime @updatedAt
+  updatedAt            DateTime   @updatedAt
   userId               Int?
-  group                Group?   @relation("groupApiKey", fields: [groupId], references: [id])
-  user                 User?    @relation("userApiKey", fields: [userId], references: [id])
+  auditLogs            AuditLog[] @relation("apiKeyAuditLog")
+  group                Group?     @relation("groupApiKey", fields: [groupId], references: [id])
+  user                 User?      @relation("userApiKey", fields: [userId], references: [id])
 
   @@index([groupId], name: "groupId")
   @@index([userId], name: "userId")
@@ -134,7 +135,7 @@ model CouponCode {
   maxUses          Int       @default(1000)
   usedCount        Int       @default(0)
   teamRestrictions String?
-  amount           Int
+  amount           Float     @default(0.00)
   currency         String
   description      String?
 }
@@ -184,7 +185,7 @@ model Session {
   ipAddress       String
   token           String
   updatedAt       DateTime @updatedAt
-  userAgent       String
+  userAgent       String?
   city            String?
   region          String?
   timezone        String?
@@ -216,10 +217,12 @@ model Webhook {
 model AuditLog {
   createdAt       DateTime @default(now())
   event           String
+  rawEvent        String
   id              Int      @id @default(autoincrement())
   groupId         Int?
   updatedAt       DateTime @updatedAt
   userId          Int?
+  apiKeyId        Int?
   ipAddress       String?
   userAgent       String?
   city            String?
@@ -230,7 +233,9 @@ model AuditLog {
   operatingSystem String?
   group           Group?   @relation("groupAuditLog", fields: [groupId], references: [id])
   user            User?    @relation("userAuditLog", fields: [userId], references: [id])
+  apiKey          ApiKey?  @relation("apiKeyAuditLog", fields: [apiKeyId], references: [id])
 
+  @@index([apiKeyId], name: "apiKeyId")
   @@index([groupId], name: "groupId")
   @@index([userId], name: "userId")
 }
