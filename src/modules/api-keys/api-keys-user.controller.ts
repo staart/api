@@ -9,6 +9,7 @@ import {
   Post,
   Put,
   Query,
+  Req,
 } from '@nestjs/common';
 import { ApiKey } from '@prisma/client';
 import { CursorPipe } from '../../pipes/cursor.pipe';
@@ -16,7 +17,7 @@ import { OptionalIntPipe } from '../../pipes/optional-int.pipe';
 import { OrderByPipe } from '../../pipes/order-by.pipe';
 import { WherePipe } from '../../pipes/where.pipe';
 import { Expose } from '../../providers/prisma/prisma.interface';
-import { AuditLog } from '../audit-logs/audit-log.decorator';
+import { UserRequest } from '../auth/auth.interface';
 import { Scopes } from '../auth/scope.decorator';
 import {
   CreateApiKeyDto,
@@ -29,8 +30,8 @@ import { ApiKeysService } from './api-keys.service';
 export class ApiKeyUserController {
   constructor(private apiKeysService: ApiKeysService) {}
 
+  /** Create an API key for a user */
   @Post()
-  @AuditLog('create-api-key')
   @Scopes('user-{userId}:write-api-key-*')
   async create(
     @Param('userId', ParseIntPipe) userId: number,
@@ -39,6 +40,7 @@ export class ApiKeyUserController {
     return this.apiKeysService.createApiKeyForUser(userId, data);
   }
 
+  /** Get API keys for a user */
   @Get()
   @Scopes('user-{userId}:read-api-key-*')
   async getAll(
@@ -58,6 +60,7 @@ export class ApiKeyUserController {
     });
   }
 
+  /** Get API key scopes for a user */
   @Get('scopes')
   @Scopes('user-{userId}:write-api-key-*')
   async scopes(
@@ -66,47 +69,49 @@ export class ApiKeyUserController {
     return this.apiKeysService.getApiKeyScopesForUser(userId);
   }
 
+  /** Get an API key */
   @Get(':id')
   @Scopes('user-{userId}:read-api-key-{id}')
   async get(
     @Param('userId', ParseIntPipe) userId: number,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Expose<ApiKey>> {
-    return this.apiKeysService.getApiKeyForUser(userId, Number(id));
+    return this.apiKeysService.getApiKeyForUser(userId, id);
   }
 
+  /** Update an API key */
   @Patch(':id')
-  @AuditLog('update-api-key')
   @Scopes('user-{userId}:write-api-key-{id}')
   async update(
     @Body() data: UpdateApiKeyDto,
     @Param('userId', ParseIntPipe) userId: number,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Expose<ApiKey>> {
-    return this.apiKeysService.updateApiKeyForUser(userId, Number(id), data);
+    return this.apiKeysService.updateApiKeyForUser(userId, id, data);
   }
 
+  /** Replace an API key */
   @Put(':id')
-  @AuditLog('update-api-key')
   @Scopes('user-{userId}:write-api-key-{id}')
   async replace(
     @Body() data: ReplaceApiKeyDto,
     @Param('userId', ParseIntPipe) userId: number,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Expose<ApiKey>> {
-    return this.apiKeysService.updateApiKeyForUser(userId, Number(id), data);
+    return this.apiKeysService.updateApiKeyForUser(userId, id, data);
   }
 
+  /** Delete an API key */
   @Delete(':id')
-  @AuditLog('delete-api-key')
   @Scopes('user-{userId}:delete-api-key-{id}')
   async remove(
     @Param('userId', ParseIntPipe) userId: number,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Expose<ApiKey>> {
-    return this.apiKeysService.deleteApiKeyForUser(userId, Number(id));
+    return this.apiKeysService.deleteApiKeyForUser(userId, id);
   }
 
+  /** Get logs for an API key */
   @Get(':id/logs')
   @Scopes('user-{userId}:read-api-key-logs-*')
   async getLogs(
