@@ -5,7 +5,7 @@ import {
   RequestMethod,
 } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
 import configuration from './config/configuration';
 import { AuditLogger } from './interceptors/audit-log.interceptor';
@@ -28,20 +28,20 @@ import { SessionsModule } from './modules/sessions/sessions.module';
 import { StripeModule } from './modules/stripe/stripe.module';
 import { UsersModule } from './modules/users/users.module';
 import { WebhooksModule } from './modules/webhooks/webhooks.module';
-import { AirtableModule } from './providers/airtable/airtable.module';
 import { CloudinaryModule } from './providers/cloudinary/cloudinary.module';
 import { DnsModule } from './providers/dns/dns.module';
 import { ElasticSearchModule } from './providers/elasticsearch/elasticsearch.module';
-import { FirebaseModule } from './providers/firebase/firebase.module';
 import { GeolocationModule } from './providers/geolocation/geolocation.module';
 import { GitHubModule } from './providers/github/github.module';
 import { GoogleMapsModule } from './providers/google-maps/google-maps.module';
 import { MailModule } from './providers/mail/mail.module';
-import { PlaywrightModule } from './providers/playwright/playwright.module';
+import { PuppeteerModule } from './providers/puppeteer/puppeteer.module';
 import { PrismaModule } from './providers/prisma/prisma.module';
 import { S3Module } from './providers/s3/s3.module';
 import { SlackModule } from './providers/slack/slack.module';
 import { TasksModule } from './providers/tasks/tasks.module';
+import { HttpExceptionFilter } from './filters/http-exception.filter';
+import { MetricsModule } from './modules/metrics/metrics.module';
 
 @Module({
   imports: [
@@ -69,15 +69,18 @@ import { TasksModule } from './providers/tasks/tasks.module';
     WebhooksModule,
     ElasticSearchModule,
     SlackModule,
-    AirtableModule,
     S3Module,
     CloudinaryModule,
-    FirebaseModule,
     GitHubModule,
     GoogleMapsModule,
-    PlaywrightModule,
+    PuppeteerModule,
+    MetricsModule,
   ],
   providers: [
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
     {
       provide: APP_INTERCEPTOR,
       useClass: RateLimitInterceptor,
