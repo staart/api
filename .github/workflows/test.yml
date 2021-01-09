@@ -1,6 +1,8 @@
 name: Test CI
 on:
   push:
+    branches-ignore:
+      - master
 jobs:
   release:
     name: Build and test
