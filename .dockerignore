@@ -1,0 +1,14 @@
+.git
+Dockerfile
+CHANGELOG.md
+Procfile
+README.md
+docs
+http
+jest.config.js
+.eslintrc.js
+.github
+.gitignore
+.prettierrc
+Dockerrun.aws.json.tpl
+Dockerrun.aws.json
