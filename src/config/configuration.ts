@@ -1,34 +1,20 @@
 import { ConfigFactory } from '@nestjs/config/dist/interfaces';
-import slugify from '@sindresorhus/slugify';
 import { config } from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
 import { Configuration } from './configuration.interface';
 dotenvExpand(config());
 
-/**
- * Get an integer from an environment variable
- * @param val - Value from process.env
- * @param num - Fallback number value
- */
 const int = (val: string | undefined, num: number): number =>
   val ? (isNaN(parseInt(val)) ? num : parseInt(val)) : num;
-
-/**
- * Get boolean value from an environment variable
- * @param val - Value from process.env
- * @param bool - Fallback boolean value
- */
 const bool = (val: string | undefined, bool: boolean): boolean =>
   val == null ? bool : val == 'true';
 
-/** Central configuration object */
 const configuration: Configuration = {
+  frontendUrl: process.env.FRONTEND_URL ?? 'http://localhost:3000',
   meta: {
-    frontendUrl: process.env.FRONTEND_URL ?? 'http://localhost:3000',
     appName: process.env.APP_NAME ?? 'Staart',
     domainVerificationFile:
-      process.env.DOMAIN_VERIFICATION_FILE ??
-      `${slugify(process.env.APP_NAME ?? 'Staart')}-verify.txt`,
+      process.env.DOMAIN_VERIFICATION_FILE ?? 'staart-verify.txt',
   },
   rateLimit: {
     public: {
@@ -51,7 +37,6 @@ const configuration: Configuration = {
   security: {
     saltRounds: int(process.env.SALT_ROUNDS, 10),
     jwtSecret: process.env.JWT_SECRET ?? 'staart',
-    issuerDomain: process.env.ISSUER_DOMAIN ?? 'staart.js.org',
     totpWindowPast: int(process.env.TOTP_WINDOW_PAST, 1),
     totpWindowFuture: int(process.env.TOTP_WINDOW_FUTURE, 0),
     mfaTokenExpiry: process.env.MFA_TOKEN_EXPIRY ?? '10m',
@@ -86,7 +71,7 @@ const configuration: Configuration = {
     },
   },
   email: {
-    name: process.env.EMAIL_NAME ?? process.env.APP_NAME ?? 'Staart',
+    name: process.env.EMAIL_NAME ?? 'Staart',
     from: process.env.EMAIL_FROM ?? '',
     retries: int(process.env.EMAIL_FAIL_RETRIES, 3),
     ses: {
@@ -135,30 +120,15 @@ const configuration: Configuration = {
     ),
     retries: int(process.env.SLACK_FAIL_RETRIES, 3),
   },
-  airtable: {
-    apiKey: process.env.AIRTABLE_API_KEY ?? '',
-    endpointUrl: process.env.AIRTABLE_ENDPOINT_URL,
-  },
   s3: {
-    accessKeyId: process.env.S3_ACCESS_KEY_ID ?? '',
-    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY ?? '',
-    region: process.env.S3_REGION ?? '',
-    bucket: process.env.S3_BUCKET,
+    accessKeyId: process.env.AWS_S3_ACCESS_KEY ?? '',
+    secretAccessKey: process.env.AWS_S3_SECRET_KEY ?? '',
+    region: process.env.AWS_S3_REGION ?? '',
   },
   cloudinary: {
     cloudName: process.env.CLOUDINARY_CLOUD_NAME ?? '',
     apiKey: process.env.CLOUDINARY_API_KEY ?? '',
     apiSecret: process.env.CLOUDINARY_API_SECRET ?? '',
-  },
-  firebase: {
-    serviceAccountKey: process.env.FIREBASE_PROJECT_ID
-      ? {
-          projectId: process.env.FIREBASE_PROJECT_ID,
-          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-          privateKey: process.env.FIREBASE_PRIVATE_KEY,
-        }
-      : process.env.FIREBASE_SERVICE_ACCOUNT_KEY,
-    databaseUrl: process.env.FIREBASE_DATABASE_URL,
   },
   github: {
     auth: process.env.GITHUB_AUTH,
