@@ -1,5 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { async as cryptoRandomString } from 'crypto-random-string';
 import {
   decode,
   DecodeOptions,
@@ -8,52 +9,104 @@ import {
   verify,
   VerifyOptions,
 } from 'jsonwebtoken';
-import { Configuration } from 'src/config/configuration.interface';
 import { v4 } from 'uuid';
 import { INVALID_TOKEN } from '../../errors/errors.constants';
 
 @Injectable()
 export class TokensService {
-  private securityConfig = this.configService.get<Configuration['security']>(
-    'security',
-  );
-
   constructor(private configService: ConfigService) {}
 
+  /**
+   * Sign a JWT
+   * @param subject - Subject
+   * @param payload - Object payload
+   * @param expiresIn - Expiry string (vercel/ms)
+   * @param options - Signing options
+   */
   signJwt(
-    jwtType: string,
-    payload: object,
+    subject: string,
+    payload: number | string | object | Buffer,
     expiresIn?: string,
     options?: SignOptions,
   ) {
-    return sign({ ...payload, typ: jwtType }, this.securityConfig.jwtSecret, {
-      ...options,
-      expiresIn,
-      issuer: this.securityConfig.issuerDomain,
-    });
+    if (typeof payload === 'number') payload = payload.toString();
+    return sign(
+      payload,
+      this.configService.get<string>('security.jwtSecret') ?? '',
+      {
+        ...options,
+        subject,
+        expiresIn,
+      },
+    );
   }
 
-  verify<T>(jwtType: string, token: string, options?: VerifyOptions) {
+  /**
+   * Verify and decode a JWT
+   * @param subject - Subject
+   * @param token - JWT
+   * @param options - Verify options
+   */
+  verify<T>(subject: string, token: string, options?: VerifyOptions) {
     try {
-      const result = (verify(
+      return (verify(
         token,
-        this.securityConfig.jwtSecret,
-        options,
+        this.configService.get<string>('security.jwtSecret') ?? '',
+        { ...options, subject },
       ) as any) as T;
-      if ('typ' in result) {
-        if ((result as { typ?: string }).typ !== jwtType) throw new Error();
-      } else throw new Error();
-      return result;
     } catch (error) {
       throw new UnauthorizedException(INVALID_TOKEN);
     }
   }
 
+  /**
+   * Decode a JWT without verifying it
+   * @deprecated Use verify() instead
+   * @param token - JWT
+   * @param options - Decode options
+   */
   decode<T>(token: string, options?: DecodeOptions) {
     return decode(token, options) as T;
   }
 
+  /**
+   * Generate a UUID
+   */
   generateUuid() {
     return v4();
+  }
+
+  /**
+   * Generate a cryptographically strong random string
+   * @param length - Length of returned string
+   * @param charactersOrType - Characters or one of the supported types
+   */
+  async generateRandomString(
+    length = 32,
+    charactersOrType = 'alphanumeric',
+  ): Promise<string> {
+    if (
+      [
+        'hex',
+        'base64',
+        'url-safe',
+        'numeric',
+        'distinguishable',
+        'ascii-printable',
+        'alphanumeric',
+      ].includes(charactersOrType)
+    )
+      return cryptoRandomString({
+        length,
+        type: charactersOrType as
+          | 'hex'
+          | 'base64'
+          | 'url-safe'
+          | 'numeric'
+          | 'distinguishable'
+          | 'ascii-printable'
+          | 'alphanumeric',
+      });
+    return cryptoRandomString({ length, characters: charactersOrType });
   }
 }

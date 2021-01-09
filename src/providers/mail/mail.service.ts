@@ -17,22 +17,22 @@ import { MailOptions } from './mail.interface';
 export class MailService {
   private readonly logger = new Logger(MailService.name);
   private transport: Mail;
-  private emailConfig = this.configService.get<Configuration['email']>('email');
+  private config: Configuration['email'];
   private queue = new PQueue({ concurrency: 1 });
   private readTemplate = mem(this.readTemplateUnmemoized);
 
   constructor(private configService: ConfigService) {
-    if (this.emailConfig.ses?.accessKeyId)
+    this.config = this.configService.get<Configuration['email']>('email');
+    if (this.config.ses?.accessKeyId)
       this.transport = nodemailer.createTransport({
         SES: new SES({
           apiVersion: '2010-12-01',
-          accessKeyId: this.emailConfig.ses.accessKeyId,
-          secretAccessKey: this.emailConfig.ses.secretAccessKey,
-          region: this.emailConfig.ses.region,
+          accessKeyId: this.config.ses.accessKeyId,
+          secretAccessKey: this.config.ses.secretAccessKey,
+          region: this.config.ses.region,
         }),
       } as SESTransport.Options);
-    else
-      this.transport = nodemailer.createTransport(this.emailConfig.transport);
+    else this.transport = nodemailer.createTransport(this.config.transport);
   }
 
   send(options: Mail.Options & MailOptions) {
@@ -43,11 +43,10 @@ export class MailService {
             this.sendMail({
               ...options,
               from:
-                options.from ??
-                `"${this.emailConfig.name}" <${this.emailConfig.from}>`,
+                options.from ?? `"${this.config.name}" <${this.config.from}>`,
             }),
           {
-            retries: this.emailConfig.retries,
+            retries: this.configService.get<number>('email.retries') ?? 3,
             onFailedAttempt: (error) => {
               this.logger.error(
                 `Mail to ${options.to} failed, retrying (${error.retriesLeft} attempts left)`,

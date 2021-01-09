@@ -23,6 +23,8 @@ export class PrismaService
   /** Delete sensitive keys from an object */
   expose<T>(item: T): Expose<T> {
     if (!item) return {} as T;
+    if (((item as any) as Partial<User>).password)
+      (item as any).hasPassword = true;
     delete ((item as any) as Partial<User>).password;
     delete ((item as any) as Partial<User>).twoFactorSecret;
     delete ((item as any) as Partial<Session>).token;

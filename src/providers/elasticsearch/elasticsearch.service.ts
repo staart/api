@@ -13,26 +13,26 @@ import { Configuration } from '../../config/configuration.interface';
 export class ElasticSearchService {
   private logger = new Logger(ElasticSearchService.name);
   private queue = new PQueue({ concurrency: 1 });
-  private elasticSearchConfig = this.configService.get<
-    Configuration['elasticSearch']
-  >('elasticSearch');
   client?: Client;
 
   constructor(private configService: ConfigService) {
-    if (this.elasticSearchConfig.aws?.accessKeyId) {
+    const config = this.configService.get<Configuration['elasticSearch']>(
+      'elasticSearch',
+    );
+    if (config.aws?.accessKeyId) {
       AWS.config.update({
-        accessKeyId: this.elasticSearchConfig.aws.accessKeyId,
-        secretAccessKey: this.elasticSearchConfig.aws.secretAccessKey,
-        region: this.elasticSearchConfig.aws.region,
+        accessKeyId: config.aws.accessKeyId,
+        secretAccessKey: config.aws.secretAccessKey,
+        region: config.aws.region,
       });
       this.client = new Client({
         ...createAwsElasticsearchConnector(AWS.config),
-        node: this.elasticSearchConfig.node,
+        node: config.node,
       });
-    } else if (this.elasticSearchConfig.node)
+    } else if (config.node)
       this.client = new Client({
-        auth: this.elasticSearchConfig.auth,
-        node: this.elasticSearchConfig.node,
+        auth: config.auth,
+        node: config.node,
       });
     else this.logger.warn('ElasticSearch tracking is not enabled');
   }
@@ -42,7 +42,8 @@ export class ElasticSearchService {
       this.queue
         .add(() =>
           pRetry(() => this.indexRecord(index, record, params), {
-            retries: this.elasticSearchConfig.retries,
+            retries:
+              this.configService.get<number>('elasticSearch.retries') ?? 3,
             onFailedAttempt: (error) => {
               this.logger.error(
                 `Indexing record failed, retrying (${error.retriesLeft} attempts left)`,
