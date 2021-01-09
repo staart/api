@@ -140,6 +140,9 @@ const configuration: Configuration = {
   googleMaps: {
     apiKey: process.env.GOOGLE_MAPS_API_KEY,
   },
+  gravatar: {
+    enabled: bool(process.env.PASSWORD_PWNED_CHECK, true),
+  },
 };
 
 const configFunction: ConfigFactory<Configuration> = () => configuration;

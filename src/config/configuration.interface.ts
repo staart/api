@@ -117,4 +117,8 @@ export interface Configuration {
   googleMaps: {
     apiKey: string;
   };
+
+  gravatar: {
+    enabled: boolean;
+  };
 }

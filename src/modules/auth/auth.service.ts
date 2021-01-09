@@ -201,16 +201,18 @@ export class AuthService {
       } catch (error) {}
     }
 
-    for await (const emailString of [email, emailSafe]) {
-      const md5Email = createHash('md5').update(emailString).digest('hex');
-      try {
-        const img = await got(
-          `https://www.gravatar.com/avatar/${md5Email}?d=404`,
-          { responseType: 'buffer' },
-        );
-        if (img.body.byteLength > 1)
-          data.profilePictureUrl = `https://www.gravatar.com/avatar/${md5Email}?d=mp`;
-      } catch (error) {}
+    if (this.configService.get<boolean>('gravatar.enabled')) {
+      for await (const emailString of [email, emailSafe]) {
+        const md5Email = createHash('md5').update(emailString).digest('hex');
+        try {
+          const img = await got(
+            `https://www.gravatar.com/avatar/${md5Email}?d=404`,
+            { responseType: 'buffer' },
+          );
+          if (img.body.byteLength > 1)
+            data.profilePictureUrl = `https://www.gravatar.com/avatar/${md5Email}?d=mp`;
+        } catch (error) {}
+      }
     }
 
     let id: number | undefined = undefined;
