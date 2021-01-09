@@ -22,6 +22,7 @@ import { EmailsService } from './emails.service';
 export class EmailController {
   constructor(private emailsService: EmailsService) {}
 
+  /** Create a new email for a user */
   @Post()
   @Scopes('user-{userId}:write-email-*')
   async create(
@@ -31,6 +32,7 @@ export class EmailController {
     return this.emailsService.createEmail(userId, data);
   }
 
+  /** Get emails for a user */
   @Get()
   @Scopes('user-{userId}:read-email-*')
   async getAll(
@@ -50,21 +52,23 @@ export class EmailController {
     });
   }
 
+  /** Get an email for a user */
   @Get(':id')
   @Scopes('user-{userId}:read-email-{id}')
   async get(
     @Param('userId', ParseIntPipe) userId: number,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Expose<Email>> {
-    return this.emailsService.getEmail(userId, Number(id));
+    return this.emailsService.getEmail(userId, id);
   }
 
+  /** Delete an email for a user */
   @Delete(':id')
   @Scopes('user-{userId}:delete-email-{id}')
   async remove(
     @Param('userId', ParseIntPipe) userId: number,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Expose<Email>> {
-    return this.emailsService.deleteEmail(userId, Number(id));
+    return this.emailsService.deleteEmail(userId, id);
   }
 }

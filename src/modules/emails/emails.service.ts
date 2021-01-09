@@ -49,14 +49,18 @@ export class EmailsService {
     },
   ): Promise<Expose<Email>[]> {
     const { skip, take, cursor, where, orderBy } = params;
-    const emails = await this.prisma.email.findMany({
-      skip,
-      take,
-      cursor,
-      where: { ...where, user: { id: userId } },
-      orderBy,
-    });
-    return emails.map((user) => this.prisma.expose<Email>(user));
+    try {
+      const emails = await this.prisma.email.findMany({
+        skip,
+        take,
+        cursor,
+        where: { ...where, user: { id: userId } },
+        orderBy,
+      });
+      return emails.map((user) => this.prisma.expose<Email>(user));
+    } catch (error) {
+      return [];
+    }
   }
 
   async getEmail(userId: number, id: number): Promise<Expose<Email>> {
