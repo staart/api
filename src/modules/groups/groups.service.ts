@@ -45,14 +45,18 @@ export class GroupsService {
     orderBy?: Prisma.GroupOrderByInput;
   }): Promise<Expose<Group>[]> {
     const { skip, take, cursor, where, orderBy } = params;
-    const groups = await this.prisma.group.findMany({
-      skip,
-      take,
-      cursor,
-      where,
-      orderBy,
-    });
-    return groups.map((user) => this.prisma.expose<Group>(user));
+    try {
+      const groups = await this.prisma.group.findMany({
+        skip,
+        take,
+        cursor,
+        where,
+        orderBy,
+      });
+      return groups.map((user) => this.prisma.expose<Group>(user));
+    } catch (error) {
+      return [];
+    }
   }
 
   async getGroup(
@@ -109,6 +113,7 @@ export class GroupsService {
       where: { id },
     });
     if (!testGroup) throw new NotFoundException(GROUP_NOT_FOUND);
+    await this.prisma.membership.deleteMany({ where: { group: { id } } });
     const group = await this.prisma.group.delete({
       where: { id },
     });
@@ -126,13 +131,17 @@ export class GroupsService {
     },
   ): Promise<Expose<Group>[]> {
     const { skip, take, cursor, where, orderBy } = params;
-    const groups = await this.prisma.group.findMany({
-      skip,
-      take,
-      cursor,
-      where: { ...where, parent: { id } },
-      orderBy,
-    });
-    return groups.map((user) => this.prisma.expose<Group>(user));
+    try {
+      const groups = await this.prisma.group.findMany({
+        skip,
+        take,
+        cursor,
+        where: { ...where, parent: { id } },
+        orderBy,
+      });
+      return groups.map((user) => this.prisma.expose<Group>(user));
+    } catch (error) {
+      return [];
+    }
   }
 }
