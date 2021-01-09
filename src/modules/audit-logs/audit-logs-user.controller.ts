@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { AuditLog } from '@prisma/client';
 import { CursorPipe } from '../../pipes/cursor.pipe';
 import { OptionalIntPipe } from '../../pipes/optional-int.pipe';
@@ -8,14 +8,15 @@ import { Expose } from '../../providers/prisma/prisma.interface';
 import { Scopes } from '../auth/scope.decorator';
 import { AuditLogsService } from './audit-logs.service';
 
-@Controller('audit-logs')
-export class AuditLogController {
+@Controller('users/:userId/audit-logs')
+export class AuditLogUserController {
   constructor(private auditLogsService: AuditLogsService) {}
 
-  /** Get audit logs for a group */
+  /** Get audit logs for a user */
   @Get()
-  @Scopes('audit-log-*:read-info')
+  @Scopes('user-{userId}:read-audit-log-*')
   async getAll(
+    @Param('userId', ParseIntPipe) userId: number,
     @Query('skip', OptionalIntPipe) skip?: number,
     @Query('take', OptionalIntPipe) take?: number,
     @Query('cursor', CursorPipe) cursor?: Record<string, number | string>,
@@ -27,7 +28,7 @@ export class AuditLogController {
       take,
       orderBy,
       cursor,
-      where,
+      where: { ...where, user: { id: userId } },
     });
   }
 }
