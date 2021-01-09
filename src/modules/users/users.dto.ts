@@ -4,7 +4,6 @@ import {
   IsEnum,
   IsIn,
   IsLocale,
-  IsObject,
   IsOptional,
   IsString,
   IsUrl,
