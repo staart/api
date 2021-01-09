@@ -23,6 +23,7 @@ import { StripeService } from './stripe.service';
 export class StripeBillingController {
   constructor(private stripeService: StripeService) {}
 
+  /** Create a billing account for a group */
   @Post()
   @AuditLog('create-billing')
   @Scopes('group-{groupId}:write-billing')
@@ -33,6 +34,7 @@ export class StripeBillingController {
     return this.stripeService.createCustomer(groupId, data);
   }
 
+  /** Read billing for a group */
   @Get()
   @Scopes('group-{groupId}:read-billing')
   async getBillingAccount(
@@ -41,6 +43,7 @@ export class StripeBillingController {
     return this.stripeService.getCustomer(groupId);
   }
 
+  /** Update billing for a group */
   @Patch()
   @AuditLog('update-billing')
   @Scopes('group-{groupId}:write-billing')
@@ -51,6 +54,7 @@ export class StripeBillingController {
     return this.stripeService.updateCustomer(groupId, data);
   }
 
+  /** Replace billing for a group */
   @Put()
   @AuditLog('update-billing')
   @Scopes('group-{groupId}:write-billing')
@@ -61,6 +65,7 @@ export class StripeBillingController {
     return this.stripeService.updateCustomer(groupId, data);
   }
 
+  /** Delete billing for a group */
   @Delete()
   @AuditLog('delete-billing')
   @Scopes('group-{groupId}:delete-billing')
@@ -70,6 +75,7 @@ export class StripeBillingController {
     return this.stripeService.deleteCustomer(groupId);
   }
 
+  /** Get the billing portal link for a group */
   @Get('link')
   @AuditLog('billing-portal')
   @Scopes('group-{groupId}:write-billing')

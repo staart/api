@@ -7,6 +7,7 @@ import { StripeService } from './stripe.service';
 export class StripeWebhookController {
   constructor(private stripeService: StripeService) {}
 
+  /** Handle a Stripe webhook */
   @Post()
   async handleWebhook(
     @Headers('stripe-signature') signature: string,

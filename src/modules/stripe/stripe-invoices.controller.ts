@@ -9,6 +9,7 @@ import { StripeService } from './stripe.service';
 export class StripeInvoicesController {
   constructor(private stripeService: StripeService) {}
 
+  /** Read invoices for a group */
   @Get()
   @Scopes('group-{groupId}:read-invoice-*')
   async getAll(
@@ -19,6 +20,7 @@ export class StripeInvoicesController {
     return this.stripeService.getInvoices(groupId, { take, cursor });
   }
 
+  /** Read an invoice for a group */
   @Get(':id')
   @Scopes('group-{groupId}:read-invoice-{id}')
   async get(

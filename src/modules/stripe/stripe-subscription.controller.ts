@@ -18,6 +18,7 @@ import { StripeService } from './stripe.service';
 export class StripeSubscriptionController {
   constructor(private stripeService: StripeService) {}
 
+  /** Create a subscription for a group */
   @Post(':plan')
   @AuditLog('create-subscription')
   @Scopes('group-{groupId}:write-subscription-*')
@@ -28,6 +29,7 @@ export class StripeSubscriptionController {
     return this.stripeService.createSession(groupId, 'subscription', plan);
   }
 
+  /** Get subscriptions for a group */
   @Get()
   @Scopes('group-{groupId}:read-subscription-*')
   async getAll(
@@ -38,6 +40,7 @@ export class StripeSubscriptionController {
     return this.stripeService.getSubscriptions(groupId, { take, cursor });
   }
 
+  /** Get a subscription for a group */
   @Get(':id')
   @Scopes('group-{groupId}:read-subscription-{id}')
   async get(
@@ -47,6 +50,7 @@ export class StripeSubscriptionController {
     return this.stripeService.getSubscription(groupId, id);
   }
 
+  /** Cancel a subscription for a group */
   @Delete(':id')
   @AuditLog('delete-subscription')
   @Scopes('group-{groupId}:delete-subscription-{id}')
@@ -57,6 +61,7 @@ export class StripeSubscriptionController {
     return this.stripeService.cancelSubscription(groupId, id);
   }
 
+  /** Get subscription plans for a group */
   @Get('plans')
   @Scopes('group-{groupId}:write-subscription-*')
   async getPlans(

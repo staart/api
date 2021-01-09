@@ -18,6 +18,7 @@ import { StripeService } from './stripe.service';
 export class StripeSourcesController {
   constructor(private stripeService: StripeService) {}
 
+  /** Create a source for a group */
   @Post()
   @AuditLog('write-source')
   @Scopes('group-{groupId}:write-source-*')
@@ -27,6 +28,7 @@ export class StripeSourcesController {
     return this.stripeService.createSession(groupId, 'setup');
   }
 
+  /** Read sources for a group */
   @Get()
   @Scopes('group-{groupId}:read-source-*')
   async getAll(
@@ -37,6 +39,7 @@ export class StripeSourcesController {
     return this.stripeService.getSources(groupId, { take, cursor });
   }
 
+  /** Read a source for a group */
   @Get(':id')
   @Scopes('group-{groupId}:read-source-{id}')
   async get(
@@ -46,13 +49,15 @@ export class StripeSourcesController {
     return this.stripeService.getSource(groupId, id);
   }
 
+  /** Delete a source for a group */
   @Delete(':id')
   @AuditLog('delete-source')
   @Scopes('group-{groupId}:delete-source-{id}')
   async remove(
     @Param('groupId', ParseIntPipe) groupId: number,
     @Param('id') id: string,
-  ): Promise<void> {
-    return this.stripeService.deleteSource(groupId, id);
+  ): Promise<{ success: true }> {
+    await this.stripeService.deleteSource(groupId, id);
+    return { success: true };
   }
 }
