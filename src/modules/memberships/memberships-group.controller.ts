@@ -28,6 +28,7 @@ import { MembershipsService } from './memberships.service';
 export class GroupMembershipController {
   constructor(private membershipsService: MembershipsService) {}
 
+  /** Add a member to a group */
   @Post()
   @AuditLog('add-membership')
   @Scopes('group-{groupId}:write-membership-*')
@@ -39,6 +40,7 @@ export class GroupMembershipController {
     return this.membershipsService.createGroupMembership(ip, groupId, data);
   }
 
+  /** Get memberships for a group */
   @Get()
   @Scopes('group-{groupId}:read-membership-*')
   async getAll(
@@ -58,15 +60,17 @@ export class GroupMembershipController {
     });
   }
 
+  /** Get a membership for a group */
   @Get(':id')
   @Scopes('group-{groupId}:read-membership-{id}')
   async get(
     @Param('groupId', ParseIntPipe) groupId: number,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Expose<Membership>> {
-    return this.membershipsService.getGroupMembership(groupId, Number(id));
+    return this.membershipsService.getGroupMembership(groupId, id);
   }
 
+  /** Update a membership for a group */
   @Patch(':id')
   @AuditLog('update-membership')
   @Scopes('group-{groupId}:write-membership-{id}')
@@ -75,13 +79,10 @@ export class GroupMembershipController {
     @Param('groupId', ParseIntPipe) groupId: number,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Expose<Membership>> {
-    return this.membershipsService.updateGroupMembership(
-      groupId,
-      Number(id),
-      data,
-    );
+    return this.membershipsService.updateGroupMembership(groupId, id, data);
   }
 
+  /** Remove a member from a group */
   @Delete(':id')
   @AuditLog('delete-membership')
   @Scopes('group-{groupId}:delete-membership-{id}')
@@ -89,6 +90,6 @@ export class GroupMembershipController {
     @Param('groupId', ParseIntPipe) groupId: number,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Expose<Membership>> {
-    return this.membershipsService.deleteGroupMembership(groupId, Number(id));
+    return this.membershipsService.deleteGroupMembership(groupId, id);
   }
 }

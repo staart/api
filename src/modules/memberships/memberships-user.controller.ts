@@ -31,8 +31,9 @@ export class UserMembershipController {
     return this.membershipsService.createUserMembership(userId, data);
   }
 
+  /** Get memberships for a user */
   @Get()
-  @Scopes('user-{userId}:read-membership')
+  @Scopes('user-{userId}:read-membership-*')
   async getAll(
     @Param('userId', ParseIntPipe) userId: number,
     @Query('skip', OptionalIntPipe) skip?: number,
@@ -50,21 +51,23 @@ export class UserMembershipController {
     });
   }
 
+  /** Get a membership for a user */
   @Get(':id')
   @Scopes('user-{userId}:read-membership-{id}')
   async get(
     @Param('userId', ParseIntPipe) userId: number,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Expose<Membership>> {
-    return this.membershipsService.getUserMembership(userId, Number(id));
+    return this.membershipsService.getUserMembership(userId, id);
   }
 
+  /** Delete a membership for a user */
   @Delete(':id')
   @Scopes('user-{userId}:delete-membership-{id}')
   async remove(
     @Param('userId', ParseIntPipe) userId: number,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Expose<Membership>> {
-    return this.membershipsService.deleteUserMembership(userId, Number(id));
+    return this.membershipsService.deleteUserMembership(userId, id);
   }
 }

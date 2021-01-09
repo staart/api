@@ -22,12 +22,10 @@ import { ApiKeysService } from '../api-keys/api-keys.service';
 import { AuthService } from '../auth/auth.service';
 import { GroupsService } from '../groups/groups.service';
 import { CreateMembershipInput } from './memberships.interface';
-import { Configuration } from '../../config/configuration.interface';
+import { TokensService } from '../../providers/tokens/tokens.service';
 
 @Injectable()
 export class MembershipsService {
-  private metaConfig = this.configService.get<Configuration['meta']>('meta');
-
   constructor(
     private prisma: PrismaService,
     private auth: AuthService,
@@ -35,7 +33,27 @@ export class MembershipsService {
     private configService: ConfigService,
     private groupsService: GroupsService,
     private apiKeyService: ApiKeysService,
+    private tokensService: TokensService,
   ) {}
+
+  async createUserMembership(
+    userId: number,
+    data: Omit<Prisma.GroupCreateInput, 'id'>,
+  ) {
+    let id: number | undefined = undefined;
+    while (!id) {
+      id = Number(
+        `10${await this.tokensService.generateRandomString(6, 'numeric')}`,
+      );
+      const users = await this.prisma.user.findMany({ where: { id }, take: 1 });
+      if (users.length) id = undefined;
+    }
+    const created = await this.groupsService.createGroup(userId, {
+      ...data,
+      id,
+    });
+    return created.memberships[0];
+  }
 
   async getMemberships(params: {
     skip?: number;
@@ -45,15 +63,19 @@ export class MembershipsService {
     orderBy?: Prisma.MembershipOrderByInput;
   }): Promise<Expose<Membership>[]> {
     const { skip, take, cursor, where, orderBy } = params;
-    const memberships = await this.prisma.membership.findMany({
-      skip,
-      take,
-      cursor,
-      where,
-      orderBy,
-      include: { group: true, user: true },
-    });
-    return memberships.map((user) => this.prisma.expose<Membership>(user));
+    try {
+      const memberships = await this.prisma.membership.findMany({
+        skip,
+        take,
+        cursor,
+        where,
+        orderBy,
+        include: { group: true, user: true },
+      });
+      return memberships.map((user) => this.prisma.expose<Membership>(user));
+    } catch (error) {
+      return [];
+    }
   }
 
   async getUserMembership(
@@ -153,10 +175,6 @@ export class MembershipsService {
     );
     return this.prisma.expose<Membership>(membership);
   }
-  async createUserMembership(userId: number, data: Prisma.GroupCreateInput) {
-    const created = await this.groupsService.createGroup(userId, data);
-    return created.memberships[0];
-  }
 
   async createGroupMembership(
     ipAddress: string,
@@ -186,7 +204,9 @@ export class MembershipsService {
       data: {
         name: user.name,
         group: result.group.name,
-        link: `${this.metaConfig.frontendUrl}/groups/${groupId}`,
+        link: `${this.configService.get<string>(
+          'frontendUrl',
+        )}/groups/${groupId}`,
       },
     });
     return this.prisma.expose<Membership>(result);
