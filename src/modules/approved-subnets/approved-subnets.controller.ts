@@ -19,6 +19,7 @@ import { ApprovedSubnetsService } from './approved-subnets.service';
 export class ApprovedSubnetController {
   constructor(private approvedSubnetsService: ApprovedSubnetsService) {}
 
+  /** Get approved subnets for a user */
   @Get()
   @Scopes('user-{userId}:read-approved-subnet-*')
   async getAll(
@@ -38,21 +39,23 @@ export class ApprovedSubnetController {
     });
   }
 
+  /** Get an approved subnet for a user */
   @Get(':id')
   @Scopes('user-{userId}:read-approved-subnet-{id}')
   async get(
     @Param('userId', ParseIntPipe) userId: number,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Expose<ApprovedSubnet>> {
-    return this.approvedSubnetsService.getApprovedSubnet(userId, Number(id));
+    return this.approvedSubnetsService.getApprovedSubnet(userId, id);
   }
 
+  /** Delete an approved subnet for a user */
   @Delete(':id')
   @Scopes('user-{userId}:delete-approved-subnet-{id}')
   async remove(
     @Param('userId', ParseIntPipe) userId: number,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Expose<ApprovedSubnet>> {
-    return this.approvedSubnetsService.deleteApprovedSubnet(userId, Number(id));
+    return this.approvedSubnetsService.deleteApprovedSubnet(userId, id);
   }
 }

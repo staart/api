@@ -29,6 +29,7 @@ import { WebhooksService } from './webhooks.service';
 export class WebhookController {
   constructor(private webhooksService: WebhooksService) {}
 
+  /** Create a webhook for a group */
   @Post()
   @AuditLog('create-webhook')
   @Scopes('group-{groupId}:write-webhook-*')
@@ -39,6 +40,7 @@ export class WebhookController {
     return this.webhooksService.createWebhook(groupId, data);
   }
 
+  /** Get webhooks for a group */
   @Get()
   @Scopes('group-{groupId}:read-webhook-*')
   async getAll(
@@ -58,21 +60,24 @@ export class WebhookController {
     });
   }
 
+  /** Get webhook scopes for a group */
   @Get('scopes')
   @Scopes('group-{groupId}:write-webhook-*')
   async scopes(): Promise<Record<string, string>> {
     return this.webhooksService.getWebhookScopes();
   }
 
+  /** Get a webhook for a group */
   @Get(':id')
   @Scopes('group-{groupId}:read-webhook-{id}')
   async get(
     @Param('groupId', ParseIntPipe) groupId: number,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Expose<Webhook>> {
-    return this.webhooksService.getWebhook(groupId, Number(id));
+    return this.webhooksService.getWebhook(groupId, id);
   }
 
+  /** Update a webhook for a group */
   @Patch(':id')
   @AuditLog('update-webhook')
   @Scopes('group-{groupId}:write-webhook-{id}')
@@ -81,9 +86,10 @@ export class WebhookController {
     @Param('groupId', ParseIntPipe) groupId: number,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Expose<Webhook>> {
-    return this.webhooksService.updateWebhook(groupId, Number(id), data);
+    return this.webhooksService.updateWebhook(groupId, id, data);
   }
 
+  /** Replace a webhook for a group */
   @Put(':id')
   @AuditLog('update-webhook')
   @Scopes('group-{groupId}:write-webhook-{id}')
@@ -92,9 +98,10 @@ export class WebhookController {
     @Param('groupId', ParseIntPipe) groupId: number,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Expose<Webhook>> {
-    return this.webhooksService.updateWebhook(groupId, Number(id), data);
+    return this.webhooksService.updateWebhook(groupId, id, data);
   }
 
+  /** Delete a webhook for a group */
   @Delete(':id')
   @AuditLog('delete-webhook')
   @Scopes('group-{groupId}:delete-webhook-{id}')
@@ -102,6 +109,6 @@ export class WebhookController {
     @Param('groupId', ParseIntPipe) groupId: number,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Expose<Webhook>> {
-    return this.webhooksService.deleteWebhook(groupId, Number(id));
+    return this.webhooksService.deleteWebhook(groupId, id);
   }
 }

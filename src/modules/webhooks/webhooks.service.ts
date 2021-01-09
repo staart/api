@@ -10,7 +10,6 @@ import { Webhook } from '@prisma/client';
 import got from 'got';
 import PQueue from 'p-queue';
 import pRetry from 'p-retry';
-import { Configuration } from '../../config/configuration.interface';
 import {
   UNAUTHORIZED_RESOURCE,
   WEBHOOK_NOT_FOUND,
@@ -48,14 +47,18 @@ export class WebhooksService {
     },
   ): Promise<Expose<Webhook>[]> {
     const { skip, take, cursor, where, orderBy } = params;
-    const webhooks = await this.prisma.webhook.findMany({
-      skip,
-      take,
-      cursor,
-      where: { ...where, group: { id: groupId } },
-      orderBy,
-    });
-    return webhooks.map((group) => this.prisma.expose<Webhook>(group));
+    try {
+      const webhooks = await this.prisma.webhook.findMany({
+        skip,
+        take,
+        cursor,
+        where: { ...where, group: { id: groupId } },
+        orderBy,
+      });
+      return webhooks.map((group) => this.prisma.expose<Webhook>(group));
+    } catch (error) {
+      return [];
+    }
   }
 
   async getWebhook(groupId: number, id: number): Promise<Expose<Webhook>> {
@@ -156,9 +159,7 @@ export class WebhooksService {
             .add(() =>
               pRetry(() => this.callWebhook(webhook, event), {
                 retries:
-                  this.configService.get<Configuration['webhooks']['retries']>(
-                    'webhooks.retries',
-                  ) ?? 3,
+                  this.configService.get<number>('webhooks.retries') ?? 3,
                 onFailedAttempt: (error) => {
                   this.logger.error(
                     `Triggering webhoook failed, retrying (${error.retriesLeft} attempts left)`,

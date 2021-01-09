@@ -15,6 +15,7 @@ import { PrismaService } from '../../providers/prisma/prisma.service';
 @Injectable()
 export class SessionsService {
   constructor(private prisma: PrismaService) {}
+
   async getSessions(
     userId: number,
     params: {
@@ -24,19 +25,30 @@ export class SessionsService {
       where?: Prisma.SessionWhereInput;
       orderBy?: Prisma.SessionOrderByInput;
     },
-  ): Promise<Expose<Session>[]> {
+    sessionId?: number,
+  ): Promise<Expose<Session & { isCurrentSession: boolean }>[]> {
     const { skip, take, cursor, where, orderBy } = params;
-    const sessions = await this.prisma.session.findMany({
-      skip,
-      take,
-      cursor,
-      where: { ...where, user: { id: userId } },
-      orderBy,
-    });
-    return sessions.map((user) => this.prisma.expose<Session>(user));
+    try {
+      const sessions = await this.prisma.session.findMany({
+        skip,
+        take,
+        cursor,
+        where: { ...where, user: { id: userId } },
+        orderBy,
+      });
+      return sessions
+        .map((user) => this.prisma.expose<Session>(user))
+        .map((i) => ({ ...i, isCurrentSession: sessionId === i.id }));
+    } catch (error) {
+      return [];
+    }
   }
 
-  async getSession(userId: number, id: number): Promise<Expose<Session>> {
+  async getSession(
+    userId: number,
+    id: number,
+    sessionId?: number,
+  ): Promise<Expose<Session & { isCurrentSession: boolean }>> {
     const session = await this.prisma.session.findUnique({
       where: { id },
     });
@@ -44,7 +56,10 @@ export class SessionsService {
     if (session.userId !== userId)
       throw new UnauthorizedException(UNAUTHORIZED_RESOURCE);
     if (!session) throw new NotFoundException(SESSION_NOT_FOUND);
-    return this.prisma.expose<Session>(session);
+    return {
+      ...this.prisma.expose<Session>(session),
+      isCurrentSession: sessionId === session.id,
+    };
   }
 
   async deleteSession(userId: number, id: number): Promise<Expose<Session>> {
