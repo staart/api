@@ -18,7 +18,7 @@ Then, you can set the individual environment variables:
 | `DB_USER`            | Username                         |
 | `DB_PASSWORD`        | Password                         |
 | `DB_HOST`            | Hostname                         |
-| `DB_POST`            | Database port, e.g., 3306        |
+| `DB_PORT`            | Database port, e.g., 3306        |
 | `DB_NAME`            | Databse name to use              |
 
 Alternately, you can also set the `DATABASE_URL` variable directly. For more information about this connection, you can visit the article on the Prisma website: [Using environment variables](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-schema#using-environment-variables).
