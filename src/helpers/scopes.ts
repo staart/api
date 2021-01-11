@@ -9,6 +9,7 @@ export const userScopes = {
   'user-{userId}:write-email-*': 'Create and update emails',
   'user-{userId}:read-email-*': 'Read emails',
   'user-{userId}:delete-email-*': 'Delete emails',
+  'user-{userId}:write-membership-*': 'Create groups',
   'user-{userId}:read-membership-*': 'Read memberships',
   'user-{userId}:delete-membership-*': 'Delete memberships',
   'user-{userId}:delete-mfa-*': 'Disable MFA',
