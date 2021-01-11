@@ -1,3 +1,16 @@
+## v4.0.1 (2021-01-11)
+
+[📝 Release notes](https://github.com/staart/api/releases/tag/v4.0.1) · [💻 Compare](https://github.com/staart/api/compare/v4.0.0...v4.0.1) · [🔖 Tag](https://github.com/staart/api/tree/v4.0.1) · 🗄️ Archive ([zip](https://github.com/staart/api/archive/v4.0.1.zip) · [tar.gz](https://github.com/staart/api/archive/v4.0.1.tar.gz))
+
+### ♻️ Updates
+
+- [`9b3629c7`](https://github.com/staart/api/commit/9b3629c7)  Add create group to scopes
+- [`5d660449`](https://github.com/staart/api/commit/5d660449)  Update scope for writing membership
+
+### ⬆️ Dependency updates
+
+- [`35aecbdc`](https://github.com/staart/api/commit/35aecbdc)  Bump rate-limiter-flexible from 2.1.16 to 2.2.1
+
 ## v4.0.0 (2021-01-09)
 
 [📝 Release notes](https://github.com/staart/api/releases/tag/v4.0.0) · [💻 Compare](https://github.com/staart/api/compare/v3.6.17...v4.0.0) · [🔖 Tag](https://github.com/staart/api/tree/v4.0.0) · 🗄️ Archive ([zip](https://github.com/staart/api/archive/v4.0.0.zip) · [tar.gz](https://github.com/staart/api/archive/v4.0.0.tar.gz))
