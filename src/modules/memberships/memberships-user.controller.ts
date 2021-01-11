@@ -23,7 +23,7 @@ export class UserMembershipController {
   constructor(private membershipsService: MembershipsService) {}
 
   @Post()
-  @Scopes('user-{userId}:write-membership')
+  @Scopes('user-{userId}:write-membership-*')
   async create(
     @Param('userId', ParseIntPipe) userId: number,
     @Body() data: CreateGroupDto,
