@@ -72,7 +72,7 @@
     "pidusage": "^2.0.21",
     "puppeteer": "^5.5.0",
     "qrcode": "^1.4.4",
-    "quick-lru": "^5.1.1",
+    "quick-lru": "^6.0.0",
     "randomcolor": "^0.6.2",
     "rate-limiter-flexible": "^2.1.16",
     "reflect-metadata": "^0.1.13",
