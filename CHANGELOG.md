@@ -1,3 +1,31 @@
+## v4.0.2 (2021-01-18)
+
+[📝 Release notes](https://github.com/staart/api/releases/tag/v4.0.2) · [💻 Compare](https://github.com/staart/api/compare/v4.0.1...v4.0.2) · [🔖 Tag](https://github.com/staart/api/tree/v4.0.2) · 🗄️ Archive ([zip](https://github.com/staart/api/archive/v4.0.2.zip) · [tar.gz](https://github.com/staart/api/archive/v4.0.2.tar.gz))
+
+### ⬆️ Dependency updates
+
+- [`12511426`](https://github.com/staart/api/commit/12511426)  Bump @types/express from 4.17.9 to 4.17.10
+- [`dea87dc5`](https://github.com/staart/api/commit/dea87dc5)  Bump @typescript-eslint/eslint-plugin from 4.12.0 to 4.13.0
+- [`3e244c63`](https://github.com/staart/api/commit/3e244c63)  Bump aws-sdk from 2.824.0 to 2.825.0
+- [`b2c9f3c4`](https://github.com/staart/api/commit/b2c9f3c4)  Bump @typescript-eslint/parser from 4.12.0 to 4.13.0
+- [`27c2a43d`](https://github.com/staart/api/commit/27c2a43d)  Bump aws-sdk from 2.825.0 to 2.826.0
+- [`df090c76`](https://github.com/staart/api/commit/df090c76)  Bump @nestjs/swagger from 4.7.9 to 4.7.10
+- [`b0227bd9`](https://github.com/staart/api/commit/b0227bd9)  Bump @types/express from 4.17.10 to 4.17.11
+- [`d0ad37ca`](https://github.com/staart/api/commit/d0ad37ca)  Bump @slack/web-api from 5.15.0 to 6.0.0
+- [`bf60e861`](https://github.com/staart/api/commit/bf60e861)  Bump aws-sdk from 2.826.0 to 2.827.0
+- [`bd83ac32`](https://github.com/staart/api/commit/bd83ac32)  Bump twilio from 3.54.2 to 3.55.0
+- [`e4688514`](https://github.com/staart/api/commit/e4688514)  Bump @sentry/node from 5.29.2 to 5.30.0
+- [`5e37e70b`](https://github.com/staart/api/commit/5e37e70b)  Bump @types/node from 14.14.20 to 14.14.21
+- [`3579cbb0`](https://github.com/staart/api/commit/3579cbb0)  Bump @googlemaps/google-maps-services-js
+- [`f3ecfad1`](https://github.com/staart/api/commit/f3ecfad1)  Bump stripe from 8.130.0 to 8.131.0
+- [`b0c7d6f7`](https://github.com/staart/api/commit/b0c7d6f7)  Bump aws-sdk from 2.827.0 to 2.828.0
+- [`172f11b0`](https://github.com/staart/api/commit/172f11b0)  Bump class-transformer from 0.3.1 to 0.3.2
+- [`96abb0e2`](https://github.com/staart/api/commit/96abb0e2)  Bump supertest from 6.0.1 to 6.1.1
+- [`eb1cfb79`](https://github.com/staart/api/commit/eb1cfb79)  Bump stripe from 8.131.0 to 8.131.1
+- [`c5012a6f`](https://github.com/staart/api/commit/c5012a6f)  Bump helmet from 4.3.1 to 4.4.0
+- [`0e8c844d`](https://github.com/staart/api/commit/0e8c844d)  Bump @nestjs/swagger from 4.7.10 to 4.7.11
+- [`ee45f005`](https://github.com/staart/api/commit/ee45f005)  Bump eslint from 7.17.0 to 7.18.0
+
 ## v4.0.1 (2021-01-11)
 
 [📝 Release notes](https://github.com/staart/api/releases/tag/v4.0.1) · [💻 Compare](https://github.com/staart/api/compare/v4.0.0...v4.0.1) · [🔖 Tag](https://github.com/staart/api/tree/v4.0.1) · 🗄️ Archive ([zip](https://github.com/staart/api/archive/v4.0.1.zip) · [tar.gz](https://github.com/staart/api/archive/v4.0.1.tar.gz))
