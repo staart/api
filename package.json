@@ -16,11 +16,11 @@
     "start:prod": "node dist/src/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "npm run test:unit && npm run test:e2e",
-    "test:watch": "jest --watch",
-    "test:cov": "jest --coverage --forceExit",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:unit": "jest --forceExit",
-    "test:e2e": "export TEST=true; npx ts-node tests/test-before.ts && jest --runInBand --config ./tests/jest-e2e.json --forceExit"
+    "test:watch": "jest --watch --testTimeout 30000",
+    "test:cov": "jest --coverage --forceExit --testTimeout 30000",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand --testTimeout 30000",
+    "test:unit": "jest --forceExit --testTimeout 30000",
+    "test:e2e": "export TEST=true; npx ts-node tests/test-before.ts && jest --runInBand --config ./tests/jest-e2e.json --forceExit --testTimeout 30000"
   },
   "dependencies": {
     "@elastic/elasticsearch": "^7.10.0",
