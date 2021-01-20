@@ -34,7 +34,7 @@
     "@nestjs/schedule": "^0.4.1",
     "@nestjs/swagger": "^4.7.9",
     "@octokit/rest": "^18.0.12",
-    "@sentry/node": "^5.29.2",
+    "@sentry/node": "^6.0.0",
     "@sindresorhus/slugify": "^1.1.0",
     "@slack/web-api": "^6.0.0",
     "@staart/mustache-markdown": "^3.0.3",
