@@ -1,3 +1,25 @@
+## v4.0.3 (2021-01-25)
+
+[📝 Release notes](https://github.com/staart/api/releases/tag/v4.0.3) · [💻 Compare](https://github.com/staart/api/compare/v4.0.2...v4.0.3) · [🔖 Tag](https://github.com/staart/api/tree/v4.0.3) · 🗄️ Archive ([zip](https://github.com/staart/api/archive/v4.0.3.zip) · [tar.gz](https://github.com/staart/api/archive/v4.0.3.tar.gz))
+
+### ⬆️ Dependency updates
+
+- [`bd0baca6`](https://github.com/staart/api/commit/bd0baca6)  Bump eslint-config-prettier from 7.1.0 to 7.2.0
+- [`92b705ad`](https://github.com/staart/api/commit/92b705ad)  Bump @typescript-eslint/parser from 4.13.0 to 4.14.0
+- [`06043340`](https://github.com/staart/api/commit/06043340)  Bump helmet from 4.4.0 to 4.4.1
+- [`5463fd71`](https://github.com/staart/api/commit/5463fd71)  Bump @typescript-eslint/eslint-plugin from 4.13.0 to 4.14.0
+- [`8df7a8c2`](https://github.com/staart/api/commit/8df7a8c2)  Bump aws-sdk from 2.828.0 to 2.829.0
+- [`c2022ccd`](https://github.com/staart/api/commit/c2022ccd)  Bump @sentry/node from 5.30.0 to 6.0.0
+- [`f5a380f8`](https://github.com/staart/api/commit/f5a380f8)  Bump @types/node from 14.14.21 to 14.14.22
+- [`fdf181df`](https://github.com/staart/api/commit/fdf181df)  Bump fs-extra from 9.0.1 to 9.1.0
+- [`1e9cfec9`](https://github.com/staart/api/commit/1e9cfec9)  Bump @prisma/cli from 2.14.0 to 2.15.0
+- [`b5ef46c5`](https://github.com/staart/api/commit/b5ef46c5)  Bump @googlemaps/google-maps-services-js
+- [`616bfb48`](https://github.com/staart/api/commit/616bfb48)  Bump @octokit/rest from 18.0.12 to 18.0.13
+- [`6669588a`](https://github.com/staart/api/commit/6669588a)  Bump @sentry/node from 6.0.0 to 6.0.1
+- [`8987b207`](https://github.com/staart/api/commit/8987b207)  Bump aws-sdk from 2.829.0 to 2.830.0
+- [`c8dd8a62`](https://github.com/staart/api/commit/c8dd8a62)  Bump stripe from 8.131.1 to 8.132.0
+- [`e8bdc1e1`](https://github.com/staart/api/commit/e8bdc1e1)  Bump @nestjs/swagger from 4.7.11 to 4.7.12
+
 ## v4.0.2 (2021-01-18)
 
 [📝 Release notes](https://github.com/staart/api/releases/tag/v4.0.2) · [💻 Compare](https://github.com/staart/api/compare/v4.0.1...v4.0.2) · [🔖 Tag](https://github.com/staart/api/tree/v4.0.2) · 🗄️ Archive ([zip](https://github.com/staart/api/archive/v4.0.2.zip) · [tar.gz](https://github.com/staart/api/archive/v4.0.2.tar.gz))
