@@ -1,3 +1,32 @@
+## v4.0.4 (2021-02-01)
+
+[📝 Release notes](https://github.com/staart/api/releases/tag/v4.0.4) · [💻 Compare](https://github.com/staart/api/compare/v4.0.3...v4.0.4) · [🔖 Tag](https://github.com/staart/api/tree/v4.0.4) · 🗄️ Archive ([zip](https://github.com/staart/api/archive/v4.0.4.zip) · [tar.gz](https://github.com/staart/api/archive/v4.0.4.tar.gz))
+
+### ⬆️ Dependency updates
+
+- [`c039311d`](https://github.com/staart/api/commit/c039311d)  Bump @nestjs/config from 0.6.1 to 0.6.2
+- [`810f9e0b`](https://github.com/staart/api/commit/810f9e0b)  Bump aws-sdk from 2.830.0 to 2.831.0
+- [`aeb037c9`](https://github.com/staart/api/commit/aeb037c9)  Bump aws-elasticsearch-connector from 9.0.1 to 9.0.3
+- [`d281dc80`](https://github.com/staart/api/commit/d281dc80)  Bump @nestjs/schedule from 0.4.1 to 0.4.2
+- [`470ad4d6`](https://github.com/staart/api/commit/470ad4d6)  Bump supertest from 6.1.1 to 6.1.2
+- [`b4a0dc00`](https://github.com/staart/api/commit/b4a0dc00)  Bump p-retry from 4.2.0 to 4.3.0
+- [`7d77fdcb`](https://github.com/staart/api/commit/7d77fdcb)  Bump @nestjs/schematics from 7.2.6 to 7.2.7
+- [`7e265f6d`](https://github.com/staart/api/commit/7e265f6d)  Bump @octokit/rest from 18.0.13 to 18.0.14
+- [`4bc1ea47`](https://github.com/staart/api/commit/4bc1ea47)  Bump @sentry/node from 6.0.1 to 6.0.2
+- [`c2522e92`](https://github.com/staart/api/commit/c2522e92)  Bump supertest from 6.1.2 to 6.1.3
+- [`aa8cdb72`](https://github.com/staart/api/commit/aa8cdb72)  Bump @typescript-eslint/parser from 4.14.0 to 4.14.1
+- [`35553763`](https://github.com/staart/api/commit/35553763)  Bump @typescript-eslint/eslint-plugin from 4.14.0 to 4.14.1
+- [`e9cfda57`](https://github.com/staart/api/commit/e9cfda57)  Bump @nestjs/testing from 7.6.5 to 7.6.6
+- [`9c43988d`](https://github.com/staart/api/commit/9c43988d)  Bump @nestjs/common from 7.6.5 to 7.6.6
+- [`132933f8`](https://github.com/staart/api/commit/132933f8)  Bump @nestjs/core from 7.6.5 to 7.6.6
+- [`86d6d090`](https://github.com/staart/api/commit/86d6d090)  Bump @nestjs/core from 7.6.6 to 7.6.7
+- [`87d17644`](https://github.com/staart/api/commit/87d17644)  Bump twilio from 3.55.0 to 3.55.1
+- [`1a6bf548`](https://github.com/staart/api/commit/1a6bf548)  Bump @nestjs/platform-express from 7.6.5 to 7.6.7
+- [`b158071e`](https://github.com/staart/api/commit/b158071e)  Bump @nestjs/common from 7.6.6 to 7.6.7
+- [`838e17e9`](https://github.com/staart/api/commit/838e17e9)  Bump aws-sdk from 2.831.0 to 2.832.0
+- [`70f116ac`](https://github.com/staart/api/commit/70f116ac)  Bump @nestjs/testing from 7.6.6 to 7.6.7
+- [`3cdb9253`](https://github.com/staart/api/commit/3cdb9253)  Bump aws-sdk from 2.832.0 to 2.833.0
+
 ## v4.0.3 (2021-01-25)
 
 [📝 Release notes](https://github.com/staart/api/releases/tag/v4.0.3) · [💻 Compare](https://github.com/staart/api/compare/v4.0.2...v4.0.3) · [🔖 Tag](https://github.com/staart/api/tree/v4.0.3) · 🗄️ Archive ([zip](https://github.com/staart/api/archive/v4.0.3.zip) · [tar.gz](https://github.com/staart/api/archive/v4.0.3.tar.gz))
