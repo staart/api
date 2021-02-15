@@ -1,3 +1,18 @@
+## v4.0.6 (2021-02-15)
+
+[📝 Release notes](https://github.com/staart/api/releases/tag/v4.0.6) · [💻 Compare](https://github.com/staart/api/compare/v4.0.5...v4.0.6) · [🔖 Tag](https://github.com/staart/api/tree/v4.0.6) · 🗄️ Archive ([zip](https://github.com/staart/api/archive/v4.0.6.zip) · [tar.gz](https://github.com/staart/api/archive/v4.0.6.tar.gz))
+
+### ⬆️ Dependency updates
+
+- [`1a7cad3d`](https://github.com/staart/api/commit/1a7cad3d)  Bump stripe from 8.132.0 to 8.134.0
+- [`be45b563`](https://github.com/staart/api/commit/be45b563)  Bump @types/node from 14.14.22 to 14.14.25
+- [`74fe75ab`](https://github.com/staart/api/commit/74fe75ab)  Bump @nestjs/core from 7.6.8 to 7.6.11
+- [`ae3a30c3`](https://github.com/staart/api/commit/ae3a30c3)  Bump @types/nunjucks from 3.1.3 to 3.1.4
+- [`ab248292`](https://github.com/staart/api/commit/ab248292)  Bump @sentry/node from 6.0.4 to 6.1.0
+- [`e84a503c`](https://github.com/staart/api/commit/e84a503c)  Bump stripe from 8.134.0 to 8.135.0
+- [`5e6ac37e`](https://github.com/staart/api/commit/5e6ac37e)  Bump ts-loader from 8.0.14 to 8.0.16
+- [`479707c4`](https://github.com/staart/api/commit/479707c4)  Bump @typescript-eslint/parser from 4.14.2 to 4.15.0
+
 ## v4.0.5 (2021-02-08)
 
 [📝 Release notes](https://github.com/staart/api/releases/tag/v4.0.5) · [💻 Compare](https://github.com/staart/api/compare/v4.0.4...v4.0.5) · [🔖 Tag](https://github.com/staart/api/tree/v4.0.5) · 🗄️ Archive ([zip](https://github.com/staart/api/archive/v4.0.5.zip) · [tar.gz](https://github.com/staart/api/archive/v4.0.5.tar.gz))
