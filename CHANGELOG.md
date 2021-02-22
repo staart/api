@@ -1,3 +1,35 @@
+## v4.0.7 (2021-02-22)
+
+[📝 Release notes](https://github.com/staart/api/releases/tag/v4.0.7) · [💻 Compare](https://github.com/staart/api/compare/v4.0.6...v4.0.7) · [🔖 Tag](https://github.com/staart/api/tree/v4.0.7) · 🗄️ Archive ([zip](https://github.com/staart/api/archive/v4.0.7.zip) · [tar.gz](https://github.com/staart/api/archive/v4.0.7.tar.gz))
+
+### ⬆️ Dependency updates
+
+- [`ae120229`](https://github.com/staart/api/commit/ae120229)  Bump @typescript-eslint/eslint-plugin from 4.14.2 to 4.15.0
+- [`866477fa`](https://github.com/staart/api/commit/866477fa)  Bump vsoch/pull-request-action from 1.0.13 to 1.0.14
+- [`6611b210`](https://github.com/staart/api/commit/6611b210)  Bump pascalgn/automerge-action from v0.13.0 to v0.13.1
+- [`5e9246cb`](https://github.com/staart/api/commit/5e9246cb)  Bump @types/puppeteer from 5.4.2 to 5.4.3
+- [`11795072`](https://github.com/staart/api/commit/11795072)  Bump @types/node from 14.14.25 to 14.14.28
+- [`fd3d507d`](https://github.com/staart/api/commit/fd3d507d)  Bump @octokit/rest from 18.1.0 to 18.1.1
+- [`b04fc4ec`](https://github.com/staart/api/commit/b04fc4ec)  Bump typescript from 4.1.3 to 4.1.5
+- [`f3455510`](https://github.com/staart/api/commit/f3455510)  Bump vsoch/pull-request-action from 1.0.14 to 1.0.15
+- [`0330ddd0`](https://github.com/staart/api/commit/0330ddd0)  Bump @nestjs/swagger from 4.7.12 to 4.7.13
+- [`370a2194`](https://github.com/staart/api/commit/370a2194)  Bump @nestjs/testing from 7.6.11 to 7.6.12
+- [`d3346c2a`](https://github.com/staart/api/commit/d3346c2a)  Bump @elastic/elasticsearch from 7.10.0 to 7.11.0
+- [`04d3337d`](https://github.com/staart/api/commit/04d3337d)  Bump ua-parser-js from 0.7.23 to 0.7.24
+- [`c0b527de`](https://github.com/staart/api/commit/c0b527de)  Bump aws-sdk from 2.834.0 to 2.845.0
+- [`a4418322`](https://github.com/staart/api/commit/a4418322)  Bump @nestjs/platform-express from 7.6.11 to 7.6.12
+- [`48172884`](https://github.com/staart/api/commit/48172884)  Bump aws-sdk from 2.845.0 to 2.846.0
+- [`087fc2af`](https://github.com/staart/api/commit/087fc2af)  Bump crypto-random-string from 3.3.0 to 3.3.1
+- [`fa66722d`](https://github.com/staart/api/commit/fa66722d)  Bump @types/fs-extra from 9.0.6 to 9.0.7
+- [`7567b09c`](https://github.com/staart/api/commit/7567b09c)  Bump @types/cheerio from 0.22.23 to 0.22.24
+- [`7e95a6ab`](https://github.com/staart/api/commit/7e95a6ab)  Bump @types/node from 14.14.28 to 14.14.30
+- [`2a6f4ea0`](https://github.com/staart/api/commit/2a6f4ea0)  Bump twilio from 3.55.1 to 3.56.0
+- [`a014d424`](https://github.com/staart/api/commit/a014d424)  Bump nunjucks from 3.2.2 to 3.2.3
+- [`7218f2ff`](https://github.com/staart/api/commit/7218f2ff)  Bump stripe from 8.135.0 to 8.137.0
+- [`18d64b74`](https://github.com/staart/api/commit/18d64b74)  Bump nodemailer from 6.4.17 to 6.4.18
+- [`f5009cb7`](https://github.com/staart/api/commit/f5009cb7)  Bump @octokit/rest from 18.1.1 to 18.2.0
+- [`39d546b0`](https://github.com/staart/api/commit/39d546b0)  Bump eslint from 7.19.0 to 7.20.0
+
 ## v4.0.6 (2021-02-15)
 
 [📝 Release notes](https://github.com/staart/api/releases/tag/v4.0.6) · [💻 Compare](https://github.com/staart/api/compare/v4.0.5...v4.0.6) · [🔖 Tag](https://github.com/staart/api/tree/v4.0.6) · 🗄️ Archive ([zip](https://github.com/staart/api/archive/v4.0.6.zip) · [tar.gz](https://github.com/staart/api/archive/v4.0.6.tar.gz))
