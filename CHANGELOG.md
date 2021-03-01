@@ -1,3 +1,17 @@
+## v4.0.8 (2021-03-01)
+
+[📝 Release notes](https://github.com/staart/api/releases/tag/v4.0.8) · [💻 Compare](https://github.com/staart/api/compare/v4.0.7...v4.0.8) · [🔖 Tag](https://github.com/staart/api/tree/v4.0.8) · 🗄️ Archive ([zip](https://github.com/staart/api/archive/v4.0.8.zip) · [tar.gz](https://github.com/staart/api/archive/v4.0.8.tar.gz))
+
+### ⬆️ Dependency updates
+
+- [`e60fd38e`](https://github.com/staart/api/commit/e60fd38e)  Bump @nestjs/core from 7.6.11 to 7.6.13
+- [`2ce3004a`](https://github.com/staart/api/commit/2ce3004a)  Bump aws-sdk from 2.846.0 to 2.849.0
+- [`8c411507`](https://github.com/staart/api/commit/8c411507)  Bump actions/setup-node from v2.1.4 to v2.1.5
+- [`dbb3b74c`](https://github.com/staart/api/commit/dbb3b74c)  Bump p-retry from 4.3.0 to 4.4.0
+- [`f64a5110`](https://github.com/staart/api/commit/f64a5110)  Bump @nestjs/cli from 7.5.4 to 7.5.5
+- [`bcae7edd`](https://github.com/staart/api/commit/bcae7edd)  Bump @typescript-eslint/parser from 4.15.0 to 4.15.2
+- [`691fd32f`](https://github.com/staart/api/commit/691fd32f)  Bump aws-sdk from 2.849.0 to 2.850.0
+
 ## v4.0.7 (2021-02-22)
 
 [📝 Release notes](https://github.com/staart/api/releases/tag/v4.0.7) · [💻 Compare](https://github.com/staart/api/compare/v4.0.6...v4.0.7) · [🔖 Tag](https://github.com/staart/api/tree/v4.0.7) · 🗄️ Archive ([zip](https://github.com/staart/api/archive/v4.0.7.zip) · [tar.gz](https://github.com/staart/api/archive/v4.0.7.tar.gz))
