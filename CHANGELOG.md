@@ -1,3 +1,11 @@
+## v4.0.9 (2021-03-15)
+
+[📝 Release notes](https://github.com/staart/api/releases/tag/v4.0.9) · [💻 Compare](https://github.com/staart/api/compare/v4.0.8...v4.0.9) · [🔖 Tag](https://github.com/staart/api/tree/v4.0.9) · 🗄️ Archive ([zip](https://github.com/staart/api/archive/v4.0.9.zip) · [tar.gz](https://github.com/staart/api/archive/v4.0.9.tar.gz))
+
+### ⬆️ Dependency updates
+
+- [`6982a103`](https://github.com/staart/api/commit/6982a103)  Bump @types/node from 14.14.30 to 14.14.32
+
 ## v4.0.8 (2021-03-01)
 
 [📝 Release notes](https://github.com/staart/api/releases/tag/v4.0.8) · [💻 Compare](https://github.com/staart/api/compare/v4.0.7...v4.0.8) · [🔖 Tag](https://github.com/staart/api/tree/v4.0.8) · 🗄️ Archive ([zip](https://github.com/staart/api/archive/v4.0.8.zip) · [tar.gz](https://github.com/staart/api/archive/v4.0.8.tar.gz))
