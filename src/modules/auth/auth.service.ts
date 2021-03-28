@@ -7,9 +7,9 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { compare, hash } from '@node-rs/bcrypt';
 import type { Prisma } from '@prisma/client';
 import { Email, MfaMethod, User } from '@prisma/client';
-import { compare, hash } from 'bcrypt';
 import { createHash } from 'crypto';
 import got from 'got/dist/source';
 import anonymize from 'ip-anonymize';

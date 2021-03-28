@@ -5,9 +5,9 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { hash } from '@node-rs/bcrypt';
 import type { MfaMethod } from '@prisma/client';
 import { User } from '@prisma/client';
-import { hash } from 'bcrypt';
 import {
   MFA_ENABLED_CONFLICT,
   MFA_NOT_ENABLED,

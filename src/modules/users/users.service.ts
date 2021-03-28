@@ -5,9 +5,9 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { compare } from '@node-rs/bcrypt';
 import type { Prisma, UserRole } from '@prisma/client';
 import { User } from '@prisma/client';
-import { compare } from 'bcrypt';
 import { extname } from 'path';
 import {
   CURRENT_PASSWORD_REQUIRED,

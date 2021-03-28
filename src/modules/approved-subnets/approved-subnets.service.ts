@@ -4,9 +4,9 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { compare, hash } from '@node-rs/bcrypt';
 import type { Prisma } from '@prisma/client';
 import { ApprovedSubnet } from '@prisma/client';
-import { compare, hash } from 'bcrypt';
 import anonymize from 'ip-anonymize';
 import {
   APPROVED_SUBNET_NOT_FOUND,
