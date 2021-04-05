@@ -98,7 +98,7 @@
     "@types/dot-object": "^2.1.2",
     "@types/express": "^4.17.9",
     "@types/fs-extra": "^9.0.6",
-    "@types/jest": "26.0.20",
+    "@types/jest": "26.0.22",
     "@types/jsonwebtoken": "^8.5.0",
     "@types/minimatch": "^3.0.3",
     "@types/node": "^14.14.20",
