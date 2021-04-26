@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Generate branch name
-        uses: actions/github-script@v3
+        uses: actions/github-script@v4.0.2
         id: set-branch-name
         with:
           script: |
@@ -34,7 +34,7 @@ jobs:
       - name: Set branch name
         run: echo "PULL_REQUEST_TITLE=${{steps.set-branch-name.outputs.result}}" >> $GITHUB_ENV
       - name: Generate PR body
-        uses: actions/github-script@v3
+        uses: actions/github-script@v4.0.2
         id: set-pr-body
         with:
           script: |
@@ -47,7 +47,7 @@ jobs:
       - name: Set PR body
         run: echo "PULL_REQUEST_BODY=${{steps.set-pr-body.outputs.result}}" >> $GITHUB_ENV
       - name: Generate PR draft
-        uses: actions/github-script@v3
+        uses: actions/github-script@v4.0.2
         id: set-pr-draft
         with:
           script: |
@@ -55,7 +55,7 @@ jobs:
       - name: Set PR draft
         run: echo "PULL_REQUEST_DRAFT=${{steps.set-pr-draft.outputs.result}}" >> $GITHUB_ENV
       - name: Determine whether to merge
-        uses: actions/github-script@v3
+        uses: actions/github-script@v4.0.2
         id: should-pr
         with:
           github-token: ${{ secrets.GH_PAT }}
