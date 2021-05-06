@@ -16,7 +16,9 @@ import { Expose } from '../../providers/prisma/prisma.interface';
 import { UserRequest } from '../auth/auth.interface';
 import { Scopes } from '../auth/scope.decorator';
 import { SessionsService } from './sessions.service';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth('access-token')
 @Controller('users/:userId/sessions')
 export class SessionController {
   constructor(private sessionsService: SessionsService) {}

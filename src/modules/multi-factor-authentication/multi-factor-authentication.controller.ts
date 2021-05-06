@@ -16,7 +16,9 @@ import {
   EnableTotpMfaDto,
 } from './multi-factor-authentication.dto';
 import { MultiFactorAuthenticationService } from './multi-factor-authentication.service';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth('access-token')
 @Controller('users/:userId/multi-factor-authentication')
 export class MultiFactorAuthenticationController {
   constructor(

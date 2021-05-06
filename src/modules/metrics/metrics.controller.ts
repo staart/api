@@ -2,7 +2,9 @@ import { Controller, Get, Post } from '@nestjs/common';
 import { Scopes } from '../auth/scope.decorator';
 import { ProcessMetricData } from './metrics.interface';
 import { MetricsService } from './metrics.service';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth('access-token')
 @Controller('metrics')
 export class MetricsController {
   constructor(private metricsService: MetricsService) {}

@@ -14,7 +14,9 @@ import { WherePipe } from '../../pipes/where.pipe';
 import { Expose } from '../../providers/prisma/prisma.interface';
 import { Scopes } from '../auth/scope.decorator';
 import { ApprovedSubnetsService } from './approved-subnets.service';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth('access-token')
 @Controller('users/:userId/approved-subnets')
 export class ApprovedSubnetController {
   constructor(private approvedSubnetsService: ApprovedSubnetsService) {}

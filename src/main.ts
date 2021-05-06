@@ -19,17 +19,18 @@ async function bootstrap() {
     await promises.readFile(join('.', 'package.json'), 'utf8'),
   );
 
+  app.setGlobalPrefix('v1');
+  app.use(responseTime());
+  app.useStaticAssets(join(__dirname, '..', 'static'));
+
   const options = new DocumentBuilder()
     .setTitle('API')
     .setDescription('API description')
     .setVersion(pkg.version)
+    .addBearerAuth({ in: 'header', type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },'access-token')
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);
-
-  app.setGlobalPrefix('v1');
-  app.use(responseTime());
-  app.useStaticAssets(join(__dirname, '..', 'static'));
 
   await app.listen(process.env.PORT ?? 3000);
 }

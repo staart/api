@@ -25,7 +25,9 @@ import {
   UpdateApiKeyDto,
 } from './api-keys.dto';
 import { ApiKeysService } from './api-keys.service';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth('access-token')
 @Controller('users/:userId/api-keys')
 export class ApiKeyUserController {
   constructor(private apiKeysService: ApiKeysService) {}

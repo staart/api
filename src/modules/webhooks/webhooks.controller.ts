@@ -24,7 +24,9 @@ import {
   UpdateWebhookDto,
 } from './webhooks.dto';
 import { WebhooksService } from './webhooks.service';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth('access-token')
 @Controller('groups/:groupId/webhooks')
 export class WebhookController {
   constructor(private webhooksService: WebhooksService) {}

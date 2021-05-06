@@ -17,7 +17,9 @@ import { Expose } from '../../providers/prisma/prisma.interface';
 import { Scopes } from '../auth/scope.decorator';
 import { CreateEmailDto } from './emails.dto';
 import { EmailsService } from './emails.service';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth('access-token')
 @Controller('users/:userId/emails')
 export class EmailController {
   constructor(private emailsService: EmailsService) {}

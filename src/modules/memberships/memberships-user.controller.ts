@@ -17,7 +17,9 @@ import { Expose } from '../../providers/prisma/prisma.interface';
 import { Scopes } from '../auth/scope.decorator';
 import { CreateGroupDto } from '../groups/groups.dto';
 import { MembershipsService } from './memberships.service';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth('access-token')
 @Controller('users/:userId/memberships')
 export class UserMembershipController {
   constructor(private membershipsService: MembershipsService) {}

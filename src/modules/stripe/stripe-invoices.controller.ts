@@ -4,7 +4,9 @@ import { CursorPipe } from '../../pipes/cursor.pipe';
 import { OptionalIntPipe } from '../../pipes/optional-int.pipe';
 import { Scopes } from '../auth/scope.decorator';
 import { StripeService } from './stripe.service';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth('access-token')
 @Controller('groups/:groupId/invoices')
 export class StripeInvoicesController {
   constructor(private stripeService: StripeService) {}

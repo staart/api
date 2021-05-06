@@ -18,7 +18,9 @@ import {
   UpdateBillingDto,
 } from './stripe.dto';
 import { StripeService } from './stripe.service';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth('access-token')
 @Controller('groups/:groupId/billing')
 export class StripeBillingController {
   constructor(private stripeService: StripeService) {}

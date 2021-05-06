@@ -22,7 +22,9 @@ import {
 } from './domains.constants';
 import { CreateDomainDto } from './domains.dto';
 import { DomainsService } from './domains.service';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth('access-token')
 @Controller('groups/:groupId/domains')
 export class DomainController {
   constructor(private domainsService: DomainsService) {}

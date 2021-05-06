@@ -23,7 +23,9 @@ import {
   UpdateMembershipDto,
 } from './memberships.dto';
 import { MembershipsService } from './memberships.service';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth('access-token')
 @Controller('groups/:groupId/memberships')
 export class GroupMembershipController {
   constructor(private membershipsService: MembershipsService) {}

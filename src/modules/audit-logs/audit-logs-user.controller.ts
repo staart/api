@@ -7,7 +7,9 @@ import { WherePipe } from '../../pipes/where.pipe';
 import { Expose } from '../../providers/prisma/prisma.interface';
 import { Scopes } from '../auth/scope.decorator';
 import { AuditLogsService } from './audit-logs.service';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth('access-token')
 @Controller('users/:userId/audit-logs')
 export class AuditLogUserController {
   constructor(private auditLogsService: AuditLogsService) {}

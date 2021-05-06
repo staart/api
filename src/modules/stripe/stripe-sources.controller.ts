@@ -13,7 +13,9 @@ import { OptionalIntPipe } from '../../pipes/optional-int.pipe';
 import { AuditLog } from '../audit-logs/audit-log.decorator';
 import { Scopes } from '../auth/scope.decorator';
 import { StripeService } from './stripe.service';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth('access-token')
 @Controller('groups/:groupId/sources')
 export class StripeSourcesController {
   constructor(private stripeService: StripeService) {}

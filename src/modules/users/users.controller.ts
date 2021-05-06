@@ -26,7 +26,9 @@ import { RateLimit } from '../auth/rate-limit.decorator';
 import { Scopes } from '../auth/scope.decorator';
 import { UpdateUserDto } from './users.dto';
 import { UsersService } from './users.service';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth('access-token')
 @Controller('users')
 export class UserController {
   constructor(private usersService: UsersService) {}

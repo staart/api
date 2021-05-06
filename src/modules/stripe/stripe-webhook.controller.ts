@@ -1,7 +1,9 @@
 import { Body, Controller, Headers, Post } from '@nestjs/common';
 import { Public } from '../auth/public.decorator';
 import { StripeService } from './stripe.service';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth('access-token')
 @Controller('webhooks/stripe')
 @Public()
 export class StripeWebhookController {

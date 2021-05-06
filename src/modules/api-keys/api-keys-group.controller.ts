@@ -26,7 +26,9 @@ import {
   UpdateApiKeyDto,
 } from './api-keys.dto';
 import { ApiKeysService } from './api-keys.service';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth('access-token')
 @Controller('groups/:groupId/api-keys')
 export class ApiKeyGroupController {
   constructor(private apiKeysService: ApiKeysService) {}
