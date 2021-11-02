@@ -23,7 +23,7 @@ jobs:
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
       - name: Checkout
-        uses: actions/checkout@v2.3.4
+        uses: actions/checkout@v2.4.0
       - name: Setup Node.js
         uses: actions/setup-node@v2.1.5
         with:
@@ -53,7 +53,7 @@ jobs:
     needs: [test]
     steps:
       - name: Checkout
-        uses: actions/checkout@v2.3.4
+        uses: actions/checkout@v2.4.0
       - name: Setup Node.js
         uses: actions/setup-node@v2.1.5
         with:
