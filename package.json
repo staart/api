@@ -91,7 +91,7 @@
     "@nestjs/schematics": "^7.2.6",
     "@nestjs/testing": "^7.6.5",
     "@prisma/cli": "^2.14.0",
-    "@prisma/client": "^2.14.0",
+    "@prisma/client": "^3.12.0",
     "@types/bcrypt": "^3.0.0",
     "@types/cheerio": "^0.22.23",
     "@types/deep-equal": "^1.0.1",
