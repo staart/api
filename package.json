@@ -40,7 +40,7 @@
     "@staart/mustache-markdown": "^3.0.3",
     "aws-elasticsearch-connector": "^9.0.1",
     "aws-sdk": "^2.824.0",
-    "axios": "^0.21.1",
+    "axios": "^0.27.2",
     "bcrypt": "^5.0.0",
     "cheerio": "^1.0.0-rc.5",
     "circularbuffer": "^0.1.1",
