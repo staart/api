@@ -45,7 +45,7 @@
     "cheerio": "^1.0.0-rc.5",
     "circularbuffer": "^0.1.1",
     "class-transformer": "^0.3.1",
-    "class-validator": "^0.12.2",
+    "class-validator": "^0.13.2",
     "cloudinary": "^1.23.0",
     "crypto-random-string": "^3.3.0",
     "deep-equal": "^2.0.5",
