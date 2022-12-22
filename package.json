@@ -58,7 +58,7 @@
     "hibp": "^10.0.1",
     "ip-anonymize": "^0.1.0",
     "ip-range-check": "^0.2.0",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "maxmind": "^4.3.1",
     "mem": "^8.0.0",
     "minimatch": "^3.0.4",
