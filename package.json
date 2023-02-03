@@ -70,7 +70,7 @@
     "p-retry": "^4.2.0",
     "passport": "^0.4.1",
     "pidusage": "^2.0.21",
-    "puppeteer": "^5.5.0",
+    "puppeteer": "^19.6.3",
     "qrcode": "^1.4.4",
     "quick-lru": "^5.1.1",
     "randomcolor": "^0.6.2",
