@@ -53,7 +53,7 @@
     "formdata-node": "^2.4.0",
     "fs-extra": "^9.0.1",
     "geolite2-redist": "^1.0.7",
-    "got": "^11.8.1",
+    "got": "^12.5.3",
     "helmet": "^4.3.1",
     "hibp": "^10.0.1",
     "ip-anonymize": "^0.1.0",
