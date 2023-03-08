@@ -28,7 +28,7 @@
     "@koj/config": "^1.2.11",
     "@nestjs/common": "^7.6.5",
     "@nestjs/config": "^0.6.1",
-    "@nestjs/core": "^7.6.5",
+    "@nestjs/core": "^9.0.5",
     "@nestjs/passport": "^7.1.5",
     "@nestjs/platform-express": "^7.6.5",
     "@nestjs/schedule": "^0.4.1",
